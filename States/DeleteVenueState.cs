@@ -1,0 +1,54 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FFXIVVenues.Utils;
+using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Api.Models;
+using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Intents;
+
+namespace FFXIVVenues.Veni.States
+{
+    class DeleteVenueState : IState
+    {
+
+        private static string[] _messages = new[]
+        {
+            "Are you super sure you want to **delete {0}**? 😢",
+            "Are you really sure you want to **delete {0}**?"
+        };
+
+        private static string[] _deleteMessages = new[]
+        {
+            "Okay, that's done. 😢",
+            "It's gone. 😢"
+        };
+
+        private readonly IApiService _apiService;
+        private Venue _venue;
+
+        public DeleteVenueState(IApiService apiService)
+        {
+            _apiService = apiService;
+        }
+
+        public Task Enter(MessageContext c)
+        {
+            _venue = c.Conversation.GetItem<Venue>("venue");
+            return c.SendMessageAsync(string.Format(_messages.PickRandom(), _venue.Name));
+        }
+
+        public async Task Handle(MessageContext c)
+        {
+            if (c.Prediction.TopIntent == IntentNames.Response.Yes)
+                await _apiService.DeleteVenueAsync(_venue.Id);
+            else if (c.Prediction.TopIntent != IntentNames.Response.No)
+                await c.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
+
+            c.Conversation.ClearData();
+            c.Conversation.ClearState();
+            await c.SendMessageAsync(_deleteMessages.PickRandom());
+        }
+    }
+}
