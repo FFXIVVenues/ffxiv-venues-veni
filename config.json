@@ -1,0 +1,15 @@
+{
+  "DiscordBotToken": "",
+  "Luis": {
+    "RuntimeKey": "",
+    "PredictionEndpoint": "https://centralus.api.cognitive.microsoft.com/",
+    "AppId": "",
+    "Slot": "Production"
+  },
+  "Api": {
+    "BaseUrl": "http://ffxiv-venues-api.azurewebsites.net"
+  },
+  "Administrators": [
+    "236852510688542720"
+  ]
+}
