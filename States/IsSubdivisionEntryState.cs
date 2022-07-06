@@ -8,8 +8,11 @@ namespace FFXIVVenues.Veni.States
 {
     class IsSubdivisionEntryState : IState
     {
-        public Task Init(MessageContext c) =>
-            c.RespondAsync(MessageRepository.AskForSubdivisionMessage.PickRandom());
+        public Task Init(MessageContext c)
+        {
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+            return c.RespondAsync(MessageRepository.AskForSubdivisionMessage.PickRandom());
+        }
 
         public Task OnMessageReceived(MessageContext c)
         {

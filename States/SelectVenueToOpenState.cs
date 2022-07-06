@@ -28,19 +28,17 @@ namespace FFXIVVenues.Veni.States
 
         private IEnumerable<Venue> _managersVenues;
         private readonly IApiService _apiService;
-        private readonly IIndexersService _indexersService;
 
-        public SelectVenueToOpenState(IApiService apiService, IIndexersService indexersService)
+        public SelectVenueToOpenState(IApiService apiService)
         {
             this._apiService = apiService;
-            this._indexersService = indexersService;
         }
 
         public Task Init(MessageContext c)
         {
             this._managersVenues = c.Conversation.GetItem<IEnumerable<Venue>>("venues");
 
-            var selectMenuKey = c.Conversation.RegisterComponentHandler(this.Handle);
+            var selectMenuKey = c.Conversation.RegisterComponentHandler(this.Handle, ComponentPersistence.DeleteMessage);
             var componentBuilder = new ComponentBuilder();
             var selectMenuBuilder = new SelectMenuBuilder() { CustomId = selectMenuKey };
             foreach (var venue in _managersVenues.OrderBy(v => v.Name))
@@ -57,20 +55,10 @@ namespace FFXIVVenues.Veni.States
             return c.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
         }
 
-        public Task OnMessageReceived(MessageContext c) => Task.CompletedTask;
-
         public async Task Handle(MessageContext c)
         {
-            _ = c.MessageComponent.DeleteOriginalResponseAsync();
             var selectedVenueId = c.MessageComponent.Data.Values.Single();
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
-
-            if (!this._indexersService.IsIndexer(c.MessageComponent.User.Id)
-                && !venue.Managers.Contains(c.MessageComponent.User.Id.ToString()))
-            {
-                _ = c.RespondAsync("Sorry, you're not a manager of this venue!", flags: MessageFlags.Ephemeral);
-                return;
-            }
 
             c.Conversation.ClearItem("venues");
             c.Conversation.ClearState();

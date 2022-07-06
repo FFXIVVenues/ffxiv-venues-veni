@@ -1,5 +1,4 @@
-﻿using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
 using System;
 using System.Collections.Generic;
@@ -28,8 +27,11 @@ namespace FFXIVVenues.Veni.States
             { "utc", TimeZoneInfo.Utc }
         };
 
-        public Task Init(MessageContext c) =>
-            c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} { _messages.PickRandom()}");
+        public Task Init(MessageContext c)
+        {
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+            return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} { _messages.PickRandom()}");
+        }
 
         public Task OnMessageReceived(MessageContext c)
         {

@@ -26,12 +26,13 @@ namespace FFXIVVenues.Veni.States
 
         public DeleteVenueState(IApiService apiService)
         {
-            _apiService = apiService;
+            this._apiService = apiService;
         }
 
         public Task Init(MessageContext c)
         {
-            _venue = c.Conversation.GetItem<Venue>("venue");
+            this._venue = c.Conversation.GetItem<Venue>("venue");
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
             return c.RespondAsync(string.Format(_messages.PickRandom(), _venue.Name));
         }
 

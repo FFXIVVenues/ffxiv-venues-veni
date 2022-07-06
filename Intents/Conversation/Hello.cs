@@ -10,7 +10,9 @@ namespace FFXIVVenues.Veni.Intents.Conversation
         {
             "Hey",
             "Hi",
+            "Hi there",
             "Hi hi",
+            "Nyyyaaaa ♥",
             "Meow",
             "Hiya",
             "Heya",
@@ -43,12 +45,6 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "Heya Bunny girl! ♥️ How's the crew?",
             "Aaryx! There's my bunny! I missed you! ♥️",
             "Aaryx, come to call me mommy again? 😑"
-        };
-
-        private static string[] _nikoMessages = new[]
-        {
-            "Heyo Niko! ♥️ When are you becoming kitty?",
-            "Niko! ♥️ Did you come to test me again? I don't know if I can take anymore. 😅"
         };
 
         private static string[] _fluffyMessages = new[]

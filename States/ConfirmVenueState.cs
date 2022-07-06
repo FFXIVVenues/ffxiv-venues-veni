@@ -22,6 +22,13 @@ namespace FFXIVVenues.Veni.States
             "Ok, that's updated for you! 😊"
         };
 
+        private static string[] _summaryResponse = new[]
+        {
+            "Here's a preview of your venue!",
+            "Okay! 🙌 Here's what your venue will look like!",
+            "Nice! So, how does it look? 😊"
+        };
+
         private static string[] _workingOnItResponse = new[]
         {
             "Yaaay! I'm working on it! So exicted. 🥳",
@@ -29,7 +36,7 @@ namespace FFXIVVenues.Veni.States
             "Alright, working on it! 😊"
         };
 
-        private static string[] _successfulResponse = new[]
+        private static string[] _successfulNewResponse = new[]
         {
             "Wooo! I've sent it. Once it's approved, it'll show on the index!",
             "All done! Once Kana or Sumi approves it, it'll be live! 🥳",
@@ -44,73 +51,66 @@ namespace FFXIVVenues.Veni.States
             this._apiUrl = apiConfig.BaseUrl;
         }
 
-        public Task Init(MessageContext c)
+        public async Task Init(MessageContext c)
         {
             var bannerUrl = c.Conversation.GetItem<string>("bannerUrl");
+            var modifying = c.Conversation.GetItem<bool>("modifying");
             var venue = c.Conversation.GetItem<Venue>("venue");
-            return c.RespondAsync($"Here's a summary of your venue!\nWould you like to make any edits?",
-                                    null,
-                                    venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", bannerUrl ?? $"{this._apiUrl}/venue/{venue.Id}/media").Build());
+
+            await c.RespondAsync(_summaryResponse.PickRandom(),
+                                    embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", bannerUrl ?? $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
+                                    component: new ComponentBuilder()
+                                        .WithButton("Looks perfect!", c.Conversation.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
+                                        .WithButton(modifying ? "Edit more" : "Edit", c.Conversation.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                                        .Build());
         }
 
-        public async Task OnMessageReceived(MessageContext c)
+        private async Task LooksPerfect(MessageContext c)
         {
-            if (c.Prediction.TopIntent == IntentNames.Response.No)
-            {
-                var preexisting = c.Conversation.GetItem<bool>("prexisting");
-                if (preexisting)
-                    _ = c.RespondAsync("Okay, working on it!");
-                else
-                    _ = c.RespondAsync(_workingOnItResponse.PickRandom());
-                _ = c.Message.Channel.TriggerTypingAsync();
+            var preexisting = c.Conversation.GetItem<bool>("prexisting");
+            _ = c.RespondAsync(_workingOnItResponse.PickRandom());
+            _ = c.Message.Channel.TriggerTypingAsync();
 
-                var venue = c.Conversation.GetItem<Venue>("venue");
-                var uploadVenueResponse = await _apiService.PutVenueAsync(venue);
-                if (!uploadVenueResponse.IsSuccessStatusCode)
+            var venue = c.Conversation.GetItem<Venue>("venue");
+            var uploadVenueResponse = await this._apiService.PutVenueAsync(venue);
+            if (!uploadVenueResponse.IsSuccessStatusCode)
+            {
+                _ = c.RespondAsync("Ooops! Something went wrong. 😢");
+                return;
+            }
+            var bannerUrl = c.Conversation.GetItem<string>("bannerUrl");
+            if (bannerUrl != null) // changed
+            {
+                await this._apiService.PutVenueBannerAsync(venue.Id, bannerUrl);
+            }
+
+            var isIndexer = this._indexersService.IsIndexer(c.Message.Author.Id);
+            if (isIndexer)
+            {
+                var approvalResponse = await this._apiService.ApproveAsync(venue.Id);
+                if (!approvalResponse.IsSuccessStatusCode)
                 {
-                    await c.RespondAsync("Ooops! Something went wrong. 😢");
+                    await c.RespondAsync("Something, went wrong while trying to auto-approve it for you. 😢");
                     return;
                 }
-                var bannerUrl = c.Conversation.GetItem<string>("bannerUrl");
-                if (bannerUrl != null) // changed
-                {
-                    var uploadBannerResponse = await _apiService.PutVenueBannerAsync(venue.Id, bannerUrl);
-                    if (!uploadBannerResponse.IsSuccessStatusCode)
-                    {
-                        await c.RespondAsync("Sorry! Something went wrong while uploading your banner. 😢\nI've put the venue up for you though!");
-                    }
-                }
-
-                var isIndexer = this._indexersService.IsIndexer(c.Message.Author.Id);
-
-                if (isIndexer)
-                {
-                    var approvalResponse = await _apiService.ApproveAsync(venue.Id);
-                    if (!approvalResponse.IsSuccessStatusCode)
-                    {
-                        await c.RespondAsync(":O Something went wrong while trying to auto-approve it for you. 😢");
-                        return;
-                    }
-                }
-
-                if (preexisting)
-                    await c.RespondAsync(_preexisingResponse.PickRandom());
-                else if (isIndexer)
-                    await c.RespondAsync("All done and auto-approved for you. :heart:");
-                else
-                {
-                    await c.RespondAsync(_successfulResponse.PickRandom());
-                    await SendToIndexers(venue, bannerUrl);
-                }
-
-                c.Conversation.ClearState();
-                c.Conversation.ClearData();
             }
-            else if (c.Prediction.TopIntent == IntentNames.Response.Yes)
-                await c.Conversation.ShiftState<ModifyVenueState>(c);
+
+            if (preexisting)
+                await c.RespondAsync(_preexisingResponse.PickRandom());
+            else if (isIndexer)
+                await c.RespondAsync("All done and auto-approved for you. :heart:");
             else
-                await c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom());
+            {
+                await c.RespondAsync(_successfulNewResponse.PickRandom());
+                await SendToIndexers(venue, bannerUrl);
+            }
+
+            c.Conversation.ClearState();
+            c.Conversation.ClearData();
         }
+
+        private Task Edit(MessageContext c) =>
+            c.Conversation.ShiftState<ModifyVenueState>(c);
 
         private Task SendToIndexers(Venue venue, string bannerUrl) =>
             this._indexersService

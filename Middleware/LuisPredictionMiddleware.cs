@@ -20,14 +20,14 @@ namespace FFXIVVenues.Veni.Middleware
 
         public async Task ExecuteAsync(MessageContext context, Func<Task> next)
         {
-            if (string.IsNullOrWhiteSpace(context.Message.Content))
+            var query = context.Message.Content.StripMentions();
+            if (string.IsNullOrWhiteSpace(query))
             {
                 context.Prediction = new Prediction { TopIntent = IntentNames.None };
                 await next();
                 return;
             }
 
-            var query = context.Message.Content.StripMentions();
             context.Prediction = await _luisClient.PredictAsync(query);
             await next();
         }

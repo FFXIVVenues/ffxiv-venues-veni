@@ -1,9 +1,7 @@
-﻿using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Api.Models;
+﻿using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.States
@@ -88,8 +86,11 @@ namespace FFXIVVenues.Veni.States
             { "Zodiark", "Light" }
         };
 
-        public Task Init(MessageContext c) =>
-            c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWorldMessage.PickRandom()}");
+        public Task Init(MessageContext c)
+        {
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+            return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWorldMessage.PickRandom()}");
+        }
 
         public Task OnMessageReceived(MessageContext c)
         {

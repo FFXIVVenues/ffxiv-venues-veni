@@ -8,8 +8,11 @@ namespace FFXIVVenues.Veni.States
 {
     class PlotEntryState : IState
     {
-        public Task Init(MessageContext c) =>
-            c.RespondAsync(MessageRepository.AskForPlotMessage.PickRandom());
+        public Task Init(MessageContext c)
+        {
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+            return c.RespondAsync(MessageRepository.AskForPlotMessage.PickRandom());
+        }
 
         public Task OnMessageReceived(MessageContext c)
         {

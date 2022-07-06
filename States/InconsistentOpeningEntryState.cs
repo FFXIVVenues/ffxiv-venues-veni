@@ -30,11 +30,13 @@ namespace FFXIVVenues.Veni.States
 
         public Task Init(MessageContext c)
         {
-            _venue = c.Conversation.GetItem<Venue>("venue");
-            _timeZoneId = c.Conversation.GetItem<string>("timeZoneId");
-            _venueDayEnd = 11 + c.Conversation.GetItem<int>("timeZoneOffset");
+            this._venue = c.Conversation.GetItem<Venue>("venue");
+            this._timeZoneId = c.Conversation.GetItem<string>("timeZoneId");
+            this._venueDayEnd = 11 + c.Conversation.GetItem<int>("timeZoneOffset");
 
-            string openingForDayMessage = string.Format(_openingMessages.PickRandom(), _venue.Openings[0].Day);
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+
+            var openingForDayMessage = string.Format(_openingMessages.PickRandom(), _venue.Openings[0].Day);
             return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {openingForDayMessage}");
         }
 
