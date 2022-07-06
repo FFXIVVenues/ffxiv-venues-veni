@@ -10,8 +10,11 @@ namespace FFXIVVenues.Veni.States
 {
     class WebsiteEntryState : IState
     {
-        public Task Init(MessageContext c) =>
-            c.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom());
+        public Task Init(MessageContext c)
+        {
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+            return c.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom());
+        }
 
         public Task OnMessageReceived(MessageContext c)
         {

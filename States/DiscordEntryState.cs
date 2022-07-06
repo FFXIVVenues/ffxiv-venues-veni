@@ -16,8 +16,11 @@ namespace FFXIVVenues.Veni.States
         static HttpClient _discordClient = new HttpClient();
         static Regex _discordPattern = new Regex(@"(https?:\/\/)?(www\.)?((discord(app)?(\.com|\.io)(\/invite)?)|(discord\.gg))\/(\w+)");
 
-        public Task Init(MessageContext c) =>
-            c.RespondAsync(MessageRepository.AskForDiscordMessage.PickRandom());
+        public Task Init(MessageContext c)
+        {
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+            return c.RespondAsync(MessageRepository.AskForDiscordMessage.PickRandom());
+        }
 
         public async Task OnMessageReceived(MessageContext c)
         {

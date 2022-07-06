@@ -1,7 +1,6 @@
 ﻿using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Intents;
 using FFXIVVenues.Veni.States;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +24,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
         {
             var user = context.Message.Author.Id;
             var isIndexer = this._indexersService.IsIndexer(user);
+
             IEnumerable<Venue> venues;
             if (isIndexer)
                 venues = await this._apiService.GetAllVenuesAsync();
@@ -40,6 +40,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
             else if (venues.Count() > 1)
             {
                 context.Conversation.SetItem("venues", venues);
+                context.Conversation.SetItem("prexisting", true); // different to "modifying" since you can modifying a not-yet-sent venue
                 await context.Conversation.ShiftState<SelectVenueToModifyState>(context);
             }
             else

@@ -29,10 +29,10 @@ namespace FFXIVVenues.Veni.States
 
         public Task Init(MessageContext c)
         {
-            _venue = c.Conversation.GetItem<Venue>("venue");
-            _timeZoneId = c.Conversation.GetItem<string>("timeZoneId");
-            _venueDayEnd = 11 + c.Conversation.GetItem<int>("timeZoneOffset");
-
+            this._venue = c.Conversation.GetItem<Venue>("venue");
+            this._timeZoneId = c.Conversation.GetItem<string>("timeZoneId");
+            this._venueDayEnd = 11 + c.Conversation.GetItem<int>("timeZoneOffset");
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
             return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_openingMessages.PickRandom()}");
         }
 

@@ -17,13 +17,18 @@ namespace FFXIVVenues.Veni.States
             "What days is the venue open each week? (please list them in one message for me)"
         };
 
-        public Task Init(MessageContext c) =>
-            c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_messages.PickRandom()}");
+        public Task Init(MessageContext c)
+        {
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+            return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_messages.PickRandom()}");
+        }
 
         public Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
             var message = c.Message.Content.StripMentions().ToLower();
+
+            venue.Openings = new();
 
             if (message.Contains("mon"))
                 venue.Openings.Add(new Opening { Day = Day.Monday });

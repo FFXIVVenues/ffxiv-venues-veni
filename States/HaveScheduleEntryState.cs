@@ -14,8 +14,11 @@ namespace FFXIVVenues.Veni.States
             "Is your venue generally open at the same days and times every week? (yes/no)",
         };
 
-        public Task Init(MessageContext c) =>
-            c.RespondAsync(_messages.PickRandom());
+        public Task Init(MessageContext c)
+        {
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+            return c.RespondAsync(_messages.PickRandom());
+        }
 
         public Task OnMessageReceived(MessageContext c)
         {

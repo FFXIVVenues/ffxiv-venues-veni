@@ -8,8 +8,11 @@ namespace FFXIVVenues.Veni.States
 {
     class ApartmentEntryState : IState
     {
-        public Task Init(MessageContext c) =>
-            c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForApartmentMessage.PickRandom()}");
+        public Task Init(MessageContext c)
+        {
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+            return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForApartmentMessage.PickRandom()}");
+        }
 
         public Task OnMessageReceived(MessageContext c)
         {

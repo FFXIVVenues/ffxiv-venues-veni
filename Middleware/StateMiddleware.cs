@@ -13,7 +13,7 @@ namespace FFXIVVenues.Veni.Middleware
             if (context.Conversation.ActiveState == null)
                 return next();
 
-            return context.Conversation.ActiveState.OnMessageReceived(context);
+            return context.Conversation.HandleMessage(context);
         }
 
     }

@@ -24,7 +24,7 @@ namespace FFXIVVenues.Veni.Api
 
         public async Task<IEnumerable<Venue>> GetAllVenuesAsync(ulong forContact)
         {
-            var response = await _httpClient.GetAsync($"/venue?contact={forContact}");
+            var response = await _httpClient.GetAsync($"/venue?manager={forContact}");
             return await response.Content.ReadFromJsonAsync<Venue[]>();
         }
 

@@ -53,12 +53,10 @@ namespace FFXIVVenues.Veni.States
                     cm.Conversation.UnregisterComponentHandler(handlerKey);
 
                 await cm.Conversation.ShiftState<TagsEntryState>(cm);
-            });
+            }, ComponentPersistence.ClearRow);
             this._tagHandlers.Add(handler);
             component.WithButton(tagLabel, handler, ButtonStyle.Secondary);
         }
-
-        public Task OnMessageReceived(MessageContext c) => Task.CompletedTask;
 
     }
 }

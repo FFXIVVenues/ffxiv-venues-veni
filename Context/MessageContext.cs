@@ -38,13 +38,13 @@ namespace FFXIVVenues.Veni.Context
             this._componentHandlers = new();
         }
 
-        public Task RespondAsync(string message = null, MessageComponent component = null, Embed embed = null, MessageFlags flags = MessageFlags.None)
+        public Task RespondAsync(string message = null, MessageComponent component = null, Embed embed = null)
         {
             _ = _logger.LogAsync("Reply", $"Veni Ki: {message}");
             if (this.Message != null)
-                return Message.Channel.SendMessageAsync(message, components: component, embed: embed, flags: flags);
+                return Message.Channel.SendMessageAsync(message, components: component, embed: embed);
             else
-                return MessageComponent.Channel.SendMessageAsync(message, components: component, embed: embed, flags: flags);
+                return MessageComponent.Channel.SendMessageAsync(message, components: component, embed: embed);
         }
 
 

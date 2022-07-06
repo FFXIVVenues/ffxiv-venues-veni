@@ -56,7 +56,7 @@ namespace FFXIVVenues.Veni
 
             var conversationContext = _conversationContextProvider.GetContext(message.User.Id.ToString());
             var context = new MessageContext(message, _client, conversationContext, _logger);
-            await conversationContext.RunComponentHandlerAsync(context);
+            await conversationContext.HandleComponentInteraction(context);
         }
 
         private Task MessageReceivedAsync(SocketMessage message)

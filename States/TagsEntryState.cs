@@ -2,7 +2,6 @@
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.States
@@ -37,11 +36,25 @@ namespace FFXIVVenues.Veni.States
         private ComponentBuilder BuildTagsComponent(MessageContext c)
         {
             var component = new ComponentBuilder();
-            foreach (var tag in _availableTags)
-                this.AddTagButton(component, c, tag.Label, tag.Value);
+            foreach (var (Label, Value) in _availableTags)
+                this.AddTagButton(component, c, Label, Value);
             component.WithButton("Complete",
-                c.Conversation.RegisterComponentHandler(this.OnComplete), ButtonStyle.Success);
+                c.Conversation.RegisterComponentHandler(this.OnComplete, ComponentPersistence.ClearRow), ButtonStyle.Success);
             return component;
+        }
+
+        private Task OnComplete(MessageContext c)
+        {
+            var venue = c.Conversation.GetItem<Venue>("venue");
+            venue.Tags.AddRange(this._tags.Keys);
+
+            _ = c.MessageComponent.ModifyOriginalResponseAsync(props =>
+                props.Components = new ComponentBuilder().Build());
+
+            if (c.Conversation.GetItem<bool>("modifying"))
+                return c.Conversation.ShiftState<ConfirmVenueState>(c);
+
+            return c.Conversation.ShiftState<WebsiteEntryState>(c);
         }
 
         private void AddTagButton(ComponentBuilder component, MessageContext c, string tagLabel, string tagValue = null) =>
@@ -60,28 +73,7 @@ namespace FFXIVVenues.Veni.States
                             var rebuilder = this.BuildTagsComponent(c);
                             props.Components = rebuilder.Build();
                         });
-                    }), this._tags.ContainsKey(tagValue) ? ButtonStyle.Primary : ButtonStyle.Secondary);
-
-        private Task OnComplete(MessageContext c)
-        {
-            var venue = c.Conversation.GetItem<Venue>("venue");
-            venue.Tags.AddRange(this._tags.Keys);
-
-            _ = c.MessageComponent.ModifyOriginalResponseAsync(props =>
-            {
-                props.Components = null;
-            });
-
-            if (c.Conversation.GetItem<bool>("modifying"))
-                return c.Conversation.ShiftState<ConfirmVenueState>(c);
-
-            return c.Conversation.ShiftState<WebsiteEntryState>(c);
-        }
-
-        public Task OnMessageReceived(MessageContext c)
-        {
-            return Task.CompletedTask;
-        }
+                    }, ComponentPersistence.PersistRow), this._tags.ContainsKey(tagValue) ? ButtonStyle.Primary : ButtonStyle.Secondary);
 
     }
 }

@@ -7,8 +7,11 @@ namespace FFXIVVenues.Veni.States
 {
     class WardEntryState : IState
     {
-        public Task Init(MessageContext c) =>
-            c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWardMessage.PickRandom()}");
+        public Task Init(MessageContext c)
+        {
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+            return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWardMessage.PickRandom()}");
+        }
 
         public Task OnMessageReceived(MessageContext c)
         {

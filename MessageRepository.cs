@@ -88,7 +88,7 @@ namespace FFXIVVenues.Veni
 
         public static string[] AskForType = new[]
         {
-            "Select the type that most suites your venue. :smile:",
+            "Select the type that most suites your venue. 🙂",
             "Which of these types apply to your venue most?"
         };
 

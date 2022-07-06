@@ -19,14 +19,17 @@ namespace FFXIVVenues.Veni.States
             this._httpClient = httpClient;
         }
 
-        public Task Init(MessageContext c) =>
-            c.RespondAsync("What cute image would you like to use as a banner?\nBanners are usually 600x200; I can do the scaling/crop for you :heart:.");
+        public Task Init(MessageContext c)
+        {
+            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
+            return c.RespondAsync("What cute image would you like to use as a banner?\nBanners are usually 600x200; I can do the scaling/crop for you :heart:.");
+        }
 
         public async Task OnMessageReceived(MessageContext c)
         {
             if (!c.Message.Attachments.Any())
             {
-                await c.RespondAsync(MessageRepository.DontUnderstandResponses + " Could you send me an image you'd like to use for your banner?");
+                await c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom() + " Could you send me an image you'd like to use for your banner?");
                 return;
             }
 
@@ -68,19 +71,10 @@ namespace FFXIVVenues.Veni.States
             var component = new ComponentBuilder();
             component.WithButton("Looks good!", c.Conversation.RegisterComponentHandler(async c =>
             {
-                c.Conversation.SetItem<string>("bannerUrl", c.MessageComponent.Message.Attachments.First().ProxyUrl);
-                //await c.MessageComponent.DeferAsync();
-                await c.MessageComponent.ModifyOriginalResponseAsync(props =>
-                {
-                    props.Components = new ComponentBuilder().Build();
-                });
+                c.Conversation.SetItem("bannerUrl", c.MessageComponent.Message.Attachments.First().ProxyUrl);
                 await c.Conversation.ShiftState<ConfirmVenueState>(c);
-            }));
-            component.WithButton("Let's try another!", c.Conversation.RegisterComponentHandler(async c =>
-            {
-                await c.MessageComponent.ModifyOriginalResponseAsync(props => props.Components = null);
-                await c.RespondAsync("Alright, send over another image! :heart:");
-            }), ButtonStyle.Secondary);
+            }, ComponentPersistence.ClearRow));
+            component.WithButton("Let's try another!", c.Conversation.RegisterComponentHandler(c => c.RespondAsync("Alrighty, send over another image! :heart:"), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
             var response = await c.Message.Channel.SendFileAsync(outStream, "banner.jpg", "How does this look? :heart:", components: component.Build());
         }
 
