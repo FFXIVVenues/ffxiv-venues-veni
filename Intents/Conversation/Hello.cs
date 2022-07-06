@@ -61,13 +61,13 @@ namespace FFXIVVenues.Veni.Intents.Conversation
         public Task Handle(MessageContext context)
         {
             if (context.Message.Author.Id == People.Kana)
-                return context.SendMessageAsync(_kanaMessages.PickRandom());
+                return context.RespondAsync(_kanaMessages.PickRandom());
             if (context.Message.Author.Id == People.Sumi)
-                return context.SendMessageAsync(_sumiMessages.PickRandom());
+                return context.RespondAsync(_sumiMessages.PickRandom());
             if (context.Message.Author.Id == People.Fluffy)
-                return context.SendMessageAsync(_fluffyMessages.PickRandom());
+                return context.RespondAsync(_fluffyMessages.PickRandom());
 
-            return context.SendMessageAsync(_helloMessage.PickRandom());
+            return context.RespondAsync(_helloMessage.PickRandom());
         }
 
     }

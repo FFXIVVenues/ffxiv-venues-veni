@@ -2,7 +2,9 @@
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.VenueModels.V2022;
 using System.Threading.Tasks;
+using Venue = FFXIVVenues.Veni.Api.Models.Venue;
 
 namespace FFXIVVenues.Veni.States
 {
@@ -15,10 +17,10 @@ namespace FFXIVVenues.Veni.States
             "What days is the venue open each week? (please list them in one message for me)"
         };
 
-        public Task Enter(MessageContext c) =>
-            c.SendMessageAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_messages.PickRandom()}");
+        public Task Init(MessageContext c) =>
+            c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_messages.PickRandom()}");
 
-        public Task Handle(MessageContext c)
+        public Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
             var message = c.Message.Content.StripMentions().ToLower();
@@ -39,7 +41,7 @@ namespace FFXIVVenues.Veni.States
                 venue.Openings.Add(new Opening { Day = Day.Sunday });
 
             if (venue.Openings.Count == 0)
-                return c.SendMessageAsync($"Sorry, I don't understand. Which days of the week is your venue open?");
+                return c.RespondAsync($"Sorry, I don't understand. Which days of the week is your venue open?");
 
             if (venue.Openings.Count > 1)
                 return c.Conversation.ShiftState<AskIfConsistentTimeEntryState>(c);

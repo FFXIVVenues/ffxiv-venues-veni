@@ -39,13 +39,13 @@ namespace FFXIVVenues.Veni.Intents.Conversation
         public Task Handle(MessageContext context)
         {
             if (context.Message.Author.Id == 236852510688542720)
-                return context.SendMessageAsync(_kanaMessages.PickRandom());
+                return context.RespondAsync(_kanaMessages.PickRandom());
             if (context.Message.Author.Id == 339219022774272000)
-                return context.SendMessageAsync(_aaryxMessages.PickRandom());
+                return context.RespondAsync(_aaryxMessages.PickRandom());
             if (context.Message.Author.Id == 685561823943983125)
-                return context.SendMessageAsync(_nikoMessages.PickRandom());
+                return context.RespondAsync(_nikoMessages.PickRandom());
 
-            return context.SendMessageAsync(_messages.PickRandom());
+            return context.RespondAsync(_messages.PickRandom());
         }
 
     }

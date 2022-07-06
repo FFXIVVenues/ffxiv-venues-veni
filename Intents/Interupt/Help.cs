@@ -13,7 +13,7 @@ namespace FFXIVVenues.Veni.Intents.Interupt
             var kana = await context.Client.Rest.GetUserAsync(236852510688542720);
             //var kana = context.Client.GetUser(236852510688542720);
 
-            await context.SendMessageAsync(
+            await context.RespondAsync(
 "Here's what I can do for you!\n\n" +
 "`create venue`\t\tYou can ask me to create a new venue and place it on the index.\n" +
 "`edit venue`\t\t\tIf you already own a venue, I can edit it's details for you.\n" +

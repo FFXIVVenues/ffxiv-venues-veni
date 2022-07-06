@@ -1,11 +1,9 @@
-﻿using FFXIVVenues.Veni;
+﻿using Discord;
+using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Utils;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.States
@@ -19,36 +17,55 @@ namespace FFXIVVenues.Veni.States
             "Which one would you like me to show you?",
             "Oki, which one? 🙂"
         };
+        private readonly string _apiUrl;
+        private readonly string _uiUrl;
+        private readonly IIndexersService _indexersService;
+        private IEnumerable<Venue> _managersVenues;
 
-        private IEnumerable<Venue> _contactsVenues;
-
-        public Task Enter(MessageContext c)
+        public SelectVenueToShowState(UiConfiguration uiConfig, ApiConfiguration apiConfig, IIndexersService indexersService)
         {
-            _contactsVenues = c.Conversation.GetItem<IEnumerable<Venue>>("venues");
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine(_messages.PickRandom());
-            foreach (var venue in _contactsVenues)
-            {
-                var isLast = _contactsVenues.Last() == venue;
-                if (isLast) stringBuilder.Append("or ");
-                stringBuilder.Append(venue.Name);
-                if (!isLast) stringBuilder.Append(", ");
-                else stringBuilder.Append("?");
-            }
-            return c.SendMessageAsync(stringBuilder.ToString());
+            this._uiUrl = uiConfig.BaseUrl;
+            this._apiUrl = apiConfig.BaseUrl;
+            this._indexersService = indexersService;
         }
+
+        public Task Init(MessageContext c)
+        {
+            _managersVenues = c.Conversation.GetItem<IEnumerable<Venue>>("venues");
+
+            var selectMenuKey = c.Conversation.RegisterComponentHandler(this.Handle);
+            var componentBuilder = new ComponentBuilder();
+            var selectMenuBuilder = new SelectMenuBuilder() { CustomId = selectMenuKey };
+            foreach (var venue in _managersVenues.OrderBy(v => v.Name))
+            {
+                var selectMenuOption = new SelectMenuOptionBuilder
+                {
+                    Label = venue.Name,
+                    Description = venue.Location.ToString(),
+                    Value = venue.Id
+                };
+                selectMenuBuilder.AddOption(selectMenuOption);
+            }
+            componentBuilder.WithSelectMenu(selectMenuBuilder);
+            return c.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
+        }
+
+        public Task OnMessageReceived(MessageContext c) => Task.CompletedTask;
 
         public Task Handle(MessageContext c)
         {
-            var (phrase, score) = c.Message.Content.StripMentions().IsSimilarToAnyPhrase(_contactsVenues.Select(v => v.Name));
-            if (score < 0.35)
-                return c.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
+            _ = c.MessageComponent.DeleteOriginalResponseAsync();
+            var selectedVenueId = c.MessageComponent.Data.Values.Single();
+            var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            var venue = _contactsVenues.FirstOrDefault(v => v.Name == phrase);
+            if (!this._indexersService.IsIndexer(c.MessageComponent.User.Id)
+                && !venue.Managers.Contains(c.MessageComponent.User.Id.ToString()))
+                return c.RespondAsync("Sorry, you're not a manager of this venue!", flags: MessageFlags.Ephemeral);
 
             c.Conversation.ClearItem("venues");
             c.Conversation.ClearState();
-            return c.SendMessageAsync(venue.ToString());
+
+            return c.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
         }
     }
 }

@@ -23,7 +23,7 @@ namespace FFXIVVenues.Veni.Middleware
         {
             var match = _match.Match(context.Message.Content);
             if (match.Success)
-                await context.SendMessageAsync(_responses.PickRandom());
+                await context.RespondAsync(_responses.PickRandom());
 
             await next();
         }

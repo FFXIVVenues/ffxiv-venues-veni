@@ -16,10 +16,10 @@ namespace FFXIVVenues.Veni.States
         static HttpClient _discordClient = new HttpClient();
         static Regex _discordPattern = new Regex(@"(https?:\/\/)?(www\.)?((discord(app)?(\.com|\.io)(\/invite)?)|(discord\.gg))\/(\w+)");
 
-        public Task Enter(MessageContext c) =>
-            c.SendMessageAsync(MessageRepository.AskForDiscordMessage.PickRandom());
+        public Task Init(MessageContext c) =>
+            c.RespondAsync(MessageRepository.AskForDiscordMessage.PickRandom());
 
-        public async Task Handle(MessageContext c)
+        public async Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
             string message = c.Message.Content.StripMentions();
@@ -43,7 +43,7 @@ namespace FFXIVVenues.Veni.States
             var match = _discordPattern.Match(rawDiscordString);
             if (!match.Success)
             {
-                await c.SendMessageAsync("That doesn't look like a valid Discord invite to me. :think:");
+                await c.RespondAsync("That doesn't look like a valid Discord invite to me. :think:");
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace FFXIVVenues.Veni.States
 
             if (!responseMessage.IsSuccessStatusCode)
             {
-                await c.SendMessageAsync("I tried that invite link but it seems to be invalid. :cry:");
+                await c.RespondAsync("I tried that invite link but it seems to be invalid. :cry:");
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace FFXIVVenues.Veni.States
 
             if (invite.expires_at != null)
             {
-                await c.SendMessageAsync($"That invite link is not permanent, it'll expire in {invite.expires_at.Value:m}");
+                await c.RespondAsync($"That invite link is not permanent, it'll expire in {invite.expires_at.Value:m}");
                 return;
             }
 

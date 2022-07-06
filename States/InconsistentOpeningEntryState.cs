@@ -1,11 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using FFXIVVenues.Api.Models;
-using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
-using VenuesBot.Api.Models;
+using FFXIVVenues.VenueModels.V2022;
+using Venue = FFXIVVenues.Veni.Api.Models.Venue;
 
 namespace FFXIVVenues.Veni.States
 {
@@ -30,25 +28,25 @@ namespace FFXIVVenues.Veni.States
         private bool nowSettingClosing = false;
         private int currentIndex = 0;
 
-        public Task Enter(MessageContext c)
+        public Task Init(MessageContext c)
         {
             _venue = c.Conversation.GetItem<Venue>("venue");
             _timeZoneId = c.Conversation.GetItem<string>("timeZoneId");
             _venueDayEnd = 11 + c.Conversation.GetItem<int>("timeZoneOffset");
 
             string openingForDayMessage = string.Format(_openingMessages.PickRandom(), _venue.Openings[0].Day);
-            return c.SendMessageAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {openingForDayMessage}");
+            return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {openingForDayMessage}");
         }
 
-        public Task Handle(MessageContext c)
+        public Task OnMessageReceived(MessageContext c)
         {
             var message = c.Message.Content.StripMentions().ToLower();
             var match = _regex.Match(message);
             if (!match.Success)
-                return c.SendMessageAsync($"Sorry, I didn't understand that, could you write in 12-hour format? Like 12am, or 7:30pm?");
+                return c.RespondAsync($"Sorry, I didn't understand that, could you write in 12-hour format? Like 12am, or 7:30pm?");
 
-            var hour = int.Parse(match.Groups["hour"].Value);
-            var minute = match.Groups["minute"].Success ? int.Parse(match.Groups["minute"].Value) : 0;
+            var hour = ushort.Parse(match.Groups["hour"].Value);
+            var minute = match.Groups["minute"].Success ? ushort.Parse(match.Groups["minute"].Value) : (ushort)0;
             var meridiem = match.Groups["meridiem"].Value;
 
             if (meridiem == "am" && hour == 12)
@@ -64,7 +62,7 @@ namespace FFXIVVenues.Veni.States
 
                 nowSettingClosing = true;
                 var closingForDayMessage = string.Format(_closingMessages.PickRandom(), _venue.Openings[currentIndex].Day);
-                return c.SendMessageAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {closingForDayMessage}");
+                return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {closingForDayMessage}");
             }
 
             // setting closing time per day
@@ -76,10 +74,12 @@ namespace FFXIVVenues.Veni.States
             if (currentIndex < _venue.Openings.Count)
             {
                 var openingForDayMessage = string.Format(_openingMessages.PickRandom(), _venue.Openings[currentIndex].Day);
-                return c.SendMessageAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {openingForDayMessage}");
+                return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {openingForDayMessage}");
             }
 
-            return c.Conversation.ShiftState<ConfirmVenueState>(c);
+            if (c.Conversation.GetItem<bool>("modifying"))
+                return c.Conversation.ShiftState<ConfirmVenueState>(c);
+            return c.Conversation.ShiftState<BannerInputState>(c);
         }
     }
 }

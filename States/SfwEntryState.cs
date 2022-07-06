@@ -1,6 +1,4 @@
 ﻿using System.Threading.Tasks;
-using FFXIVVenues.Utils;
-using FFXIVVenues.Veni;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
@@ -9,10 +7,10 @@ namespace FFXIVVenues.Veni.States
 {
     class SfwEntryState : IState
     {
-        public Task Enter(MessageContext c) =>
-            c.SendMessageAsync(MessageRepository.AskForSfwMessage.PickRandom());
+        public Task Init(MessageContext c) =>
+            c.RespondAsync(MessageRepository.AskForSfwMessage.PickRandom());
 
-        public Task Handle(MessageContext c)
+        public Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
 
@@ -21,9 +19,11 @@ namespace FFXIVVenues.Veni.States
             else if (c.Prediction.TopIntent == IntentNames.Response.No)
                 venue.Sfw = false;
             else
-                return c.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
+                return c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom());
 
-            return c.Conversation.ShiftState<NsfwEntryState>(c);
+            if (c.Conversation.GetItem<bool>("modifying"))
+                return c.Conversation.ShiftState<ConfirmVenueState>(c);
+            return c.Conversation.ShiftState<TypeEntryState>(c);
         }
     }
 

@@ -1,116 +1,103 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
+using Discord;
 
 namespace FFXIVVenues.Veni.Api.Models
 {
-    public class Venue
+    public class Venue : VenueModels.V2022.Venue
     {
-        public string Id { get; set; }
-        public string Name { get; set; } = "An mysterious venue";
-        public List<string> Description { get; set; } = new();
-        public Location Location { get; set; } = new();
-        public Uri Website { get; set; }
-        public Uri Discord { get; set; }
-        public bool Sfw { get; set; }
-        public bool Nsfw { get; set; }
-        public List<Opening> Openings { get; set; } = new();
-        public List<OpeningException> Exceptions { get; set; } = new();
-        public List<Notice> Notices { get; set; } = new();
-        public List<string> Contacts { get; set; } = new();
-        public List<string> Tags { get; set; } = new();
-        public bool Open { get; set; }
 
-        public Venue() =>
-            Id = GenerateId();
-
-        public string GenerateId()
+        public EmbedBuilder ToEmbed(string uiUrl, string bannerUrl)
         {
-            var chars = "BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz0123456789";
-            var stringChars = new char[12];
-            var random = new Random();
-
-            for (int i = 0; i < stringChars.Length; i++)
-            {
-                stringChars[i] = chars[random.Next(chars.Length)];
-            }
-
-            return new string(stringChars);
-        }
-
-        public override string ToString()
-        {
-            var summary = new StringBuilder();
-
-            summary.Append(":id: : ")
-                .AppendLine(Id)
-                .Append(":placard:  : ")
-                .AppendLine(Name)
-                .Append($":hut:  : ")
-                .Append(Location.DataCenter).Append(", ").Append(Location.World).Append(", ")
-                .Append(Location.District).Append(", Ward ").Append(Location.Ward).Append(", ");
-
-            if (Location.Apartment > 0)
-            {
-                summary.Append("Apartment #").Append(Location.Apartment);
-                if (Location.Subdivision) summary.Append(" (subdivision)");
-            }
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append("**Location**: ");
+            stringBuilder.AppendLine(this.Location.ToString());
+            stringBuilder.Append("**SFW**: ");
+            stringBuilder.AppendLine(this.Sfw ? "Yes" : "No");
+            stringBuilder.Append("**Website**: ");
+            stringBuilder.AppendLine(this.Website?.ToString() ?? "No website");
+            stringBuilder.Append("**Discord**: ");
+            stringBuilder.AppendLine(this.Discord?.ToString() ?? "No discord");
+            stringBuilder.Append("**Tags**: ");
+            if (this.Tags == null || this.Tags.Count == 0)
+                stringBuilder.AppendLine(" None");
             else
-                summary.Append("Plot #").Append(Location.Plot);
+                stringBuilder.AppendLine(string.Join(", ", this.Tags));
 
-            summary.AppendLine().Append(":hugging:  : ").AppendLine(Sfw ? "Is SFW" : "Is not SFW")
-                                .Append(":underage:  : ").AppendLine(Nsfw ? "Provides NSFW services" : "Does not provide NSFW services")
-                                .Append(":link:  : ").AppendLine(Website?.ToString() ?? "No website")
-                                .Append(":speaking_head:  : ").AppendLine(Discord?.ToString() ?? "No discord");
-
-            if (Open)
-                summary.AppendLine("🟢 : *Currently open.*");
-            else
-                summary.AppendLine("🔴 : *Not currently open.*");
-
-            if (Openings == null || Openings.Count == 0)
-                summary.Append(":calendar: : ").AppendLine("No set schedule");
-            else
-            {
-                summary.AppendLine(":calendar: : ");
-                foreach (var opening in Openings)
-                    summary.Append(opening.Day.ToString())
-                           .Append(", ")
-                           .Append(opening.Start.Hour)
-                           .Append(":")
-                           .Append(opening.Start.Minute.ToString("00"))
-                           .Append(" (")
-                           .Append(opening.Start.TimeZone)
-                           .Append(") - ")
-                           .Append(opening.End.Hour)
-                           .Append(":")
-                           .Append(opening.End.Minute.ToString("00"))
-                           .Append(" (")
-                           .Append(opening.End.TimeZone)
-                           .AppendLine(")");
-
-            }
 
             var charsLeft = 1000;
-            summary.Append("📝 : ");
-            foreach (var paragraph in Description)
+            stringBuilder.Append("**Description**: ");
+            foreach (var paragraph in this.Description)
             {
-                if (charsLeft < 10)
-                {
-                    summary.AppendLine("...");
-                    break;
-                }
+                stringBuilder.AppendLine();
 
                 var trimmmedParagraph = paragraph;
                 if (paragraph.Length > charsLeft)
                 {
                     trimmmedParagraph = paragraph.Substring(0, charsLeft);
                 }
-                summary.AppendLine(paragraph).AppendLine();
+                stringBuilder.Append(paragraph);
                 charsLeft -= trimmmedParagraph.Length;
+
+                if (charsLeft < 10)
+                {
+                    stringBuilder.AppendLine("...").AppendLine();
+                    break;
+                }
+                stringBuilder.AppendLine();
             }
 
-            return summary.ToString();
+
+
+            if (Openings == null || Openings.Count == 0)
+                stringBuilder.AppendLine("**Schedule**: ")
+                    .AppendLine("No set schedule");
+            else
+            {
+                stringBuilder.AppendLine("**Schedule**: ");
+                foreach (var opening in Openings)
+                    stringBuilder
+                           .Append(opening.Day.ToString())
+                           .Append("s, ")
+                           .Append(opening.Start.Hour)
+                           .Append(":")
+                           .Append(opening.Start.Minute.ToString("00"))
+                           .Append(" (")
+                           .Append(opening.Start.TimeZone switch
+                           {
+                               "Eastern Standard Time" => "EST",
+                               "Central Standard Time" => "CST",
+                               "Mountain Standard Time" => "MST",
+                               "Pacific Standard Time" => "PST",
+                               "Atlantic Standard Time" => "AST",
+                               _ => opening.Start.TimeZone
+                           })
+                           .Append(") - ")
+                           .Append(opening.End.Hour)
+                           .Append(":")
+                           .Append(opening.End.Minute.ToString("00"))
+                           .Append(" (")
+                           .Append(opening.End.TimeZone switch
+                           {
+                               "Eastern Standard Time" => "EST",
+                               "Central Standard Time" => "CST",
+                               "Mountain Standard Time" => "MST",
+                               "Pacific Standard Time" => "PST",
+                               "Atlantic Standard Time" => "AST",
+                               _ => opening.End.TimeZone
+                           })
+                           .AppendLine(")");
+
+            }
+
+
+            var builder = new EmbedBuilder()
+                .WithTitle(this.Name)
+                .WithDescription(stringBuilder.ToString())
+                .WithUrl(uiUrl)
+                .WithImageUrl(bannerUrl);
+
+            return builder;
         }
+
     }
 }

@@ -1,11 +1,9 @@
-﻿using FFXIVVenues.Veni;
+﻿using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Utils;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.States
@@ -28,45 +26,57 @@ namespace FFXIVVenues.Veni.States
         };
 
 
-        private IEnumerable<Venue> _contactsVenues;
-        private IApiService _apiService;
+        private IEnumerable<Venue> _managersVenues;
+        private readonly IApiService _apiService;
+        private readonly IIndexersService _indexersService;
 
-        public SelectVenueToOpenState(IApiService apiService)
+        public SelectVenueToOpenState(IApiService apiService, IIndexersService indexersService)
         {
-            _apiService = apiService;
+            this._apiService = apiService;
+            this._indexersService = indexersService;
         }
 
-        public Task Enter(MessageContext c)
+        public Task Init(MessageContext c)
         {
-            _contactsVenues = c.Conversation.GetItem<IEnumerable<Venue>>("venues");
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine(_messages.PickRandom());
-            foreach (var venue in _contactsVenues)
+            this._managersVenues = c.Conversation.GetItem<IEnumerable<Venue>>("venues");
+
+            var selectMenuKey = c.Conversation.RegisterComponentHandler(this.Handle);
+            var componentBuilder = new ComponentBuilder();
+            var selectMenuBuilder = new SelectMenuBuilder() { CustomId = selectMenuKey };
+            foreach (var venue in _managersVenues.OrderBy(v => v.Name))
             {
-                var isLast = _contactsVenues.Last() == venue;
-                if (isLast) stringBuilder.Append("or ");
-                stringBuilder.Append(venue.Name);
-                if (!isLast) stringBuilder.Append(", ");
-                else stringBuilder.Append("?");
+                var selectMenuOption = new SelectMenuOptionBuilder
+                {
+                    Label = venue.Name,
+                    Description = venue.Location.ToString(),
+                    Value = venue.Id
+                };
+                selectMenuBuilder.AddOption(selectMenuOption);
             }
-            return c.SendMessageAsync(stringBuilder.ToString());
+            componentBuilder.WithSelectMenu(selectMenuBuilder);
+            return c.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
         }
+
+        public Task OnMessageReceived(MessageContext c) => Task.CompletedTask;
 
         public async Task Handle(MessageContext c)
         {
-            var (phrase, score) = c.Message.Content.StripMentions().IsSimilarToAnyPhrase(_contactsVenues.Select(v => v.Name));
-            if (score < 0.35)
+            _ = c.MessageComponent.DeleteOriginalResponseAsync();
+            var selectedVenueId = c.MessageComponent.Data.Values.Single();
+            var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
+
+            if (!this._indexersService.IsIndexer(c.MessageComponent.User.Id)
+                && !venue.Managers.Contains(c.MessageComponent.User.Id.ToString()))
             {
-                await c.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
+                _ = c.RespondAsync("Sorry, you're not a manager of this venue!", flags: MessageFlags.Ephemeral);
                 return;
             }
 
-            var venue = _contactsVenues.FirstOrDefault(v => v.Name == phrase);
-
             c.Conversation.ClearItem("venues");
             c.Conversation.ClearState();
-            await _apiService.OpenVenue(venue.Id);
-            await c.SendMessageAsync(_responses.PickRandom());
+
+            await _apiService.OpenVenueAsync(venue.Id);
+            await c.RespondAsync(_responses.PickRandom());
         }
     }
 }

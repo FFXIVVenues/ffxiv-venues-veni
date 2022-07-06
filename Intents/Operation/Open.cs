@@ -1,6 +1,8 @@
 ﻿using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,28 +18,36 @@ namespace FFXIVVenues.Veni.Intents.Operation
             "Let's do it! We... are... live!!! We're green on the index and the pings are flying! So excited. 🙂"
         };
 
-        private IApiService _apiService;
+        private readonly IApiService _apiService;
+        private readonly IIndexersService _indexersService;
 
-        public Open(IApiService apiService)
+        public Open(IApiService apiService, IIndexersService indexersService)
         {
-            _apiService = apiService;
+            this._apiService = apiService;
+            this._indexersService = indexersService;
         }
 
         public async Task Handle(MessageContext context)
         {
-            var contact = context.Message.Author.Id;
-            var venuesForContact = await _apiService.GetAllVenuesAsync(contact);
-            if (venuesForContact == null || !venuesForContact.Any())
-                await context.SendMessageAsync("You don't seem to be an assigned contact for any venues. 🤔");
-            else if (venuesForContact.Count() > 1)
+            var user = context.Message.Author.Id;
+            var isIndexer = this._indexersService.IsIndexer(user);
+            IEnumerable<Venue> venues;
+            if (isIndexer)
+                venues = await this._apiService.GetAllVenuesAsync();
+            else
+                venues = await this._apiService.GetAllVenuesAsync(user);
+
+            if (venues == null || !venues.Any())
+                await context.RespondAsync("You don't seem to be an assigned contact for any venues. 🤔");
+            else if (venues.Count() > 1)
             {
-                context.Conversation.SetItem("venues", venuesForContact);
+                context.Conversation.SetItem("venues", venues);
                 await context.Conversation.ShiftState<SelectVenueToOpenState>(context);
             }
             else
             {
-                await _apiService.OpenVenue(venuesForContact.Single().Id);
-                await context.SendMessageAsync(_responses.PickRandom());
+                await _apiService.OpenVenueAsync(venues.Single().Id);
+                await context.RespondAsync(_responses.PickRandom());
             }
         }
 

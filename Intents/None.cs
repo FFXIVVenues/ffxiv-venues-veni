@@ -20,7 +20,7 @@ namespace FFXIVVenues.Veni.Intents
         };
 
         public Task Handle(MessageContext context) =>
-            context.SendMessageAsync(_responses.PickRandom());
+            context.RespondAsync(_responses.PickRandom());
 
     }
 }

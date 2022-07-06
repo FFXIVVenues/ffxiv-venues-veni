@@ -1,19 +1,26 @@
-﻿using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Intents;
+﻿using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Context;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Intents.Interupt
 {
     internal class Escalate : IIntentHandler
     {
+        private readonly IIndexersService _indexersService;
+
+        public Escalate(IIndexersService indexersService)
+        {
+            this._indexersService = indexersService;
+        }
 
         public async Task Handle(MessageContext context)
         {
-            await context.SendMessageAsync($"Alright! I've messaged mom! She'll contact you soon!");
+            await context.RespondAsync($"Alright! I've messaged mom! She or another indexer will contact you soon!");
 
-            var kana = context.Client.GetUser(236852510688542720);
-            var channel = await kana.GetOrCreateDMChannelAsync();
-            await channel.SendMessageAsync($"Kaanaa! I have a {context.Message.Author.Mention} that needs some help");
+            await this._indexersService
+                .Broadcast()
+                .WithMessage($"Heyo, I need an human indexer! I have {context.Message.Author.Mention} needing some help. :cry:")
+                .SendToAsync(this._indexersService.Indexers);
         }
 
     }

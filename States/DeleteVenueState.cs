@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FFXIVVenues.Utils;
+﻿using System.Threading.Tasks;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
@@ -33,22 +29,22 @@ namespace FFXIVVenues.Veni.States
             _apiService = apiService;
         }
 
-        public Task Enter(MessageContext c)
+        public Task Init(MessageContext c)
         {
             _venue = c.Conversation.GetItem<Venue>("venue");
-            return c.SendMessageAsync(string.Format(_messages.PickRandom(), _venue.Name));
+            return c.RespondAsync(string.Format(_messages.PickRandom(), _venue.Name));
         }
 
-        public async Task Handle(MessageContext c)
+        public async Task OnMessageReceived(MessageContext c)
         {
             if (c.Prediction.TopIntent == IntentNames.Response.Yes)
                 await _apiService.DeleteVenueAsync(_venue.Id);
             else if (c.Prediction.TopIntent != IntentNames.Response.No)
-                await c.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
+                await c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom());
 
             c.Conversation.ClearData();
             c.Conversation.ClearState();
-            await c.SendMessageAsync(_deleteMessages.PickRandom());
+            await c.RespondAsync(_deleteMessages.PickRandom());
         }
     }
 }

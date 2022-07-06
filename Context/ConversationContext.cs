@@ -7,11 +7,14 @@ using FFXIVVenues.Veni.States;
 
 namespace FFXIVVenues.Veni.Context
 {
-    class ConversationContext
+    public class ConversationContext
     {
+
 
         public ConcurrentDictionary<string, object> ContextData { get; } = new();
         public IState ActiveState { get; private set; }
+
+        private ConcurrentDictionary<string, Func<MessageContext, Task>> _componentHandlers = new();
 
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
@@ -26,7 +29,7 @@ namespace FFXIVVenues.Veni.Context
         {
             _ = _logger.LogAsync("StateShift", $"[{ActiveState?.GetType().Name}] -> [{typeof(T).Name}]");
             ActiveState = ActivatorUtilities.CreateInstance<T>(_serviceProvider); ;
-            await ActiveState.Enter(context);
+            await ActiveState.Init(context);
         }
 
         public void ClearState()
@@ -55,5 +58,24 @@ namespace FFXIVVenues.Veni.Context
         {
             ContextData.AddOrUpdate(name, item, (s, o) => item);
         }
+
+        public string RegisterComponentHandler(Func<MessageContext, Task> @delegate)
+        {
+            var key = Guid.NewGuid().ToString();
+            this._componentHandlers[key] = @delegate;
+            return key;
+        }
+
+        public void UnregisterComponentHandler(string key)
+        {
+            this._componentHandlers.TryRemove(key, out _);
+        }
+
+        public async Task RunComponentHandlerAsync(MessageContext context)
+        {
+            if (this._componentHandlers.TryGetValue(context.MessageComponent.Data.CustomId, out var handler))
+                await handler(context);
+        }
+
     }
 }

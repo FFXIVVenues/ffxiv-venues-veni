@@ -26,9 +26,9 @@ namespace FFXIVVenues.Veni.Intents.Conversation
         public async Task Handle(MessageContext context)
         {
             if (context.Message.Author.Id == People.Kana)
-                await context.SendMessageAsync(_kanaMessages.PickRandom());
+                await context.RespondAsync(_kanaMessages.PickRandom());
             else
-                await context.SendMessageAsync(_responses.PickRandom());
+                await context.RespondAsync(_responses.PickRandom());
         }
 
     }
