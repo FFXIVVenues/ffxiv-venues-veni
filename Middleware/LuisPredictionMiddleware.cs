@@ -1,10 +1,11 @@
 ﻿using Kana.Pipelines;
-using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Luis;
 using FFXIVVenues.Veni.Context;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
+using FFXIVVenues.Veni.Intents;
 
 namespace FFXIVVenues.Veni.Middleware
 {
@@ -19,6 +20,13 @@ namespace FFXIVVenues.Veni.Middleware
 
         public async Task ExecuteAsync(MessageContext context, Func<Task> next)
         {
+            if (string.IsNullOrWhiteSpace(context.Message.Content))
+            {
+                context.Prediction = new Prediction { TopIntent = IntentNames.None };
+                await next();
+                return;
+            }
+
             var query = context.Message.Content.StripMentions();
             context.Prediction = await _luisClient.PredictAsync(query);
             await next();

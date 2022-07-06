@@ -11,11 +11,11 @@ namespace FFXIVVenues.Veni.Intents.Interupt
         public Task Handle(MessageContext context)
         {
             if (context.Conversation.ActiveState == null)
-                return context.SendMessageAsync("Huh? We're not in the middle of anything. :shrug:");
+                return context.RespondAsync("Huh? We're not in the middle of anything. :shrug:");
 
             context.Conversation.ClearData();
             context.Conversation.ClearState();
-            return context.SendMessageAsync(MessageRepository.StoppedMessage.PickRandom());
+            return context.RespondAsync(MessageRepository.StoppedMessage.PickRandom());
         }
 
     }

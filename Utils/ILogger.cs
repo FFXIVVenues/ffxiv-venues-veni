@@ -2,7 +2,7 @@
 
 namespace FFXIVVenues.Veni.Utils
 {
-    internal interface ILogger
+    public interface ILogger
     {
         Task LogAsync(string type, string msg);
     }

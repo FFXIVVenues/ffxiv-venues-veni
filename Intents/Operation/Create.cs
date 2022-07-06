@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using FFXIVVenues.Api.Models;
+using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States;
 
@@ -13,9 +13,9 @@ namespace FFXIVVenues.Veni.Intents.Operation
         public async Task Handle(MessageContext context)
         {
             var venue = new Venue();
-            venue.Contacts.Add(context.Message.Author.Id.ToString());
+            venue.Managers.Add(context.Message.Author.Id.ToString());
             context.Conversation.ContextData.AddOrUpdate(CREATE_VALUE_KEY, (s, v) => v, (s, e, v) => v, venue);
-            await context.SendMessageAsync(MessageRepository.CreateVenueMessage.PickRandom());
+            await context.RespondAsync(MessageRepository.CreateVenueMessage.PickRandom());
             await context.Conversation.ShiftState<NameEntryState>(context);
         }
 

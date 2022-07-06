@@ -25,7 +25,7 @@ namespace FFXIVVenues.Veni
         {
             "Let's get started. What is the name of your venue?",
             "What are we calling it?",
-            "What is the name?",
+            "Alrighty, what is the name? :smile:",
             "What's the name of your venue?",
             "Please, tell me the name!"
         };
@@ -86,10 +86,16 @@ namespace FFXIVVenues.Veni
             "Is it usually safe for someone looking for an SFW experience to walk into? (yes/no)",
         };
 
-        public static string[] AskForNsfwMessage = new[]
+        public static string[] AskForType = new[]
         {
-            "Does your venue offer NSFW services? (yes/no)",
-            "Do you have NSFW services? (yes/no)"
+            "Select the type that most suites your venue. :smile:",
+            "Which of these types apply to your venue most?"
+        };
+
+        public static string[] AskForTags = new[]
+        {
+            "Select all the tags that apply to your venue. :smile:",
+            "Which of these tags apply to the venue?"
         };
 
         public static string[] AskForHouseOrApartmentMessage = new[]

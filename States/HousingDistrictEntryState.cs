@@ -8,15 +8,15 @@ namespace FFXIVVenues.Veni.States
 {
     class HousingDistrictEntryState : IState
     {
-        public Task Enter(MessageContext c) =>
-            c.SendMessageAsync(MessageRepository.AskForHousingDistrictMessage.PickRandom());
+        public Task Init(MessageContext c) =>
+            c.RespondAsync(MessageRepository.AskForHousingDistrictMessage.PickRandom());
 
-        public Task Handle(MessageContext c)
+        public Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
             var result = c.Message.Content.StripMentions().IsSimilarToAnyPhrase("Mist", "Empyreum", "Goblet", "Lavender Beds", "Shirogane");
             if (result.Score < 0.5)
-                return c.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
+                return c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom());
 
             venue.Location.District = result.Phrase;
             return c.Conversation.ShiftState<WardEntryState>(c);

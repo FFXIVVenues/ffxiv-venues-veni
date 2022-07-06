@@ -8,15 +8,15 @@ namespace FFXIVVenues.Veni.States
 {
     class PlotEntryState : IState
     {
-        public Task Enter(MessageContext c) =>
-            c.SendMessageAsync(MessageRepository.AskForPlotMessage.PickRandom());
+        public Task Init(MessageContext c) =>
+            c.RespondAsync(MessageRepository.AskForPlotMessage.PickRandom());
 
-        public Task Handle(MessageContext c)
+        public Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
-            if (!int.TryParse(c.Message.Content.StripMentions(), out var plot) || plot < 1 || plot > 60)
+            if (!ushort.TryParse(c.Message.Content.StripMentions(), out var plot) || plot < 1 || plot > 60)
             {
-                return c.SendMessageAsync("Sorry, I didn't understand that, please enter a number between 1 and 60.");
+                return c.RespondAsync("Sorry, I didn't understand that, please enter a number between 1 and 60.");
             }
 
             venue.Location.Plot = plot;

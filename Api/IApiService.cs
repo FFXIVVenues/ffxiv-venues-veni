@@ -1,5 +1,6 @@
 ﻿using FFXIVVenues.Veni.Api.Models;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -11,8 +12,11 @@ namespace FFXIVVenues.Veni.Api
         Task<IEnumerable<Venue>> GetAllVenuesAsync(ulong forContact);
         Task<Venue> GetVenueAsync(string id);
         Task<HttpResponseMessage> PutVenueAsync(Venue venue);
+        Task<HttpResponseMessage> PutVenueBannerAsync(string id, string url);
+        Task<HttpResponseMessage> PutVenueBannerAsync(string id, Stream stream);
         Task<HttpResponseMessage> DeleteVenueAsync(string id);
-        Task<HttpResponseMessage> OpenVenue(string id);
-        Task<HttpResponseMessage> CloseVenue(string id);
+        Task<HttpResponseMessage> OpenVenueAsync(string id);
+        Task<HttpResponseMessage> CloseVenueAsync(string id);
+        Task<HttpResponseMessage> ApproveAsync(string id, bool approval = true);
     }
 }

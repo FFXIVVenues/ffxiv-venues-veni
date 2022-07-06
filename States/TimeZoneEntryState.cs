@@ -28,10 +28,10 @@ namespace FFXIVVenues.Veni.States
             { "utc", TimeZoneInfo.Utc }
         };
 
-        public Task Enter(MessageContext c) =>
-            c.SendMessageAsync($"{MessageRepository.ConfirmMessage.PickRandom()} { _messages.PickRandom()}");
+        public Task Init(MessageContext c) =>
+            c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} { _messages.PickRandom()}");
 
-        public Task Handle(MessageContext c)
+        public Task OnMessageReceived(MessageContext c)
         {
             var message = c.Message.Content.StripMentions().ToLower();
             foreach (var timezone in _timezones)
@@ -46,7 +46,7 @@ namespace FFXIVVenues.Veni.States
                     return c.Conversation.ShiftState<DaysEntryState>(c);
                 }
 
-            return c.SendMessageAsync($"Sorry, I don't know that time zone. 😭");
+            return c.RespondAsync($"Sorry, I don't know that time zone. 😭");
 
         }
     }

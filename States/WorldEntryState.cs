@@ -88,16 +88,16 @@ namespace FFXIVVenues.Veni.States
             { "Zodiark", "Light" }
         };
 
-        public Task Enter(MessageContext c) =>
-            c.SendMessageAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWorldMessage.PickRandom()}");
+        public Task Init(MessageContext c) =>
+            c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWorldMessage.PickRandom()}");
 
-        public Task Handle(MessageContext c)
+        public Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
             var similarity = c.Message.Content.StripMentions().AnyWorldIsSimilarToAnyPhrase(_worldMap.Keys);
 
             if (similarity.Score < .7)
-                return c.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
+                return c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom());
 
             venue.Location.World = similarity.Phrase;
             venue.Location.DataCenter = _worldMap[venue.Location.World];

@@ -1,15 +1,19 @@
 {
-  "DiscordBotToken": "",
-  "Luis": {
-    "RuntimeKey": "",
-    "PredictionEndpoint": "https://centralus.api.cognitive.microsoft.com/",
-    "AppId": "",
-    "Slot": "Production"
-  },
-  "Api": {
-    "BaseUrl": "http://ffxiv-venues-api.azurewebsites.net"
-  },
-  "Administrators": [
-    "236852510688542720"
-  ]
+	"DiscordBotToken": "",
+	"Luis": {
+		"RuntimeKey": "",
+		"PredictionEndpoint": "https://centralus.api.cognitive.microsoft.com/",
+		"AppId": "",
+		"Slot": "Production"
+	},
+	"Ui": {
+		"BaseUrl": "https://ffxivvenues.com"
+	},
+	"Api": {
+		"BaseUrl": "http://api.ffxivvenues.com"
+	},
+	"Indexers": [
+		"236852510688542720",
+		"252142384303833088"
+	]
 }

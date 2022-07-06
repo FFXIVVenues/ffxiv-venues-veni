@@ -10,10 +10,10 @@ namespace FFXIVVenues.Veni.States
 {
     class WebsiteEntryState : IState
     {
-        public Task Enter(MessageContext c) =>
-            c.SendMessageAsync(MessageRepository.AskForWebsiteMessage.PickRandom());
+        public Task Init(MessageContext c) =>
+            c.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom());
 
-        public Task Handle(MessageContext c)
+        public Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
             if (new Regex("\\bskip\\b").IsMatch(c.Message.Content.ToLower()))
@@ -29,7 +29,7 @@ namespace FFXIVVenues.Veni.States
 
             if (!Uri.TryCreate(rawWebsiteString, UriKind.Absolute, out var website))
             {
-                c.SendMessageAsync("Sorry, that doesn't look like a valid website address.");
+                c.RespondAsync("Sorry, that doesn't look like a valid website address.");
                 return Task.CompletedTask;
             }
 

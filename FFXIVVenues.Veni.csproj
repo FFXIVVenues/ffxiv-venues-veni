@@ -12,11 +12,14 @@
 
   <ItemGroup>
     <None Remove="count.json" />
+    <None Remove="FFXIVVenues.VenueModels" />
+    <None Remove="PrettyPrintNet" />
+    <None Remove="SixLabors.ImageSharp" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="2.4.0" />
-    <PackageReference Include="F23.StringSimilarity" Version="4.1.0" />
+    <PackageReference Include="Discord.Net" Version="3.7.2" />
+    <PackageReference Include="F23.StringSimilarity" Version="5.0.0" />
     <PackageReference Include="Kana.Pipelines" Version="2.2.0" />
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
@@ -24,8 +27,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-    <PackageReference Include="PrettyPrintNet" Version="1.6.1" />
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
+    <PackageReference Include="FFXIVVenues.VenueModels" Version="6.3.0" />
+    <PackageReference Include="PrettyPrintNet" Version="1.6.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
   </ItemGroup>
 
   <ItemGroup>

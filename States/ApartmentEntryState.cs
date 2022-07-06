@@ -8,14 +8,14 @@ namespace FFXIVVenues.Veni.States
 {
     class ApartmentEntryState : IState
     {
-        public Task Enter(MessageContext c) =>
-            c.SendMessageAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForApartmentMessage.PickRandom()}");
+        public Task Init(MessageContext c) =>
+            c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForApartmentMessage.PickRandom()}");
 
-        public Task Handle(MessageContext c)
+        public Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
-            if (!int.TryParse(c.Message.Content.StripMentions(), out var apartment) || apartment < 1)
-                return c.SendMessageAsync("Sorry, I didn't understand that, please enter your apartment number.");
+            if (!ushort.TryParse(c.Message.Content.StripMentions(), out var apartment) || apartment < 1)
+                return c.RespondAsync("Sorry, I didn't understand that, please enter your apartment number.");
 
             venue.Location.Apartment = apartment;
 

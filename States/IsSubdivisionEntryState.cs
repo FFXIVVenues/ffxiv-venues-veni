@@ -8,10 +8,10 @@ namespace FFXIVVenues.Veni.States
 {
     class IsSubdivisionEntryState : IState
     {
-        public Task Enter(MessageContext c) =>
-            c.SendMessageAsync(MessageRepository.AskForSubdivisionMessage.PickRandom());
+        public Task Init(MessageContext c) =>
+            c.RespondAsync(MessageRepository.AskForSubdivisionMessage.PickRandom());
 
-        public Task Handle(MessageContext c)
+        public Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
 

@@ -20,7 +20,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
         public Task Handle(MessageContext context)
         {
             var age = DateTime.Now - DateTime.Parse("06-11-2021 21:40:00");
-            return context.SendMessageAsync(string.Format(_messages.PickRandom(), age.ToPrettyString()));
+            return context.RespondAsync(string.Format(_messages.PickRandom(), age.ToPrettyString()));
         }
 
     }

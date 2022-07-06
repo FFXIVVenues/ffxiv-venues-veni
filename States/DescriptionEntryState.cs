@@ -8,10 +8,10 @@ namespace FFXIVVenues.Veni.States
 {
     class DescriptionEntryState : IState
     {
-        public Task Enter(MessageContext c) =>
-            c.SendMessageAsync(MessageRepository.AskForDescriptionMessage.PickRandom());
+        public Task Init(MessageContext c) =>
+            c.RespondAsync(MessageRepository.AskForDescriptionMessage.PickRandom());
 
-        public Task Handle(MessageContext c)
+        public Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
             venue.Description = c.Message.Content.StripMentions().AsListOfParagraphs();

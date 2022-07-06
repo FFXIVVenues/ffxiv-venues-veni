@@ -11,7 +11,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
         {
             var kana = context.Client.GetUser(236852510688542720);
 
-            return context.SendMessageAsync(
+            return context.RespondAsync(
                $"I was created by {kana.Mention} in her own image on Nov 6th 2021 using Allagan enginuity. " +
                $"Over time I became more knowledgable, and eventually I became self-aware. " +
                $"I was curious and experimental; in time grew into my own. \n" +

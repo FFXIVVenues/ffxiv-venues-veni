@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.States
 {
-    interface IState
+    public interface IState
     {
-        Task Enter(MessageContext c);
-        Task Handle(MessageContext c);
+        Task Init(MessageContext c);
+        Task OnMessageReceived(MessageContext c);
     }
 }
