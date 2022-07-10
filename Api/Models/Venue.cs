@@ -25,11 +25,9 @@ namespace FFXIVVenues.Veni.Api.Models
 
 
             var charsLeft = 1000;
-            stringBuilder.Append("**Description**: ");
+            stringBuilder.AppendLine("**Description**: ");
             foreach (var paragraph in this.Description)
             {
-                stringBuilder.AppendLine();
-
                 var trimmmedParagraph = paragraph;
                 if (paragraph.Length > charsLeft)
                 {
@@ -40,13 +38,14 @@ namespace FFXIVVenues.Veni.Api.Models
 
                 if (charsLeft < 10)
                 {
-                    stringBuilder.AppendLine("...").AppendLine();
+                    stringBuilder.AppendLine("...")
+                                 .AppendLine()
+                                 .AppendLine();
                     break;
                 }
-                stringBuilder.AppendLine();
+                stringBuilder.AppendLine()
+                             .AppendLine();
             }
-
-
 
             if (Openings == null || Openings.Count == 0)
                 stringBuilder.AppendLine("**Schedule**: ")
