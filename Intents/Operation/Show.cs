@@ -46,34 +46,36 @@ namespace FFXIVVenues.Veni.Intents.Operation
                 var isOwnerOrIndexer = venue.Managers.Contains(asker.ToString()) || this._indexersService.IsIndexer(asker);
 
                 if (isOwnerOrIndexer)
-                    await c.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
-                        component: new ComponentBuilder()
-                            .WithButton("Open", c.Conversation.RegisterComponentHandler(async cm =>
-                            {
-                                await this._apiService.OpenVenueAsync(venue.Id);
-                                await cm.RespondAsync(MessageRepository.VenueOpenMessage.PickRandom());
-                            }, ComponentPersistence.ClearRow), ButtonStyle.Primary)
-                            .WithButton("Close", c.Conversation.RegisterComponentHandler(async cm =>
-                            {
-                                await this._apiService.CloseVenueAsync(venue.Id);
-                                await cm.RespondAsync(MessageRepository.VenueClosedMessage.PickRandom());
-                            }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                            .WithButton("Edit", c.Conversation.RegisterComponentHandler(cm =>
-                            {
-                                c.Conversation.SetItem("venue", venue);
-                                return cm.Conversation.ShiftState<ModifyVenueState>(cm);
-                            }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                            .WithButton("Delete", c.Conversation.RegisterComponentHandler(cm =>
-                            {
-                                c.Conversation.SetItem("venue", venue);
-                                return cm.Conversation.ShiftState<DeleteVenueState>(cm);
-                            }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
-                            .WithButton("Do nothing", c.Conversation.RegisterComponentHandler(cm =>
-                                Task.CompletedTask,
-                            ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                            .Build());
+                    await c.RespondAsync(MessageRepository.ShowVenueResponses.PickRandom(), 
+                                         embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
+                                         component: new ComponentBuilder()
+                                            .WithButton("Open", c.Conversation.RegisterComponentHandler(async cm =>
+                                            {
+                                                await this._apiService.OpenVenueAsync(venue.Id);
+                                                await cm.RespondAsync(MessageRepository.VenueOpenMessage.PickRandom());
+                                            }, ComponentPersistence.ClearRow), ButtonStyle.Primary)
+                                            .WithButton("Close", c.Conversation.RegisterComponentHandler(async cm =>
+                                            {
+                                                await this._apiService.CloseVenueAsync(venue.Id);
+                                                await cm.RespondAsync(MessageRepository.VenueClosedMessage.PickRandom());
+                                            }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                                            .WithButton("Edit", c.Conversation.RegisterComponentHandler(cm =>
+                                            {
+                                                c.Conversation.SetItem("venue", venue);
+                                                return cm.Conversation.ShiftState<ModifyVenueState>(cm);
+                                            }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                                            .WithButton("Delete", c.Conversation.RegisterComponentHandler(cm =>
+                                            {
+                                                c.Conversation.SetItem("venue", venue);
+                                                return cm.Conversation.ShiftState<DeleteVenueState>(cm);
+                                            }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
+                                            .WithButton("Do nothing", c.Conversation.RegisterComponentHandler(cm =>
+                                                Task.CompletedTask,
+                                            ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                                            .Build());
                 else
-                    await c.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
+                    await c.RespondAsync(MessageRepository.ShowVenueResponses.PickRandom(), 
+                                         embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
             }
         }
 
