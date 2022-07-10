@@ -11,12 +11,6 @@ namespace FFXIVVenues.Veni.States
     class SelectVenueToShowState : IState
     {
 
-        private static string[] _messages = new[]
-        {
-            "Okay, here you go! 🥰",
-            "Here you go, hun! 💓",
-            "Here's what I've found! 💓"
-        };
         private readonly string _apiUrl;
         private readonly string _uiUrl;
         private readonly IApiService _apiService;
@@ -49,7 +43,7 @@ namespace FFXIVVenues.Veni.States
                 selectMenuBuilder.AddOption(selectMenuOption);
             }
             componentBuilder.WithSelectMenu(selectMenuBuilder);
-            return c.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
+            return c.RespondAsync(MessageRepository.ShowVenueResponses.PickRandom(), componentBuilder.Build());
         }
 
         public Task Handle(MessageContext c)

@@ -151,6 +151,12 @@ namespace FFXIVVenues.Veni
             "Kupo?"
         };
 
+        public static string[] ShowVenueResponses = new[]
+        {
+            "Okay, here you go! 🥰",
+            "Here you go, hun! 💓",
+            "Here's what I've found! 💓"
+        };
 
         static Random random = new Random();
         public static string PickRandom(this string[] messageList)
