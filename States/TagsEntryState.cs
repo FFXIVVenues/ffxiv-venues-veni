@@ -16,6 +16,8 @@ namespace FFXIVVenues.Veni.States
             ("Artists", "Artists"),
             ("Dancers", "Dancers"),
             ("Bards", "Bards"),
+            ("Food", "Food"),
+            ("Drink", "Drink"),
             ("Twitch DJ", "Twitch DJ"),
             ("Tarot", "Tarot"),
             ("Pillow talk", "Pillow"),
