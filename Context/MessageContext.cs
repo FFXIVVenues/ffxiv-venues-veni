@@ -17,6 +17,8 @@ namespace FFXIVVenues.Veni.Context
         public DiscordSocketClient Client { get; }
         public ConversationContext Conversation { get; }
 
+        public SocketUser User => this.Message != null ? this.Message.Author : this.MessageComponent.User;
+
         private Dictionary<string, Func<MessageContext, Task>> _componentHandlers;
         private readonly ILogger _logger;
 

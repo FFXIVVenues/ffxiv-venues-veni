@@ -72,7 +72,10 @@ namespace FFXIVVenues.Veni.States
             component.WithButton("Looks good!", c.Conversation.RegisterComponentHandler(async c =>
             {
                 c.Conversation.SetItem("bannerUrl", c.MessageComponent.Message.Attachments.First().ProxyUrl);
-                await c.Conversation.ShiftState<ConfirmVenueState>(c);
+                if (c.Conversation.GetItem<bool>("modifying"))
+                    await c.Conversation.ShiftState<ConfirmVenueState>(c);
+                else
+                    await c.Conversation.ShiftState<BannerInputState>(c);
             }, ComponentPersistence.ClearRow));
             component.WithButton("Let's try another!", c.Conversation.RegisterComponentHandler(c => c.RespondAsync("Alrighty, send over another image! :heart:"), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
             var response = await c.Message.Channel.SendFileAsync(outStream, "banner.jpg", "How does this look? :heart:", components: component.Build());

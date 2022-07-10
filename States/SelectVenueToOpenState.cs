@@ -52,7 +52,6 @@ namespace FFXIVVenues.Veni.States
             var selectedVenueId = c.MessageComponent.Data.Values.Single();
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            c.Conversation.ClearItem("venues");
             c.Conversation.ClearState();
 
             await _apiService.OpenVenueAsync(venue.Id);

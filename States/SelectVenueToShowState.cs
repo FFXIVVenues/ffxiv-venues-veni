@@ -58,7 +58,6 @@ namespace FFXIVVenues.Veni.States
             var asker = c.MessageComponent.User.Id;
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            c.Conversation.ClearItem("venues");
             c.Conversation.ClearState();
 
             var isOwnerOrIndexer = venue.Managers.Contains(asker.ToString()) || this._indexersService.IsIndexer(asker);

@@ -38,14 +38,10 @@ namespace FFXIVVenues.Veni.Context
 
         public void ClearState()
         {
+            this.ContextData.Clear();
             this.ClearComponentHandlers();
             this.ClearMessageHandlers();
             ActiveState = null;
-        }
-
-        public void ClearData()
-        {
-            ContextData.Clear();
         }
 
         public T GetItem<T>(string name)

@@ -88,6 +88,11 @@ namespace FFXIVVenues.Veni.Api.Models
 
             }
 
+            stringBuilder.AppendLine();
+
+            stringBuilder.AppendLine("**Managers**: ");
+            foreach (var manager in this.Managers)
+                stringBuilder.AppendLine(MentionUtils.MentionUser(ulong.Parse(manager)));
 
             var builder = new EmbedBuilder()
                 .WithTitle(this.Name)

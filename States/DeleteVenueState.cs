@@ -43,7 +43,6 @@ namespace FFXIVVenues.Veni.States
             else if (c.Prediction.TopIntent != IntentNames.Response.No)
                 await c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom());
 
-            c.Conversation.ClearData();
             c.Conversation.ClearState();
             await c.RespondAsync(_deleteMessages.PickRandom());
         }
