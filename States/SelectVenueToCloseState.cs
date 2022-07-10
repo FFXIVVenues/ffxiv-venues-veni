@@ -18,13 +18,6 @@ namespace FFXIVVenues.Veni.States
             "Which one?"
         };
 
-        private static string[] _responses = new[]
-        {
-            "The doors are closed! I can't wait til next time. ♥️",
-            "We're no longer green! We're all closed up.",
-            "Okay! I'll lock up. 😉"
-        };
-
         private IEnumerable<Venue> _managersVenues;
         private readonly IApiService _apiService;
 
@@ -63,7 +56,7 @@ namespace FFXIVVenues.Veni.States
             c.Conversation.ClearState();
 
             await _apiService.CloseVenueAsync(venue.Id);
-            await c.RespondAsync(_responses.PickRandom());
+            await c.RespondAsync(MessageRepository.VenueClosedMessage.PickRandom());
         }
     }
 }

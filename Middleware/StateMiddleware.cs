@@ -8,12 +8,16 @@ namespace FFXIVVenues.Veni.Middleware
     class StateMiddleware : IMiddleware<MessageContext>
     {
 
-        public Task ExecuteAsync(MessageContext context, Func<Task> next)
+        public async Task ExecuteAsync(MessageContext context, Func<Task> next)
         {
             if (context.Conversation.ActiveState == null)
-                return next();
-
-            return context.Conversation.HandleMessage(context);
+            {
+                await next();
+                return;
+            }
+            
+            var handled = await context.Conversation.HandleMessageAsync(context);
+            if (!handled) await next();
         }
 
     }

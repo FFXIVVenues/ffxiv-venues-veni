@@ -32,6 +32,7 @@ namespace FFXIVVenues.Veni.Intents
                 .Add<Edit>(IntentNames.Operation.Edit)
                 .Add<Show>(IntentNames.Operation.Show)
                 .Add<Open>(IntentNames.Operation.Open)
+                .Add<Search>(IntentNames.Operation.Search)
                 .Add<None>(IntentNames.None);
 
             _interuptMap = new TypeMap<IIntentHandler>(serviceProvider)

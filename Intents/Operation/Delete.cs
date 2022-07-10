@@ -12,29 +12,25 @@ namespace FFXIVVenues.Veni.Intents.Operation
     {
 
         private readonly IApiService _apiService;
-        private readonly IIndexersService _indexersService;
 
-        public Delete(IApiService apiService, IIndexersService indexersService)
+        public Delete(IApiService apiService)
         {
             this._apiService = apiService;
-            this._indexersService = indexersService;
         }
 
         public async Task Handle(MessageContext context)
         {
             var user = context.Message.Author.Id;
-            var isIndexer = this._indexersService.IsIndexer(user);
-            IEnumerable<Venue> venues;
-            if (isIndexer)
-                venues = await this._apiService.GetAllVenuesAsync();
-            else
-                venues = await this._apiService.GetAllVenuesAsync(user);
+            var venues = await this._apiService.GetAllVenuesAsync(user);
 
             if (venues == null || !venues.Any())
                 await context.RespondAsync("You don't seem to be an assigned contact for any venues. 🤔");
             else if (venues.Count() > 1)
             {
+                if (venues.Count() > 25)
+                    venues = venues.Take(25);
                 context.Conversation.SetItem("venues", venues);
+                context.Conversation.SetItem("prexisting", true); // different to "modifying" since you can modifying a not-yet-sent venue
                 await context.Conversation.ShiftState<SelectVenueToDeleteState>(context);
             }
             else
