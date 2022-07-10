@@ -86,6 +86,9 @@ namespace FFXIVVenues.Veni.States
                             c.Conversation.SetItem("venue", venue);
                             return cm.Conversation.ShiftState<DeleteVenueState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
+                        .WithButton("Dismiss", c.Conversation.RegisterComponentHandler(cm =>
+                                cm.MessageComponent.DeleteOriginalResponseAsync(),
+                            ComponentPersistence.ClearRow), ButtonStyle.Link)
                         .Build());
             else
                 return c.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());

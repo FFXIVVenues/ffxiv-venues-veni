@@ -14,6 +14,12 @@ namespace FFXIVVenues.Veni.Utils
             return regex.Replace(message, string.Empty).Trim();
         }
 
+        public static string StripMentions(this string message, ulong userId)
+        {
+            var regex = new Regex(@$"<@!?{userId}>");
+            return regex.Replace(message, string.Empty).Trim();
+        }
+
         public static string NounCase(this string message) =>
             message switch
             {

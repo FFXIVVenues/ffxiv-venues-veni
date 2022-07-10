@@ -20,7 +20,7 @@ namespace FFXIVVenues.Veni.Middleware
 
         public async Task ExecuteAsync(MessageContext context, Func<Task> next)
         {
-            var query = context.Message.Content.StripMentions();
+            var query = context.Message.Content.StripMentions(context.Client.CurrentUser.Id);
             if (string.IsNullOrWhiteSpace(query))
             {
                 context.Prediction = new Prediction { TopIntent = IntentNames.None };
