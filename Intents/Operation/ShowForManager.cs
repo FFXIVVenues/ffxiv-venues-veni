@@ -33,7 +33,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
 
             if (venues == null || !venues.Any())
             {
-                await c.RespondAsync("Could find any venues for that manager. 😔");
+                await c.RespondAsync("Couldn't find any venues for that manager. 😔");
                 return;
             }
 
