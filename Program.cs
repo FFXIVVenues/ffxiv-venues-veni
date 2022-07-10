@@ -17,9 +17,10 @@ using Discord;
 const string DISCORD_BOT_CONFIG_KEY = "DiscordBotToken";
 
 var config = new ConfigurationBuilder()
-                    .AddJsonFile("config.json", optional: true)
-                    .AddUserSecrets<DiscordHandler>(optional: true)
-                    .Build();
+                 .AddJsonFile("config.json", optional: true)
+                 .AddUserSecrets<DiscordHandler>(optional: true)
+                 .AddEnvironmentVariables("FFXIV_VENUES_VENI_")
+                 .Build();
 
 var luisConfig = new LuisConfiguration();
 config.GetSection("Luis").Bind(luisConfig);

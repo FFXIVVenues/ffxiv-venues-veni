@@ -8,6 +8,9 @@
     <AssemblyName>FFXIVVenues.Veni</AssemblyName>
     <SignAssembly>False</SignAssembly>
     <EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+    <DockerfileBuildArguments>--build-arg NUGET_REPO_PASSWORD=$(FFXIV_VENUES_NUGET_REPO_PASSWORD)</DockerfileBuildArguments>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,9 +27,11 @@
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
     <PackageReference Include="FFXIVVenues.VenueModels" Version="6.3.0" />
     <PackageReference Include="PrettyPrintNet" Version="1.6.1" />

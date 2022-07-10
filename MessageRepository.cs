@@ -132,7 +132,8 @@ namespace FFXIVVenues.Veni
         public static string[] DontUnderstandResponses = new[]
         {
             "I don't understand. :smiling_face_with_tear:",
-            "Whaaat?",
+            "Huh? I don't get it.",
+            "Hmm?",
             "Huh?",
             "Kweh!?!",
             "Kupo?"

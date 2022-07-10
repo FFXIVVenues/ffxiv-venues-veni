@@ -69,7 +69,7 @@ namespace FFXIVVenues.Veni.States
         {
             var preexisting = c.Conversation.GetItem<bool>("prexisting");
             _ = c.RespondAsync(_workingOnItResponse.PickRandom());
-            _ = c.Message.Channel.TriggerTypingAsync();
+            _ = c.MessageComponent.Channel.TriggerTypingAsync();
 
             var venue = c.Conversation.GetItem<Venue>("venue");
             var uploadVenueResponse = await this._apiService.PutVenueAsync(venue);
@@ -84,7 +84,7 @@ namespace FFXIVVenues.Veni.States
                 await this._apiService.PutVenueBannerAsync(venue.Id, bannerUrl);
             }
 
-            var isIndexer = this._indexersService.IsIndexer(c.Message.Author.Id);
+            var isIndexer = this._indexersService.IsIndexer(c.MessageComponent.User.Id);
             if (isIndexer)
             {
                 var approvalResponse = await this._apiService.ApproveAsync(venue.Id);
