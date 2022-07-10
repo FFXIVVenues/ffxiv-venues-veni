@@ -77,8 +77,8 @@ namespace FFXIVVenues.Veni.Intents.Operation
                                 c.Conversation.SetItem("venue", venue);
                                 return cm.Conversation.ShiftState<DeleteVenueState>(cm);
                             }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
-                            .WithButton("Dismiss", c.Conversation.RegisterComponentHandler(cm =>
-                                cm.MessageComponent.DeleteOriginalResponseAsync(),
+                            .WithButton("Do nothing", c.Conversation.RegisterComponentHandler(cm =>
+                                Task.CompletedTask,
                             ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                             .Build());
                 else
