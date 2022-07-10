@@ -2,12 +2,13 @@
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States;
+using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Intents.Operation
 {
-    internal class Show : IIntentHandler
+    internal class Search : IIntentHandler
     {
 
         private readonly IApiService _apiService;
@@ -15,9 +16,9 @@ namespace FFXIVVenues.Veni.Intents.Operation
         private readonly string _uiUrl;
         private readonly string _apiUrl;
 
-        public Show(IApiService apiService,
+        public Search(IApiService apiService,
                     UiConfiguration uiConfig,
-                    ApiConfiguration apiConfig, 
+                    ApiConfiguration apiConfig,
                     IIndexersService indexersService)
         {
             this._apiService = apiService;
@@ -29,10 +30,18 @@ namespace FFXIVVenues.Veni.Intents.Operation
         public async Task Handle(MessageContext c)
         {
             var asker = c.Message.Author.Id;
-            var venues = await this._apiService.GetAllVenuesAsync(asker);
+            var query = (c.Prediction.Entities["search-query"] as JArray)?.First.Value<string>();
+
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                await c.RespondAsync("What am I looking for? 🤔");
+                return;
+            }
+
+            var venues = await this._apiService.GetAllVenuesAsync(query);
 
             if (venues == null || !venues.Any())
-                await c.RespondAsync("You don't seem to be an assigned manager for any venues. 🤔");
+                await c.RespondAsync("Could find any venues with that name. 😔");
             else if (venues.Count() > 1)
             {
                 if (venues.Count() > 25)

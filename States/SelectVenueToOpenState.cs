@@ -18,14 +18,6 @@ namespace FFXIVVenues.Veni.States
             "🎉 Which one?"
         };
 
-        private static string[] _responses = new[]
-        {
-            "Woo! The doors are open. You're green and announcements have been sent! Let's have fun today! ♥️",
-            "Yay! It's that time again. 😀 You're all green on the index, and everyone's been notified. ♥️",
-            "Let's do it! We... are... live!!! We're green on the index and the pings are flying! So excited. 🙂"
-        };
-
-
         private IEnumerable<Venue> _managersVenues;
         private readonly IApiService _apiService;
 
@@ -64,7 +56,7 @@ namespace FFXIVVenues.Veni.States
             c.Conversation.ClearState();
 
             await _apiService.OpenVenueAsync(venue.Id);
-            await c.RespondAsync(_responses.PickRandom());
+            await c.RespondAsync(MessageRepository.VenueOpenMessage.PickRandom());
         }
     }
 }

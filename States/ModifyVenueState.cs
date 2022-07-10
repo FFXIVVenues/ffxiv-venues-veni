@@ -11,7 +11,7 @@ namespace FFXIVVenues.Veni.States
         {
             c.Conversation.SetItem("modifying", true);
 
-            return c.RespondAsync($"What would you like to change",
+            return c.RespondAsync($"What would you like to change? 🥰",
                 component: new ComponentBuilder()
                     .WithButton("Name", c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<NameEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("Description", c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<DescriptionEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)

@@ -13,18 +13,22 @@ namespace FFXIVVenues.Veni.States
 
         private static string[] _messages = new[]
         {
-            "Which venue would you like to see?",
-            "Which one would you like me to show you?",
-            "Oki, which one? 🙂"
+            "Okay, here you go! 🥰",
+            "Here you go, hun! 💓",
+            "Here's what I've found! 💓"
         };
         private readonly string _apiUrl;
         private readonly string _uiUrl;
+        private readonly IApiService _apiService;
+        private readonly IIndexersService _indexersService;
         private IEnumerable<Venue> _managersVenues;
 
-        public SelectVenueToShowState(UiConfiguration uiConfig, ApiConfiguration apiConfig)
+        public SelectVenueToShowState(UiConfiguration uiConfig, ApiConfiguration apiConfig, IApiService apiService, IIndexersService indexersService)
         {
             this._uiUrl = uiConfig.BaseUrl;
             this._apiUrl = apiConfig.BaseUrl;
+            this._apiService = apiService;
+            this._indexersService = indexersService;
         }
 
         public Task Init(MessageContext c)
@@ -51,12 +55,40 @@ namespace FFXIVVenues.Veni.States
         public Task Handle(MessageContext c)
         {
             var selectedVenueId = c.MessageComponent.Data.Values.Single();
+            var asker = c.MessageComponent.User.Id;
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
             c.Conversation.ClearItem("venues");
             c.Conversation.ClearState();
 
-            return c.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
+            var isOwnerOrIndexer = venue.Managers.Contains(asker.ToString()) || this._indexersService.IsIndexer(asker);
+
+            if (isOwnerOrIndexer)
+                return c.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
+                    component: new ComponentBuilder()
+                        .WithButton("Open", c.Conversation.RegisterComponentHandler(async cm =>
+                        {
+                            await this._apiService.OpenVenueAsync(venue.Id);
+                            await cm.RespondAsync(MessageRepository.VenueOpenMessage.PickRandom());
+                        }, ComponentPersistence.ClearRow), ButtonStyle.Primary)
+                        .WithButton("Close", c.Conversation.RegisterComponentHandler(async cm =>
+                        {
+                            await this._apiService.CloseVenueAsync(venue.Id);
+                            await cm.RespondAsync(MessageRepository.VenueClosedMessage.PickRandom());
+                        }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                        .WithButton("Edit", c.Conversation.RegisterComponentHandler(cm =>
+                        {
+                            c.Conversation.SetItem("venue", venue);
+                            return cm.Conversation.ShiftState<ModifyVenueState>(cm);
+                        }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                        .WithButton("Delete", c.Conversation.RegisterComponentHandler(cm =>
+                        {
+                            c.Conversation.SetItem("venue", venue);
+                            return cm.Conversation.ShiftState<DeleteVenueState>(cm);
+                        }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
+                        .Build());
+            else
+                return c.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
         }
     }
 }

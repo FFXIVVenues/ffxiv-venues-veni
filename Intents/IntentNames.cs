@@ -42,6 +42,7 @@
             public static string Show = "Operation.Show";
             public static string Delete = "Operation.Delete";
             public static string Open = "Operation.Open";
+            public static string Search = "Operation.Search";
         }
 
     }

@@ -119,10 +119,15 @@ namespace FFXIVVenues.Veni.Context
             this._messageHandlers.Clear();
         }
 
-        public async Task HandleMessage(MessageContext context)
+        public async Task<bool> HandleMessageAsync(MessageContext context)
         {
+            var handled = false;
             foreach (var handler in this._messageHandlers)
+            {
                 await handler.Value(context);
+                handled = true;
+            }
+            return handled;
         }
 
     }

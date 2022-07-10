@@ -91,6 +91,8 @@ namespace FFXIVVenues.Veni.States
                 if (!approvalResponse.IsSuccessStatusCode)
                 {
                     await c.RespondAsync("Something, went wrong while trying to auto-approve it for you. 😢");
+                    c.Conversation.ClearState();
+                    c.Conversation.ClearData();
                     return;
                 }
             }
