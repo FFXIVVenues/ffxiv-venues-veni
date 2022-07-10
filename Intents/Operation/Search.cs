@@ -79,7 +79,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
                             }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
                             .WithButton("Dismiss", c.Conversation.RegisterComponentHandler(cm =>
                                 cm.MessageComponent.DeleteOriginalResponseAsync(),
-                            ComponentPersistence.ClearRow), ButtonStyle.Link)
+                            ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                             .Build());
                 else
                     await c.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
