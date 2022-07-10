@@ -2,7 +2,6 @@
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Intents;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -62,6 +61,7 @@ namespace FFXIVVenues.Veni.States
                                     component: new ComponentBuilder()
                                         .WithButton("Looks perfect!", c.Conversation.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
                                         .WithButton(modifying ? "Edit more" : "Edit", c.Conversation.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                                        .WithButton("Cancel", c.Conversation.RegisterComponentHandler(this.Cancel, ComponentPersistence.ClearRow), ButtonStyle.Danger)
                                         .Build());
         }
 
@@ -92,7 +92,6 @@ namespace FFXIVVenues.Veni.States
                 {
                     await c.RespondAsync("Something, went wrong while trying to auto-approve it for you. 😢");
                     c.Conversation.ClearState();
-                    c.Conversation.ClearData();
                     return;
                 }
             }
@@ -108,11 +107,17 @@ namespace FFXIVVenues.Veni.States
             }
 
             c.Conversation.ClearState();
-            c.Conversation.ClearData();
         }
 
         private Task Edit(MessageContext c) =>
             c.Conversation.ShiftState<ModifyVenueState>(c);
+
+        private Task Cancel(MessageContext c)
+        {
+            _ = c.RespondAsync("It's as if it never happened! 😅");
+            c.Conversation.ClearState();
+            return Task.CompletedTask;
+        }
 
         private Task SendToIndexers(Venue venue, string bannerUrl) =>
             this._indexersService
