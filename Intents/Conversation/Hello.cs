@@ -29,22 +29,15 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "Kana :heart_eyes:",
         };
 
-
         private static string[] _sumiMessages = new[]
         {
-            "Suuumiiii! ♥️  Aether's newest indexer!",
-            "Suuumiiii! ♥️  How goes indexing?",
+            "Suuumiiii! ♥️",
+            "Siiis! ♥️  How goes indexing?",
             "Sumi! ♥️",
             "Hi! ♥️ You came for me, Sumichan?",
             "Heya sis!",
             "Sumi :heart_eyes:",
-        };
-
-        private static string[] _aaryxMessages = new[]
-        {
-            "Heya Bunny girl! ♥️ How's the crew?",
-            "Aaryx! There's my bunny! I missed you! ♥️",
-            "Aaryx, come to call me mommy again? 😑"
+            "Sis ♥️",
         };
 
         private static string[] _fluffyMessages = new[]
