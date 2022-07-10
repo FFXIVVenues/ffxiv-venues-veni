@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Api
@@ -14,7 +15,7 @@ namespace FFXIVVenues.Veni.Api
         Task<Venue> GetVenueAsync(string id);
         Task<HttpResponseMessage> PutVenueAsync(Venue venue);
         Task<HttpResponseMessage> PutVenueBannerAsync(string id, string url);
-        Task<HttpResponseMessage> PutVenueBannerAsync(string id, Stream stream);
+        Task<HttpResponseMessage> PutVenueBannerAsync(string id, Stream stream, MediaTypeHeaderValue mediaType);
         Task<HttpResponseMessage> DeleteVenueAsync(string id);
         Task<HttpResponseMessage> OpenVenueAsync(string id);
         Task<HttpResponseMessage> CloseVenueAsync(string id);
