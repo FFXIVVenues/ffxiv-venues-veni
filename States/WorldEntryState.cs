@@ -30,7 +30,7 @@ namespace FFXIVVenues.Veni.States
             { "Ultros", "Primal" },
 
             { "Balmung", "Crystal" },
-            { "Coerl", "Crystal" },
+            { "Brynhildr", "Crystal" },
             { "Coeurl", "Crystal" },
             { "Diabolos", "Crystal" },
             { "Goblin", "Crystal" },

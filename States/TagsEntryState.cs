@@ -21,6 +21,8 @@ namespace FFXIVVenues.Veni.States
             ("Twitch DJ", "Twitch DJ"),
             ("Tarot", "Tarot"),
             ("Pillow talk", "Pillow"),
+            ("Photography", "Photography"),
+            ("Open stage", "Open stage"),
             ("VIP", "VIP"),
             ("Triple triad", "Triple triad"),
             ("IC RP only", "IC RP Only")
