@@ -67,7 +67,7 @@ namespace FFXIVVenues.Veni.States
                 opening.End = new Time { Hour = hour, Minute = minute, NextDay = opening.Start.NextDay || hour < _venueDayEnd, TimeZone = _timeZoneId };
 
             if (c.Conversation.GetItem<bool>("modifying"))
-                return c.Conversation.ShiftState<BannerInputState>(c);
+                return c.Conversation.ShiftState<ConfirmVenueState>(c);
             return c.Conversation.ShiftState<BannerInputState>(c);
         }
     }

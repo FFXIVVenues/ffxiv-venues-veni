@@ -19,13 +19,14 @@ namespace FFXIVVenues.Veni.States
             ("Food", "Food"),
             ("Drink", "Drink"),
             ("Twitch DJ", "Twitch DJ"),
+            ("Bar", "Bar"),
             ("Tarot", "Tarot"),
             ("Pillow talk", "Pillow"),
             ("Photography", "Photography"),
             ("Open stage", "Open stage"),
-            ("VIP", "VIP"),
+            ("VIP available", "VIP"),
             ("Triple triad", "Triple triad"),
-            ("IC RP only", "IC RP Only")
+            ("Strictly in-character RP only", "IC RP Only")
         };
 
         private Dictionary<string, string> _tags = new();
