@@ -26,6 +26,7 @@ namespace FFXIVVenues.Veni.States
             ("Open stage", "Open stage"),
             ("VIP available", "VIP"),
             ("Triple triad", "Triple triad"),
+            ("RP Heavily Encouraged", "RP Heavy"),
             ("Strictly in-character RP only", "IC RP Only")
         };
 
@@ -52,9 +53,6 @@ namespace FFXIVVenues.Veni.States
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
             venue.Tags.AddRange(this._tags.Keys);
-
-            _ = c.MessageComponent.ModifyOriginalResponseAsync(props =>
-                props.Components = new ComponentBuilder().Build());
 
             if (c.Conversation.GetItem<bool>("modifying"))
                 return c.Conversation.ShiftState<ConfirmVenueState>(c);
