@@ -20,7 +20,7 @@ namespace FFXIVVenues.Veni.States
             ("Bath house", "Bath house"),
             ("Restaurant", "Restaurant"),
             ("Fightclub", "Fightclub"),
-            ("Library", "Library"),
+            ("Auction house", "Auction house"),
             ("Casino", "Casino"),
             ("Shop", "Shop"),
             ("Maid cafe / Host club", "Maid cafe"),
