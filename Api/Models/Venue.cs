@@ -24,28 +24,31 @@ namespace FFXIVVenues.Veni.Api.Models
                 stringBuilder.AppendLine(string.Join(", ", this.Tags));
 
 
-            var charsLeft = 1000;
-            stringBuilder.AppendLine("**Description**: ");
-            foreach (var paragraph in this.Description)
-            {
-                var trimmmedParagraph = paragraph;
-                if (paragraph.Length > charsLeft)
-                {
-                    trimmmedParagraph = paragraph.Substring(0, charsLeft);
-                }
-                stringBuilder.Append(paragraph);
-                charsLeft -= trimmmedParagraph.Length;
+                var charsLeft = 1000;
+                stringBuilder.AppendLine("**Description**: ");
 
-                if (charsLeft < 10)
+            if (this.Description != null)
+                foreach (var paragraph in this.Description)
                 {
-                    stringBuilder.AppendLine("...")
-                                 .AppendLine()
+                    var trimmmedParagraph = paragraph;
+                    if (paragraph.Length > charsLeft)
+                        trimmmedParagraph = paragraph[..charsLeft];
+                    stringBuilder.Append(paragraph);
+                    charsLeft -= trimmmedParagraph.Length;
+
+                    if (charsLeft < 10)
+                    {
+                        stringBuilder.AppendLine("...")
+                                     .AppendLine()
+                                     .AppendLine();
+                        break;
+                    }
+                    stringBuilder.AppendLine()
                                  .AppendLine();
-                    break;
                 }
-                stringBuilder.AppendLine()
+            else
+                stringBuilder.AppendLine("No description")
                              .AppendLine();
-            }
 
             if (Openings == null || Openings.Count == 0)
                 stringBuilder.AppendLine("**Schedule**: ")
@@ -54,11 +57,12 @@ namespace FFXIVVenues.Veni.Api.Models
             {
                 stringBuilder.AppendLine("**Schedule**: ");
                 foreach (var opening in Openings)
+                {
                     stringBuilder
                            .Append(opening.Day.ToString())
                            .Append("s, ")
                            .Append(opening.Start.Hour)
-                           .Append(":")
+                           .Append(':')
                            .Append(opening.Start.Minute.ToString("00"))
                            .Append(" (")
                            .Append(opening.Start.TimeZone switch
@@ -69,30 +73,39 @@ namespace FFXIVVenues.Veni.Api.Models
                                "Pacific Standard Time" => "PST",
                                "Atlantic Standard Time" => "AST",
                                _ => opening.Start.TimeZone
-                           })
-                           .Append(") - ")
-                           .Append(opening.End.Hour)
-                           .Append(":")
-                           .Append(opening.End.Minute.ToString("00"))
-                           .Append(" (")
-                           .Append(opening.End.TimeZone switch
-                           {
-                               "Eastern Standard Time" => "EST",
-                               "Central Standard Time" => "CST",
-                               "Mountain Standard Time" => "MST",
-                               "Pacific Standard Time" => "PST",
-                               "Atlantic Standard Time" => "AST",
-                               _ => opening.End.TimeZone
-                           })
-                           .AppendLine(")");
-
+                           }).Append(')');
+                    if (opening.End != null)
+                        stringBuilder
+                               .Append(" - ")
+                               .Append(opening.End.Hour)
+                               .Append(':')
+                               .Append(opening.End.Minute.ToString("00"))
+                               .Append(" (")
+                               .Append(opening.End.TimeZone switch
+                               {
+                                   "Eastern Standard Time" => "EST",
+                                   "Central Standard Time" => "CST",
+                                   "Mountain Standard Time" => "MST",
+                                   "Pacific Standard Time" => "PST",
+                                   "Atlantic Standard Time" => "AST",
+                                   _ => opening.End.TimeZone
+                               })
+                               .Append(')');
+                    stringBuilder.AppendLine();
+                }
             }
 
             stringBuilder.AppendLine();
 
             stringBuilder.AppendLine("**Managers**: ");
-            foreach (var manager in this.Managers)
-                stringBuilder.AppendLine(MentionUtils.MentionUser(ulong.Parse(manager)));
+            if (this.Managers != null)
+                foreach (var manager in this.Managers)
+                    stringBuilder.AppendLine(MentionUtils.MentionUser(ulong.Parse(manager)));
+            else
+                stringBuilder.AppendLine("No managers listed");
+
+            if (this.Open)
+                stringBuilder.AppendLine().AppendLine(":green_circle: Open right now");
 
             var builder = new EmbedBuilder()
                 .WithTitle(this.Name)

@@ -158,6 +158,13 @@ namespace FFXIVVenues.Veni
             "Here's what I've found! 💓"
         };
 
+        public static string[] AskDaysOpenMessage = new[]
+        {
+            "What days are you open?",
+            "What days is the venue open each week?"
+        };
+
+
         static Random random = new Random();
         public static string PickRandom(this string[] messageList)
         {

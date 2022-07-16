@@ -18,9 +18,13 @@ namespace FFXIVVenues.Veni.States
             ("Inn", "Inn"),
             ("Lounge", "Lounge"),
             ("Bath house", "Bath house"),
+            ("Restaurant", "Restaurant"),
+            ("Fightclub", "Fightclub"),
             ("Library", "Library"),
             ("Casino", "Casino"),
-            ("Maid cafe / Host club", "Maid cafe")
+            ("Shop", "Shop"),
+            ("Maid cafe / Host club", "Maid cafe"),
+            ("Other", "other")
         };
 
         private List<string> _tagHandlers = new();

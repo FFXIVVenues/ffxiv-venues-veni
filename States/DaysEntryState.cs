@@ -1,8 +1,7 @@
-﻿using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Api.Models;
+﻿using Discord;
 using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels.V2022;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Venue = FFXIVVenues.Veni.Api.Models.Venue;
 
@@ -11,47 +10,65 @@ namespace FFXIVVenues.Veni.States
     class DaysEntryState : IState
     {
 
-        private static string[] _messages = new[]
+        private static List<(string Label, Day Value)> _availableDays = new()
         {
-            "What days are you open? (please list them in one message for me)",
-            "What days is the venue open each week? (please list them in one message for me)"
+            ("Monday", Day.Monday),
+            ("Tuesday", Day.Tuesday),
+            ("Wednesday", Day.Wednesday),
+            ("Thursday", Day.Thursday),
+            ("Friday", Day.Friday),
+            ("Saturday", Day.Saturday),
+            ("Sunday", Day.Sunday),
         };
+
+        private Dictionary<Day, string> _days = new();
+        private Dictionary<Day, string> _daysHandlers = new();
 
         public Task Init(MessageContext c)
         {
-            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
-            return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_messages.PickRandom()}");
+            var component = this.BuildDaysComponent(c);
+            return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskDaysOpenMessage.PickRandom()}", component: component.Build());
         }
 
-        public Task OnMessageReceived(MessageContext c)
+        private ComponentBuilder BuildDaysComponent(MessageContext c)
+        {
+            var component = new ComponentBuilder();
+            foreach (var (Label, Value) in _availableDays)
+                this.AddDayButton(component, c, Label, Value);
+            component.WithButton("Complete",
+                c.Conversation.RegisterComponentHandler(this.OnComplete, ComponentPersistence.ClearRow), ButtonStyle.Success);
+            return component;
+        }
+
+        private Task OnComplete(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
-            var message = c.Message.Content.StripMentions().ToLower();
-
             venue.Openings = new();
-
-            if (message.Contains("mon"))
-                venue.Openings.Add(new Opening { Day = Day.Monday });
-            if (message.Contains("tue"))
-                venue.Openings.Add(new Opening { Day = Day.Tuesday });
-            if (message.Contains("wed"))
-                venue.Openings.Add(new Opening { Day = Day.Wednesday });
-            if (message.Contains("thur"))
-                venue.Openings.Add(new Opening { Day = Day.Thursday });
-            if (message.Contains("fri"))
-                venue.Openings.Add(new Opening { Day = Day.Friday });
-            if (message.Contains("sat"))
-                venue.Openings.Add(new Opening { Day = Day.Saturday });
-            if (message.Contains("sun"))
-                venue.Openings.Add(new Opening { Day = Day.Sunday });
-
-            if (venue.Openings.Count == 0)
-                return c.RespondAsync($"Sorry, I don't understand. Which days of the week is your venue open?");
+            foreach (var day in this._days.Keys)
+                venue.Openings.Add(new Opening { Day = day });
 
             if (venue.Openings.Count > 1)
                 return c.Conversation.ShiftState<AskIfConsistentTimeEntryState>(c);
 
             return c.Conversation.ShiftState<ConsistentOpeningEntryState>(c);
         }
+
+        private void AddDayButton(ComponentBuilder component, MessageContext c, string dayLabel, Day dayValue) =>
+            component.WithButton(dayLabel,
+                this._daysHandlers.ContainsKey(dayValue)
+                    ? this._daysHandlers[dayValue]
+                    : this._daysHandlers[dayValue] = c.Conversation.RegisterComponentHandler(async cm =>
+                    {
+                        if (this._days.ContainsKey(dayValue))
+                            this._days.Remove(dayValue);
+                        else
+                            this._days[dayValue] = dayLabel;
+                        await cm.MessageComponent.ModifyOriginalResponseAsync(props =>
+                        {
+                            var rebuilder = this.BuildDaysComponent(c);
+                            props.Components = rebuilder.Build();
+                        });
+                    }, ComponentPersistence.PersistRow), this._days.ContainsKey(dayValue) ? ButtonStyle.Primary : ButtonStyle.Secondary);
+
     }
 }
