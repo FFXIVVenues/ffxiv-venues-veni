@@ -1,4 +1,4 @@
-﻿using FFXIVVenues.Veni;
+﻿using Discord;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
@@ -13,7 +13,15 @@ namespace FFXIVVenues.Veni.States
         public Task Init(MessageContext c)
         {
             c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
-            return c.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom());
+            return c.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom(),
+                new ComponentBuilder()
+                    .WithButton("Skip", c.Conversation.RegisterComponentHandler(cm => 
+                    {
+                        if (c.Conversation.GetItem<bool>("modifying"))
+                            return c.Conversation.ShiftState<ConfirmVenueState>(cm);
+                        return c.Conversation.ShiftState<HaveScheduleEntryState>(cm);
+                    }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                .Build());
         }
 
         public Task OnMessageReceived(MessageContext c)

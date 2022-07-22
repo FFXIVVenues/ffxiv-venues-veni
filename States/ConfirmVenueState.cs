@@ -67,7 +67,7 @@ namespace FFXIVVenues.Veni.States
 
         private async Task LooksPerfect(MessageContext c)
         {
-            var preexisting = c.Conversation.GetItem<bool>("prexisting");
+            var isNewVenue = c.Conversation.GetItem<bool>("isNewVenue");
             _ = c.RespondAsync(_workingOnItResponse.PickRandom());
             _ = c.MessageComponent.Channel.TriggerTypingAsync();
 
@@ -96,7 +96,7 @@ namespace FFXIVVenues.Veni.States
                 }
             }
 
-            if (preexisting)
+            if (!isNewVenue)
                 await c.RespondAsync(_preexisingResponse.PickRandom());
             else if (isIndexer)
                 await c.RespondAsync("All done and auto-approved for you. :heart:");

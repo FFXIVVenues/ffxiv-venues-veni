@@ -2,6 +2,7 @@
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.States
@@ -17,7 +18,9 @@ namespace FFXIVVenues.Veni.States
         public Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
-            if (!ushort.TryParse(c.Message.Content.StripMentions(), out var plot) || plot < 1 || plot > 60)
+            var match = new Regex("\\b\\d+\\b").Match(c.Message.Content.StripMentions());
+
+            if (!match.Success || !ushort.TryParse(match.Value, out var plot) || plot < 1 || plot > 60)
             {
                 return c.RespondAsync("Sorry, I didn't understand that, please enter a number between 1 and 60.");
             }

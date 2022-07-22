@@ -11,9 +11,9 @@ namespace FFXIVVenues.Veni.States
 
         private static string[] _messages = new[]
         {
-            "Are you super sure you want to **delete** {0}? 😢",
-            "Are you really sure you want to **delete** {0}?",
-            "R-really? Are you sure you want me to **delete** {0}?"
+            "Are you super sure you want to **delete {0}**? 😢",
+            "Are you really sure you want to **delete {0}**?",
+            "R-really? Are you sure you want me to **delete {0}**?"
         };
 
         private static string[] _deleteMessages = new[]

@@ -23,95 +23,95 @@ namespace FFXIVVenues.Veni
 
         public static string[] AskForNameMessage = new[]
         {
-            "Let's get started. What is the name of your venue?",
-            "What are we calling it?",
-            "Alrighty, what is the name? :smile:",
-            "What's the name of your venue?",
-            "Please, tell me the name!"
+            "Let's get started. What is the **name** of your venue?",
+            "What are we **naming** it?",
+            "Alrighty, what is the **name**? :smile:",
+            "What's the **name** of your venue?",
+            "Please, tell me the **name**!"
         };
 
         public static string[] AskForDataCenterMessage = new[]
         {
-            "Which Data Center are you in? (Aether, Primal, Crystal, Elemental, Gaia, Mana, Chaos, Light)",
-            "And which Data Center is it? (Aether, Primal, Crystal, Elemental, Gaia, Mana, Chaos, Light)",
-            "Which Data Center is the venue in? (Aether, Primal, Crystal, Elemental, Gaia, Mana, Chaos, Light)"
+            "Which **Data Center** are you in? (Aether, Primal, Crystal, Elemental, Gaia, Mana, Chaos, Light)",
+            "And which **Data Center** is it? (Aether, Primal, Crystal, Elemental, Gaia, Mana, Chaos, Light)",
+            "Which **Data Center** is the venue in? (Aether, Primal, Crystal, Elemental, Gaia, Mana, Chaos, Light)"
         };
 
         public static string[] AskForWorldMessage = new[]
         {
-            "Which world are you in? (Gilgamesh, Jenova, Balmung etc.)",
-            "Which world is your venue in? (Gilgamesh, Jenova, Balmung etc.)"
+            "Which **world** are you in?",
+            "Which **world** is your venue in?"
         };
 
         public static string[] AskForHousingDistrictMessage = new[]
         {
-            "Which housing district are you in? (Lavender Beds, Mist, Goblet, Shirogane, Empyreum)",
-            "Which housing district is your venue in? (Lavender Beds, Mist, Goblet, Shirogane, Empyreum)"
+            "Which **housing district** are you in?",
+            "Which **housing district** is your venue in?"
         };
 
         public static string[] AskForWardMessage = new[]
         {
-            "Which number ward are you in? (1-24)",
-            "Which number ward is your venue in? (1-24)"
+            "Which **number ward** are you in? (1-24)",
+            "Which **number ward** is your venue in? (1-24)"
         };
 
         public static string[] AskForPlotMessage = new[]
         {
-            "and the plot number? (1-60)",
-            "Which number plot are you? (1-60)",
-            "Which number plot is your venue? (1-60)"
+            "and the **plot number**? (1-60)",
+            "Which **number plot** are you? (1-60)",
+            "Which **number plot** is your venue? (1-60)"
         };
 
         public static string[] AskForSubdivisionMessage = new[]
         {
-            "Are you in the subdivision? (yes/no)",
-            "Is your venue in the subdivision? (yes/no)"
+            "Are you in the **subdivision**?",
+            "Is your venue in the **subdivision**?"
         };
 
         public static string[] AskForApartmentMessage = new[]
         {
-            "and the apartment number?",
-            "Which number apartment are you?",
-            "Which number apartment is your venue?"
+            "and the **apartment number**?",
+            "Which **number apartment** are you?",
+            "Which **number apartment** is your venue?"
         };
 
         public static string[] AskForDescriptionMessage = new[]
         {
-            "Could you give me an ad or description of the venue? Something for players to read when they click on your venue.",
-            "Could you write a introduction/advertisement of the venue? Players will see it in your card on the index. :)"
+            "Could you give me an ad or **description** of the venue? Something for players to read when they click on your venue.",
+            "Could you write a **introduction/advertisement** of the venue? Players will see it in your card on the index. :)"
         };
 
         public static string[] AskForSfwMessage = new[]
         {
-            "Is it usually safe for someone looking for an SFW experience to walk into? (yes/no)",
+            "Is it usually safe for someone looking for an **SFW** experience to walk into?",
         };
 
         public static string[] AskForType = new[]
         {
-            "Select the type that most suites your venue. 🙂",
-            "Which of these types apply to your venue most?"
+            "Select the **type** that most suites your venue. 🙂",
+            "Which of these **types** apply to your venue most?"
         };
 
         public static string[] AskForTags = new[]
         {
-            "Select all the tags that apply to your venue. :smile:",
-            "Which of these tags apply to the venue?"
+            "Select all the **tags** that apply to your venue. :smile:",
+            "Which of these **tags** apply to the venue?"
         };
 
         public static string[] AskForHouseOrApartmentMessage = new[]
         {
-            "Is your venue in a house or apartment?",
-            "Is it a house or apartment?",
+            "Is your venue in a **house or apartment**?",
+            "Is it a **house or apartment**?",
         };
 
         public static string[] AskForWebsiteMessage = new[]
         {
-            "What is your website address? If you don't have one just say \"skip\".",
+            "What is your **website address**?",
         };
 
         public static string[] AskForDiscordMessage = new[]
         {
-            "What is your venue's permanent discord invite link? If you don't have one just say \"skip\".",
+            "What is your venue's permanent **discord invite** link?",
         };
 
         public static string[] ConfirmMessage = new[]

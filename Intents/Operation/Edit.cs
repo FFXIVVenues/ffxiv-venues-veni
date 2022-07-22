@@ -29,13 +29,11 @@ namespace FFXIVVenues.Veni.Intents.Operation
                 if (venues.Count() > 25)
                     venues = venues.Take(25);
                 context.Conversation.SetItem("venues", venues);
-                context.Conversation.SetItem("prexisting", true); // different to "modifying" since you can modifying a not-yet-sent venue
                 await context.Conversation.ShiftState<SelectVenueToModifyState>(context);
             }
             else
             {
                 context.Conversation.SetItem("venue", venues.Single());
-                context.Conversation.SetItem("prexisting", true); // different to "modifying" since you can modifying a not-yet-sent venue
                 await context.Conversation.ShiftState<ModifyVenueState>(context);
             }
         }

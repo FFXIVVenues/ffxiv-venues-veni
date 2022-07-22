@@ -1,4 +1,4 @@
-﻿using FFXIVVenues.Veni;
+﻿using Discord;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
@@ -19,25 +19,21 @@ namespace FFXIVVenues.Veni.States
         public Task Init(MessageContext c)
         {
             c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
-            return c.RespondAsync(MessageRepository.AskForDiscordMessage.PickRandom());
+            return c.RespondAsync(MessageRepository.AskForDiscordMessage.PickRandom(),
+                new ComponentBuilder()
+                    .WithButton("Skip", c.Conversation.RegisterComponentHandler(cm => 
+                    {
+                        if (c.Conversation.GetItem<bool>("modifying"))
+                            return c.Conversation.ShiftState<ConfirmVenueState>(cm);
+                        return c.Conversation.ShiftState<HaveScheduleEntryState>(cm);
+                    }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                .Build());
         }
 
         public async Task OnMessageReceived(MessageContext c)
         {
             var venue = c.Conversation.GetItem<Venue>("venue");
             string message = c.Message.Content.StripMentions();
-            if (message.ToLower().MatchesAnyRegex("skip", "no")
-                || message.ToLower().MatchesAnyPhrase("don't have one", "not available", "not public", "don't want to give"))
-            {
-                if (c.Conversation.GetItem<bool>("modifying"))
-                {
-                    await c.Conversation.ShiftState<ConfirmVenueState>(c);
-                    return;
-                }
-
-                await c.Conversation.ShiftState<HaveScheduleEntryState>(c);
-                return;
-            }
 
             var rawDiscordString = c.Message.Content.StripMentions();
             if (!new Regex("^https?://").IsMatch(rawDiscordString))

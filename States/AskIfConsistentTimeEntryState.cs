@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Discord;
 using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Intents;
 
 namespace FFXIVVenues.Veni.States
 {
@@ -9,24 +9,20 @@ namespace FFXIVVenues.Veni.States
 
         private static string[] _messages = new[]
         {
-            "Are you open at the same time for each these days? (yes/no)",
-            "Is the venue open the same time on each day? (yes/no)"
+            "Is the venue open the same time across each these days?",
+            "Is the scheduled opening time the same across all those days?"
         };
 
-        public Task Init(MessageContext c)
-        {
-            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
-            return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} { _messages.PickRandom()}");
-        }
+        public Task Init(MessageContext c) =>
+            c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_messages.PickRandom()}",
+                new ComponentBuilder()
+                    .WithButton("Yes, each day has the same opening/closing time",
+                        c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<ConsistentOpeningEntryState>(cm), 
+                    ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("No, it's different opening times between days",
+                        c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<InconsistentOpeningEntryState>(cm), 
+                    ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                .Build());
 
-        public Task OnMessageReceived(MessageContext c)
-        {
-            if (c.Prediction.TopIntent == IntentNames.Response.Yes)
-                return c.Conversation.ShiftState<ConsistentOpeningEntryState>(c);
-            else if (c.Prediction.TopIntent == IntentNames.Response.No)
-                return c.Conversation.ShiftState<InconsistentOpeningEntryState>(c);
-            else
-                return c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom());
-        }
     }
 }

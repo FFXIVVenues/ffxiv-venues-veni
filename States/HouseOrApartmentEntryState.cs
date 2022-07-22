@@ -1,4 +1,5 @@
-﻿using FFXIVVenues.Veni;
+﻿using Discord;
+using FFXIVVenues.Veni;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
@@ -9,20 +10,18 @@ namespace FFXIVVenues.Veni.States
     {
         public Task Init(MessageContext c)
         {
-            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
-            return c.RespondAsync(MessageRepository.AskForHouseOrApartmentMessage.PickRandom());
-        }
-
-        public Task OnMessageReceived(MessageContext c)
-        {
-            if (c.Message.Content.StripMentions().AnyWordMatchesAnyPhrase("house", "mansion", "estate", "cottage", "large", "medium", "small"))
-                c.Conversation.SetItem("isHouse", true);
-            else if (c.Message.Content.StripMentions().AnyWordMatchesAnyPhrase("apartment", "hotel", "flat"))
-                c.Conversation.SetItem("isHouse", false);
-            else
-                return c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom());
-
-            return c.Conversation.ShiftState<WorldEntryState>(c);
+            return c.RespondAsync(MessageRepository.AskForHouseOrApartmentMessage.PickRandom(), new ComponentBuilder()
+                .WithButton("A house", c.Conversation.RegisterComponentHandler(cm =>
+                {
+                    c.Conversation.SetItem("isHouse", true);
+                    return c.Conversation.ShiftState<WorldEntryState>(cm);
+                }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                .WithButton("An apartment", c.Conversation.RegisterComponentHandler(cm =>
+                {
+                    c.Conversation.SetItem("isHouse", false);
+                    return c.Conversation.ShiftState<WorldEntryState>(cm);
+                }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                .Build());
         }
     }
 }
