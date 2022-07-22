@@ -25,6 +25,8 @@ namespace FFXIVVenues.Veni.States
                 return c.RespondAsync("Sorry, I didn't understand that, please enter a number between 1 and 60.");
             }
 
+            venue.Location.Room = 0;
+            venue.Location.Apartment = 0;
             venue.Location.Plot = plot;
             venue.Location.Subdivision = plot > 30;
 

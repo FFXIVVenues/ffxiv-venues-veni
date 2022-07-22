@@ -22,6 +22,8 @@ namespace FFXIVVenues.Veni.States
             if (!match.Success || !ushort.TryParse(match.Value, out var apartment) || apartment < 1)
                 return c.RespondAsync("Sorry, I didn't understand that, please enter your apartment number.");
 
+            venue.Location.Plot = 0;
+            venue.Location.Room = 0;
             venue.Location.Apartment = apartment;
 
             if (c.Conversation.GetItem<bool>("modifying"))
