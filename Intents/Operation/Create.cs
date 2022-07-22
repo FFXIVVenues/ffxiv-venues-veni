@@ -12,6 +12,8 @@ namespace FFXIVVenues.Veni.Intents.Operation
 
         public async Task Handle(MessageContext context)
         {
+            context.Conversation.SetItem("isNewVenue", true);
+
             var venue = new Venue();
             venue.Managers.Add(context.Message.Author.Id.ToString());
             context.Conversation.ContextData.AddOrUpdate(CREATE_VALUE_KEY, (s, v) => v, (s, e, v) => v, venue);

@@ -22,7 +22,14 @@ namespace FFXIVVenues.Veni.States
         public Task Init(MessageContext c)
         {
             c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
-            return c.RespondAsync("What cute image would you like to use as a banner?\nBanners are usually 600x200; I can do the scaling/crop for you :heart:.");
+            return c.RespondAsync("What cute image would you like to use as a banner?\nBanners are usually 600x200; I can do the scaling/crop for you :heart:.",
+                new ComponentBuilder()
+                    .WithButton("Skip", c.Conversation.RegisterComponentHandler(cm => {
+                        if (c.Conversation.GetItem<bool>("modifying"))
+                            return c.Conversation.ShiftState<ConfirmVenueState>(cm);
+                        return c.Conversation.ShiftState<ManagerEntryState>(cm);
+                    }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                .Build());
         }
 
         public async Task OnMessageReceived(MessageContext c)

@@ -1,7 +1,9 @@
-﻿using FFXIVVenues.Veni;
+﻿using Discord;
+using FFXIVVenues.Veni;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.States
@@ -10,18 +12,22 @@ namespace FFXIVVenues.Veni.States
     {
         public Task Init(MessageContext c)
         {
-            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
-            return c.RespondAsync(MessageRepository.AskForHousingDistrictMessage.PickRandom());
+            var districts = new[] { "Mist", "Empyreum", "Goblet", "Lavender Beds", "Shirogane" }
+                .Select(zone => new SelectMenuOptionBuilder(zone, zone)).ToList();
+            var selectMenu = new SelectMenuBuilder();
+            selectMenu.WithOptions(districts);
+            selectMenu.WithCustomId(c.Conversation.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow));
+
+
+            return c.RespondAsync(MessageRepository.AskForHousingDistrictMessage.PickRandom(), 
+                                  new ComponentBuilder().WithSelectMenu(selectMenu).Build());
         }
 
-        public Task OnMessageReceived(MessageContext c)
+        public Task Handle(MessageContext c)
         {
+            var district = c.MessageComponent.Data.Values.Single();
             var venue = c.Conversation.GetItem<Venue>("venue");
-            var result = c.Message.Content.StripMentions().IsSimilarToAnyPhrase("Mist", "Empyreum", "Goblet", "Lavender Beds", "Shirogane");
-            if (result.Score < 0.5)
-                return c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom());
-
-            venue.Location.District = result.Phrase;
+            venue.Location.District = district;
             return c.Conversation.ShiftState<WardEntryState>(c);
         }
 
