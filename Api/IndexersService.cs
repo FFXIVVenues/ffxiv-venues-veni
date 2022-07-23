@@ -11,6 +11,7 @@ namespace FFXIVVenues.Veni.Api
     {
 
         public ulong[] Indexers { get; private init; }
+        public ulong[] Photographers { get; private init; }
 
         private readonly DiscordSocketClient _client;
         private readonly ConcurrentDictionary<string, Broadcast> _broadcasts = new();
@@ -19,10 +20,13 @@ namespace FFXIVVenues.Veni.Api
         {
             var indexerStrings = config.GetSection("Indexers")?.GetChildren()?.Select(x => x.Value)?.ToArray();
             this.Indexers = indexerStrings.Select(s => ulong.Parse(s)).ToArray();
+            var photographerStrings = config.GetSection("Photographers")?.GetChildren()?.Select(x => x.Value)?.ToArray();
+            this.Photographers = photographerStrings.Select(s => ulong.Parse(s)).ToArray();
             this._client = client;
         }
 
         public bool IsIndexer(ulong userId) => this.Indexers.Contains(userId);
+        public bool IsPhotographer(ulong userId) => this.Photographers.Contains(userId);
 
         public Broadcast Broadcast()
         {

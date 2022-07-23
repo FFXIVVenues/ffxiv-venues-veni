@@ -82,6 +82,15 @@ namespace FFXIVVenues.Veni.States
                         .WithButton("Do nothing", c.Conversation.RegisterComponentHandler(cm => Task.CompletedTask,
                             ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .Build());
+            else if (this._indexersService.IsPhotographer(asker))
+                return c.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
+                    component: new ComponentBuilder()
+                        .WithButton("Edit Banner Photo", c.Conversation.RegisterComponentHandler(cm =>
+                        {
+                            c.Conversation.SetItem("venue", venue);
+                            return cm.Conversation.ShiftState<BannerInputState>(cm);
+                        }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                        .Build());
             else
                 return c.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
         }
