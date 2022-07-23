@@ -7,9 +7,10 @@ namespace FFXIVVenues.Veni.Api
     {
 
         ulong[] Indexers { get; }
-
+        ulong[] Photographers { get; }
 
         bool IsIndexer(ulong userId);
+        bool IsPhotographer(ulong userId);
 
         Broadcast Broadcast();
 
