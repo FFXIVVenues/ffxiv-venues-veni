@@ -18,7 +18,7 @@ namespace FFXIVVenues.Veni.States
                     venue.Sfw = true;
                     if (c.Conversation.GetItem<bool>("modifying"))
                         return c.Conversation.ShiftState<ConfirmVenueState>(c);
-                    return c.Conversation.ShiftState<TypeEntryState>(c);
+                    return c.Conversation.ShiftState<CategoryEntryState>(c);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .WithButton("No, we're openly NSFW", c.Conversation.RegisterComponentHandler(cm =>
                 {
@@ -26,7 +26,7 @@ namespace FFXIVVenues.Veni.States
                     venue.Sfw = false;
                     if (c.Conversation.GetItem<bool>("modifying"))
                         return c.Conversation.ShiftState<ConfirmVenueState>(c);
-                    return c.Conversation.ShiftState<TypeEntryState>(c);
+                    return c.Conversation.ShiftState<CategoryEntryState>(c);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
@@ -44,7 +44,7 @@ namespace FFXIVVenues.Veni.States
 
             if (c.Conversation.GetItem<bool>("modifying"))
                 return c.Conversation.ShiftState<ConfirmVenueState>(c);
-            return c.Conversation.ShiftState<TypeEntryState>(c);
+            return c.Conversation.ShiftState<CategoryEntryState>(c);
         }
     }
 
