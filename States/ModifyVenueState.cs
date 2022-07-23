@@ -25,7 +25,7 @@ namespace FFXIVVenues.Veni.States
                     .WithButton("Location", c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<HouseOrApartmentEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("Schedule", c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<HaveScheduleEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("N/SFW status", c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<SfwEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("Tags", c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<TypeEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("Tags", c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<CategoryEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("Website", c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<WebsiteEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("Discord", c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<DiscordEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("Banner photo", c.Conversation.RegisterComponentHandler(cm => cm.Conversation.ShiftState<BannerInputState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary);

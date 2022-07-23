@@ -86,10 +86,10 @@ namespace FFXIVVenues.Veni
             "Is it usually safe for someone looking for an **SFW** experience to walk into?",
         };
 
-        public static string[] AskForType = new[]
+        public static string[] AskForCategories = new[]
         {
-            "Select the **type** that most suites your venue. 🙂",
-            "Which of these **types** apply to your venue most?"
+            "Oki! Select the **categories** that most suites your venue (maximum 2). 🙂",
+            "Great! 🥰 Which of these **categories** apply to your venue most (maximum 2)? "
         };
 
         public static string[] AskForTags = new[]

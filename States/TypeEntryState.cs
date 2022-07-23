@@ -1,15 +1,18 @@
 ﻿using Discord;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.States
 {
-    class TypeEntryState : IState
+    class CategoryEntryState : IState
     {
 
-        private static List<(string Label, string Value)> _availableTypes = new()
+        private Venue _venue;
+        private static List<(string Label, string Value)> _availableCategories = new()
         {
             ("Nightclub", "Nightclub"),
             ("Den", "Den"),
@@ -27,39 +30,33 @@ namespace FFXIVVenues.Veni.States
             ("Other", "other")
         };
 
-        private List<string> _tagHandlers = new();
-
         public Task Init(MessageContext c)
         {
+            this._venue = c.Conversation.GetItem<Venue>("venue");
+
             var component = this.BuildTagsComponent(c);
-            return c.RespondAsync(MessageRepository.AskForType.PickRandom(), component.Build());
+            return c.RespondAsync(MessageRepository.AskForCategories.PickRandom(), component.Build());
         }
 
         private ComponentBuilder BuildTagsComponent(MessageContext c)
         {
-            var component = new ComponentBuilder();
-            foreach (var tag in _availableTypes)
-                this.AddTagButton(component, c, tag.Label, tag.Value);
-            return component;
+            var selectComponent = new SelectMenuBuilder()
+                .WithCustomId(c.Conversation.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
+                .WithMaxValues(Math.Max(2, _availableCategories.Count(t => this._venue.Tags?.Contains(t.Value) ?? false)));
+            foreach (var (label, value) in _availableCategories)
+                selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value));
+
+            return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
-        private void AddTagButton(ComponentBuilder component, MessageContext c, string tagLabel, string tagValue)
+        private Task OnComplete(MessageContext c)
         {
-            var handler = c.Conversation.RegisterComponentHandler(async cm =>
-            {
-                var venue = cm.Conversation.GetItem<Venue>("venue");
-                venue.Tags = new() { tagValue };
+            var venue = c.Conversation.GetItem<Venue>("venue");
+            venue.Tags = venue.Tags ?? new();
+            venue.Tags.RemoveAll(existingTag => _availableCategories.Any(availableTag => existingTag == availableTag.Value));
+            venue.Tags.AddRange(c.MessageComponent.Data.Values);
 
-                await cm.MessageComponent.ModifyOriginalResponseAsync(props =>
-                    props.Components = new ComponentBuilder().Build());
-
-                foreach (var handlerKey in this._tagHandlers)
-                    cm.Conversation.UnregisterComponentHandler(handlerKey);
-
-                await cm.Conversation.ShiftState<TagsEntryState>(cm);
-            }, ComponentPersistence.ClearRow);
-            this._tagHandlers.Add(handler);
-            component.WithButton(tagLabel, handler, ButtonStyle.Secondary);
+            return c.Conversation.ShiftState<TagsEntryState>(c);
         }
 
     }
