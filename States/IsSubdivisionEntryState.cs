@@ -17,13 +17,13 @@ namespace FFXIVVenues.Veni.States
                     var venue = c.Conversation.GetItem<Venue>("venue");
                     venue.Location.Subdivision = true;
                     return c.Conversation.ShiftState<ApartmentEntryState>(cm);
-                }, ComponentPersistence.ClearRow))
+                }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .WithButton("No, the first division", c.Conversation.RegisterComponentHandler(cm =>
                 {
                     var venue = c.Conversation.GetItem<Venue>("venue");
                     venue.Location.Subdivision = false;
                     return c.Conversation.ShiftState<ApartmentEntryState>(cm);
-                }, ComponentPersistence.ClearRow))
+                }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
     }

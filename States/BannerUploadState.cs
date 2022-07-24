@@ -51,6 +51,13 @@ namespace FFXIVVenues.Veni.States
             var outStream = new MemoryStream();
             using (var image = await Image.LoadAsync(stream))
             {
+
+                if (image.Height * image.Width > 5_000_000)
+                {
+                    await c.RespondAsync("Aaaah, my desk isn't big enough for this! 😓\n Can you send me that a _little_ smaller?");
+                    return;
+                }
+
                 if (image.Height < 200 || image.Width < 600)
                 {
                     await c.RespondAsync("Sorry, could you send me something that's bigger than 600px width and 200px height? :blush:");
