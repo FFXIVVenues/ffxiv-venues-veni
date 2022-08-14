@@ -14,32 +14,32 @@ namespace FFXIVVenues.Veni.States
 
         private static Dictionary<string, string> _worldMap = new()
         {
-            { "Aether | Adamantoise", "Aether" },
-            { "Aether | Cactuar", "Aether" },
-            { "Aether | Faerie", "Aether" },
-            { "Aether | Gilgamesh", "Aether" },
-            { "Aether | Jenova", "Aether" },
-            { "Aether | Midgardsormr", "Aether" },
-            { "Aether | Sargatanas", "Aether" },
-            { "Aether | Siren", "Aether" },
+            { "Adamantoise", "Aether" },
+            { "Cactuar", "Aether" },
+            { "Faerie", "Aether" },
+            { "Gilgamesh", "Aether" },
+            { "Jenova", "Aether" },
+            { "Midgardsormr", "Aether" },
+            { "Sargatanas", "Aether" },
+            { "Siren", "Aether" },
 
-            { "Primal | Behemoth", "Primal" },
-            { "Primal | Excalibur", "Primal" },
-            { "Primal | Exodus", "Primal" },
-            { "Primal | Famfrit", "Primal" },
-            { "Primal | Hyperion", "Primal" },
-            { "Primal | Lamia", "Primal" },
-            { "Primal | Leviathan", "Primal" },
-            { "Primal | Ultros", "Primal" },
+            { "Behemoth", "Primal" },
+            { "Excalibur", "Primal" },
+            { "Exodus", "Primal" },
+            { "Famfrit", "Primal" },
+            { "Hyperion", "Primal" },
+            { "Lamia", "Primal" },
+            { "Leviathan", "Primal" },
+            { "Ultros", "Primal" },
 
-            { "Primal | Balmung", "Crystal" },
-            { "Primal | Brynhildr", "Crystal" },
-            { "Primal | Coeurl", "Crystal" },
-            { "Primal | Diabolos", "Crystal" },
-            { "Primal | Goblin", "Crystal" },
-            { "Primal | Malboro", "Crystal" },
-            { "Primal | Mateus", "Crystal" },
-            { "Primal | Zalera", "Crystal" },
+            { "Balmung", "Crystal" },
+            { "Brynhildr", "Crystal" },
+            { "Coeurl", "Crystal" },
+            { "Diabolos", "Crystal" },
+            { "Goblin", "Crystal" },
+            { "Malboro", "Crystal" },
+            { "Mateus", "Crystal" },
+            { "Zalera", "Crystal" },
 
             //{ "Aegis", "Elemental" },
             //{ "Atamos", "Elemental" },
@@ -91,7 +91,8 @@ namespace FFXIVVenues.Veni.States
 
         public Task Init(InteractionContext c)
         {
-            var worlds = _worldMap.Select(world => new SelectMenuOptionBuilder(world.Key, world.Key)).ToList();
+            var worlds = _worldMap.Select(world => new SelectMenuOptionBuilder(world.Value + " | " + world.Key, world.Key))
+                                  .OrderBy(o => o.Label).ToList();
             var selectMenu = new SelectMenuBuilder();
             selectMenu.WithOptions(worlds);
             selectMenu.WithCustomId(c.Session.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow));
