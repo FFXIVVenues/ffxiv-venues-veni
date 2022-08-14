@@ -6,13 +6,15 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Luis;
 using FFXIVVenues.Veni.Intents;
 using Discord.WebSocket;
 using Discord;
+using FFXIVVenues.Veni.Commands.Brokerage;
+using FFXIVVenues.Veni.Commands;
+using FFXIVVenues.Veni.Context.Abstractions;
 
 const string DISCORD_BOT_CONFIG_KEY = "DiscordBotToken";
 
@@ -41,11 +43,11 @@ serviceCollection.AddSingleton<UiConfiguration>(uiConfig);
 
 serviceCollection.AddSingleton<HttpClient>(apiHttpClient);
 
-serviceCollection.AddSingleton<ILogger, Logger>();
+serviceCollection.AddSingleton<ICommandBroker, CommandBroker>();
 serviceCollection.AddSingleton<IApiService, ApiService>();
 serviceCollection.AddSingleton<IIndexersService, IndexersService>();
 serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
-serviceCollection.AddSingleton<IConversationContextProvider, ConversationContextProvider>();
+serviceCollection.AddSingleton<ISessionContextProvider, SessionContextProvider>();
 serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();
 serviceCollection.AddSingleton<ILuisClient, LuisClient>();
 
@@ -70,6 +72,18 @@ serviceCollection.AddSingleton<DiscordSocketClient>(_ =>
 });
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
+
+var commandBroker = serviceProvider.GetService<ICommandBroker>();
+commandBroker.Add<Close.CommandFactory, Close.CommandHandler>(Close.COMMAND_NAME);
+commandBroker.Add<Create.CommandFactory, Create.CommandHandler>(Create.COMMAND_NAME);
+commandBroker.Add<Delete.CommandFactory, Delete.CommandHandler>(Delete.COMMAND_NAME);
+commandBroker.Add<Edit.CommandFactory, Edit.CommandHandler>(Edit.COMMAND_NAME);
+commandBroker.Add<Escalate.CommandFactory, Escalate.CommandHandler>(Escalate.COMMAND_NAME);
+commandBroker.Add<Find.CommandFactory, Find.CommandHandler>(Find.COMMAND_NAME);
+commandBroker.Add<Help.CommandFactory, Help.CommandHandler>(Help.COMMAND_NAME);
+commandBroker.Add<Open.CommandFactory, Open.CommandHandler>(Open.COMMAND_NAME);
+commandBroker.Add<ShowFor.CommandFactory, ShowFor.CommandHandler>(ShowFor.COMMAND_NAME);
+commandBroker.Add<ShowMine.CommandFactory, ShowMine.CommandHandler>(ShowMine.COMMAND_NAME);
 
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
 

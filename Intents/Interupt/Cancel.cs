@@ -1,18 +1,19 @@
 ﻿using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Intents.Interupt
 {
-    internal class Cancel : IIntentHandler
+    internal class Cancel : IntentHandler
     {
 
-        public Task Handle(MessageContext context)
+        public override Task Handle(InteractionContext context)
         {
-            if (context.Conversation.ActiveState == null)
-                return context.RespondAsync("Huh? We're not in the middle of anything. :shrug:");
+            if (context.Session.State == null)
+                return context.Interaction.RespondAsync("Huh? We're not in the middle of anything. :shrug:");
 
-            context.Conversation.ClearState();
-            return context.RespondAsync(MessageRepository.StoppedMessage.PickRandom());
+            context.Session.ClearState();
+            return context.Interaction.RespondAsync(MessageRepository.StoppedMessage.PickRandom());
         }
 
     }

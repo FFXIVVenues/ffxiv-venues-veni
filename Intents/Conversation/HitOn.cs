@@ -1,12 +1,11 @@
-﻿using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
 using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Conversation
+namespace FFXIVVenues.Veni.Intents.Session
 {
-    internal class HitOn : IIntentHandler
+    internal class HitOn : IntentHandler
     {
 
         private static string[] _kanaMessages = new[]
@@ -23,12 +22,12 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "*looks away meekly as she blushes*"
         };
 
-        public async Task Handle(MessageContext context)
+        public override async Task Handle(InteractionContext context)
         {
-            if (context.Message.Author.Id == People.Kana)
-                await context.RespondAsync(_kanaMessages.PickRandom());
+            if (context.Interaction.User.Id == People.Kana)
+                await context.Interaction.RespondAsync(_kanaMessages.PickRandom());
             else
-                await context.RespondAsync(_responses.PickRandom());
+                await context.Interaction.RespondAsync(_responses.PickRandom());
         }
 
     }

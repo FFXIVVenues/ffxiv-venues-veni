@@ -1,9 +1,10 @@
 ﻿using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Conversation
+namespace FFXIVVenues.Veni.Intents.Session
 {
-    internal class Affection : IIntentHandler
+    internal class Affection : IntentHandler
     {
 
         private static string[] _responses = new[]
@@ -18,8 +19,8 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "*looks away meekly as she blushes*"
         };
 
-        public Task Handle(MessageContext context) =>
-            context.RespondAsync(_responses.PickRandom());
+        public override Task Handle(InteractionContext context) =>
+            context.Interaction.RespondAsync(_responses.PickRandom());
 
     }
 }

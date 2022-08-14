@@ -1,6 +1,8 @@
 ﻿using Discord;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.States.Abstractions;
+using FFXIVVenues.Veni.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,18 +34,18 @@ namespace FFXIVVenues.Veni.States
             ("Strictly in-character RP only", "IC RP Only")
         };
 
-        public Task Init(MessageContext c)
+        public Task Init(InteractionContext c)
         {
-            this._venue = c.Conversation.GetItem<Venue>("venue");
+            this._venue = c.Session.GetItem<Venue>("venue");
 
             var component = this.BuildTagsComponent(c);
-            return c.RespondAsync(MessageRepository.AskForTags.PickRandom(), component.Build());
+            return c.Interaction.RespondAsync(MessageRepository.AskForTags.PickRandom(), component.Build());
         }
 
-        private ComponentBuilder BuildTagsComponent(MessageContext c)
+        private ComponentBuilder BuildTagsComponent(InteractionContext c)
         {
             var selectComponent = new SelectMenuBuilder()
-                .WithCustomId(c.Conversation.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
+                .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
                 .WithMaxValues(_availableTags.Count);
             foreach (var (label, value) in _availableTags)
                 selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value));
@@ -51,17 +53,17 @@ namespace FFXIVVenues.Veni.States
             return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
-        private Task OnComplete(MessageContext c)
+        private Task OnComplete(MessageComponentInteractionContext c)
         {
-            var venue = c.Conversation.GetItem<Venue>("venue");
+            var venue = c.Session.GetItem<Venue>("venue");
             venue.Tags = venue.Tags ?? new();
             venue.Tags.RemoveAll(existingTag => _availableTags.Any(availableTag => existingTag == availableTag.Value));
-            venue.Tags.AddRange(c.MessageComponent.Data.Values);
+            venue.Tags.AddRange(c.Interaction.Data.Values);
 
-            if (c.Conversation.GetItem<bool>("modifying"))
-                return c.Conversation.ShiftState<ConfirmVenueState>(c);
+            if (c.Session.GetItem<bool>("modifying"))
+                return c.Session.ShiftState<ConfirmVenueState>(c);
 
-            return c.Conversation.ShiftState<WebsiteEntryState>(c);
+            return c.Session.ShiftState<WebsiteEntryState>(c);
         }
 
     }

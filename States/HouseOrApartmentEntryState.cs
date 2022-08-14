@@ -1,6 +1,6 @@
 ﻿using Discord;
-using FFXIVVenues.Veni;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
@@ -8,18 +8,18 @@ namespace FFXIVVenues.Veni.States
 {
     class HouseOrApartmentEntryState : IState
     {
-        public Task Init(MessageContext c)
+        public Task Init(InteractionContext c)
         {
-            return c.RespondAsync(MessageRepository.AskForHouseOrApartmentMessage.PickRandom(), new ComponentBuilder()
-                .WithButton("A house", c.Conversation.RegisterComponentHandler(cm =>
+            return c.Interaction.RespondAsync(MessageRepository.AskForHouseOrApartmentMessage.PickRandom(), new ComponentBuilder()
+                .WithButton("A house", c.Session.RegisterComponentHandler(cm =>
                 {
-                    c.Conversation.SetItem("isHouse", true);
-                    return c.Conversation.ShiftState<WorldEntryState>(cm);
+                    cm.Session.SetItem("isHouse", true);
+                    return cm.Session.ShiftState<WorldEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .WithButton("An apartment", c.Conversation.RegisterComponentHandler(cm =>
+                .WithButton("An apartment", c.Session.RegisterComponentHandler(cm =>
                 {
-                    c.Conversation.SetItem("isHouse", false);
-                    return c.Conversation.ShiftState<WorldEntryState>(cm);
+                    cm.Session.SetItem("isHouse", false);
+                    return cm.Session.ShiftState<WorldEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }

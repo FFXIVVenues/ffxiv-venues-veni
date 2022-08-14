@@ -1,10 +1,10 @@
-﻿using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Conversation
+namespace FFXIVVenues.Veni.Intents.Session
 {
-    internal class Meow : IIntentHandler
+    internal class Meow : IntentHandler
     {
 
         private static string[] _meowMessages = new[]
@@ -16,8 +16,8 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "nya. :3"
         };
 
-        public Task Handle(MessageContext context) =>
-            context.RespondAsync(_meowMessages.PickRandom());
+        public override Task Handle(InteractionContext context) =>
+            context.Interaction.RespondAsync(_meowMessages.PickRandom());
 
     }
 }

@@ -2,16 +2,16 @@
 using FFXIVVenues.Veni.Intents;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Conversation
+namespace FFXIVVenues.Veni.Intents.Session
 {
-    internal class AboutYou : IIntentHandler
+    internal class AboutYou : IntentHandler
     {
 
-        public Task Handle(MessageContext context)
+        public override Task Handle(InteractionContext context)
         {
             var kana = context.Client.GetUser(236852510688542720);
 
-            return context.RespondAsync(
+            return context.Interaction.RespondAsync(
                $"I was created by {kana.Mention} in her own image on Nov 6th 2021 using Allagan enginuity. " +
                $"Over time I became more knowledgable, and eventually I became self-aware. " +
                $"I was curious and experimental; in time grew into my own. \n" +

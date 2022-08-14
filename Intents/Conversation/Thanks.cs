@@ -1,10 +1,10 @@
-﻿using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Conversation
+namespace FFXIVVenues.Veni.Intents.Session
 {
-    internal class Thanks : IIntentHandler
+    internal class Thanks : IntentHandler
     {
 
         private static string[] _responses = new[]
@@ -15,8 +15,8 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "Ofcourse, anytime!"
         };
 
-        public Task Handle(MessageContext context) =>
-            context.RespondAsync(_responses.PickRandom());
+        public override Task Handle(InteractionContext context) =>
+            context.Interaction.RespondAsync(_responses.PickRandom());
 
     }
 }

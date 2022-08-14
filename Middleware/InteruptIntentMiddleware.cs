@@ -6,7 +6,7 @@ using FFXIVVenues.Veni.Context;
 
 namespace FFXIVVenues.Veni.Middleware
 {
-    class InteruptIntentMiddleware : IMiddleware<MessageContext>
+    class InteruptIntentMiddleware : IMiddleware<MessageInteractionContext>
     {
 
         private readonly IIntentHandlerProvider intentHandlerProvider;
@@ -16,13 +16,13 @@ namespace FFXIVVenues.Veni.Middleware
             this.intentHandlerProvider = intentHandlerProvider;
         }
 
-        public Task ExecuteAsync(MessageContext context, Func<Task> next)
+        public Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
         {
-            var intentHandler = intentHandlerProvider.ActivateInteruptIntentHandler(context.Prediction.TopIntent);
-            if (intentHandler == null)
+            var handleTask = intentHandlerProvider.HandleIteruptIntent(context.Prediction.TopIntent, context);
+            if (handleTask == null)
                 return next();
 
-            return intentHandler.Handle(context);
+            return handleTask;
         }
 
     }

@@ -1,10 +1,10 @@
 ﻿using FFXIVVenues.Veni.Context;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.States
+namespace FFXIVVenues.Veni.States.Abstractions
 {
     public interface IState
     {
-        Task Init(MessageContext c);
+        Task Init(InteractionContext c);
     }
 }

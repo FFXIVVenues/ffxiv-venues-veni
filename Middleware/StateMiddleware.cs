@@ -1,22 +1,23 @@
-﻿using FFXIVVenues.Veni.Context;
+﻿using Discord.WebSocket;
+using FFXIVVenues.Veni.Context;
 using Kana.Pipelines;
 using System;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Middleware
 {
-    class StateMiddleware : IMiddleware<MessageContext>
+    class StateMiddleware : IMiddleware<MessageInteractionContext>
     {
 
-        public async Task ExecuteAsync(MessageContext context, Func<Task> next)
+        public async Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
         {
-            if (context.Conversation.ActiveState == null)
+            if (context.Session.State == null)
             {
                 await next();
                 return;
             }
             
-            var handled = await context.Conversation.HandleMessageAsync(context);
+            var handled = await context.Session.HandleMessageAsync(context);
             if (!handled) await next();
         }
 

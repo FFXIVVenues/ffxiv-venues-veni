@@ -1,6 +1,7 @@
 ﻿using Discord;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using System;
 using System.Net.Http;
@@ -16,33 +17,33 @@ namespace FFXIVVenues.Veni.States
         static HttpClient _discordClient = new HttpClient();
         static Regex _discordPattern = new Regex(@"(https?:\/\/)?(www\.)?((discord(app)?(\.com|\.io)(\/invite)?)|(discord\.gg))\/(\w+)");
 
-        public Task Init(MessageContext c)
+        public Task Init(InteractionContext c)
         {
-            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
-            return c.RespondAsync(MessageRepository.AskForDiscordMessage.PickRandom(),
+            c.Session.RegisterMessageHandler(this.OnMessageReceived);
+            return c.Interaction.RespondAsync(MessageRepository.AskForDiscordMessage.PickRandom(),
                 new ComponentBuilder()
-                    .WithButton("Skip", c.Conversation.RegisterComponentHandler(cm => 
+                    .WithButton("Skip", c.Session.RegisterComponentHandler(cm => 
                     {
-                        if (c.Conversation.GetItem<bool>("modifying"))
-                            return c.Conversation.ShiftState<ConfirmVenueState>(cm);
-                        return c.Conversation.ShiftState<HaveScheduleEntryState>(cm);
+                        if (cm.Session.GetItem<bool>("modifying"))
+                            return cm.Session.ShiftState<ConfirmVenueState>(cm);
+                        return cm.Session.ShiftState<HaveScheduleEntryState>(cm);
                     }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
 
-        public async Task OnMessageReceived(MessageContext c)
+        public async Task OnMessageReceived(MessageInteractionContext c)
         {
-            var venue = c.Conversation.GetItem<Venue>("venue");
-            string message = c.Message.Content.StripMentions();
+            var venue = c.Session.GetItem<Venue>("venue");
+            string message = c.Interaction.Content.StripMentions();
 
-            var rawDiscordString = c.Message.Content.StripMentions();
+            var rawDiscordString = c.Interaction.Content.StripMentions();
             if (!new Regex("^https?://").IsMatch(rawDiscordString))
                 rawDiscordString = "https://" + rawDiscordString;
 
             var match = _discordPattern.Match(rawDiscordString);
             if (!match.Success)
             {
-                await c.RespondAsync("That doesn't look like a valid Discord invite to me. :think:");
+                await c.Interaction.Channel.SendMessageAsync("That doesn't look like a valid Discord invite to me. :think:");
                 return;
             }
 
@@ -51,7 +52,7 @@ namespace FFXIVVenues.Veni.States
 
             if (!responseMessage.IsSuccessStatusCode)
             {
-                await c.RespondAsync("I tried that invite link but it seems to be invalid. :cry:");
+                await c.Interaction.Channel.SendMessageAsync("I tried that invite link but it seems to be invalid. :cry:");
                 return;
             }
 
@@ -60,19 +61,19 @@ namespace FFXIVVenues.Veni.States
 
             if (invite.expires_at != null)
             {
-                await c.RespondAsync($"That invite link is not permanent, it'll expire in {invite.expires_at.Value:m}");
+                await c.Interaction.Channel.SendMessageAsync($"That invite link is not permanent, it'll expire in {invite.expires_at.Value:m}");
                 return;
             }
 
             venue.Discord = new Uri(rawDiscordString);
 
-            if (c.Conversation.GetItem<bool>("modifying"))
+            if (c.Session.GetItem<bool>("modifying"))
             {
-                await c.Conversation.ShiftState<ConfirmVenueState>(c);
+                await c.Session.ShiftState<ConfirmVenueState>(c);
                 return;
             }
 
-            await c.Conversation.ShiftState<HaveScheduleEntryState>(c);
+            await c.Session.ShiftState<HaveScheduleEntryState>(c);
         }
 
     }

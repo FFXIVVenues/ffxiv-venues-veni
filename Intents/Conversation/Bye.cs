@@ -1,11 +1,11 @@
-﻿using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
+using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Conversation
+namespace FFXIVVenues.Veni.Intents.Session
 {
-    internal class Bye : IIntentHandler
+    internal class Bye : IntentHandler
     {
 
         private static string[] _messages = new[]
@@ -36,16 +36,16 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "Cya Niko! ♥️ No more tests, alright? 😅"
         };
 
-        public Task Handle(MessageContext context)
+        public override Task Handle(InteractionContext context)
         {
-            if (context.Message.Author.Id == 236852510688542720)
-                return context.RespondAsync(_kanaMessages.PickRandom());
-            if (context.Message.Author.Id == 339219022774272000)
-                return context.RespondAsync(_aaryxMessages.PickRandom());
-            if (context.Message.Author.Id == 685561823943983125)
-                return context.RespondAsync(_nikoMessages.PickRandom());
+            if (context.Interaction.User.Id == 236852510688542720)
+                return context.Interaction.RespondAsync(_kanaMessages.PickRandom());
+            if (context.Interaction.User.Id == 339219022774272000)
+                return context.Interaction.RespondAsync(_aaryxMessages.PickRandom());
+            if (context.Interaction.User.Id == 685561823943983125)
+                return context.Interaction.RespondAsync(_nikoMessages.PickRandom());
 
-            return context.RespondAsync(_messages.PickRandom());
+            return context.Interaction.RespondAsync(_messages.PickRandom());
         }
 
     }

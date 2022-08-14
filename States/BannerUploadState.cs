@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.IO;
 using Discord;
 using Image = SixLabors.ImageSharp.Image;
+using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.States.Abstractions;
 
 namespace FFXIVVenues.Veni.States
 {
@@ -19,31 +21,31 @@ namespace FFXIVVenues.Veni.States
             this._httpClient = httpClient;
         }
 
-        public Task Init(MessageContext c)
+        public Task Init(InteractionContext c)
         {
-            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
-            return c.RespondAsync("What cute image would you like to use as a banner?\nBanners are usually 600x200; I can do the scaling/crop for you :heart:.",
+            c.Session.RegisterMessageHandler(this.OnMessageReceived);
+            return c.Interaction.RespondAsync("What cute image would you like to use as a **banner**?\nBanners are usually 600x200; I can do the scaling/crop for you :heart:.",
                 new ComponentBuilder()
-                    .WithButton("Skip", c.Conversation.RegisterComponentHandler(cm => {
-                        if (c.Conversation.GetItem<bool>("modifying"))
-                            return c.Conversation.ShiftState<ConfirmVenueState>(cm);
-                        return c.Conversation.ShiftState<ManagerEntryState>(cm);
+                    .WithButton("Skip", c.Session.RegisterComponentHandler(cm => {
+                        if (cm.Session.GetItem<bool>("modifying"))
+                            return cm.Session.ShiftState<ConfirmVenueState>(cm);
+                        return cm.Session.ShiftState<ManagerEntryState>(cm);
                     }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
 
-        public async Task OnMessageReceived(MessageContext c)
+        public async Task OnMessageReceived(MessageInteractionContext c)
         {
-            if (!c.Message.Attachments.Any())
+            if (!c.Interaction.Attachments.Any())
             {
-                await c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom() + " Could you send me an image you'd like to use for your banner?");
+                await c.Interaction.Channel.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom() + " Could you send me an image you'd like to use for your banner?");
                 return;
             }
 
-            var attachment = c.Message.Attachments.First();
+            var attachment = c.Interaction.Attachments.First();
             if (!attachment.ContentType.StartsWith("image"))
             {
-                await c.RespondAsync("Sorry, could you send me an image file like a jpeg or png? :relaxed: ");
+                await c.Interaction.Channel.SendMessageAsync("Sorry, could you send me an image file like a jpeg or png? :relaxed: ");
                 return;
             }
 
@@ -54,13 +56,13 @@ namespace FFXIVVenues.Veni.States
 
                 if (image.Height * image.Width > 5_000_000)
                 {
-                    await c.RespondAsync("Aaaah, my desk isn't big enough for this! 😓\n Can you send me that a _little_ smaller?");
+                    await c.Interaction.Channel.SendMessageAsync("Aaaah, my desk isn't big enough for this! 😓\n Can you send me that a _little_ smaller?");
                     return;
                 }
 
                 if (image.Height < 200 || image.Width < 600)
                 {
-                    await c.RespondAsync("Sorry, could you send me something that's bigger than 600px width and 200px height? :blush:");
+                    await c.Interaction.Channel.SendMessageAsync("Sorry, could you send me something that's bigger than 600px width and 200px height? :blush:");
                     return;
                 }
 
@@ -83,16 +85,16 @@ namespace FFXIVVenues.Veni.States
             }
 
             var component = new ComponentBuilder();
-            component.WithButton("Looks good!", c.Conversation.RegisterComponentHandler(async c =>
+            component.WithButton("Looks good!", c.Session.RegisterComponentHandler(async cm =>
             {
-                c.Conversation.SetItem("bannerUrl", c.MessageComponent.Message.Attachments.First().ProxyUrl);
-                if (c.Conversation.GetItem<bool>("modifying"))
-                    await c.Conversation.ShiftState<ConfirmVenueState>(c);
+                cm.Session.SetItem("bannerUrl", cm.Interaction.Message.Attachments.First().ProxyUrl);
+                if (cm.Session.GetItem<bool>("modifying"))
+                    await cm.Session.ShiftState<ConfirmVenueState>(c);
                 else
-                    await c.Conversation.ShiftState<ManagerEntryState>(c);
+                    await cm.Session.ShiftState<ManagerEntryState>(c);
             }, ComponentPersistence.ClearRow));
-            component.WithButton("Let's try another!", c.Conversation.RegisterComponentHandler(c => c.RespondAsync("Alrighty, send over another image! :heart:"), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
-            var response = await c.Message.Channel.SendFileAsync(outStream, "banner.jpg", "How does this look? :heart:", components: component.Build());
+            component.WithButton("Let's try another!", c.Session.RegisterComponentHandler(cm => cm.Interaction.RespondAsync("Alrighty, send over another image! :heart:"), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
+            var response = await c.Interaction.Channel.SendFileAsync(outStream, "banner.jpg", "How does this look? :heart:", components: component.Build());
         }
 
     }

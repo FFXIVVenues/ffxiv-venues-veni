@@ -1,15 +1,16 @@
-﻿using FFXIVVenues.Veni.Context;
+﻿using Discord.WebSocket;
+using FFXIVVenues.Veni.Context;
 using Kana.Pipelines;
 using System;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Middleware
 {
-    internal class StartTypingMiddleware : IMiddleware<MessageContext>
+    internal class StartTypingMiddleware : IMiddleware<MessageInteractionContext>
     {
-        public async Task ExecuteAsync(MessageContext context, Func<Task> next)
+        public async Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
         {
-            await context.Message.Channel.TriggerTypingAsync();
+            await context.Interaction.Channel.TriggerTypingAsync();
             await next();
         }
     }
