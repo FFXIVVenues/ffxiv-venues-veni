@@ -1,11 +1,11 @@
-﻿using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
+using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Conversation
+namespace FFXIVVenues.Veni.Intents.Session
 {
-    internal class Name : IIntentHandler
+    internal class Name : IntentHandler
     {
 
         private static string[] _nameMessages = new[]
@@ -16,8 +16,8 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "It's Veni. ♥️",
         };
 
-        public Task Handle(MessageContext context) =>
-            context.RespondAsync(_nameMessages.PickRandom());
+        public override Task Handle(InteractionContext context) =>
+            context.Interaction.RespondAsync(_nameMessages.PickRandom());
 
     }
 }

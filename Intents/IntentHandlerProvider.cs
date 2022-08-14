@@ -1,8 +1,10 @@
-﻿using FFXIVVenues.Veni.Intents.Conversation;
+﻿using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Intents.Session;
 using FFXIVVenues.Veni.Intents.Interupt;
 using FFXIVVenues.Veni.Intents.Operation;
 using FFXIVVenues.Veni.Utils;
 using System;
+using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Intents
 {
@@ -42,11 +44,23 @@ namespace FFXIVVenues.Veni.Intents
                 .Add<Help>(IntentNames.Interupt.Help);
         }
 
-        public IIntentHandler ActivateInteruptIntentHandler(string interupt) =>
-            _interuptMap.Activate(interupt);
+        public Task HandleIteruptIntent(string interupt, MessageInteractionContext context) =>
+            _interuptMap.Activate(interupt)?.Handle(context);
 
-        public IIntentHandler ActivateIntentHandler(string interupt) =>
-            _intentMap.Activate(interupt);
+        public Task HandleIteruptIntent(string interupt, MessageComponentInteractionContext context) =>
+            _interuptMap.Activate(interupt)?.Handle(context);
+
+        public Task HandleIteruptIntent(string interupt, SlashCommandInteractionContext context) =>
+            _interuptMap.Activate(interupt)?.Handle(context);
+
+        public Task HandleIntent(string interupt, MessageInteractionContext context) =>
+           _intentMap.Activate(interupt)?.Handle(context) ?? new None().Handle(context);
+
+        public Task HandleIntent(string interupt, MessageComponentInteractionContext context) =>
+           _intentMap.Activate(interupt)?.Handle(context) ?? new None().Handle(context);
+
+        public Task HandleIntent(string interupt, SlashCommandInteractionContext context) =>
+            _intentMap.Activate(interupt)?.Handle(context) ?? new None().Handle(context);
 
     }
 }

@@ -2,6 +2,8 @@
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.States.Abstractions;
+using FFXIVVenues.Veni.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,11 +22,11 @@ namespace FFXIVVenues.Veni.States
 
         private IEnumerable<Venue> _managersVenues;
 
-        public Task Init(MessageContext c)
+        public Task Init(InteractionContext c)
         {
-            _managersVenues = c.Conversation.GetItem<IEnumerable<Venue>>("venues");
+            _managersVenues = c.Session.GetItem<IEnumerable<Venue>>("venues");
 
-            var selectMenuKey = c.Conversation.RegisterComponentHandler(this.Handle, ComponentPersistence.DeleteMessage);
+            var selectMenuKey = c.Session.RegisterComponentHandler(this.Handle, ComponentPersistence.DeleteMessage);
             var componentBuilder = new ComponentBuilder();
             var selectMenuBuilder = new SelectMenuBuilder() { CustomId = selectMenuKey };
             foreach (var venue in _managersVenues.OrderBy(v => v.Name))
@@ -38,18 +40,18 @@ namespace FFXIVVenues.Veni.States
                 selectMenuBuilder.AddOption(selectMenuOption);
             }
             componentBuilder.WithSelectMenu(selectMenuBuilder);
-            return c.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
+            return c.Interaction.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
         }
 
-        public Task Handle(MessageContext c)
+        public Task Handle(MessageComponentInteractionContext c)
         {
-            var selectedVenueId = c.MessageComponent.Data.Values.Single();
+            var selectedVenueId = c.Interaction.Data.Values.Single();
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            c.Conversation.ClearItem("venues");
-            c.Conversation.SetItem("venue", venue);
+            c.Session.ClearItem("venues");
+            c.Session.SetItem("venue", venue);
 
-            return c.Conversation.ShiftState<DeleteVenueState>(c);
+            return c.Session.ShiftState<DeleteVenueState>(c);
         }
     }
 }

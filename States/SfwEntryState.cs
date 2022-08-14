@@ -3,48 +3,50 @@ using Discord;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
+using FFXIVVenues.Veni.States.Abstractions;
+using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni.States
 {
     class SfwEntryState : IState
     {
-        public Task Init(MessageContext c)
+        public Task Init(InteractionContext c)
         {
-            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
-            return c.RespondAsync(MessageRepository.AskForSfwMessage.PickRandom(), new ComponentBuilder()
-                .WithButton("Yes, it's safe on entry", c.Conversation.RegisterComponentHandler(cm =>
+            c.Session.RegisterMessageHandler(this.OnMessageReceived);
+            return c.Interaction.RespondAsync(MessageRepository.AskForSfwMessage.PickRandom(), new ComponentBuilder()
+                .WithButton("Yes, it's safe on entry", c.Session.RegisterComponentHandler(cm =>
                 {
-                    var venue = c.Conversation.GetItem<Venue>("venue");
+                    var venue = cm.Session.GetItem<Venue>("venue");
                     venue.Sfw = true;
-                    if (c.Conversation.GetItem<bool>("modifying"))
-                        return c.Conversation.ShiftState<ConfirmVenueState>(c);
-                    return c.Conversation.ShiftState<CategoryEntryState>(c);
+                    if (cm.Session.GetItem<bool>("modifying"))
+                        return cm.Session.ShiftState<ConfirmVenueState>(cm);
+                    return cm.Session.ShiftState<CategoryEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .WithButton("No, we're openly NSFW", c.Conversation.RegisterComponentHandler(cm =>
+                .WithButton("No, we're openly NSFW", c.Session.RegisterComponentHandler(cm =>
                 {
-                    var venue = c.Conversation.GetItem<Venue>("venue");
+                    var venue = cm.Session.GetItem<Venue>("venue");
                     venue.Sfw = false;
-                    if (c.Conversation.GetItem<bool>("modifying"))
-                        return c.Conversation.ShiftState<ConfirmVenueState>(c);
-                    return c.Conversation.ShiftState<CategoryEntryState>(c);
+                    if (cm.Session.GetItem<bool>("modifying"))
+                        return cm.Session.ShiftState<ConfirmVenueState>(cm);
+                    return cm.Session.ShiftState<CategoryEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
 
-        public Task OnMessageReceived(MessageContext c)
+        public Task OnMessageReceived(MessageInteractionContext c)
         {
-            var venue = c.Conversation.GetItem<Venue>("venue");
+            var venue = c.Session.GetItem<Venue>("venue");
 
             if (c.Prediction.TopIntent == IntentNames.Response.Yes)
                 venue.Sfw = true;
             else if (c.Prediction.TopIntent == IntentNames.Response.No)
                 venue.Sfw = false;
             else
-                return c.RespondAsync(MessageRepository.DontUnderstandResponses.PickRandom());
+                return c.Interaction.Channel.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
 
-            if (c.Conversation.GetItem<bool>("modifying"))
-                return c.Conversation.ShiftState<ConfirmVenueState>(c);
-            return c.Conversation.ShiftState<CategoryEntryState>(c);
+            if (c.Session.GetItem<bool>("modifying"))
+                return c.Session.ShiftState<ConfirmVenueState>(c);
+            return c.Session.ShiftState<CategoryEntryState>(c);
         }
     }
 

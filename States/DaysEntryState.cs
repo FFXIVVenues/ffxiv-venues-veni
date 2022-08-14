@@ -1,7 +1,11 @@
 ﻿using Discord;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.States.Abstractions;
+using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels.V2022;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Venue = FFXIVVenues.Veni.Api.Models.Venue;
 
@@ -23,52 +27,38 @@ namespace FFXIVVenues.Veni.States
 
         private Dictionary<Day, string> _days = new();
         private Dictionary<Day, string> _daysHandlers = new();
+        private Venue _venue;
 
-        public Task Init(MessageContext c)
+        public Task Init(InteractionContext c)
         {
+            this._venue = c.Session.GetItem<Venue>("venue");
+
             var component = this.BuildDaysComponent(c);
-            return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskDaysOpenMessage.PickRandom()}", component: component.Build());
+            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskDaysOpenMessage.PickRandom()}", component: component.Build());
         }
 
-        private ComponentBuilder BuildDaysComponent(MessageContext c)
+        private ComponentBuilder BuildDaysComponent(InteractionContext c)
         {
-            var component = new ComponentBuilder();
-            foreach (var (Label, Value) in _availableDays)
-                this.AddDayButton(component, c, Label, Value);
-            component.WithButton("Complete",
-                c.Conversation.RegisterComponentHandler(this.OnComplete, ComponentPersistence.ClearRow), ButtonStyle.Success);
-            return component;
+            var selectComponent = new SelectMenuBuilder()
+                .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
+                .WithMaxValues(_availableDays.Count);
+            foreach (var (label, value) in _availableDays)
+                selectComponent.AddOption(label, value.ToString(), isDefault: this._venue.Openings.Any(o => o.Day == value));
+
+            return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
-        private Task OnComplete(MessageContext c)
+        private Task OnComplete(MessageComponentInteractionContext c)
         {
-            var venue = c.Conversation.GetItem<Venue>("venue");
-            venue.Openings = new();
-            foreach (var day in this._days.Keys)
-                venue.Openings.Add(new Opening { Day = day });
+            this._venue.Openings = c.Interaction.Data.Values
+                                    .Select(d => new Opening { Day = Enum.Parse<Day>(d) })
+                                    .ToList();
 
-            if (venue.Openings.Count > 1)
-                return c.Conversation.ShiftState<AskIfConsistentTimeEntryState>(c);
+            if (this._venue.Openings.Count > 1)
+                return c.Session.ShiftState<AskIfConsistentTimeEntryState>(c);
 
-            return c.Conversation.ShiftState<ConsistentOpeningEntryState>(c);
+            return c.Session.ShiftState<ConsistentOpeningEntryState>(c);
         }
-
-        private void AddDayButton(ComponentBuilder component, MessageContext c, string dayLabel, Day dayValue) =>
-            component.WithButton(dayLabel,
-                this._daysHandlers.ContainsKey(dayValue)
-                    ? this._daysHandlers[dayValue]
-                    : this._daysHandlers[dayValue] = c.Conversation.RegisterComponentHandler(async cm =>
-                    {
-                        if (this._days.ContainsKey(dayValue))
-                            this._days.Remove(dayValue);
-                        else
-                            this._days[dayValue] = dayLabel;
-                        await cm.MessageComponent.ModifyOriginalResponseAsync(props =>
-                        {
-                            var rebuilder = this.BuildDaysComponent(c);
-                            props.Components = rebuilder.Build();
-                        });
-                    }, ComponentPersistence.PersistRow), this._days.ContainsKey(dayValue) ? ButtonStyle.Primary : ButtonStyle.Secondary);
 
     }
 }

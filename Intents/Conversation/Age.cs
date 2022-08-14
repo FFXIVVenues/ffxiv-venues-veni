@@ -1,12 +1,12 @@
-﻿using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Utils;
 using PrettyPrintNet;
 using System;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Conversation
+namespace FFXIVVenues.Veni.Intents.Session
 {
-    internal class Age : IIntentHandler
+    internal class Age : IntentHandler
     {
 
         private static string[] _messages = new[]
@@ -17,10 +17,10 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "{0}",
         };
 
-        public Task Handle(MessageContext context)
+        public override Task Handle(InteractionContext context)
         {
             var age = DateTime.Now - DateTime.Parse("06-11-2021 21:40:00");
-            return context.RespondAsync(string.Format(_messages.PickRandom(), age.ToPrettyString()));
+            return context.Interaction.RespondAsync(string.Format(_messages.PickRandom(), age.ToPrettyString()));
         }
 
     }

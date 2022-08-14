@@ -1,10 +1,10 @@
-﻿using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Intents
 {
-    internal class None : IIntentHandler
+    internal class None : IntentHandler
     {
 
         private string[] _responses = new[]
@@ -19,8 +19,8 @@ namespace FFXIVVenues.Veni.Intents
             "I don't really know how to respond to that. 😅"
         };
 
-        public Task Handle(MessageContext context) =>
-            context.RespondAsync(_responses.PickRandom());
+        public override Task Handle(InteractionContext context) =>
+            context.Interaction.RespondAsync(_responses.PickRandom());
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States;
@@ -18,29 +19,41 @@ namespace FFXIVVenues.Veni.Intents.Operation
             this._apiService = apiService;
         }
 
-        public async Task Handle(MessageContext c)
+        public Task Handle(MessageInteractionContext context)
         {
-            var discordIdStr = (c.Prediction.Entities["discord-id"] as JArray)?.First.Value<string>();
+            var discordIdStr = (context.Prediction?.Entities["discord-id"] as JArray)?.First.Value<string>();
 
             if (string.IsNullOrWhiteSpace(discordIdStr))
-            {
-                await c.RespondAsync("Which manager am I getting venues for? 🤔");
-                return;
-            }
+                return context.Interaction.Channel.SendMessageAsync("Which manager am I getting venues for? 🤔");
 
             var discordId = ulong.Parse(discordIdStr);
+
+            return this.Handle(context.ToWrappedInteraction(), discordId);
+        }
+
+        public Task Handle(MessageComponentInteractionContext context) =>
+            Task.CompletedTask;
+
+        public Task Handle(SlashCommandInteractionContext context)
+        {
+            var user = context.Interaction.Data?.Options?.FirstOrDefault(o => o.Name == "user")?.Value as SocketUser;
+            return this.Handle(context.ToWrappedInteraction(), user.Id);
+        }
+
+        private async Task Handle(InteractionContext c, ulong discordId)
+        {
             var venues = await this._apiService.GetAllVenuesAsync(discordId);
 
             if (venues == null || !venues.Any())
             {
-                await c.RespondAsync("Couldn't find any venues for that manager. 😔");
+                await c.Interaction.RespondAsync("Couldn't find any venues for that manager. 😔");
                 return;
             }
 
             if (venues.Count() > 25)
                 venues = venues.Take(25);
-            c.Conversation.SetItem("venues", venues);
-            await c.Conversation.ShiftState<SelectVenueToShowState>(c);
+            c.Session.SetItem("venues", venues);
+            await c.Session.ShiftState<SelectVenueToShowState>(c);
         }
 
     }

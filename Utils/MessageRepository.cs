@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FFXIVVenues.Veni
+namespace FFXIVVenues.Veni.Utils
 {
     static class MessageRepository
     {
@@ -129,15 +129,15 @@ namespace FFXIVVenues.Veni
 
         public static string[] VenueOpenMessage = new[]
         {
-            "Woo! The doors are open. You're green and announcements have been sent! Let's have fun today! ♥️",
-            "Yay! It's that time again. 😀 You're all green on the index, and everyone's been notified. ♥️",
-            "Let's do it! We... are... live!!! We're green on the index and the pings are flying! So excited. 🙂"
+            "Woo! The doors are open. You're glowing pink and announcements have been sent! Let's have fun today! ♥️",
+            "Yay! It's that time again. 😀 You're glowing pink on the index, and everyone's been notified. ♥️",
+            "Let's do it! We... are... live!!! We're glowing pink on the index and the pings are flying! So excited. 🙂"
         };
 
         public static string[] VenueClosedMessage = new[]
         {
             "The doors are closed! I can't wait til next time. ♥️",
-            "We're no longer green! We'll close up. ",
+            "We're no longer pink! I'll close up. 🥰",
             "Okay! I'll lock up. 😉"
         };
 

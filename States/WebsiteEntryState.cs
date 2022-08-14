@@ -1,6 +1,7 @@
 ﻿using Discord;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using System;
 using System.Text.RegularExpressions;
@@ -10,46 +11,46 @@ namespace FFXIVVenues.Veni.States
 {
     class WebsiteEntryState : IState
     {
-        public Task Init(MessageContext c)
+        public Task Init(InteractionContext c)
         {
-            c.Conversation.RegisterMessageHandler(this.OnMessageReceived);
-            return c.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom(),
+            c.Session.RegisterMessageHandler(this.OnMessageReceived);
+            return c.Interaction.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom(),
                 new ComponentBuilder()
-                    .WithButton("Skip", c.Conversation.RegisterComponentHandler(cm => 
+                    .WithButton("Skip", c.Session.RegisterComponentHandler(cm => 
                     {
-                        if (c.Conversation.GetItem<bool>("modifying"))
-                            return c.Conversation.ShiftState<ConfirmVenueState>(cm);
-                        return c.Conversation.ShiftState<HaveScheduleEntryState>(cm);
+                        if (cm.Session.GetItem<bool>("modifying"))
+                            return cm.Session.ShiftState<ConfirmVenueState>(cm);
+                        return cm.Session.ShiftState<DiscordEntryState>(cm);
                     }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
 
-        public Task OnMessageReceived(MessageContext c)
+        public Task OnMessageReceived(MessageInteractionContext c)
         {
-            var venue = c.Conversation.GetItem<Venue>("venue");
-            if (new Regex("\\bskip\\b").IsMatch(c.Message.Content.ToLower()))
+            var venue = c.Session.GetItem<Venue>("venue");
+            if (new Regex("\\bskip\\b").IsMatch(c.Interaction.Content.ToLower()))
             {
-                if (c.Conversation.GetItem<bool>("modifying"))
-                    return c.Conversation.ShiftState<ConfirmVenueState>(c);
-                return c.Conversation.ShiftState<DiscordEntryState>(c);
+                if (c.Session.GetItem<bool>("modifying"))
+                    return c.Session.ShiftState<ConfirmVenueState>(c);
+                return c.Session.ShiftState<DiscordEntryState>(c);
             }
 
-            var rawWebsiteString = c.Message.Content.StripMentions();
+            var rawWebsiteString = c.Interaction.Content.StripMentions();
             if (!new Regex("^https?://").IsMatch(rawWebsiteString))
                 rawWebsiteString = "https://" + rawWebsiteString;
 
             if (!Uri.TryCreate(rawWebsiteString, UriKind.Absolute, out var website))
             {
-                c.RespondAsync("Sorry, that doesn't look like a valid website address.");
+                c.Interaction.Channel.SendMessageAsync("Sorry, that doesn't look like a valid website address.");
                 return Task.CompletedTask;
             }
 
             venue.Website = website;
 
-            if (c.Conversation.GetItem<bool>("modifying"))
-                return c.Conversation.ShiftState<ConfirmVenueState>(c);
+            if (c.Session.GetItem<bool>("modifying"))
+                return c.Session.ShiftState<ConfirmVenueState>(c);
 
-            return c.Conversation.ShiftState<DiscordEntryState>(c);
+            return c.Session.ShiftState<DiscordEntryState>(c);
         }
     }
 }

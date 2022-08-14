@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Intents.Interupt
 {
-    internal class Escalate : IIntentHandler
+    internal class Escalate : IntentHandler
     {
         private readonly IIndexersService _indexersService;
 
@@ -13,13 +13,13 @@ namespace FFXIVVenues.Veni.Intents.Interupt
             this._indexersService = indexersService;
         }
 
-        public async Task Handle(MessageContext context)
+        public override async Task Handle(InteractionContext context)
         {
-            await context.RespondAsync($"Alright! I've messaged mom! She or another indexer will contact you soon!");
+            await context.Interaction.RespondAsync($"Alright! I've messaged mom! She or another indexer will contact you soon!");
 
             await this._indexersService
                 .Broadcast()
-                .WithMessage($"Heyo, I need an human indexer! I have {context.Message.Author.Mention} needing some help. :cry:")
+                .WithMessage($"Heyo, I need an human indexer! I have {context.Interaction.User.Mention} needing some help. :cry:")
                 .SendToAsync(this._indexersService.Indexers);
         }
 

@@ -1,6 +1,7 @@
 ﻿using Discord;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,32 +14,32 @@ namespace FFXIVVenues.Veni.States
 
         private static Dictionary<string, string> _worldMap = new()
         {
-            { "Adamantoise", "Aether" },
-            { "Cactuar", "Aether" },
-            { "Faerie", "Aether" },
-            { "Gilgamesh", "Aether" },
-            { "Jenova", "Aether" },
-            { "Midgardsormr", "Aether" },
-            { "Sargatanas", "Aether" },
-            { "Siren", "Aether" },
+            { "Aether | Adamantoise", "Aether" },
+            { "Aether | Cactuar", "Aether" },
+            { "Aether | Faerie", "Aether" },
+            { "Aether | Gilgamesh", "Aether" },
+            { "Aether | Jenova", "Aether" },
+            { "Aether | Midgardsormr", "Aether" },
+            { "Aether | Sargatanas", "Aether" },
+            { "Aether | Siren", "Aether" },
 
-            { "Behemoth", "Primal" },
-            { "Excalibur", "Primal" },
-            { "Exodus", "Primal" },
-            { "Famfrit", "Primal" },
-            { "Hyperion", "Primal" },
-            { "Lamia", "Primal" },
-            { "Leviathan", "Primal" },
-            { "Ultros", "Primal" },
+            { "Primal | Behemoth", "Primal" },
+            { "Primal | Excalibur", "Primal" },
+            { "Primal | Exodus", "Primal" },
+            { "Primal | Famfrit", "Primal" },
+            { "Primal | Hyperion", "Primal" },
+            { "Primal | Lamia", "Primal" },
+            { "Primal | Leviathan", "Primal" },
+            { "Primal | Ultros", "Primal" },
 
-            { "Balmung", "Crystal" },
-            { "Brynhildr", "Crystal" },
-            { "Coeurl", "Crystal" },
-            { "Diabolos", "Crystal" },
-            { "Goblin", "Crystal" },
-            { "Malboro", "Crystal" },
-            { "Mateus", "Crystal" },
-            { "Zalera", "Crystal" },
+            { "Primal | Balmung", "Crystal" },
+            { "Primal | Brynhildr", "Crystal" },
+            { "Primal | Coeurl", "Crystal" },
+            { "Primal | Diabolos", "Crystal" },
+            { "Primal | Goblin", "Crystal" },
+            { "Primal | Malboro", "Crystal" },
+            { "Primal | Mateus", "Crystal" },
+            { "Primal | Zalera", "Crystal" },
 
             //{ "Aegis", "Elemental" },
             //{ "Atamos", "Elemental" },
@@ -88,27 +89,27 @@ namespace FFXIVVenues.Veni.States
             //{ "Zodiark", "Light" }
         };
 
-        public Task Init(MessageContext c)
+        public Task Init(InteractionContext c)
         {
             var worlds = _worldMap.Select(world => new SelectMenuOptionBuilder(world.Key, world.Key)).ToList();
             var selectMenu = new SelectMenuBuilder();
             selectMenu.WithOptions(worlds);
-            selectMenu.WithCustomId(c.Conversation.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow));
+            selectMenu.WithCustomId(c.Session.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow));
             
-            return c.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWorldMessage.PickRandom()}", 
+            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWorldMessage.PickRandom()}", 
                                   new ComponentBuilder().WithSelectMenu(selectMenu).Build());
         }
 
-        public Task Handle(MessageContext c)
+        public Task Handle(MessageComponentInteractionContext c)
         {
-            var venue = c.Conversation.GetItem<Venue>("venue");
+            var venue = c.Session.GetItem<Venue>("venue");
 
-            var world = c.MessageComponent.Data.Values.Single();
+            var world = c.Interaction.Data.Values.Single();
 
             venue.Location.World = world;
             venue.Location.DataCenter = _worldMap[venue.Location.World];
 
-            return c.Conversation.ShiftState<HousingDistrictEntryState>(c);
+            return c.Session.ShiftState<HousingDistrictEntryState>(c);
         }
 
     }

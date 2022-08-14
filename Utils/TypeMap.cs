@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace FFXIVVenues.Veni.Utils
 {
-    internal class TypeMap<T> where T : class
+    internal class TypeMap<T> : IEnumerable<T> where T : class
     {
 
         private readonly Dictionary<string, Type> _typeMap = new();
@@ -35,6 +36,15 @@ namespace FFXIVVenues.Veni.Utils
             }
             return ActivatorUtilities.CreateInstance(_serviceProvider, _typeMap[key]) as T;
         }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            foreach (var key in this._typeMap.Keys)
+                yield return this.Activate(key);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() =>
+            this.GetEnumerator();
 
     }
 }

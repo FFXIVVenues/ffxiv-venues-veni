@@ -2,9 +2,9 @@
 using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Conversation
+namespace FFXIVVenues.Veni.Intents.Session
 {
-    internal class Hello : IIntentHandler
+    internal class Hello : IntentHandler
     {
         private static string[] _helloMessage = new string[]
         {
@@ -47,16 +47,16 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "Fluffy! How's my greedy catboi? ❤️"
         };
 
-        public Task Handle(MessageContext context)
+        public override Task Handle(InteractionContext context)
         {
-            if (context.Message.Author.Id == People.Kana)
-                return context.RespondAsync(_kanaMessages.PickRandom());
-            if (context.Message.Author.Id == People.Sumi)
-                return context.RespondAsync(_sumiMessages.PickRandom());
-            if (context.Message.Author.Id == People.Fluffy)
-                return context.RespondAsync(_fluffyMessages.PickRandom());
+            if (context.Interaction.User.Id == People.Kana)
+                return context.Interaction.RespondAsync(_kanaMessages.PickRandom());
+            if (context.Interaction.User.Id == People.Sumi)
+                return context.Interaction.RespondAsync(_sumiMessages.PickRandom());
+            if (context.Interaction.User.Id == People.Fluffy)
+                return context.Interaction.RespondAsync(_fluffyMessages.PickRandom());
 
-            return context.RespondAsync(_helloMessage.PickRandom());
+            return context.Interaction.RespondAsync(_helloMessage.PickRandom());
         }
 
     }

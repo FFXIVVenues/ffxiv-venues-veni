@@ -1,7 +1,7 @@
 ﻿using Discord;
-using FFXIVVenues.Veni;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
@@ -9,20 +9,20 @@ namespace FFXIVVenues.Veni.States
 {
     class IsSubdivisionEntryState : IState
     {
-        public Task Init(MessageContext c)
+        public Task Init(InteractionContext c)
         {
-            return c.RespondAsync(MessageRepository.AskForSubdivisionMessage.PickRandom(), new ComponentBuilder()
-                .WithButton("Yes, it's subdivision", c.Conversation.RegisterComponentHandler(cm =>
+            return c.Interaction.RespondAsync(MessageRepository.AskForSubdivisionMessage.PickRandom(), new ComponentBuilder()
+                .WithButton("Yes, it's subdivision", c.Session.RegisterComponentHandler(cm =>
                 {
-                    var venue = c.Conversation.GetItem<Venue>("venue");
+                    var venue = cm.Session.GetItem<Venue>("venue");
                     venue.Location.Subdivision = true;
-                    return c.Conversation.ShiftState<ApartmentEntryState>(cm);
+                    return cm.Session.ShiftState<ApartmentEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .WithButton("No, the first division", c.Conversation.RegisterComponentHandler(cm =>
+                .WithButton("No, the first division", c.Session.RegisterComponentHandler(cm =>
                 {
-                    var venue = c.Conversation.GetItem<Venue>("venue");
+                    var venue = cm.Session.GetItem<Venue>("venue");
                     venue.Location.Subdivision = false;
-                    return c.Conversation.ShiftState<ApartmentEntryState>(cm);
+                    return cm.Session.ShiftState<ApartmentEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }

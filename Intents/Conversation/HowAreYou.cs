@@ -1,11 +1,11 @@
-﻿using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
+using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Conversation
+namespace FFXIVVenues.Veni.Intents.Session
 {
-    internal class HowAreYou : IIntentHandler
+    internal class HowAreYou : IntentHandler
     {
 
         private static string[] _messages = new[]
@@ -17,8 +17,8 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "Better now you're here. :wink:"
         };
 
-        public Task Handle(MessageContext context) =>
-            context.RespondAsync(_messages.PickRandom());
+        public override Task Handle(InteractionContext context) =>
+            context.Interaction.RespondAsync(_messages.PickRandom());
 
     }
 }
