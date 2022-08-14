@@ -101,7 +101,16 @@ namespace FFXIVVenues.Veni.States
             if (!isNewVenue)
                 await c.Interaction.Channel.SendMessageAsync(_preexisingResponse.PickRandom());
             else if (isIndexer)
+            {
                 await c.Interaction.Channel.SendMessageAsync("All done and auto-approved for you. :heart:");
+                foreach (var managerId in venue.Managers)
+                {
+                    var manager = await c.Client.GetUserAsync(ulong.Parse(managerId));
+                    var dmChannel = await manager.CreateDMChannelAsync();
+                    _ = dmChannel.SendMessageAsync($"Hey hey! :heart:\n**{venue.Name}** has been **approved** and it's live!\n{this._uiUrl}/#{venue.Id}\nLet me know if you'd like anything edited or to know what else I can do for you. 🥳",
+                                                   embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
+                }
+            }
             else
             {
                 await c.Interaction.Channel.SendMessageAsync(_successfulNewResponse.PickRandom());
@@ -145,6 +154,8 @@ namespace FFXIVVenues.Veni.States
                 return;
             }
 
+            // It may have been edited by indexers, so get the latest.
+            venue = await this._apiService.GetVenueAsync(venue.Id);
             await this._apiService.ApproveAsync(venue.Id);
 
             _ = approveBic.ModifyForOtherUsers((props, original) =>
@@ -165,7 +176,8 @@ namespace FFXIVVenues.Veni.States
             {
                 var manager = await approveBic.Broadcast.Client.GetUserAsync(ulong.Parse(managerId));
                 var dmChannel = await manager.CreateDMChannelAsync();
-                _ = dmChannel.SendMessageAsync($"Hey hey! :heart:\n**{venue.Name}** has been **approved** and it's live!\n{this._uiUrl}/#{venue.Id}\nLet me know if you'd like anything edited. 🥳");
+                _ = dmChannel.SendMessageAsync($"Hey hey! :heart:\n**{venue.Name}** has been **approved** and it's live!\n{this._uiUrl}/#{venue.Id}\nLet me know if you'd like anything edited or to know what else I can do for you. 🥳",
+                                               embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
             }
         }
 
