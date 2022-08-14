@@ -2,6 +2,8 @@
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States.Abstractions;
+using FFXIVVenues.Veni.Utils;
+using System;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.States
@@ -34,7 +36,8 @@ namespace FFXIVVenues.Veni.States
             if (this._indexersService.IsIndexer(c.Interaction.User.Id))
                 component.WithButton("Managers", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<ManagerEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
 
-            return c.Interaction.RespondAsync($"What would you like to change? 🥰",
+            return c.Interaction.RespondAsync(MessageRepository.EditVenueMessage.PickRandom() + Environment.NewLine
+                                              + MessageRepository.MentionOrReplyToMeMessage.PickRandom(),
                 component: component.Build());
         }
 

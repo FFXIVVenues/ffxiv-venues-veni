@@ -21,6 +21,18 @@ namespace FFXIVVenues.Veni.Utils
             "Pog! ♥️"
         };
 
+        public static string[] EditVenueMessage = new[]
+        {
+            "What would you like to change? 🥰",
+            "What would you like to edit? 🙂"
+        };
+
+        public static string[] MentionOrReplyToMeMessage = new[]
+        {
+            "Since we're in a public channel, please **Reply** to my messages **or @ me** with your answers so I know you're talking to _me_ 🥰",
+            "We're in a channel so please **@ me** with your answers so I know you're talking to _me_. 🥰"
+        };
+
         public static string[] AskForNameMessage = new[]
         {
             "Let's get started. What is the **name** of your venue?",
@@ -130,7 +142,7 @@ namespace FFXIVVenues.Veni.Utils
         public static string[] VenueOpenMessage = new[]
         {
             "Woo! The doors are open. You're glowing pink and announcements have been sent! Let's have fun today! ♥️",
-            "Yay! It's that time again. 😀 You're glowing pink on the index, and everyone's been notified. ♥️",
+            "Yay! It's that time again. 🙂 You're glowing pink on the index, and everyone's been notified. ♥️",
             "Let's do it! We... are... live!!! We're glowing pink on the index and the pings are flying! So excited. 🙂"
         };
 
@@ -138,7 +150,7 @@ namespace FFXIVVenues.Veni.Utils
         {
             "The doors are closed! I can't wait til next time. ♥️",
             "We're no longer pink! I'll close up. 🥰",
-            "Okay! I'll lock up. 😉"
+            "Okay! I'll lock up. 🙂"
         };
 
         public static string[] DontUnderstandResponses = new[]
