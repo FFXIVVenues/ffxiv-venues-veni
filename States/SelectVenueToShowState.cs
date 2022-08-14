@@ -59,7 +59,7 @@ namespace FFXIVVenues.Veni.States
             var isOwnerOrIndexer = venue.Managers.Contains(asker.ToString()) || this._indexersService.IsIndexer(asker);
 
             if (isOwnerOrIndexer)
-                return c.Interaction.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
+                return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
                     components: new ComponentBuilder()
                         .WithButton("Open", c.Session.RegisterComponentHandler(async cm =>
                         {
@@ -85,7 +85,7 @@ namespace FFXIVVenues.Veni.States
                             ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .Build());
             else if (this._indexersService.IsPhotographer(asker))
-                return c.Interaction.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
+                return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
                     components: new ComponentBuilder()
                         .WithButton("Edit Banner Photo", c.Session.RegisterComponentHandler(cm =>
                         {
@@ -94,7 +94,7 @@ namespace FFXIVVenues.Veni.States
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .Build());
             else
-                return c.Interaction.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
+                return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
         }
     }
 }
