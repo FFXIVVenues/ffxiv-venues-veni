@@ -20,7 +20,7 @@ namespace FFXIVVenues.Veni.Commands
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)
                     .WithDescription("Show venues for a given manager!")
-                    .AddOption("user", ApplicationCommandOptionType.User, "The manager to list venues of.")
+                    .AddOption("user", ApplicationCommandOptionType.User, "The manager to list venues of.", isRequired: true)
                     .Build();
             }
 

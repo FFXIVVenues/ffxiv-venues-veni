@@ -33,7 +33,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
-    <PackageReference Include="FFXIVVenues.VenueModels" Version="6.3.0" />
+    <PackageReference Include="FFXIVVenues.VenueModels" Version="6.7.0" />
     <PackageReference Include="PrettyPrintNet" Version="1.6.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
   </ItemGroup>

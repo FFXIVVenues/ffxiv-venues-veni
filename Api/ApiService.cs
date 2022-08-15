@@ -29,6 +29,12 @@ namespace FFXIVVenues.Veni.Api
             return await response.Content.ReadFromJsonAsync<Venue[]>();
         }
 
+        public async Task<IEnumerable<Venue>> GetOpenVenuesAsync()
+        {
+            var response = await _httpClient.GetAsync($"/venue?open=true");
+            return await response.Content.ReadFromJsonAsync<Venue[]>();
+        }
+
         public async Task<IEnumerable<Venue>> GetAllVenuesAsync(string searchQuery)
         {
             var response = await _httpClient.GetAsync($"/venue?search={searchQuery}");

@@ -82,6 +82,7 @@ commandBroker.Add<Escalate.CommandFactory, Escalate.CommandHandler>(Escalate.COM
 commandBroker.Add<Find.CommandFactory, Find.CommandHandler>(Find.COMMAND_NAME);
 commandBroker.Add<Help.CommandFactory, Help.CommandHandler>(Help.COMMAND_NAME);
 commandBroker.Add<Open.CommandFactory, Open.CommandHandler>(Open.COMMAND_NAME);
+commandBroker.Add<ShowOpen.CommandFactory, ShowOpen.CommandHandler>(ShowOpen.COMMAND_NAME);
 commandBroker.Add<ShowFor.CommandFactory, ShowFor.CommandHandler>(ShowFor.COMMAND_NAME);
 commandBroker.Add<ShowMine.CommandFactory, ShowMine.CommandHandler>(ShowMine.COMMAND_NAME);
 

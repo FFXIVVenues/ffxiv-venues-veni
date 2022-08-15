@@ -10,11 +10,13 @@ namespace FFXIVVenues.Veni.Context.InteractionWrappers
     public class SlashCommandWrapper : IInteractionWrapper
     {
 
-        private SocketSlashCommand _slashCommand { get; }
-
         public SocketUser User => _slashCommand?.User;
         public string Content => null;
         public IInteractionDataWrapper InteractionData { get; set; }
+        public bool IsDM => this._slashCommand.IsDMInteraction;
+
+        private SocketSlashCommand _slashCommand { get; }
+
 
         public SlashCommandWrapper(SocketSlashCommand slashCommand)
         {

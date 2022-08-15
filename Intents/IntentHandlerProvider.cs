@@ -32,8 +32,9 @@ namespace FFXIVVenues.Veni.Intents
                 .Add<Create>(IntentNames.Operation.Create)
                 .Add<Delete>(IntentNames.Operation.Delete)
                 .Add<Edit>(IntentNames.Operation.Edit)
-                .Add<Show>(IntentNames.Operation.Show)
                 .Add<Open>(IntentNames.Operation.Open)
+                .Add<Show>(IntentNames.Operation.Show)
+                .Add<ShowOpen>(IntentNames.Operation.ShowOpen)
                 .Add<ShowForManager>(IntentNames.Operation.ShowForManager)
                 .Add<Search>(IntentNames.Operation.Search)
                 .Add<None>(IntentNames.None);
