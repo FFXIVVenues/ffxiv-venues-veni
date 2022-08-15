@@ -93,6 +93,12 @@ namespace FFXIVVenues.Veni.Utils
             "Could you write a **introduction/advertisement** of the venue? Players will see it in your card on the index. :)"
         };
 
+        public static string[] WhatsOpenMessage = new[]
+        {
+            "Here's what's open right nyaaow! 😽",
+            "Where should we go? 🙂",
+        };
+
         public static string[] AskForSfwMessage = new[]
         {
             "Is it usually safe for someone looking for an **SFW** experience to walk into?",

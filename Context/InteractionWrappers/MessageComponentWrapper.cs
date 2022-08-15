@@ -13,10 +13,9 @@ namespace FFXIVVenues.Veni.Context.InteractionWrappers
         public SocketUser User => _messageComponent?.User;
         public string Content => null;
         public IInteractionDataWrapper InteractionData { get; set; }
-
+        public bool IsDM => this._messageComponent.IsDMInteraction;
 
         private SocketMessageComponent _messageComponent { get; }
-
 
         public MessageComponentWrapper(SocketMessageComponent messageComponent)
         {

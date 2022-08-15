@@ -15,6 +15,8 @@ namespace FFXIVVenues.Veni.Context.InteractionWrappers
         public SocketUser User => _message?.Author;
         public string Content => _message?.CleanContent;
         public IInteractionDataWrapper InteractionData => null;
+        public bool IsDM => this._message.Channel is IDMChannel;
+
 
         public MessageWrapper(SocketMessage message) =>
             _message = message;

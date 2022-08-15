@@ -19,8 +19,11 @@ namespace FFXIVVenues.Veni.Intents.Operation
             var venue = new Venue();
             venue.Managers.Add(context.Interaction.User.Id.ToString());
             context.Session.Data.AddOrUpdate(CREATE_VALUE_KEY, (s, v) => v, (s, e, v) => v, venue);
-            await context.Interaction.RespondAsync(MessageRepository.CreateVenueMessage.PickRandom() 
-                                                   + Environment.NewLine + MessageRepository.MentionOrReplyToMeMessage.PickRandom());
+            if (context.Interaction.IsDM)
+                await context.Interaction.RespondAsync(MessageRepository.CreateVenueMessage.PickRandom());
+            else
+                await context.Interaction.RespondAsync(MessageRepository.CreateVenueMessage.PickRandom()
+                                                        + Environment.NewLine + MessageRepository.MentionOrReplyToMeMessage.PickRandom());
             await context.Session.ShiftState<NameEntryState>(context);
         }
 

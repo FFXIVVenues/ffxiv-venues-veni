@@ -36,9 +36,12 @@ namespace FFXIVVenues.Veni.States
             if (this._indexersService.IsIndexer(c.Interaction.User.Id))
                 component.WithButton("Managers", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<ManagerEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
 
-            return c.Interaction.RespondAsync(MessageRepository.EditVenueMessage.PickRandom() + Environment.NewLine
-                                              + MessageRepository.MentionOrReplyToMeMessage.PickRandom(),
-                component: component.Build());
+            if (c.Interaction.IsDM)
+                return c.Interaction.RespondAsync(MessageRepository.EditVenueMessage.PickRandom(), component: component.Build());
+            else
+                return c.Interaction.RespondAsync(MessageRepository.EditVenueMessage.PickRandom() + Environment.NewLine
+                                                  + MessageRepository.MentionOrReplyToMeMessage.PickRandom(),
+                                                  component: component.Build());
         }
 
     }
