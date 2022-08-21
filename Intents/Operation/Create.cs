@@ -24,7 +24,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
             else
                 await context.Interaction.RespondAsync(MessageRepository.CreateVenueMessage.PickRandom()
                                                         + Environment.NewLine + MessageRepository.MentionOrReplyToMeMessage.PickRandom());
-            await context.Session.ShiftState<NameEntryState>(context);
+            await context.Session.SetStateAsync<NameEntryState>(context);
         }
 
     }

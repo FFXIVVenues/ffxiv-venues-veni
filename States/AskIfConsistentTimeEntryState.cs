@@ -18,13 +18,14 @@ namespace FFXIVVenues.Veni.States
         public Task Init(InteractionContext c) =>
             c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_messages.PickRandom()}",
                 new ComponentBuilder()
+                    .WithBackButton(c)
                     .WithButton("Yes, each day has the same opening/closing time",
                         c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<ConsistentOpeningEntryState>(cm), 
                     ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("No, it's different opening times between days",
                         c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<InconsistentOpeningEntryState>(cm), 
                     ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .Build());
+                    .Build());
 
     }
 }

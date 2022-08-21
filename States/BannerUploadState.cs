@@ -26,6 +26,7 @@ namespace FFXIVVenues.Veni.States
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync("What cute image would you like to use as a **banner**?\nBanners are usually 600x200; I can do the scaling/crop for you :heart:.",
                 new ComponentBuilder()
+                    .WithBackButton(c)
                     .WithButton("Skip", c.Session.RegisterComponentHandler(cm => {
                         if (cm.Session.GetItem<bool>("modifying"))
                             return cm.Session.ShiftState<ConfirmVenueState>(cm);

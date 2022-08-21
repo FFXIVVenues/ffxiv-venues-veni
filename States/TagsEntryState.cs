@@ -50,7 +50,10 @@ namespace FFXIVVenues.Veni.States
             foreach (var (label, value) in _availableTags)
                 selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value));
 
-            return new ComponentBuilder().WithSelectMenu(selectComponent);
+            return new ComponentBuilder()
+                .WithSelectMenu(selectComponent)
+                .WithBackButton(c)
+                .WithSkipButton<WebsiteEntryState, ConfirmVenueState>(c);
         }
 
         private Task OnComplete(MessageComponentInteractionContext c)

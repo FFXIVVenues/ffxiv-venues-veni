@@ -32,12 +32,11 @@ namespace FFXIVVenues.Veni
             this._indexersService = indexersService;
 
             this._client.Connected += Connected;
-            //this._client.GuildAvailable += GuildAvailableAsync;
             this._client.SlashCommandExecuted += SlashCommandExecutedAsync;
             this._client.MessageReceived += MessageReceivedAsync;
             this._client.SelectMenuExecuted += ComponentExecutedAsync;
             this._client.ButtonExecuted += ComponentExecutedAsync;
-
+            
             this._pipeline = new Pipeline<MessageInteractionContext>()
                 .WithServiceProvider(serviceProvider)
                 .Add<ConversationFilterMiddleware>()

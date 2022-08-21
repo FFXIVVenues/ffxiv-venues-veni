@@ -7,41 +7,69 @@ using FFXIVVenues.Veni.Utils;
 using Discord;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.States.Abstractions;
+using System.Collections.Generic;
+using NChronicle.Core.Interfaces;
 
 namespace FFXIVVenues.Veni.Context
 {
     public class SessionContext
     {
 
-        public IState State { get; private set; }
+        public Stack<IState> StateStack { get; private set; } = new();
         public ConcurrentDictionary<string, object> Data { get; } = new();
 
 
         private readonly IServiceProvider _serviceProvider;
+        private IChronicle _chronicle;
         private ConcurrentDictionary<string, Func<MessageComponentInteractionContext, Task>> _componentHandlers = new();
         private ConcurrentDictionary<string, Func<MessageInteractionContext, Task>> _messageHandlers = new();
 
-        public SessionContext(IServiceProvider serviceProvider) =>
-            _serviceProvider = serviceProvider;
-
-        public async Task ShiftState<T>(InteractionContext context) where T : IState
+        public SessionContext(IServiceProvider serviceProvider)
         {
-            Console.WriteLine($"StateShift\t\t[{State?.GetType().Name}] -> [{typeof(T).Name}]");
+            _serviceProvider = serviceProvider;
+            _chronicle = serviceProvider.GetService<IChronicle>();
+        }
+
+        public async Task SetStateAsync<T>(InteractionContext context) where T : IState
+        {
+            if (StateStack.TryPeek(out var currentState))
+                this._chronicle.Debug($"Set state from [{currentState?.GetType().Name}] to [{typeof(T).Name}]");
+            else
+                this._chronicle.Debug($"Set state to [{typeof(T).Name}]");
+
             this.ClearComponentHandlers();
             this.ClearMessageHandlers();
-            State = ActivatorUtilities.CreateInstance<T>(_serviceProvider);
-            await State.Init(context);
+            var newState = ActivatorUtilities.CreateInstance<T>(_serviceProvider);
+            StateStack.Push(newState);
+            await newState.Init(context);
         }
 
         public Task ShiftState<T>(IWrappableInteraction context) where T : IState =>
-            this.ShiftState<T>(context.ToWrappedInteraction());
+            this.SetStateAsync<T>(context.ToWrappedInteraction());
+
+        public async Task<bool> TryBackStateAsync(InteractionContext context)
+        {
+            if (!StateStack.TryPop(out var currentState))
+                return false;
+            if (!StateStack.TryPeek(out var newState))
+                return false;
+            this._chronicle.Debug($"Back state from [{currentState?.GetType().Name}] to [{newState?.GetType().Name}]");
+            this.ClearComponentHandlers();
+            this.ClearMessageHandlers();
+            await newState.Init(context);
+            return true;
+        }
+
+        public Task<bool> TryBackStateAsync(IWrappableInteraction context) =>
+            this.TryBackStateAsync(context.ToWrappedInteraction());
+
 
         public void ClearState()
         {
             this.Data.Clear();
             this.ClearComponentHandlers();
             this.ClearMessageHandlers();
-            State = null;
+            StateStack = new();
         }
 
         public T GetItem<T>(string name)

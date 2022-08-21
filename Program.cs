@@ -15,6 +15,9 @@ using Discord;
 using FFXIVVenues.Veni.Commands.Brokerage;
 using FFXIVVenues.Veni.Commands;
 using FFXIVVenues.Veni.Context.Abstractions;
+using NChronicle.Core.Model;
+using NChronicle.Console.Extensions;
+using NChronicle.Core.Interfaces;
 
 const string DISCORD_BOT_CONFIG_KEY = "DiscordBotToken";
 
@@ -34,15 +37,21 @@ config.GetSection("Ui").Bind(uiConfig);
 var apiHttpClient = new HttpClient { BaseAddress = new Uri(apiConfig.BaseUrl) };
 apiHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiConfig.AuthorizationKey);
 
+NChronicle.Core.NChronicle.Configure(c => {
+    c.WithConsoleLibrary().Configure(c => 
+        c.ListeningToAllLevels()
+    );
+});
+var chronicle = new Chronicle();
+
 var serviceCollection = new ServiceCollection();
 
+serviceCollection.AddSingleton<IChronicle>(chronicle);
 serviceCollection.AddSingleton<IConfiguration>(config);
 serviceCollection.AddSingleton<LuisConfiguration>(luisConfig);
 serviceCollection.AddSingleton<ApiConfiguration>(apiConfig);
 serviceCollection.AddSingleton<UiConfiguration>(uiConfig);
-
 serviceCollection.AddSingleton<HttpClient>(apiHttpClient);
-
 serviceCollection.AddSingleton<ICommandBroker, CommandBroker>();
 serviceCollection.AddSingleton<IApiService, ApiService>();
 serviceCollection.AddSingleton<IIndexersService, IndexersService>();
@@ -50,26 +59,7 @@ serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
 serviceCollection.AddSingleton<ISessionContextProvider, SessionContextProvider>();
 serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();
 serviceCollection.AddSingleton<ILuisClient, LuisClient>();
-
-serviceCollection.AddSingleton<DiscordSocketClient>(_ =>
-{
-    var discordKey = config.GetValue<string>(DISCORD_BOT_CONFIG_KEY);
-    if (discordKey == null)
-        throw new Exception("Discord Bot Token not set!");
-
-    var client = new DiscordSocketClient(new()
-    {
-        LogLevel = LogSeverity.Verbose
-    });
-    client.Log += (LogMessage msg) =>
-    {
-        Console.WriteLine(msg.ToString());
-        return Task.CompletedTask;
-    };
-    client.LoginAsync(TokenType.Bot, discordKey);
-
-    return client;
-});
+serviceCollection.AddSingleton(GetDiscordSocketClient(config, chronicle));
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -89,3 +79,28 @@ commandBroker.Add<ShowMine.CommandFactory, ShowMine.CommandHandler>(ShowMine.COM
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
 
 await Task.Delay(Timeout.Infinite);
+
+static DiscordSocketClient GetDiscordSocketClient(IConfigurationRoot config, IChronicle chronicle)
+{
+    var discordKey = config.GetValue<string>(DISCORD_BOT_CONFIG_KEY);
+    if (discordKey == null)
+        throw new Exception("Discord Bot Token not set!");
+
+    var client = new DiscordSocketClient(new() {
+        LogLevel = LogSeverity.Verbose
+    });
+    client.Log += (LogMessage msg) =>
+    {
+        if (msg.Severity == LogSeverity.Critical)
+            chronicle.Critical(msg.Message, msg.Exception);
+        if (msg.Severity == LogSeverity.Error || msg.Severity == LogSeverity.Warning)
+            chronicle.Warning(msg.Message, msg.Exception);
+        if (msg.Severity == LogSeverity.Info)
+            chronicle.Info(msg.Message);
+        if (msg.Severity == LogSeverity.Debug || msg.Severity == LogSeverity.Verbose)
+            chronicle.Debug(msg.Message);
+        return Task.CompletedTask;
+    };
+    client.LoginAsync(TokenType.Bot, discordKey);
+    return client;
+}

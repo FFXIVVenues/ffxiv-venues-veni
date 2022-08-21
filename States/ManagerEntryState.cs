@@ -21,7 +21,7 @@ namespace FFXIVVenues.Veni.States
         public Task Init(InteractionContext c)
         {
             if (!this._indexersService.IsIndexer(c.Interaction.User.Id))
-                return c.Session.ShiftState<ConfirmVenueState>(c);
+                return c.Session.SetStateAsync<ConfirmVenueState>(c);
 
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync("Who is/are the manager(s)? :heart:");
