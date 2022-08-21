@@ -14,12 +14,9 @@ namespace FFXIVVenues.Veni.States
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync(MessageRepository.AskForDescriptionMessage.PickRandom(),
                 new ComponentBuilder()
-                    .WithButton("Skip", c.Session.RegisterComponentHandler(cm => {
-                        if (cm.Session.GetItem<bool>("modifying"))
-                            return cm.Session.ShiftState<ConfirmVenueState>(cm);
-                        return cm.Session.ShiftState<HouseOrApartmentEntryState>(cm);
-                    }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .Build());
+                    .WithBackButton(c)
+                    .WithSkipButton<WebsiteEntryState, ConfirmVenueState>(c)
+                    .Build());
         }
 
         public Task OnMessageReceived(MessageInteractionContext c)

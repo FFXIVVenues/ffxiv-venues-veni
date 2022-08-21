@@ -1,4 +1,5 @@
-﻿using FFXIVVenues.Veni.Api.Models;
+﻿using Discord;
+using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
@@ -12,7 +13,8 @@ namespace FFXIVVenues.Veni.States
         public Task Init(InteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
-            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForApartmentMessage.PickRandom()}");
+            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForApartmentMessage.PickRandom()}",
+                                                new ComponentBuilder().WithBackButton(c).Build());
         }
 
         public Task OnMessageReceived(MessageInteractionContext c)

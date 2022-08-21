@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
 using Microsoft.Extensions.DependencyInjection;
+using NChronicle.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,12 +16,14 @@ namespace FFXIVVenues.Veni.Commands.Brokerage
         private readonly DiscordSocketClient _discordClient;
         private readonly TypeMap<ICommandFactory> _factories;
         private readonly TypeMap<ICommandHandler> _handlers;
+        private readonly IChronicle _chronicle;
 
-        public CommandBroker(IServiceProvider serviceProvider)
+        public CommandBroker(IServiceProvider serviceProvider, IChronicle chronicle)
         {
             this._discordClient = serviceProvider.GetService<DiscordSocketClient>();
             this._factories = new(serviceProvider);
             this._handlers = new(serviceProvider);
+            this._chronicle = chronicle;
         }
 
         public void Add<Factory, Handler>(string key)
@@ -37,7 +40,7 @@ namespace FFXIVVenues.Veni.Commands.Brokerage
             foreach (var factory in this._factories)
             {
                 var command = factory.GetSlashCommand();
-                Console.WriteLine($"Configure\t\tGlobally registering application command {command.Name}");
+                this._chronicle.Debug($"Registering global application command {command.Name}");
                 commandProperties.Add(command);
             }
             return this._discordClient.BulkOverwriteGlobalApplicationCommandsAsync(commandProperties.ToArray());
@@ -49,7 +52,7 @@ namespace FFXIVVenues.Veni.Commands.Brokerage
             foreach (var factory in this._factories)
             {
                 var command = factory.GetSlashCommand(guild);
-                Console.WriteLine($"Configure\t\tRegistering application command {command.Name}");
+                this._chronicle.Debug($"Registering application command {command.Name}", $"guild[{guild.Id}]");
                 commandProperties.Add(command);
             }
             return guild.BulkOverwriteApplicationCommandAsync(commandProperties.ToArray());

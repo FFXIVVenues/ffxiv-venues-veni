@@ -11,7 +11,7 @@ namespace FFXIVVenues.Veni.Middleware
 
         public async Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
         {
-            if (context.Session.State == null)
+            if (context.Session.StateStack == null)
             {
                 await next();
                 return;

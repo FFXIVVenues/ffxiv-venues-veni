@@ -9,7 +9,7 @@ namespace FFXIVVenues.Veni.Intents.Interupt
 
         public override Task Handle(InteractionContext context)
         {
-            if (context.Session.State == null)
+            if (context.Session.StateStack == null)
                 return context.Interaction.RespondAsync("Huh? We're not in the middle of anything. :shrug:");
 
             context.Session.ClearState();

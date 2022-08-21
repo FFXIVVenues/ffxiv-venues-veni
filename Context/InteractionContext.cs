@@ -7,7 +7,7 @@ using System.Linq;
 namespace FFXIVVenues.Veni.Context
 {
 
-    public abstract class InteractionContext<T> where T : class
+    public abstract class InteractionContext<T>: IInteractionContext where T : class
     {
 
         public T Interaction { get; }
