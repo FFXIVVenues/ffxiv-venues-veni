@@ -5,6 +5,6 @@ namespace FFXIVVenues.Veni.States.Abstractions
 {
     public interface IState
     {
-        Task Init(InteractionContext c);
+        Task Enter(InteractionContext c);
     }
 }

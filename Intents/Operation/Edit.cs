@@ -29,12 +29,12 @@ namespace FFXIVVenues.Veni.Intents.Operation
                 if (venues.Count() > 25)
                     venues = venues.Take(25);
                 context.Session.SetItem("venues", venues);
-                await context.Session.SetStateAsync<SelectVenueToModifyState>(context);
+                await context.Session.MoveStateAsync<SelectVenueToModifyState>(context);
             }
             else
             {
                 context.Session.SetItem("venue", venues.Single());
-                await context.Session.SetStateAsync<ModifyVenueState>(context);
+                await context.Session.MoveStateAsync<ModifyVenueState>(context);
             }
         }
 

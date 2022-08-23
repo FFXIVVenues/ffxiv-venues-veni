@@ -6,20 +6,26 @@ using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.States
 {
-    class HouseOrApartmentEntryState : IState
+    class LocationTypeEntryState : IState
     {
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             return c.Interaction.RespondAsync(MessageRepository.AskForHouseOrApartmentMessage.PickRandom(), new ComponentBuilder()
+                .WithBackButton(c)
                 .WithButton("A house", c.Session.RegisterComponentHandler(cm =>
                 {
-                    cm.Session.SetItem("isHouse", true);
-                    return cm.Session.ShiftState<WorldEntryState>(cm);
+                    cm.Session.SetItem("locationType", "house");
+                    return cm.Session.MoveStateAsync<WorldEntryState>(cm);
+                }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                .WithButton("A room in a house", c.Session.RegisterComponentHandler(cm =>
+                {
+                    cm.Session.SetItem("locationType", "room");
+                    return cm.Session.MoveStateAsync<WorldEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .WithButton("An apartment", c.Session.RegisterComponentHandler(cm =>
                 {
-                    cm.Session.SetItem("isHouse", false);
-                    return cm.Session.ShiftState<WorldEntryState>(cm);
+                    cm.Session.SetItem("locationType", "apartment");
+                    return cm.Session.MoveStateAsync<WorldEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }

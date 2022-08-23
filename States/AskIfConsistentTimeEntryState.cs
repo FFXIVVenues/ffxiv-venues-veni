@@ -15,15 +15,15 @@ namespace FFXIVVenues.Veni.States
             "Is the scheduled **opening time the same** across all those days?"
         };
 
-        public Task Init(InteractionContext c) =>
+        public Task Enter(InteractionContext c) =>
             c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_messages.PickRandom()}",
                 new ComponentBuilder()
                     .WithBackButton(c)
                     .WithButton("Yes, each day has the same opening/closing time",
-                        c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<ConsistentOpeningEntryState>(cm), 
+                        c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<ConsistentOpeningEntryState>(cm), 
                     ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("No, it's different opening times between days",
-                        c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<InconsistentOpeningEntryState>(cm), 
+                        c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<InconsistentOpeningEntryState>(cm), 
                     ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .Build());
 

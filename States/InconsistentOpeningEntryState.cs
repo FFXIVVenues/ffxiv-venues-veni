@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Discord;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
@@ -13,12 +14,12 @@ namespace FFXIVVenues.Veni.States
 
         private static string[] _openingMessages = new[]
         {
-            "What time do you **open** on {0}? (for example 8:30pm, 9pm or 1:30am)"
+            "What time do you **open** on **{0}**? (for example 8:30pm, 9pm or 1:30am)"
         };
 
         private static string[] _closingMessages = new[]
         {
-            "What time do you **close** on {0}? (for example 8:30pm, 9pm or 1:30am)"
+            "What time do you **close** on **{0}**? (for example 8:30pm, 9pm or 1:30am)"
         };
 
         private static Regex _regex = new Regex("(?<hour>[0-9]|(1[0-2]))(:?(?<minute>[0-5][0-9]))? ?(?<meridiem>am|pm)");
@@ -26,19 +27,34 @@ namespace FFXIVVenues.Veni.States
         private Venue _venue;
         private string _timeZoneId;
         private int _venueDayEnd;
-        private bool nowSettingClosing = false;
-        private int currentIndex = 0;
+        private bool? _nowSettingClosing;
+        private int? _nowSettingDay;
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             this._venue = c.Session.GetItem<Venue>("venue");
             this._timeZoneId = c.Session.GetItem<string>("timeZoneId");
             this._venueDayEnd = 11 + c.Session.GetItem<int>("timeZoneOffset");
 
+            if (this._nowSettingClosing == null)
+                this._nowSettingClosing = c.Session.GetItem<bool?>("nowSettingClosing");
+
+            if (this._nowSettingClosing == null)
+                this._nowSettingClosing = false;
+
+            if (this._nowSettingDay == null)
+                this._nowSettingDay = c.Session.GetItem<int?>("nowSettingDay");
+
+            if (this._nowSettingDay == null)
+                this._nowSettingDay = 0;
+
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
 
-            var openingForDayMessage = string.Format(_openingMessages.PickRandom(), _venue.Openings[0].Day);
-            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {openingForDayMessage}");
+            var messages = !this._nowSettingClosing.Value ? _openingMessages : _closingMessages;
+            var openingForDayMessage = string.Format(messages.PickRandom(), _venue.Openings[this._nowSettingDay.Value].Day);
+            
+            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {openingForDayMessage}",
+                                               new ComponentBuilder().WithBackButton(c).Build());
         }
 
         public Task OnMessageReceived(MessageInteractionContext c)
@@ -57,32 +73,32 @@ namespace FFXIVVenues.Veni.States
             else if (meridiem == "pm" && hour != 12)
                 hour += 12;
 
-            var opening = _venue.Openings[currentIndex];
-            if (!nowSettingClosing)
+            var opening = _venue.Openings[this._nowSettingDay.Value];
+            if (!this._nowSettingClosing.Value)
             {
-                // setting opening time per day
                 opening.Start = new Time { Hour = hour, Minute = minute, NextDay = hour < _venueDayEnd, TimeZone = _timeZoneId };
-
-                nowSettingClosing = true;
-                var closingForDayMessage = string.Format(_closingMessages.PickRandom(), _venue.Openings[currentIndex].Day);
-                return c.Interaction.Channel.SendMessageAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {closingForDayMessage}");
+                c.Session.SetItem("nowSettingDay", this._nowSettingDay);
+                c.Session.SetItem("nowSettingClosing", true);
+                return c.Session.MoveStateAsync<InconsistentOpeningEntryState>(c);
             }
 
             // setting closing time per day
             opening.End = new Time { Hour = hour, Minute = minute, NextDay = opening.Start.NextDay || hour < _venueDayEnd, TimeZone = _timeZoneId };
 
-            currentIndex++;
-            nowSettingClosing = false;
-
-            if (currentIndex < _venue.Openings.Count)
+            var thisWasLastDay = this._nowSettingDay + 1 == _venue.Openings.Count;
+            if (!thisWasLastDay)
             {
-                var openingForDayMessage = string.Format(_openingMessages.PickRandom(), _venue.Openings[currentIndex].Day);
-                return c.Interaction.Channel.SendMessageAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {openingForDayMessage}");
+                c.Session.SetItem("nowSettingDay", this._nowSettingDay + 1);
+                c.Session.SetItem("nowSettingClosing", false);
+                return c.Session.MoveStateAsync<InconsistentOpeningEntryState>(c);
             }
 
+            c.Session.ClearItem("nowSettingDay");
+            c.Session.ClearItem("nowSettingClosing");
+
             if (c.Session.GetItem<bool>("modifying"))
-                return c.Session.ShiftState<ConfirmVenueState>(c);
-            return c.Session.ShiftState<BannerInputState>(c);
+                return c.Session.MoveStateAsync<ConfirmVenueState>(c);
+            return c.Session.MoveStateAsync<BannerEntryState>(c);
         }
     }
 }

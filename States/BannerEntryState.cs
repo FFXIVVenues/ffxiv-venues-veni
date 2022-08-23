@@ -12,27 +12,24 @@ using FFXIVVenues.Veni.States.Abstractions;
 
 namespace FFXIVVenues.Veni.States
 {
-    class BannerInputState : IState
+    class BannerEntryState : IState
     {
         private readonly HttpClient _httpClient;
 
-        public BannerInputState(HttpClient httpClient)
+        public BannerEntryState(HttpClient httpClient)
         {
             this._httpClient = httpClient;
         }
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
+            c.Session.SetBackClearanceAmount(3);
             return c.Interaction.RespondAsync("What cute image would you like to use as a **banner**?\nBanners are usually 600x200; I can do the scaling/crop for you :heart:.",
                 new ComponentBuilder()
                     .WithBackButton(c)
-                    .WithButton("Skip", c.Session.RegisterComponentHandler(cm => {
-                        if (cm.Session.GetItem<bool>("modifying"))
-                            return cm.Session.ShiftState<ConfirmVenueState>(cm);
-                        return cm.Session.ShiftState<ManagerEntryState>(cm);
-                    }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .Build());
+                    .WithSkipButton<ManagerEntryState, ConfirmVenueState>(c)
+                    .Build());
         }
 
         public async Task OnMessageReceived(MessageInteractionContext c)
@@ -90,9 +87,9 @@ namespace FFXIVVenues.Veni.States
             {
                 cm.Session.SetItem("bannerUrl", cm.Interaction.Message.Attachments.First().ProxyUrl);
                 if (cm.Session.GetItem<bool>("modifying"))
-                    await cm.Session.ShiftState<ConfirmVenueState>(c);
+                    await cm.Session.MoveStateAsync<ConfirmVenueState>(c);
                 else
-                    await cm.Session.ShiftState<ManagerEntryState>(c);
+                    await cm.Session.MoveStateAsync<ManagerEntryState>(c);
             }, ComponentPersistence.ClearRow));
             component.WithButton("Let's try another!", c.Session.RegisterComponentHandler(cm => cm.Interaction.RespondAsync("Alrighty, send over another image! :heart:"), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
             var response = await c.Interaction.Channel.SendFileAsync(outStream, "banner.jpg", "How does this look? :heart:", components: component.Build());

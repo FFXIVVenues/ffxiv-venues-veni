@@ -17,17 +17,13 @@ namespace FFXIVVenues.Veni.States
         static HttpClient _discordClient = new HttpClient();
         static Regex _discordPattern = new Regex(@"(https?:\/\/)?(www\.)?((discord(app)?(\.com|\.io)(\/invite)?)|(discord\.gg))\/(\w+)");
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync(MessageRepository.AskForDiscordMessage.PickRandom(),
                 new ComponentBuilder()
-                    .WithButton("Skip", c.Session.RegisterComponentHandler(cm => 
-                    {
-                        if (cm.Session.GetItem<bool>("modifying"))
-                            return cm.Session.ShiftState<ConfirmVenueState>(cm);
-                        return cm.Session.ShiftState<HaveScheduleEntryState>(cm);
-                    }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithBackButton(c)
+                    .WithSkipButton<HaveScheduleEntryState, ConfirmVenueState>(c)
                 .Build());
         }
 
@@ -69,11 +65,11 @@ namespace FFXIVVenues.Veni.States
 
             if (c.Session.GetItem<bool>("modifying"))
             {
-                await c.Session.ShiftState<ConfirmVenueState>(c);
+                await c.Session.MoveStateAsync<ConfirmVenueState>(c);
                 return;
             }
 
-            await c.Session.ShiftState<HaveScheduleEntryState>(c);
+            await c.Session.MoveStateAsync<HaveScheduleEntryState>(c);
         }
 
     }

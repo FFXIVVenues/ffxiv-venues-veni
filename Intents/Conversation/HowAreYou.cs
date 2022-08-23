@@ -1,9 +1,8 @@
 ﻿using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Intents;
 using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Session
+namespace FFXIVVenues.Veni.Intents.Conversation
 {
     internal class HowAreYou : IntentHandler
     {

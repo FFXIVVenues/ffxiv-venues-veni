@@ -12,7 +12,7 @@ namespace FFXIVVenues.Veni.Intents.Interupt
             if (context.Session.StateStack == null)
                 return context.Interaction.RespondAsync("Huh? We're not in the middle of anything. :shrug:");
 
-            context.Session.ClearState();
+            _ = context.Session.ClearState(context);
             return context.Interaction.RespondAsync(MessageRepository.StoppedMessage.PickRandom());
         }
 

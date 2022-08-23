@@ -48,7 +48,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
                 if (venues.Count() > 25)
                     venues = venues.Take(25);
                 c.Session.SetItem("venues", venues);
-                await c.Session.SetStateAsync<SelectVenueToShowState>(c);
+                await c.Session.MoveStateAsync<SelectVenueToShowState>(c);
             }
             else
             {
@@ -71,12 +71,12 @@ namespace FFXIVVenues.Veni.Intents.Operation
                             .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
                             {
                                 cm.Session.SetItem("venue", venue);
-                                return cm.Session.ShiftState<ModifyVenueState>(cm);
+                                return cm.Session.MoveStateAsync<ModifyVenueState>(cm);
                             }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                             .WithButton("Delete", c.Session.RegisterComponentHandler(cm =>
                             {
                                 cm.Session.SetItem("venue", venue);
-                                return cm.Session.ShiftState<DeleteVenueState>(cm);
+                                return cm.Session.MoveStateAsync<DeleteVenueState>(cm);
                             }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
                             .WithButton("Do nothing", c.Session.RegisterComponentHandler(cm =>
                                 Task.CompletedTask,
@@ -88,7 +88,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
                             .WithButton("Edit Banner Photo", c.Session.RegisterComponentHandler(cm =>
                             {
                                 cm.Session.SetItem("venue", venue);
-                                return cm.Session.ShiftState<BannerInputState>(cm);
+                                return cm.Session.MoveStateAsync<BannerEntryState>(cm);
                             }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                             .Build());
                 else

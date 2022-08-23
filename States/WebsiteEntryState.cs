@@ -11,18 +11,14 @@ namespace FFXIVVenues.Veni.States
 {
     class WebsiteEntryState : IState
     {
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom(),
                 new ComponentBuilder()
-                    .WithButton("Skip", c.Session.RegisterComponentHandler(cm => 
-                    {
-                        if (cm.Session.GetItem<bool>("modifying"))
-                            return cm.Session.ShiftState<ConfirmVenueState>(cm);
-                        return cm.Session.ShiftState<DiscordEntryState>(cm);
-                    }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .Build());
+                    .WithBackButton(c)
+                    .WithSkipButton<DiscordEntryState, ConfirmVenueState>(c)
+                    .Build());
         }
 
         public Task OnMessageReceived(MessageInteractionContext c)
@@ -31,8 +27,8 @@ namespace FFXIVVenues.Veni.States
             if (new Regex("\\bskip\\b").IsMatch(c.Interaction.Content.ToLower()))
             {
                 if (c.Session.GetItem<bool>("modifying"))
-                    return c.Session.ShiftState<ConfirmVenueState>(c);
-                return c.Session.ShiftState<DiscordEntryState>(c);
+                    return c.Session.MoveStateAsync<ConfirmVenueState>(c);
+                return c.Session.MoveStateAsync<DiscordEntryState>(c);
             }
 
             var rawWebsiteString = c.Interaction.Content.StripMentions();
@@ -48,9 +44,9 @@ namespace FFXIVVenues.Veni.States
             venue.Website = website;
 
             if (c.Session.GetItem<bool>("modifying"))
-                return c.Session.ShiftState<ConfirmVenueState>(c);
+                return c.Session.MoveStateAsync<ConfirmVenueState>(c);
 
-            return c.Session.ShiftState<DiscordEntryState>(c);
+            return c.Session.MoveStateAsync<DiscordEntryState>(c);
         }
     }
 }

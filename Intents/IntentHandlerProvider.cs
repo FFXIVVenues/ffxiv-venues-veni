@@ -1,10 +1,10 @@
 ﻿using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Intents.Session;
 using FFXIVVenues.Veni.Intents.Interupt;
 using FFXIVVenues.Veni.Intents.Operation;
 using FFXIVVenues.Veni.Utils;
 using System;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Intents.Conversation;
 
 namespace FFXIVVenues.Veni.Intents
 {

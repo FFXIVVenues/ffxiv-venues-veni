@@ -9,6 +9,8 @@ namespace FFXIVVenues.Veni.Context.InteractionWrappers
     {
 
         SocketUser User { get; }
+        ISocketMessageChannel Channel { get; }
+
         string Content { get; }
         IInteractionDataWrapper InteractionData { get; }
         bool IsDM { get; }

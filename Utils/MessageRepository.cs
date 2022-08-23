@@ -67,6 +67,14 @@ namespace FFXIVVenues.Veni.Utils
             "Which **number ward** is your venue in? (1-24)"
         };
 
+        public static string[] AskForRoomMessage = new[]
+        {
+            "and the **room number**? (1-60)",
+            "Which **number room** are you? (1-60)",
+            "Which **number room** is your venue? (1-60)"
+        };
+
+
         public static string[] AskForPlotMessage = new[]
         {
             "and the **plot number**? (1-60)",
@@ -118,8 +126,8 @@ namespace FFXIVVenues.Veni.Utils
 
         public static string[] AskForHouseOrApartmentMessage = new[]
         {
-            "Is your venue in a **house or apartment**?",
-            "Is it a **house or apartment**?",
+            "Is your venue in a **house, room or apartment**?",
+            "Is it a **house, room or apartment**?",
         };
 
         public static string[] AskForWebsiteMessage = new[]
@@ -183,13 +191,13 @@ namespace FFXIVVenues.Veni.Utils
         };
 
 
-        static Random random = new Random();
+        private static readonly Random _random = new ();
         public static string PickRandom(this string[] messageList)
         {
             if (messageList.Length == 0)
                 return null;
 
-            var index = random.Next(messageList.Length);
+            var index = _random.Next(messageList.Length);
             return messageList[index];
         }
 

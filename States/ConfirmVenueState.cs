@@ -52,7 +52,7 @@ namespace FFXIVVenues.Veni.States
             this._apiUrl = apiConfig.BaseUrl;
         }
 
-        public async Task Init(InteractionContext c)
+        public async Task Enter(InteractionContext c)
         {
             var bannerUrl = c.Session.GetItem<string>("bannerUrl");
             var modifying = c.Session.GetItem<bool>("modifying");
@@ -82,9 +82,7 @@ namespace FFXIVVenues.Veni.States
             }
             var bannerUrl = c.Session.GetItem<string>("bannerUrl");
             if (bannerUrl != null) // changed
-            {
                 await this._apiService.PutVenueBannerAsync(venue.Id, bannerUrl);
-            }
 
             var isIndexer = this._indexersService.IsIndexer(c.Interaction.User.Id);
             if (isIndexer)
@@ -93,7 +91,7 @@ namespace FFXIVVenues.Veni.States
                 if (!approvalResponse.IsSuccessStatusCode)
                 {
                     await c.Interaction.Channel.SendMessageAsync("Something, went wrong while trying to auto-approve it for you. 😢");
-                    c.Session.ClearState();
+                    _ = c.Session.ClearState(c);
                     return;
                 }
             }
@@ -117,16 +115,16 @@ namespace FFXIVVenues.Veni.States
                 await SendToIndexers(venue, bannerUrl);
             }
 
-            c.Session.ClearState();
+            _ = c.Session.ClearState(c);
         }
 
         private Task Edit(MessageComponentInteractionContext c) =>
-            c.Session.ShiftState<ModifyVenueState>(c);
+            c.Session.MoveStateAsync<ModifyVenueState>(c);
 
         private Task Cancel(MessageComponentInteractionContext c)
         {
             _ = c.Interaction.RespondAsync("It's as if it never happened! 😅");
-            c.Session.ClearState();
+            _ = c.Session.ClearState(c);
             return Task.CompletedTask;
         }
 

@@ -30,7 +30,7 @@ namespace FFXIVVenues.Veni.States
             { "Coordinated Universal Time (UTC)", TimeZoneInfo.Utc }
         };
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             var component = new ComponentBuilder();
             var timezoneOptions = _timezones.Select(dc => new SelectMenuOptionBuilder(dc.Key, dc.Key)).ToList();
@@ -39,7 +39,7 @@ namespace FFXIVVenues.Veni.States
             selectMenu.WithCustomId(c.Session.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow));
             
             return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} { _messages.PickRandom()}",
-                                  component.WithSelectMenu(selectMenu).Build());
+                                  component.WithSelectMenu(selectMenu).WithBackButton(c).Build());
         }
 
         public Task Handle(MessageComponentInteractionContext c)
@@ -51,7 +51,7 @@ namespace FFXIVVenues.Veni.States
             c.Session.SetItem("timeZoneId", timezone.Id);
             var offset = timezone.GetUtcOffset(DateTime.UtcNow);
             c.Session.SetItem("timezoneOffset", offset.Hours);
-            return c.Session.ShiftState<DaysEntryState>(c);
+            return c.Session.MoveStateAsync<DaysEntryState>(c);
         }
     }
 }

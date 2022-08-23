@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Discord;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
@@ -26,15 +27,25 @@ namespace FFXIVVenues.Veni.States
         private Venue _venue;
         private string _timeZoneId;
         private int _venueDayEnd;
-        private bool _nowSettingClosing = false;
+        private bool? _nowSettingClosing;
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             this._venue = c.Session.GetItem<Venue>("venue");
             this._timeZoneId = c.Session.GetItem<string>("timeZoneId");
             this._venueDayEnd = 11 + c.Session.GetItem<int>("timeZoneOffset");
+
+            if (this._nowSettingClosing == null)
+                this._nowSettingClosing = c.Session.GetItem<bool?>("nowSettingClosing");
+
+            if (this._nowSettingClosing == null)
+                this._nowSettingClosing = false;
+
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
-            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_openingMessages.PickRandom()}");
+
+            var messages = !this._nowSettingClosing.Value ? _openingMessages : _closingMessages;
+            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {messages.PickRandom()}",
+                                                new ComponentBuilder().WithBackButton(c).Build());
         }
 
         public Task OnMessageReceived(MessageInteractionContext c)
@@ -53,7 +64,7 @@ namespace FFXIVVenues.Veni.States
             else if (meridiem == "pm" && hour != 12)
                 hour += 12;
 
-            if (!_nowSettingClosing)
+            if (!this._nowSettingClosing.Value)
             {
                 // setting opening times
                 foreach (var opening in _venue.Openings)
@@ -63,17 +74,19 @@ namespace FFXIVVenues.Veni.States
                     opening.Start = new Time { Hour = hour, Minute = minute, NextDay = hour < _venueDayEnd, TimeZone = _timeZoneId };
                 }
 
-                _nowSettingClosing = true;
-                return c.Interaction.Channel.SendMessageAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_closingMessages.PickRandom()}");
+                c.Session.SetItem("nowSettingClosing", true);
+                return c.Session.MoveStateAsync<ConsistentOpeningEntryState>(c);
             }
 
             // setting closing times
             foreach (var opening in _venue.Openings)
                 opening.End = new Time { Hour = hour, Minute = minute, NextDay = opening.Start.NextDay || hour < _venueDayEnd, TimeZone = _timeZoneId };
 
+            c.Session.ClearItem("nowSettingClosing");
+
             if (c.Session.GetItem<bool>("modifying"))
-                return c.Session.ShiftState<ConfirmVenueState>(c);
-            return c.Session.ShiftState<BannerInputState>(c);
+                return c.Session.MoveStateAsync<ConfirmVenueState>(c);
+            return c.Session.MoveStateAsync<BannerEntryState>(c);
         }
     }
 }

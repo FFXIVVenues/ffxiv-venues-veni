@@ -8,7 +8,7 @@ namespace FFXIVVenues.Veni.States
 {
     class NameEntryState : IState
     {
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync(MessageRepository.AskForNameMessage.PickRandom());
@@ -19,8 +19,8 @@ namespace FFXIVVenues.Veni.States
             var venue = c.Session.GetItem<Venue>("venue");
             venue.Name = c.Interaction.Content.StripMentions();
             if (c.Session.GetItem<bool>("modifying"))
-                return c.Session.ShiftState<ConfirmVenueState>(c);
-            return c.Session.ShiftState<DescriptionEntryState>(c);
+                return c.Session.MoveStateAsync<ConfirmVenueState>(c);
+            return c.Session.MoveStateAsync<DescriptionEntryState>(c);
         }
     }
 }

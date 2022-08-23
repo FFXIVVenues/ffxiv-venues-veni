@@ -89,7 +89,7 @@ namespace FFXIVVenues.Veni.States
             //{ "Zodiark", "Light" }
         };
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             var worlds = _worldMap.Select(world => new SelectMenuOptionBuilder(world.Value + " | " + world.Key, world.Key))
                                   .OrderBy(o => o.Label).ToList();
@@ -98,7 +98,7 @@ namespace FFXIVVenues.Veni.States
             selectMenu.WithCustomId(c.Session.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow));
             
             return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWorldMessage.PickRandom()}", 
-                                  new ComponentBuilder().WithSelectMenu(selectMenu).Build());
+                                  new ComponentBuilder().WithSelectMenu(selectMenu).WithBackButton(c).Build());
         }
 
         public Task Handle(MessageComponentInteractionContext c)
@@ -110,7 +110,7 @@ namespace FFXIVVenues.Veni.States
             venue.Location.World = world;
             venue.Location.DataCenter = _worldMap[venue.Location.World];
 
-            return c.Session.ShiftState<HousingDistrictEntryState>(c);
+            return c.Session.MoveStateAsync<HousingDistrictEntryState>(c);
         }
 
     }

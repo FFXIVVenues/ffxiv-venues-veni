@@ -18,6 +18,7 @@ using FFXIVVenues.Veni.Context.Abstractions;
 using NChronicle.Core.Model;
 using NChronicle.Console.Extensions;
 using NChronicle.Core.Interfaces;
+using FFXIVVenues.Veni.Logging;
 
 const string DISCORD_BOT_CONFIG_KEY = "DiscordBotToken";
 
@@ -37,16 +38,19 @@ config.GetSection("Ui").Bind(uiConfig);
 var apiHttpClient = new HttpClient { BaseAddress = new Uri(apiConfig.BaseUrl) };
 apiHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiConfig.AuthorizationKey);
 
+var discordChronicleLibrary = new DiscordChronicleLibrary();
 NChronicle.Core.NChronicle.Configure(c => {
     c.WithConsoleLibrary().Configure(c => 
         c.ListeningToAllLevels()
     );
+    c.WithLibrary(discordChronicleLibrary);
 });
 var chronicle = new Chronicle();
 
 var serviceCollection = new ServiceCollection();
 
 serviceCollection.AddSingleton<IChronicle>(chronicle);
+serviceCollection.AddSingleton<IDiscordChronicleLibrary>(discordChronicleLibrary);
 serviceCollection.AddSingleton<IConfiguration>(config);
 serviceCollection.AddSingleton<LuisConfiguration>(luisConfig);
 serviceCollection.AddSingleton<ApiConfiguration>(apiConfig);
@@ -75,6 +79,7 @@ commandBroker.Add<Open.CommandFactory, Open.CommandHandler>(Open.COMMAND_NAME);
 commandBroker.Add<ShowOpen.CommandFactory, ShowOpen.CommandHandler>(ShowOpen.COMMAND_NAME);
 commandBroker.Add<ShowFor.CommandFactory, ShowFor.CommandHandler>(ShowFor.COMMAND_NAME);
 commandBroker.Add<ShowMine.CommandFactory, ShowMine.CommandHandler>(ShowMine.COMMAND_NAME);
+commandBroker.Add<Inspect.CommandFactory, Inspect.CommandHandler>(Inspect.COMMAND_NAME);
 
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
 
