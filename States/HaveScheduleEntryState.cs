@@ -18,13 +18,14 @@ namespace FFXIVVenues.Veni.States
             "Is your venue generally open at the same days and times every week?",
         };
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             return c.Interaction.RespondAsync(_messages.PickRandom(),
                 new ComponentBuilder()
+                    .WithBackButton(c)
                     .WithButton("Yes, we have a set weekly schedule",
                         c.Session.RegisterComponentHandler(cm => 
-                            cm.Session.ShiftState<TimeZoneEntryState>(cm), 
+                            cm.Session.MoveStateAsync<TimeZoneEntryState>(cm), 
                         ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("No, we don't have a set weekly schedule",
                         c.Session.RegisterComponentHandler(cm =>
@@ -33,8 +34,8 @@ namespace FFXIVVenues.Veni.States
                             venue.Openings = new();
 
                             if (cm.Session.GetItem<bool>("modifying"))
-                                return cm.Session.ShiftState<ConfirmVenueState>(cm);
-                            return cm.Session.ShiftState<BannerInputState>(cm);
+                                return cm.Session.MoveStateAsync<ConfirmVenueState>(cm);
+                            return cm.Session.MoveStateAsync<BannerEntryState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }

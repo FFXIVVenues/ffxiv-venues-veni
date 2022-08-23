@@ -4,7 +4,7 @@ using PrettyPrintNet;
 using System;
 using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Intents.Session
+namespace FFXIVVenues.Veni.Intents.Conversation
 {
     internal class Age : IntentHandler
     {

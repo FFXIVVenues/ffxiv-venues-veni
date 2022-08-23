@@ -32,11 +32,11 @@ namespace FFXIVVenues.Veni.States
             ("Other", "other")
         };
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             this._venue = c.Session.GetItem<Venue>("venue");
 
-            var component = this.BuildTagsComponent(c);
+            var component = this.BuildTagsComponent(c).WithBackButton(c).WithSkipButton<TagsEntryState, TagsEntryState>(c);
             return c.Interaction.RespondAsync(MessageRepository.AskForCategories.PickRandom(), component.Build());
         }
 
@@ -49,9 +49,7 @@ namespace FFXIVVenues.Veni.States
                 selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value));
 
             return new ComponentBuilder()
-                .WithSelectMenu(selectComponent)
-                .WithBackButton(c)
-                .WithSkipButton<TagsEntryState, TagsEntryState>(c);
+                .WithSelectMenu(selectComponent);
         }
 
         private Task OnComplete(MessageComponentInteractionContext c)
@@ -61,7 +59,7 @@ namespace FFXIVVenues.Veni.States
             venue.Tags.RemoveAll(existingTag => _availableCategories.Any(availableTag => existingTag == availableTag.Value));
             venue.Tags.AddRange(c.Interaction.Data.Values);
 
-            return c.Session.ShiftState<TagsEntryState>(c);
+            return c.Session.MoveStateAsync<TagsEntryState>(c);
         }
 
     }

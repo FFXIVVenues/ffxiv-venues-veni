@@ -10,25 +10,26 @@ namespace FFXIVVenues.Veni.States
 {
     class SfwEntryState : IState
     {
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync(MessageRepository.AskForSfwMessage.PickRandom(), new ComponentBuilder()
+                .WithBackButton(c)
                 .WithButton("Yes, it's safe on entry", c.Session.RegisterComponentHandler(cm =>
                 {
                     var venue = cm.Session.GetItem<Venue>("venue");
                     venue.Sfw = true;
                     if (cm.Session.GetItem<bool>("modifying"))
-                        return cm.Session.ShiftState<ConfirmVenueState>(cm);
-                    return cm.Session.ShiftState<CategoryEntryState>(cm);
+                        return cm.Session.MoveStateAsync<ConfirmVenueState>(cm);
+                    return cm.Session.MoveStateAsync<CategoryEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .WithButton("No, we're openly NSFW", c.Session.RegisterComponentHandler(cm =>
                 {
                     var venue = cm.Session.GetItem<Venue>("venue");
                     venue.Sfw = false;
                     if (cm.Session.GetItem<bool>("modifying"))
-                        return cm.Session.ShiftState<ConfirmVenueState>(cm);
-                    return cm.Session.ShiftState<CategoryEntryState>(cm);
+                        return cm.Session.MoveStateAsync<ConfirmVenueState>(cm);
+                    return cm.Session.MoveStateAsync<CategoryEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
@@ -45,8 +46,8 @@ namespace FFXIVVenues.Veni.States
                 return c.Interaction.Channel.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
 
             if (c.Session.GetItem<bool>("modifying"))
-                return c.Session.ShiftState<ConfirmVenueState>(c);
-            return c.Session.ShiftState<CategoryEntryState>(c);
+                return c.Session.MoveStateAsync<ConfirmVenueState>(c);
+            return c.Session.MoveStateAsync<CategoryEntryState>(c);
         }
     }
 

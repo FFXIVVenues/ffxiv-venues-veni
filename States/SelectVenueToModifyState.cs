@@ -23,7 +23,7 @@ namespace FFXIVVenues.Veni.States
 
         private IEnumerable<Venue> _managersVenues;
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             _managersVenues = c.Session.GetItem<IEnumerable<Venue>>("venues");
 
@@ -52,7 +52,7 @@ namespace FFXIVVenues.Veni.States
             c.Session.ClearItem("venues");
             c.Session.SetItem("venue", venue);
 
-            return c.Session.ShiftState<ModifyVenueState>(c);
+            return c.Session.MoveStateAsync<ModifyVenueState>(c);
         }
 
     }

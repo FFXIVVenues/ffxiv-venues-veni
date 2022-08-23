@@ -10,7 +10,7 @@ namespace FFXIVVenues.Veni.States
 {
     class HousingDistrictEntryState : IState
     {
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             var districts = new[] { "Mist", "Empyreum", "Goblet", "Lavender Beds", "Shirogane" }
                 .Select(zone => new SelectMenuOptionBuilder(zone, zone)).ToList();
@@ -20,7 +20,7 @@ namespace FFXIVVenues.Veni.States
 
 
             return c.Interaction.RespondAsync(MessageRepository.AskForHousingDistrictMessage.PickRandom(), 
-                                  new ComponentBuilder().WithSelectMenu(selectMenu).Build());
+                                  new ComponentBuilder().WithSelectMenu(selectMenu).WithBackButton(c).Build());
         }
 
         public Task Handle(MessageComponentInteractionContext c)
@@ -28,7 +28,7 @@ namespace FFXIVVenues.Veni.States
             var district = c.Interaction.Data.Values.Single();
             var venue = c.Session.GetItem<Venue>("venue");
             venue.Location.District = district;
-            return c.Session.ShiftState<WardEntryState>(c);
+            return c.Session.MoveStateAsync<WardEntryState>(c);
         }
 
     }

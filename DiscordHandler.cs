@@ -8,6 +8,8 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Commands.Brokerage;
 using FFXIVVenues.Veni.Context.Abstractions;
 using Discord;
+using NChronicle.Core.Interfaces;
+using FFXIVVenues.Veni.States.Abstractions;
 
 namespace FFXIVVenues.Veni
 {
@@ -19,18 +21,20 @@ namespace FFXIVVenues.Veni
         private readonly Pipeline<MessageInteractionContext> _pipeline;
         private readonly ISessionContextProvider _sessionContextProvider;
         private readonly IIndexersService _indexersService;
+        private readonly IChronicle _chronicle;
 
         public DiscordHandler(DiscordSocketClient client,
                               ICommandBroker commandBroker,
                               IServiceProvider serviceProvider,
                               ISessionContextProvider sessionContextProvider,
-                              IIndexersService indexersService)
+                              IIndexersService indexersService, 
+                              IChronicle chronicle)
         {
             this._client = client;
             this._commandBroker = commandBroker;
             this._sessionContextProvider = sessionContextProvider;
             this._indexersService = indexersService;
-
+            this._chronicle = chronicle;
             this._client.Connected += Connected;
             this._client.SlashCommandExecuted += SlashCommandExecutedAsync;
             this._client.MessageReceived += MessageReceivedAsync;
@@ -58,8 +62,15 @@ namespace FFXIVVenues.Veni
         private async Task SlashCommandExecutedAsync(SocketSlashCommand slashCommand)
         {
             var sessionContext = _sessionContextProvider.GetContext(slashCommand.User.Id.ToString());
-            var context = new SlashCommandInteractionContext(slashCommand, _client, sessionContext);
+            var context = new SlashCommandInteractionContext(slashCommand, _client, sessionContext, this._chronicle);
 
+            var stateText = "";
+            IState currentState = null;
+            context.Session.StateStack?.TryPeek(out currentState);
+            if (currentState != null)
+                stateText = "[" + currentState.GetType().Name + "] ";
+            this._chronicle.Info($"{stateText}{slashCommand.User}: [Command: /{slashCommand.CommandName}]");
+            
             await this._commandBroker.HandleAsync(context);
         }
 
@@ -70,7 +81,15 @@ namespace FFXIVVenues.Veni
                 return;
 
             var conversationContext = _sessionContextProvider.GetContext(message.User.Id.ToString());
-            var context = new MessageComponentInteractionContext(message, _client, conversationContext);
+            var context = new MessageComponentInteractionContext(message, _client, conversationContext, this._chronicle);
+
+            var stateText = "";
+            IState currentState = null;
+            context.Session.StateStack?.TryPeek(out currentState);
+            if (currentState != null)
+                stateText = "[" + currentState.GetType().Name + "] ";
+            this._chronicle.Info($"{stateText}{message.User}: [Component Interaction]");
+
             await conversationContext.HandleComponentInteraction(context);
         }
 
@@ -80,7 +99,7 @@ namespace FFXIVVenues.Veni
                 return Task.CompletedTask;
 
             var conversationContext = _sessionContextProvider.GetContext(message.Author.Id.ToString());
-            var context = new MessageInteractionContext(message, _client, conversationContext);
+            var context = new MessageInteractionContext(message, _client, conversationContext, this._chronicle);
             return _pipeline.RunAsync(context);
         }
     }

@@ -24,7 +24,7 @@ namespace FFXIVVenues.Veni.Middleware
             context.Session.StateStack?.TryPeek(out currentState);
             if (currentState != null)
                 stateText = "[" + currentState.GetType().Name + "] ";
-            this._chronicle.Debug($"{stateText}{context.Interaction.Author}: {context.Interaction.Content}");
+            this._chronicle.Info($"{stateText}{context.Interaction.Author}: {context.Interaction.Content}");
             return next();
         }
     }

@@ -53,7 +53,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
             if (venues.Count() > 25)
                 venues = venues.Take(25);
             c.Session.SetItem("venues", venues);
-            await c.Session.SetStateAsync<SelectVenueToShowState>(c);
+            await c.Session.MoveStateAsync<SelectVenueToShowState>(c);
         }
 
     }

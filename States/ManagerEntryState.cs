@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.States.Abstractions;
+using Discord;
 
 namespace FFXIVVenues.Veni.States
 {
@@ -18,13 +19,17 @@ namespace FFXIVVenues.Veni.States
             this._indexersService = indexersService;
         }
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             if (!this._indexersService.IsIndexer(c.Interaction.User.Id))
-                return c.Session.SetStateAsync<ConfirmVenueState>(c);
+                return c.Session.MoveStateAsync<ConfirmVenueState>(c);
 
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
-            return c.Interaction.RespondAsync("Who is/are the manager(s)? :heart:");
+            return c.Interaction.RespondAsync("Who is/are the manager(s)? :heart:",
+                                               new ComponentBuilder()
+                                               .WithBackButton(c)
+                                               .WithSkipButton<ConfirmVenueState, ConfirmVenueState>(c)
+                                               .Build());
         }
 
         public Task OnMessageReceived(MessageInteractionContext c)
@@ -39,7 +44,7 @@ namespace FFXIVVenues.Veni.States
                 return c.Interaction.Channel.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
 
             venue.Managers = discordIds.Select(id => id.Value<string>()).ToList();
-            return c.Session.ShiftState<ConfirmVenueState>(c);
+            return c.Session.MoveStateAsync<ConfirmVenueState>(c);
         }
 
     }

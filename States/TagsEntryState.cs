@@ -34,7 +34,7 @@ namespace FFXIVVenues.Veni.States
             ("Strictly in-character RP only", "IC RP Only")
         };
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             this._venue = c.Session.GetItem<Venue>("venue");
 
@@ -64,9 +64,9 @@ namespace FFXIVVenues.Veni.States
             venue.Tags.AddRange(c.Interaction.Data.Values);
 
             if (c.Session.GetItem<bool>("modifying"))
-                return c.Session.ShiftState<ConfirmVenueState>(c);
+                return c.Session.MoveStateAsync<ConfirmVenueState>(c);
 
-            return c.Session.ShiftState<WebsiteEntryState>(c);
+            return c.Session.MoveStateAsync<WebsiteEntryState>(c);
         }
 
     }

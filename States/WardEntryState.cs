@@ -1,4 +1,5 @@
-﻿using FFXIVVenues.Veni.Api.Models;
+﻿using Discord;
+using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
@@ -9,10 +10,13 @@ namespace FFXIVVenues.Veni.States
 {
     class WardEntryState : IState
     {
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
-            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWardMessage.PickRandom()}");
+            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWardMessage.PickRandom()}",
+                                                new ComponentBuilder()
+                                                .WithBackButton(c)
+                                                .Build());
         }
 
         public Task OnMessageReceived(MessageInteractionContext c)
@@ -25,11 +29,11 @@ namespace FFXIVVenues.Veni.States
 
             venue.Location.Ward = ward;
 
-            var isHouse = c.Session.GetItem<bool>("isHouse");
-            if (isHouse)
-                return c.Session.ShiftState<PlotEntryState>(c);
+            var locationType = c.Session.GetItem<string>("locationType");
+            if (locationType == "house" || locationType == "room")
+                return c.Session.MoveStateAsync<PlotEntryState>(c);
             else
-                return c.Session.ShiftState<IsSubdivisionEntryState>(c);
+                return c.Session.MoveStateAsync<IsSubdivisionEntryState>(c);
         }
     }
 }

@@ -18,23 +18,23 @@ namespace FFXIVVenues.Veni.States
             this._indexersService = indexersService;
         }
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             c.Session.SetItem("modifying", true);
 
             var component = new ComponentBuilder()
-                    .WithButton("Name", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<NameEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("Description", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<DescriptionEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("Location", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<HouseOrApartmentEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("Schedule", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<HaveScheduleEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("N/SFW status", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<SfwEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("Tags", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<CategoryEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("Website", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<WebsiteEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("Discord", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<DiscordEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("Banner photo", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<BannerInputState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
+                    .WithButton("Name", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<NameEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("Description", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<DescriptionEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("Location", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<LocationTypeEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("Schedule", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<HaveScheduleEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("N/SFW status", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<SfwEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("Tags", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<CategoryEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("Website", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<WebsiteEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("Discord", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<DiscordEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("Banner photo", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<BannerEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
 
             if (this._indexersService.IsIndexer(c.Interaction.User.Id))
-                component.WithButton("Managers", c.Session.RegisterComponentHandler(cm => cm.Session.ShiftState<ManagerEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
+                component.WithButton("Managers", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<ManagerEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
 
             if (c.Interaction.IsDM)
                 return c.Interaction.RespondAsync(MessageRepository.EditVenueMessage.PickRandom(), component: component.Build());

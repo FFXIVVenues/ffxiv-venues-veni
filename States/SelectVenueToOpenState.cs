@@ -28,7 +28,7 @@ namespace FFXIVVenues.Veni.States
             this._apiService = apiService;
         }
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             this._managersVenues = c.Session.GetItem<IEnumerable<Venue>>("venues");
 
@@ -54,7 +54,7 @@ namespace FFXIVVenues.Veni.States
             var selectedVenueId = c.Interaction.Data.Values.Single();
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            c.Session.ClearState();
+            _ = c.Session.ClearState(c);
 
             await _apiService.OpenVenueAsync(venue.Id);
             await c.Interaction.RespondAsync(MessageRepository.VenueOpenMessage.PickRandom());

@@ -27,7 +27,7 @@ namespace FFXIVVenues.Veni.States
             this._indexersService = indexersService;
         }
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             _managersVenues = c.Session.GetItem<IEnumerable<Venue>>("venues");
 
@@ -48,18 +48,18 @@ namespace FFXIVVenues.Veni.States
             return c.Interaction.RespondAsync(MessageRepository.ShowVenueResponses.PickRandom(), componentBuilder.Build());
         }
 
-        public Task Handle(MessageComponentInteractionContext c)
+        public async Task Handle(MessageComponentInteractionContext c)
         {
             var selectedVenueId = c.Interaction.Data.Values.Single();
             var asker = c.Interaction.User.Id;
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            c.Session.ClearState();
+            await c.Session.ClearState(c);
 
             var isOwnerOrIndexer = venue.Managers.Contains(asker.ToString()) || this._indexersService.IsIndexer(asker);
 
             if (isOwnerOrIndexer)
-                return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
+                await c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
                     components: new ComponentBuilder()
                         .WithButton("Open", c.Session.RegisterComponentHandler(async cm =>
                         {
@@ -74,27 +74,27 @@ namespace FFXIVVenues.Veni.States
                         .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
                         {
                             c.Session.SetItem("venue", venue);
-                            return cm.Session.ShiftState<ModifyVenueState>(cm);
+                            return cm.Session.MoveStateAsync<ModifyVenueState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .WithButton("Delete", c.Session.RegisterComponentHandler(cm =>
                         {
                             c.Session.SetItem("venue", venue);
-                            return cm.Session.ShiftState<DeleteVenueState>(cm);
+                            return cm.Session.MoveStateAsync<DeleteVenueState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
                         .WithButton("Do nothing", c.Session.RegisterComponentHandler(cm => Task.CompletedTask,
                             ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .Build());
             else if (this._indexersService.IsPhotographer(asker))
-                return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
+                await c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
                     components: new ComponentBuilder()
                         .WithButton("Edit Banner Photo", c.Session.RegisterComponentHandler(cm =>
                         {
                             c.Session.SetItem("venue", venue);
-                            return cm.Session.ShiftState<BannerInputState>(cm);
+                            return cm.Session.MoveStateAsync<BannerEntryState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .Build());
             else
-                return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
+                await c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
         }
     }
 }

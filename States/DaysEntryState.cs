@@ -25,15 +25,18 @@ namespace FFXIVVenues.Veni.States
             ("Sunday", Day.Sunday),
         };
 
-        private Dictionary<Day, string> _days = new();
-        private Dictionary<Day, string> _daysHandlers = new();
         private Venue _venue;
 
-        public Task Init(InteractionContext c)
+        public Task Enter(InteractionContext c)
         {
             this._venue = c.Session.GetItem<Venue>("venue");
 
-            var component = this.BuildDaysComponent(c);
+            var component = this.BuildDaysComponent(c).WithBackButton(c);
+            if (this._venue.Openings.Count > 1)
+                component.WithSkipButton<AskIfConsistentTimeEntryState, AskIfConsistentTimeEntryState>(c);
+            else if (this._venue.Openings.Count == 1)
+                component.WithSkipButton<ConsistentOpeningEntryState, ConsistentOpeningEntryState>(c);
+
             return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskDaysOpenMessage.PickRandom()}", component: component.Build());
         }
 
@@ -41,6 +44,7 @@ namespace FFXIVVenues.Veni.States
         {
             var selectComponent = new SelectMenuBuilder()
                 .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
+                .WithMinValues(1)
                 .WithMaxValues(_availableDays.Count);
             foreach (var (label, value) in _availableDays)
                 selectComponent.AddOption(label, value.ToString(), isDefault: this._venue.Openings.Any(o => o.Day == value));
@@ -55,9 +59,9 @@ namespace FFXIVVenues.Veni.States
                                     .ToList();
 
             if (this._venue.Openings.Count > 1)
-                return c.Session.ShiftState<AskIfConsistentTimeEntryState>(c);
+                return c.Session.MoveStateAsync<AskIfConsistentTimeEntryState>(c);
 
-            return c.Session.ShiftState<ConsistentOpeningEntryState>(c);
+            return c.Session.MoveStateAsync<ConsistentOpeningEntryState>(c);
         }
 
     }
