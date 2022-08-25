@@ -1,5 +1,4 @@
-﻿
-using Discord;
+﻿using Discord;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Utils.TypeConditioning;
 using NChronicle.Core.Interfaces;
@@ -32,7 +31,7 @@ namespace FFXIVVenues.Veni.Context.InteractionWrappers
 
         public Task RespondAsync(string message = null, MessageComponent component = null, Embed embed = null)
         {
-            this._chronicle.Info($"Veni Ki [bot]: {message} (Components: {component?.Components?.Count ?? 0}) (Embeds: {(embed != null ? "Yes" : "No")})");
+            this._chronicle.Info($"**Veni Ki** [bot]: {message} (Components: {component?.Components?.Count ?? 0}) (Embeds: {(embed != null ? "Yes" : "No")})");
             return _slashCommand.HasResponded ?
                    _slashCommand.Channel.SendMessageAsync(message, components: component, embed: embed) :
                    _slashCommand.RespondAsync(message, components: component, embed: embed);
