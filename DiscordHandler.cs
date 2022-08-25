@@ -68,8 +68,8 @@ namespace FFXIVVenues.Veni
             IState currentState = null;
             context.Session.StateStack?.TryPeek(out currentState);
             if (currentState != null)
-                stateText = "[" + currentState.GetType().Name + "] ";
-            this._chronicle.Info($"{stateText}{slashCommand.User}: [Command: /{slashCommand.CommandName}]");
+                stateText = " [" + currentState.GetType().Name + "]";
+            this._chronicle.Info($"**{slashCommand.User}{stateText}**: [Command: /{slashCommand.CommandName}]");
             
             await this._commandBroker.HandleAsync(context);
         }
@@ -87,8 +87,8 @@ namespace FFXIVVenues.Veni
             IState currentState = null;
             context.Session.StateStack?.TryPeek(out currentState);
             if (currentState != null)
-                stateText = "[" + currentState.GetType().Name + "] ";
-            this._chronicle.Info($"{stateText}{message.User}: [Component Interaction]");
+                stateText = " [" + currentState.GetType().Name + "]";
+            this._chronicle.Info($"**{message.User}{stateText}**: [Component Interaction]");
 
             await conversationContext.HandleComponentInteraction(context);
         }

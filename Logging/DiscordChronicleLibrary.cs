@@ -34,6 +34,10 @@ namespace FFXIVVenues.Veni.Logging
 
             var stringBuilder = new StringBuilder();
 
+            stringBuilder.Append("[");
+            stringBuilder.Append(Thread.CurrentThread.ManagedThreadId);
+            stringBuilder.Append("] ");
+
             stringBuilder.Append(record.Level switch {
                 ChronicleLevel.Critical => "🔴 ",
                 ChronicleLevel.Warning => "🟡 ",
@@ -43,18 +47,9 @@ namespace FFXIVVenues.Veni.Logging
                 _ => "⚫ "
             });
 
-            stringBuilder.Append(DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm:ss.fff"));
-            stringBuilder.Append(" [");
-            stringBuilder.Append(Thread.CurrentThread.ManagedThreadId);
-            stringBuilder.Append("] ");
-
-            
-
             if (record.Message != null)
             {
-                stringBuilder.Append("**");
                 stringBuilder.Append(record.Message);
-                stringBuilder.Append("** ");
                 if (record.Exception != null)
                     stringBuilder.AppendLine();
             }

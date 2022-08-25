@@ -23,8 +23,8 @@ namespace FFXIVVenues.Veni.Middleware
             IState currentState = null;
             context.Session.StateStack?.TryPeek(out currentState);
             if (currentState != null)
-                stateText = "[" + currentState.GetType().Name + "] ";
-            this._chronicle.Info($"{stateText}{context.Interaction.Author}: {context.Interaction.Content}");
+                stateText = " [" + currentState.GetType().Name + "]";
+            this._chronicle.Info($"**{context.Interaction.Author.Mention}{stateText}**: {context.Interaction.Content}");
             return next();
         }
     }

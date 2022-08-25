@@ -31,7 +31,7 @@ namespace FFXIVVenues.Veni.Context.InteractionWrappers
 
         public Task RespondAsync(string message = null, MessageComponent component = null, Embed embed = null)
         {
-            this._chronicle.Info($"Veni Ki [bot]: {message} (Components: {component?.Components?.Count ?? 0}) (Embeds: {(embed != null ? "Yes" : "No")})");
+            this._chronicle.Info($"**Veni Ki** [bot]: {message} (Components: {component?.Components?.Count ?? 0}) (Embeds: {(embed != null ? "Yes" : "No")})");
             return _message.Channel.SendMessageAsync(message, components: component, embed: embed);
         }
 
