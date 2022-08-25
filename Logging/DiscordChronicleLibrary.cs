@@ -55,7 +55,11 @@ namespace FFXIVVenues.Veni.Logging
             }
 
             if (record.Exception != null)
+            {
+                stringBuilder.AppendLine("```");
                 stringBuilder.AppendLine(record.Exception.ToString());
+                stringBuilder.AppendLine("```");
+            }
 
             foreach (var channel in this._channels)
                 if (record.Level <= channel.Value.MinLevel)
