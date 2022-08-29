@@ -37,13 +37,19 @@ namespace FFXIVVenues.Veni.States
             this._venueDayEnd = 11 + c.Session.GetItem<int>("timeZoneOffset");
 
             if (this._nowSettingClosing == null)
+            {
                 this._nowSettingClosing = c.Session.GetItem<bool?>("nowSettingClosing");
+                c.Session.ClearItem("nowSettingClosing");
+            }
 
             if (this._nowSettingClosing == null)
                 this._nowSettingClosing = false;
 
             if (this._nowSettingDay == null)
+            {
                 this._nowSettingDay = c.Session.GetItem<int?>("nowSettingDay");
+                c.Session.ClearItem("nowSettingDay");
+            }
 
             if (this._nowSettingDay == null)
                 this._nowSettingDay = 0;

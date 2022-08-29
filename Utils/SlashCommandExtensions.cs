@@ -24,10 +24,7 @@ namespace FFXIVVenues.Veni.Utils
             var option = command.Interaction.Data.Options.FirstOrDefault(o => o.Name == name);
             if (option == null) return null;
 
-            if (!int.TryParse((string)option.Value, out var value))
-                return null;
-
-            return value;
+            return (int) (double) option.Value;
         }
 
         public static bool? GetBoolArg(this SlashCommandInteractionContext command, string name)
