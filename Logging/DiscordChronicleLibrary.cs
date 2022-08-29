@@ -14,7 +14,34 @@ namespace FFXIVVenues.Veni.Logging
     internal class DiscordChronicleLibrary : IChronicleLibrary, IDiscordChronicleLibrary
     {
 
+        private const int BUFFER_TIME = 3_000;
+
         private Dictionary<ulong, (ChronicleLevel MinLevel, ISocketMessageChannel Channel)> _channels = new();
+        private Queue<(ChronicleLevel Level, string Message)> _messageBuffer = new();
+        private Timer _timer;
+
+        public DiscordChronicleLibrary()
+        {
+            this._timer = new Timer(this.Tick, null, BUFFER_TIME, BUFFER_TIME);
+        }
+
+        private void Tick(object state)
+        {
+            var channelBuffers = new Dictionary<ulong, StringBuilder>();
+            foreach (var channel in _channels)
+                channelBuffers.Add(channel.Key, new());
+
+            string message = null;
+
+            while (_messageBuffer.TryDequeue(out var currentMessage))
+                foreach (var channel in this._channels)
+                    if (currentMessage.Level <= channel.Value.MinLevel)
+                        channelBuffers[channel.Key].AppendLine(currentMessage.Message);
+
+            foreach (var channelBuffer in channelBuffers)
+                if (channelBuffer.Value.Length > 0)
+                    _ = _channels[channelBuffer.Key].Channel.SendMessageAsync(channelBuffer.Value.ToString());
+        }
 
         public bool IsSubscribed(ISocketMessageChannel channel) =>
             this._channels.ContainsKey(channel.Id);
@@ -61,9 +88,7 @@ namespace FFXIVVenues.Veni.Logging
                 stringBuilder.AppendLine("```");
             }
 
-            foreach (var channel in this._channels)
-                if (record.Level <= channel.Value.MinLevel)
-                    _ = channel.Value.Channel.SendMessageAsync(stringBuilder.ToString());
+            _messageBuffer.Enqueue((record.Level, stringBuilder.ToString()));
         }
 
 

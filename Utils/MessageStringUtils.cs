@@ -42,7 +42,6 @@ namespace FFXIVVenues.Veni.Utils
             return message.AnyWordMatchesAnyPhrase(yesPhrases);
         }
 
-
         public static bool IndicatesContradiction(this string message)
         {
             var regex = new Regex(@"\bn(o+(p+e+)?|a+h+)\b");
