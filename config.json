@@ -1,11 +1,16 @@
 {
 	"DiscordBotToken": "",
+
 	"Luis": {
 		"RuntimeKey": "",
 		"PredictionEndpoint": "https://centralus.api.cognitive.microsoft.com/",
 		"AppId": "",
 		"Slot": "Production"
 	},
+	"Persistence": {
+		"Provider": "Cosmos",
+		"ConnectionString": "",
+	}
 	"Ui": {
 		"BaseUrl": "https://ffxivvenues.com"
 	},
@@ -16,4 +21,7 @@
 		"236852510688542720",
 		"252142384303833088"
 	]
+}
+
+{
 }
