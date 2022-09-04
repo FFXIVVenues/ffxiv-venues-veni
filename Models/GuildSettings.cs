@@ -7,12 +7,13 @@ namespace FFXIVVenues.Veni.Models
     {
 
         public string Id { get; set; }
-        public ulong GuildId {
+        public ulong GuildId
+        {
             get => ulong.TryParse(this.Id, out var result) ? result : 0;
-            set => this.Id = value.ToString(); 
+            set => this.Id = value.ToString();
         }
 
-        public Dictionary<string, ulong> DataCenterRoleMap { get; set; }
+        public Dictionary<string, ulong> DataCenterRoleMap { get; set; } = new();
 
         public bool FormatNames { get; set; }
 
