@@ -1,7 +1,9 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Managers;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using System.Linq;
@@ -13,6 +15,7 @@ namespace FFXIVVenues.Veni.States
     {
         private readonly IApiService _apiService;
         private readonly IIndexersService _indexersService;
+        private readonly IGuildManager _guildManager;
         private readonly string _uiUrl;
         private readonly string _apiUrl;
 
@@ -44,10 +47,15 @@ namespace FFXIVVenues.Veni.States
             "Ok! We'll get that approved and get it live soon! 🎉"
         };
 
-        public ConfirmVenueState(IApiService apiService, UiConfiguration uiConfig, ApiConfiguration apiConfig, IIndexersService indexersService)
+        public ConfirmVenueState(IApiService apiService,
+                                 UiConfiguration uiConfig,
+                                 ApiConfiguration apiConfig,
+                                 IIndexersService indexersService,
+                                 IGuildManager guildManager)
         {
             this._apiService = apiService;
             this._indexersService = indexersService;
+            this._guildManager = guildManager;
             this._uiUrl = uiConfig.BaseUrl;
             this._apiUrl = apiConfig.BaseUrl;
         }
@@ -97,17 +105,14 @@ namespace FFXIVVenues.Veni.States
             }
 
             if (!isNewVenue)
+            {
+                _ = this._guildManager.AssignRolesInAllGuildsAsync(venue);
                 await c.Interaction.Channel.SendMessageAsync(_preexisingResponse.PickRandom());
+            }
             else if (isIndexer)
             {
                 await c.Interaction.Channel.SendMessageAsync("All done and auto-approved for you. :heart:");
-                foreach (var managerId in venue.Managers)
-                {
-                    var manager = await c.Client.GetUserAsync(ulong.Parse(managerId));
-                    var dmChannel = await manager.CreateDMChannelAsync();
-                    _ = dmChannel.SendMessageAsync($"Hey hey! :heart:\n**{venue.Name}** has been **approved** and it's live!\n{this._uiUrl}/#{venue.Id}\nLet me know if you'd like anything edited or to know what else I can do for you. 🥳",
-                                                   embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
-                }
+                await this.ApproveVenueAsync(venue, c.Client);
             }
             else
             {
@@ -170,11 +175,20 @@ namespace FFXIVVenues.Veni.States
                     .Concat(new[] { new EmbedBuilder().WithDescription($"You handled this and approved the venue. 🥳").Build() })
                     .ToArray();
             });
+            await ApproveVenueAsync(venue, approveBic.Broadcast.Client);
+        }
+
+        private async Task ApproveVenueAsync(Venue venue, DiscordSocketClient client)
+        {
+            _ = this._guildManager.AssignRolesInAllGuildsAsync(venue);
+
             foreach (var managerId in venue.Managers)
             {
-                var manager = await approveBic.Broadcast.Client.GetUserAsync(ulong.Parse(managerId));
+                var manager = await client.GetUserAsync(ulong.Parse(managerId));
                 var dmChannel = await manager.CreateDMChannelAsync();
-                _ = dmChannel.SendMessageAsync($"Hey hey! :heart:\n**{venue.Name}** has been **approved** and it's live!\n{this._uiUrl}/#{venue.Id}\nLet me know if you'd like anything edited or to know what else I can do for you. 🥳",
+                _ = dmChannel.SendMessageAsync($"Hey hey! :heart:\n**{venue.Name}** has been **approved** and it's live!\n{this._uiUrl}/#{venue.Id}\n" +
+                                               $"I've assigned you your Venue Manager discord role too.\n" +
+                                               $"Let me know if you'd like anything edited or anything you'd like help with. 🥳",
                                                embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
             }
         }

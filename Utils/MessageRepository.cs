@@ -190,6 +190,26 @@ namespace FFXIVVenues.Veni.Utils
             "What days is the venue open each week?"
         };
 
+        public static string[] WelcomeMessages = new[]
+        {
+            "Welcome {mention} to the cutie's venue server!",
+            "Welcome {mention}! Glad to have mew! 🥰",
+            "Welcome {mention}, hope mew have a good time!",
+            "Yay, {mention} joined! ♥",
+            "It's {mention}! Welcome to the home for venue tech! 🥰",
+            "{mention}! Hi hi! Glad to see you here. 😻",
+            "Hey {mention} cutie! Good to see you. ;)",
+            "Meow! {mention}! Welcome! 🥰",
+            "Hey everyone! It's {mention}! ♥ Welcome welcome! 🥰"
+        };
+
+        public static string[] RolesAssigned = new[]
+        {
+            "I've assigned you your Venue Manager role.🙂",
+            "I've given you your Venue Manager role. 🙂",
+            "Your Venue Manager role is assigned. 🙂"
+        };
+
 
         private static readonly Random _random = new ();
         public static string PickRandom(this string[] messageList)

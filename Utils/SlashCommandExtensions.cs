@@ -32,10 +32,7 @@ namespace FFXIVVenues.Veni.Utils
             var option = command.Interaction.Data.Options.FirstOrDefault(o => o.Name == name);
             if (option == null) return null;
 
-            if (!bool.TryParse((string)option.Value, out var value))
-                return null;
-
-            return value;
+            return (bool) option.Value;
         }
 
         public static string GetStringArg(this SlashCommandInteractionContext command, string name)

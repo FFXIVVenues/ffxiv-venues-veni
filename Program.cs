@@ -21,6 +21,7 @@ using NChronicle.Core.Interfaces;
 using FFXIVVenues.Veni.Logging;
 using FFXIVVenues.Veni.Persistance;
 using FFXIVVenues.Veni.Persistance.Abstraction;
+using FFXIVVenues.Veni.Managers;
 
 const string DISCORD_BOT_CONFIG_KEY = "DiscordBotToken";
 
@@ -34,9 +35,8 @@ var luisConfig = new LuisConfiguration();
 config.GetSection("Luis").Bind(luisConfig);
 var apiConfig = new ApiConfiguration();
 config.GetSection("Api").Bind(apiConfig);
-var persistanceConfig = new PersistanceConfiguration();
-config.GetSection("Persistance").Bind(apiConfig);
-
+var persistenceConfig = new PersistenceConfiguration();
+config.GetSection("Persistence").Bind(persistenceConfig);
 var uiConfig = new UiConfiguration();
 config.GetSection("Ui").Bind(uiConfig);
 
@@ -44,10 +44,10 @@ var apiHttpClient = new HttpClient { BaseAddress = new Uri(apiConfig.BaseUrl) };
 apiHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiConfig.AuthorizationKey);
 
 IRepository repository = null;
-if (persistanceConfig.Provider == PersistanceProvider.LiteDb)
-    repository = new LiteDbRepository(persistanceConfig.ConnectionString);
-else if (persistanceConfig.Provider == PersistanceProvider.Cosmos)
-    repository = new CosmosDbRepository(persistanceConfig.ConnectionString);
+if (persistenceConfig.Provider == PersistanceProvider.LiteDb)
+    repository = new LiteDbRepository(persistenceConfig.ConnectionString);
+else if (persistenceConfig.Provider == PersistanceProvider.Cosmos)
+    repository = new CosmosDbRepository(persistenceConfig.ConnectionString);
 else
     repository = new InMemoryRepository();
 
@@ -67,12 +67,13 @@ serviceCollection.AddSingleton<IDiscordChronicleLibrary>(discordChronicleLibrary
 serviceCollection.AddSingleton<IConfiguration>(config);
 serviceCollection.AddSingleton<LuisConfiguration>(luisConfig);
 serviceCollection.AddSingleton<ApiConfiguration>(apiConfig);
-serviceCollection.AddSingleton<PersistanceConfiguration>(persistanceConfig);
+serviceCollection.AddSingleton<PersistenceConfiguration>(persistenceConfig);
 serviceCollection.AddSingleton<UiConfiguration>(uiConfig);
 serviceCollection.AddSingleton<HttpClient>(apiHttpClient);
 serviceCollection.AddSingleton<IRepository>(repository);
 serviceCollection.AddSingleton<ICommandBroker, CommandBroker>();
 serviceCollection.AddSingleton<IApiService, ApiService>();
+serviceCollection.AddSingleton<IGuildManager, GuildManager>();
 serviceCollection.AddSingleton<IIndexersService, IndexersService>();
 serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
 serviceCollection.AddSingleton<ISessionContextProvider, SessionContextProvider>();
@@ -95,11 +96,14 @@ commandBroker.Add<ShowOpen.CommandFactory, ShowOpen.CommandHandler>(ShowOpen.COM
 commandBroker.Add<ShowFor.CommandFactory, ShowFor.CommandHandler>(ShowFor.COMMAND_NAME);
 commandBroker.Add<ShowMine.CommandFactory, ShowMine.CommandHandler>(ShowMine.COMMAND_NAME);
 commandBroker.Add<Inspect.CommandFactory, Inspect.CommandHandler>(Inspect.COMMAND_NAME);
+commandBroker.Add<SetRoleMap.CommandFactory, SetRoleMap.CommandHandler>(SetRoleMap.COMMAND_NAME);
+commandBroker.Add<SetWelcomeJoiners.CommandFactory, SetWelcomeJoiners.CommandHandler>(SetWelcomeJoiners.COMMAND_NAME);
 
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
 
 await Task.Delay(Timeout.Infinite);
 
+// Factory
 static DiscordSocketClient GetDiscordSocketClient(IConfigurationRoot config, IChronicle chronicle)
 {
     var discordKey = config.GetValue<string>(DISCORD_BOT_CONFIG_KEY);
@@ -107,7 +111,8 @@ static DiscordSocketClient GetDiscordSocketClient(IConfigurationRoot config, ICh
         throw new Exception("Discord Bot Token not set!");
 
     var client = new DiscordSocketClient(new() {
-        LogLevel = LogSeverity.Verbose
+        LogLevel = LogSeverity.Verbose,
+        GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers,
     });
     client.Log += (LogMessage msg) =>
     {
