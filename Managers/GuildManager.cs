@@ -27,7 +27,7 @@ namespace FFXIVVenues.Veni.Managers
 
         public async Task<bool> AssignRolesInAllGuildsAsync(Venue venue)
         {
-            var guilds = await GetVenisGuildsAsync();
+            var guilds = this.GetVenisGuilds();
             var guildIds = guilds.Select(guild => guild.Id.ToString());
             var guildSettings = await this._repository.GetWhere<GuildSettings>(c => guildIds.Contains(c.id));
             var rolesAdded = false;
@@ -37,6 +37,8 @@ namespace FFXIVVenues.Veni.Managers
                     continue;
 
                 var guild = guilds.FirstOrDefault(g => g.Id == guildSetting.GuildId);
+                if (guild == null) continue;
+
                 var role = guild.GetRole(roleId);
 
                 foreach (var managerId in venue.Managers)
@@ -89,7 +91,7 @@ namespace FFXIVVenues.Veni.Managers
             return true;
         }
 
-        private async Task<IReadOnlyCollection<IGuild>> GetVenisGuildsAsync() =>
+        private IReadOnlyCollection<IGuild> GetVenisGuilds() =>
             this._guildsCache != null ? this._guildsCache : this._guildsCache = this._client.Guilds;
 
     }
