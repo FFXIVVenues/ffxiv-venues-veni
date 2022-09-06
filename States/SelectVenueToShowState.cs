@@ -2,6 +2,7 @@
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Managers;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using System.Collections.Generic;
@@ -55,7 +56,6 @@ namespace FFXIVVenues.Veni.States
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
             await c.Session.ClearState(c);
-
             var isOwnerOrIndexer = venue.Managers.Contains(asker.ToString()) || this._indexersService.IsIndexer(asker);
 
             if (isOwnerOrIndexer)

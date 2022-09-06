@@ -30,7 +30,7 @@ namespace FFXIVVenues.Veni.Context
     public class InteractionContext : InteractionContext<IInteractionWrapper>
     {
 
-        private Prediction _prediction { get; set; }
+        private Prediction _prediction;
 
         public InteractionContext(IInteractionWrapper m,
                                   DiscordSocketClient dsc,
@@ -94,7 +94,7 @@ namespace FFXIVVenues.Veni.Context
         }
 
         public InteractionContext ToWrappedInteraction() =>
-            new InteractionContext(new MessageComponentWrapper(this.Interaction, this._chronicle),
+            new (new MessageComponentWrapper(this.Interaction, this._chronicle),
                                    this.Client,
                                    this.Session);
 
