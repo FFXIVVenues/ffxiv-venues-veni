@@ -6,11 +6,11 @@ namespace LinqEm.Persistence.Abstraction
     public abstract class Entity : IEntity
     {
 
-        public abstract string Id { get; protected set; }
+        public abstract string id { get; protected set; }
 
         public Entity()
         {
-            this.Id = GenerateId();
+            this.id = GenerateId();
         }
 
         public string GenerateId()

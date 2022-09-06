@@ -1,6 +1,6 @@
 ﻿namespace FFXIVVenues.Veni.Persistance
 {
-    internal class PersistanceConfiguration
+    internal class PersistenceConfiguration
     {
 
         public PersistanceProvider Provider { get; set; }

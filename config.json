@@ -9,8 +9,8 @@
 	},
 	"Persistence": {
 		"Provider": "Cosmos",
-		"ConnectionString": "",
-	}
+		"ConnectionString": ""
+	},
 	"Ui": {
 		"BaseUrl": "https://ffxivvenues.com"
 	},
@@ -21,7 +21,4 @@
 		"236852510688542720",
 		"252142384303833088"
 	]
-}
-
-{
 }

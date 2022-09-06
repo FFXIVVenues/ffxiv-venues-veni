@@ -46,16 +46,16 @@ namespace FFXIVVenues.Veni.Persistance
             Task.FromResult(_repository.GetCollection<T>().Upsert(entity));
 
         public Task DeleteAsync<T>(T entity) where T : class, IEntity =>
-            Task.FromResult(_repository.GetCollection<T>().Delete(entity.Id));
+            Task.FromResult(_repository.GetCollection<T>().Delete(entity.id));
 
         public Task DeleteAsync<T>(string id) where T : class, IEntity =>
             Task.FromResult(_repository.GetCollection<T>().Delete(id));
 
-        public IQueryable<T> GetWhere<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity =>
-            _repository.GetCollection<T>().Find(predicate).AsQueryable();
+        public Task<IQueryable<T>> GetWhere<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity =>
+            Task.FromResult(_repository.GetCollection<T>().Find(predicate).AsQueryable());
 
-        public IQueryable<T> GetAll<T>() where T : class, IEntity =>
-            _repository.GetCollection<T>().FindAll().AsQueryable();
+        public Task<IQueryable<T>> GetAll<T>() where T : class, IEntity =>
+            Task.FromResult(_repository.GetCollection<T>().FindAll().AsQueryable());
 
         public Task<T> GetByIdAsync<T>(string id) where T : class, IEntity =>
             Task.FromResult(_repository.GetCollection<T>().FindById(id));
