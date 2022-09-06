@@ -10,6 +10,8 @@ using FFXIVVenues.Veni.Context.Abstractions;
 using Discord;
 using NChronicle.Core.Interfaces;
 using FFXIVVenues.Veni.States.Abstractions;
+using FFXIVVenues.Veni.Managers;
+using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni
 {
@@ -22,24 +24,28 @@ namespace FFXIVVenues.Veni
         private readonly ISessionContextProvider _sessionContextProvider;
         private readonly IIndexersService _indexersService;
         private readonly IChronicle _chronicle;
+        private readonly IGuildManager _guildManager;
 
         public DiscordHandler(DiscordSocketClient client,
                               ICommandBroker commandBroker,
                               IServiceProvider serviceProvider,
                               ISessionContextProvider sessionContextProvider,
                               IIndexersService indexersService, 
-                              IChronicle chronicle)
+                              IChronicle chronicle,
+                              IGuildManager guildManager)
         {
             this._client = client;
             this._commandBroker = commandBroker;
             this._sessionContextProvider = sessionContextProvider;
             this._indexersService = indexersService;
             this._chronicle = chronicle;
+            this._guildManager = guildManager;
             this._client.Connected += Connected;
             this._client.SlashCommandExecuted += SlashCommandExecutedAsync;
             this._client.MessageReceived += MessageReceivedAsync;
             this._client.SelectMenuExecuted += ComponentExecutedAsync;
             this._client.ButtonExecuted += ComponentExecutedAsync;
+            this._client.UserJoined += UserJoinedAsync;
             
             this._pipeline = new Pipeline<MessageInteractionContext>()
                 .WithServiceProvider(serviceProvider)
@@ -52,6 +58,7 @@ namespace FFXIVVenues.Veni
                 .Add<StateMiddleware>()
                 .Add<IntentMiddleware>();
         }
+
 
         public Task ListenAsync() =>
             _client.StartAsync();
@@ -93,6 +100,13 @@ namespace FFXIVVenues.Veni
             await conversationContext.HandleComponentInteraction(context);
         }
 
+        private async Task UserJoinedAsync(SocketGuildUser user)
+        {
+            await this._guildManager.WelcomeGuildUser(user);
+            if (await this._guildManager.AssignRolesToGuildUser(user))
+                await user.Guild.SystemChannel.SendMessageAsync(MessageRepository.RolesAssigned.PickRandom().Replace("{mention}", user.Mention));
+        }
+
         private Task MessageReceivedAsync(SocketMessage message)
         {
             if (message.Author.Id == _client.CurrentUser.Id)
@@ -102,5 +116,6 @@ namespace FFXIVVenues.Veni
             var context = new MessageInteractionContext(message, _client, conversationContext, this._chronicle);
             return _pipeline.RunAsync(context);
         }
+
     }
 }

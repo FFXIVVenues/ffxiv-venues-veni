@@ -1,6 +1,7 @@
 ﻿using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Managers;
 using FFXIVVenues.Veni.States;
 using FFXIVVenues.Veni.Utils;
 using System.Linq;
