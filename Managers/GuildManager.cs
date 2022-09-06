@@ -25,11 +25,12 @@ namespace FFXIVVenues.Veni.Managers
             this._apiService = apiService;
         }
 
-        public async Task AssignRolesInAllGuildsAsync(Venue venue)
+        public async Task<bool> AssignRolesInAllGuildsAsync(Venue venue)
         {
             var guilds = await GetVenisGuildsAsync();
             var guildIds = guilds.Select(guild => guild.Id.ToString());
             var guildSettings = await this._repository.GetWhere<GuildSettings>(c => guildIds.Contains(c.id));
+            var rolesAdded = false;
             foreach (var guildSetting in guildSettings)
             {
                 if (!guildSetting.DataCenterRoleMap.TryGetValue(venue.Location.DataCenter, out var roleId))
@@ -42,9 +43,14 @@ namespace FFXIVVenues.Veni.Managers
                 {
                     var manager = await guild.GetUserAsync(ulong.Parse(managerId));
                     if (manager == null) continue;
-                    await manager.AddRoleAsync(roleId);
+                    if (!manager.RoleIds.Contains(roleId))
+                    {
+                        await manager.AddRoleAsync(roleId);
+                        rolesAdded = true;
+                    }
                 }
             }
+            return rolesAdded;
         }
 
         public async Task<bool> AssignRolesToGuildUser(IGuildUser user)
