@@ -106,7 +106,8 @@ namespace FFXIVVenues.Veni.States
 
             if (!isNewVenue)
             {
-                _ = this._guildManager.AssignRolesInAllGuildsAsync(venue);
+                _ = this._guildManager.SyncRolesForVenueAsync(venue);
+                _ = this._guildManager.FormatDisplayNamesForVenueAsync(venue);
                 await c.Interaction.Channel.SendMessageAsync(_preexisingResponse.PickRandom());
             }
             else if (isIndexer)
@@ -180,7 +181,8 @@ namespace FFXIVVenues.Veni.States
 
         private async Task ApproveVenueAsync(Venue venue, DiscordSocketClient client)
         {
-            _ = this._guildManager.AssignRolesInAllGuildsAsync(venue);
+            _ = this._guildManager.AssignRolesForVenueAsync(venue);
+            _ = this._guildManager.FormatDisplayNamesForVenueAsync(venue);
 
             foreach (var managerId in venue.Managers)
             {
