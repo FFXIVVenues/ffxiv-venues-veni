@@ -41,6 +41,7 @@
             public static string Edit = "Operation.Edit";
             public static string Show = "Operation.Show";
             public static string ShowOpen = "Operation.ShowOpen";
+            public static string ShowCount = "Operation.ShowCount";
             public static string ShowForManager = "Operation.ShowForManager";
             public static string Delete = "Operation.Delete";
             public static string Open = "Operation.Open";
