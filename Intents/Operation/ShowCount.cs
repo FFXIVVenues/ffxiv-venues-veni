@@ -23,24 +23,15 @@ namespace FFXIVVenues.Veni.Intents.Operation
 
             foreach (var venue in venues)
             {
-                if (venue.Location.DataCenter.Equals("Crystal"))
-                {
-                    crystalSum++;
-                }
-                else if (venue.Location.DataCenter.Equals("Primal"))
-                {
-                    primalSum++;
-                }
-                else if (venue.Location.DataCenter.Equals("Aether"))
-                {
-                    aetherSum++;
-                }
+                if (venue.Location.DataCenter.Equals("Crystal")) crystalSum++;
+                else if (venue.Location.DataCenter.Equals("Primal")) primalSum++;
+                else if (venue.Location.DataCenter.Equals("Aether")) aetherSum++;
+ 
             }
             await context.Interaction.RespondAsync(" We have **" + (aetherSum + crystalSum + primalSum) + "** total venues! 🤗.\n **" +
                 aetherSum + "** from Aether, **" +
                 crystalSum + "** from Crystal, and **" +
-                primalSum + "** in Primal."
-                );
+                primalSum + "** in Primal.");
         }
 
     }

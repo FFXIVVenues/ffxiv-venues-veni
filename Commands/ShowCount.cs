@@ -17,7 +17,7 @@ namespace FFXIVVenues.Veni.Commands
             {
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)
-                    .WithDescription("Show how many venues we have indexed so far")
+                    .WithDescription("Show how many venues were indexed so far.")
                     .Build();
             }
         }
