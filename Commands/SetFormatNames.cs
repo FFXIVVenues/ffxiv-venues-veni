@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Commands
 {
-    public static class SetWelcomeJoiners
+    public static class SetFormatNames
     {
 
-        public const string COMMAND_NAME = "setwelcomejoiners";
+        public const string COMMAND_NAME = "setformatnames";
         public const string OPTION_ALLOW = "allow";
 
         internal class CommandFactory : ICommandFactory
@@ -24,11 +24,11 @@ namespace FFXIVVenues.Veni.Commands
                    .WithName(OPTION_ALLOW)
                    .WithType(ApplicationCommandOptionType.Boolean)
                    .WithRequired(true)
-                   .WithDescription("Whether to allow Veni to welcome new joiners.");
+                   .WithDescription("Whether to allow Veni to format Venue Manager's display names.");
 
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)
-                    .WithDescription("Tell Veni whether to welcome new joiners to the discord server or not!")
+                    .WithDescription("Tell Veni whether to format the display names of Venue Managers in this discord server or not!")
                     .WithDefaultMemberPermissions(GuildPermission.ManageRoles)
                     .WithDMPermission(false)
                     .AddOption(allowArugment)
@@ -63,13 +63,13 @@ namespace FFXIVVenues.Veni.Commands
                 if (allow == null)
                     return;
 
-                guildSettings.WelcomeJoiners = allow.Value;
+                guildSettings.FormatNames = allow.Value;
                 var upsertTask = this._repository.UpsertAsync(guildSettings);
 
                 if (allow.Value)
-                    await slashCommand.Interaction.RespondAsync($"Yaay! I'll give warm welcomes I promise! 😻");
+                    await slashCommand.Interaction.RespondAsync($"Oki! I'll make sure everyone knows who they are! 🥰");
                 else
-                    await slashCommand.Interaction.RespondAsync($"Oooookkk! I'll stop welcoming. 😿");
+                    await slashCommand.Interaction.RespondAsync($"Okies! I'll stop setting their names. 🙂");
 
                 await upsertTask;
             }
