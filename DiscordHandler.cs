@@ -100,11 +100,20 @@ namespace FFXIVVenues.Veni
             await conversationContext.HandleComponentInteraction(context);
         }
 
-        private async Task UserJoinedAsync(SocketGuildUser user)
+        private Task UserJoinedAsync(SocketGuildUser user)
         {
-            await this._guildManager.WelcomeGuildUser(user);
-            if (await this._guildManager.AssignRolesToGuildUser(user))
-                await user.Guild.SystemChannel.SendMessageAsync(MessageRepository.RolesAssigned.PickRandom().Replace("{mention}", user.Mention));
+            Task.Delay(30_000).ContinueWith(async _ =>
+            {
+                var welcomeTask = this._guildManager.WelcomeGuildUserAsync(user);
+                var formatTask = this._guildManager.FormatDisplayNameForGuildUserAsync(user);
+                var roleTask = Task.CompletedTask;
+                if (await this._guildManager.SyncRolesForGuildUserAsync(user))
+                    roleTask = user.Guild.SystemChannel.SendMessageAsync(MessageRepository.RolesAssigned.PickRandom().Replace("{mention}", user.Mention));
+                await roleTask;
+                await formatTask;
+                await welcomeTask;
+            });
+            return Task.CompletedTask;
         }
 
         private Task MessageReceivedAsync(SocketMessage message)
