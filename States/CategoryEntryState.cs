@@ -29,7 +29,7 @@ namespace FFXIVVenues.Veni.States
             ("Casino", "Casino"),
             ("Shop", "Shop"),
             ("Maid cafe / Host club", "Maid cafe"),
-            ("Other", "other")
+            ("Other", "Other")
         };
 
         public Task Enter(InteractionContext c)
