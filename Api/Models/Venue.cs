@@ -1,5 +1,10 @@
-﻿using System.Text;
+﻿using System;
+using System.Linq;
+using System.Text;
 using Discord;
+using FFXIVVenues.Veni.Utils;
+using moment.net;
+using PrettyPrintNet;
 
 namespace FFXIVVenues.Veni.Api.Models
 {
@@ -9,6 +14,8 @@ namespace FFXIVVenues.Veni.Api.Models
         public EmbedBuilder ToEmbed(string uiUrl, string bannerUrl)
         {
             var stringBuilder = new StringBuilder();
+            stringBuilder.Append("**Created**: ");
+            stringBuilder.AppendLine(this.Added.FromNow());
             stringBuilder.Append("**Location**: ");
             stringBuilder.AppendLine(this.Location.ToString());
             stringBuilder.Append("**SFW**: ");
@@ -43,12 +50,13 @@ namespace FFXIVVenues.Veni.Api.Models
                                      .AppendLine();
                         break;
                     }
-                    stringBuilder.AppendLine()
-                                 .AppendLine();
+                    stringBuilder.AppendLine();
                 }
             else
                 stringBuilder.AppendLine("No description")
                              .AppendLine();
+
+            stringBuilder.AppendLine();
 
             if (Openings == null || Openings.Count == 0)
                 stringBuilder.AppendLine("**Schedule**: ")
@@ -73,8 +81,16 @@ namespace FFXIVVenues.Veni.Api.Models
                                "Pacific Standard Time" => "PST",
                                "Atlantic Standard Time" => "AST",
                                _ => opening.Start.TimeZone
-                           }).Append(')');
+                           }).Append(" (ND/PMN)");
+                    if (opening.Start.NextDay)
+                    {
+                        stringBuilder.Append(" (");
+                        stringBuilder.Append(opening.Day.Next().ToShortName());
+                        stringBuilder.Append(")");
+                    }
                     if (opening.End != null)
+                    {
+
                         stringBuilder
                                .Append(" - ")
                                .Append(opening.End.Hour)
@@ -91,10 +107,41 @@ namespace FFXIVVenues.Veni.Api.Models
                                    _ => opening.End.TimeZone
                                })
                                .Append(')');
+                        if (opening.Start.NextDay)
+                        {
+                            stringBuilder.Append(" (");
+                            stringBuilder.Append(opening.Day.Next().ToShortName());
+                            stringBuilder.Append(")");
+                        }
+                    }
                     stringBuilder.AppendLine();
                 }
             }
 
+            stringBuilder.AppendLine();
+
+            if (this.OpenOverrides != null && this.OpenOverrides.Any())
+            {
+                stringBuilder.AppendLine("**Schedule Overrides**:");
+                foreach (var @override in this.OpenOverrides)
+                {
+                    if (@override.End < DateTime.Now)
+                        continue;
+
+                    stringBuilder.Append(@override.Open ? "Open " : "Closed ");
+
+                    if (@override.Start < DateTime.Now)
+                        stringBuilder.Append(" until ");
+                    else
+                    {
+                        stringBuilder.Append(" from ");
+                        stringBuilder.Append(@override.Start.ToNow());
+                        stringBuilder.Append(" until ");
+                    }
+
+                    stringBuilder.AppendLine(@override.Start.ToNow());
+                }
+            }
             stringBuilder.AppendLine();
 
             stringBuilder.AppendLine("**Managers**: ");
@@ -106,6 +153,8 @@ namespace FFXIVVenues.Veni.Api.Models
 
             if (this.Open)
                 stringBuilder.AppendLine().AppendLine(":green_circle: Open right now");
+            else
+                stringBuilder.AppendLine().AppendLine(":black_circle: Not open right now");
 
             var builder = new EmbedBuilder()
                 .WithTitle(this.Name)
@@ -118,3 +167,4 @@ namespace FFXIVVenues.Veni.Api.Models
 
     }
 }
+

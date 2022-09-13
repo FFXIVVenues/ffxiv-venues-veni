@@ -19,7 +19,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
 
         public override Task Handle(InteractionContext context)
         {
-            var age = DateTime.Now - DateTime.Parse("06-11-2021 21:40:00");
+            var age = DateTime.Now - new DateTime(2021, 11, 6, 21, 40, 0);
             return context.Interaction.RespondAsync(string.Format(_messages.PickRandom(), age.ToPrettyString()));
         }
 

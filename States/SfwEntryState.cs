@@ -12,7 +12,6 @@ namespace FFXIVVenues.Veni.States
     {
         public Task Enter(InteractionContext c)
         {
-            c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync(MessageRepository.AskForSfwMessage.PickRandom(), new ComponentBuilder()
                 .WithBackButton(c)
                 .WithButton("Yes, it's safe on entry", c.Session.RegisterComponentHandler(cm =>
@@ -34,21 +33,6 @@ namespace FFXIVVenues.Veni.States
                 .Build());
         }
 
-        public Task OnMessageReceived(MessageInteractionContext c)
-        {
-            var venue = c.Session.GetItem<Venue>("venue");
-
-            if (c.Prediction.TopIntent == IntentNames.Response.Yes)
-                venue.Sfw = true;
-            else if (c.Prediction.TopIntent == IntentNames.Response.No)
-                venue.Sfw = false;
-            else
-                return c.Interaction.Channel.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
-
-            if (c.Session.GetItem<bool>("modifying"))
-                return c.Session.MoveStateAsync<ConfirmVenueState>(c);
-            return c.Session.MoveStateAsync<CategoryEntryState>(c);
-        }
     }
 
 }

@@ -64,12 +64,12 @@ namespace FFXIVVenues.Veni.States
                         .WithButton("Open", c.Session.RegisterComponentHandler(async cm =>
                         {
                             await this._apiService.OpenVenueAsync(venue.Id);
-                            await cm.Interaction.RespondAsync(MessageRepository.VenueOpenMessage.PickRandom());
+                            await cm.Interaction.FollowupAsync(MessageRepository.VenueOpenMessage.PickRandom());
                         }, ComponentPersistence.ClearRow), ButtonStyle.Primary)
                         .WithButton("Close", c.Session.RegisterComponentHandler(async cm =>
                         {
                             await this._apiService.CloseVenueAsync(venue.Id);
-                            await cm.Interaction.RespondAsync(MessageRepository.VenueClosedMessage.PickRandom());
+                            await cm.Interaction.FollowupAsync(MessageRepository.VenueClosedMessage.PickRandom());
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
                         {
