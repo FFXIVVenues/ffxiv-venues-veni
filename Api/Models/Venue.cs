@@ -81,7 +81,7 @@ namespace FFXIVVenues.Veni.Api.Models
                                "Pacific Standard Time" => "PST",
                                "Atlantic Standard Time" => "AST",
                                _ => opening.Start.TimeZone
-                           }).Append(" (ND/PMN)");
+                           }).Append(")");
                     if (opening.Start.NextDay)
                     {
                         stringBuilder.Append(" (");
