@@ -133,7 +133,7 @@ namespace FFXIVVenues.Veni.Managers
                         rolesToAdd.Add(roleId);
                 }
 
-            var rolesToRemove = guildSettings.DataCenterRoleMap.Values.Where(r => !rolesToKeep.Contains(r)).ToHashSet();
+            var rolesToRemove = guildSettings.DataCenterRoleMap.Values.Where(r => !rolesToKeep.Contains(r) && user.RoleIds.Contains(r)).ToHashSet();
 
             var changesMade = false;
             if (rolesToAdd.Any())
@@ -194,6 +194,9 @@ namespace FFXIVVenues.Veni.Managers
         /// is too long, the venue name is stripped of conjunctions,
         /// then the display name is trim to one word, and then the
         /// venue name is trimmed until it will fit.
+        /// 
+        /// This will not reformat a Display name if it appears 
+        /// that it already follows the format.
         /// </summary>
         /// <param name="user">
         /// The guild user to rename.
@@ -203,6 +206,9 @@ namespace FFXIVVenues.Veni.Managers
         /// </returns>
         public async Task<bool> FormatDisplayNameForGuildUserAsync(IGuildUser user, GuildSettings guildSettings = null)
         {
+            if (user.DisplayName.Contains(" | "))
+                return false;
+
             if (guildSettings == null) 
                 guildSettings = await this._repository.GetByIdAsync<GuildSettings>(user.GuildId.ToString());
             if (guildSettings == null) return false;
