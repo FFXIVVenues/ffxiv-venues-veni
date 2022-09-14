@@ -15,7 +15,7 @@ namespace FFXIVVenues.Veni.Api.Models
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.Append("**Created**: ");
-            stringBuilder.AppendLine(this.Added.FromNow());
+            stringBuilder.AppendLine(this.Added.FromNow()[0].ToString().ToUpper() + this.Added.FromNow()[1..]);
             stringBuilder.Append("**Location**: ");
             stringBuilder.AppendLine(this.Location.ToString());
             stringBuilder.Append("**SFW**: ");
@@ -118,28 +118,35 @@ namespace FFXIVVenues.Veni.Api.Models
                 }
             }
 
-            stringBuilder.AppendLine();
 
-            if (this.OpenOverrides != null && this.OpenOverrides.Any())
+            if (this.OpenOverrides != null && this.OpenOverrides.Any(o => o.End > DateTime.Now))
             {
+                stringBuilder.AppendLine();
                 stringBuilder.AppendLine("**Schedule Overrides**:");
                 foreach (var @override in this.OpenOverrides)
                 {
                     if (@override.End < DateTime.Now)
                         continue;
 
+                    if (@override.IsNow)
+                        stringBuilder.AppendLine("Open test");
+
+
                     stringBuilder.Append(@override.Open ? "Open " : "Closed ");
 
                     if (@override.Start < DateTime.Now)
-                        stringBuilder.Append(" until ");
+                    {
+                        stringBuilder.Append(" for ");
+                        stringBuilder.AppendLine(@override.End.ToNow()[3..]);
+                    }
                     else
                     {
                         stringBuilder.Append(" from ");
-                        stringBuilder.Append(@override.Start.ToNow());
-                        stringBuilder.Append(" until ");
+                        stringBuilder.Append(@override.Start.ToNow()[3..]);
+                        stringBuilder.Append(" from now for ");
+                        stringBuilder.AppendLine((@override.End - @override.Start).ToPrettyString());
                     }
 
-                    stringBuilder.AppendLine(@override.Start.ToNow());
                 }
             }
             stringBuilder.AppendLine();
