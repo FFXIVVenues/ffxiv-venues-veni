@@ -107,7 +107,7 @@ namespace FFXIVVenues.Veni.Api.Models
                                    _ => opening.End.TimeZone
                                })
                                .Append(')');
-                        if (opening.Start.NextDay)
+                        if (opening.End.NextDay)
                         {
                             stringBuilder.Append(" (");
                             stringBuilder.Append(opening.Day.Next().ToShortName());
