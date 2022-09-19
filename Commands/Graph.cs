@@ -53,16 +53,13 @@ namespace FFXIVVenues.Veni.Commands
                     var period = c.GetInt(OPTION_NAME);
                     var date = DateTime.Now;
                     var venues = await this._apiService.GetAllVenuesAsync();
-
                     var venuesForPeriod = venues.Where(venue => venue.Added > date.AddDays((double)-period));
 
-
                     if (!venuesForPeriod.Any())
-                    {
                         await c.Interaction.RespondAsync("No venue indexed during this period :sob:");
-                    }
-
-                    
+                    else
+                        await c.Interaction.RespondAsync(" We had **" + venuesForPeriod.Count() + "** total venues indexed " +
+                            "on the last **"+ period +"** days! 🤗.\n **");
                 }
             }
         }
