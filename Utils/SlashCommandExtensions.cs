@@ -8,15 +8,12 @@ namespace FFXIVVenues.Veni.Utils
     internal static class SlashCommandExtensions
     {
 
-        public static ulong? GetUlongArg(this SlashCommandInteractionContext command, string name)
+        public static long? GetLongArg(this SlashCommandInteractionContext command, string name)
         {
             var option = command.Interaction.Data.Options.FirstOrDefault(o => o.Name == name);
             if (option == null) return null;
 
-            if (!ulong.TryParse((string)option.Value, out var value))
-                return null;
-
-            return value;
+            return (long)option.Value;
         }
 
         public static int? GetInt(this SlashCommandInteractionContext command, string name)
