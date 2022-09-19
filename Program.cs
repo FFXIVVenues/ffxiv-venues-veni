@@ -100,6 +100,7 @@ commandBroker.Add<SetRoleMap.CommandFactory, SetRoleMap.CommandHandler>(SetRoleM
 commandBroker.Add<SetWelcomeJoiners.CommandFactory, SetWelcomeJoiners.CommandHandler>(SetWelcomeJoiners.COMMAND_NAME);
 commandBroker.Add<SetFormatNames.CommandFactory, SetFormatNames.CommandHandler>(SetFormatNames.COMMAND_NAME);
 commandBroker.Add<ShowCount.CommandFactory, ShowCount.CommandHandler>(ShowCount.COMMAND_NAME);
+commandBroker.Add<Graph.CommandFactory, Graph.CommandHandler>(Graph.COMMAND_NAME);
 
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
 

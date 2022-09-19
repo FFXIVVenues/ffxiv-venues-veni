@@ -3,10 +3,7 @@ using Discord;
 using FFXIVVenues.Veni.Commands.Brokerage;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Intents;
 using FFXIVVenues.Veni.Api;
-using FFXIVVenues.Veni.Persistance.Abstraction;
-using FFXIVVenues.VenueModels.V2022;
 using FFXIVVenues.Veni.Utils;
 using System;
 using System.Linq;
@@ -27,6 +24,7 @@ namespace FFXIVVenues.Veni.Commands
                     .WithName(OPTION_NAME)
                     .WithDescription(OPTION_DESCRIPTION)
                     .WithType(ApplicationCommandOptionType.Integer)
+                    .WithRequired(true)
                     .AddChoice("1 week", 7)
                     .AddChoice("15 days", 15)
                     .AddChoice("1 month", 30)
@@ -39,7 +37,7 @@ namespace FFXIVVenues.Veni.Commands
                     .AddOption(periodOption)
                     .Build();
             }
-
+        }
             internal class CommandHandler : ICommandHandler
             {
                 private readonly IApiService _apiService;
@@ -50,18 +48,16 @@ namespace FFXIVVenues.Veni.Commands
                 }
 
                 public async Task HandleAsync(SlashCommandInteractionContext c) {
-                    var period = c.GetInt(OPTION_NAME);
+                    var period = (int)c.GetLongArg(OPTION_NAME);
                     var date = DateTime.Now;
                     var venues = await this._apiService.GetAllVenuesAsync();
-                    var venuesForPeriod = venues.Where(venue => venue.Added > date.AddDays((double)-period));
-
+                    var venuesForPeriod = venues.Where(venue => venue.Added >= date.AddDays((int)-period));
                     if (!venuesForPeriod.Any())
-                        await c.Interaction.RespondAsync("No venue indexed during this period :sob:");
+                        await c.Interaction.RespondAsync("No venue indexed on the past **"+ period +"** days :sob:");
                     else
                         await c.Interaction.RespondAsync(" We had **" + venuesForPeriod.Count() + "** total venues indexed " +
-                            "on the last **"+ period +"** days! 🤗.\n **");
+                            "on the last **" + period + "** days! 🤗.\n");
                 }
             }
         }
     }
-}
