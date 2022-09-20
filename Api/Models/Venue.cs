@@ -128,10 +128,6 @@ namespace FFXIVVenues.Veni.Api.Models
                     if (@override.End < DateTime.Now)
                         continue;
 
-                    if (@override.IsNow)
-                        stringBuilder.AppendLine("Open test");
-
-
                     stringBuilder.Append(@override.Open ? "Open " : "Closed ");
 
                     if (@override.Start < DateTime.Now)
