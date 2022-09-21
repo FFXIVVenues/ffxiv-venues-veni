@@ -65,7 +65,7 @@ namespace FFXIVVenues.Veni.Commands
 
                     for (int i = 0; i < venuesCountByPeriod; i++)
                     {
-                        dataXPeriod[i] = venuesForPeriod.ElementAt(i).Added.ToOADate();
+                        dataXPeriod[i] = venuesForPeriod.ElementAt(i).Added.Date.ToOADate();
                         dataYVenue[i] = venueCount++;
                     }
 
