@@ -14,9 +14,9 @@ namespace FFXIVVenues.Veni.Commands
     internal class Graph
     {
         public const string COMMAND_NAME = "graph";
-        public const string OPTION_NAME = "period";
-        public const string OPTION_DESCRIPTION = "Period of time for graph";
-        public const string FILE_NAME = "graph.png";
+        private const string OPTION_NAME = "period";
+        private const string OPTION_DESCRIPTION = "Period of time for graph";
+        private const string FILE_NAME = "graph.png";
 
         internal class CommandFactory : ICommandFactory
         {
