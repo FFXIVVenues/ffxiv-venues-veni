@@ -7,6 +7,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Utils;
 using System;
 using System.Linq;
+using ScottPlot;
 
 namespace FFXIVVenues.Veni.Commands
 {
@@ -15,6 +16,7 @@ namespace FFXIVVenues.Veni.Commands
         public const string COMMAND_NAME = "graph";
         public const string OPTION_NAME = "period";
         public const string OPTION_DESCRIPTION = "Period of time for graph";
+        public const string FILE_NAME = "graph.png";
 
         internal class CommandFactory : ICommandFactory
         {
@@ -51,13 +53,47 @@ namespace FFXIVVenues.Veni.Commands
                 var period = (int)c.GetLongArg(OPTION_NAME);
                 var date = DateTime.Now;
                 var venues = await this._apiService.GetAllVenuesAsync();
-                var venuesForPeriod = venues.Where(venue => venue.Added >= date.AddDays((int)-period));
-
-                if (!venuesForPeriod.Any())
-                    await c.Interaction.RespondAsync("No venue indexed on the past **"+ period +"** days :sob:");
+                var venuesForPeriod = (venues.Where(venue => venue.Added >= date.AddDays((int)-period))).OrderBy(x => x.Added).ToList();
+                var venuesCountByPeriod = venues.Count(venue => venue.Added >= date.AddDays((int)-period));
+                if (venuesCountByPeriod == 0)
+                    await c.Interaction.RespondAsync("No venue indexed on the past **" + period + "** days :sob:");
                 else
-                    await c.Interaction.RespondAsync(" We had **" + venuesForPeriod.Count() + "** total venues indexed " +
+                {
+                    double[] dataXPeriod = new double[venuesCountByPeriod];
+                    double[] dataYVenue = new double[venuesCountByPeriod];
+                    double venueCount = venues.Count() - venuesCountByPeriod;
+
+                    for (int i = 0; i < venuesCountByPeriod; i++)
+                    {
+                        dataXPeriod[i] = venuesForPeriod.ElementAt(i).Added.ToOADate();
+                        dataYVenue[i] = venueCount++;
+                    }
+
+                    var plt = new ScottPlot.Plot(500, 500);
+                    plt.YAxis.Label("Venues");
+                    plt.XAxis.DateTimeFormat(true);
+
+                    plt.Palette = ScottPlot.Palette.OneHalfDark;
+                    plt.Style(ScottPlot.Style.Gray1);
+                    
+                    var sp = plt.AddScatter(dataXPeriod, dataYVenue);
+                    sp.MarkerShape = MarkerShape.filledCircle;
+                    sp.MarkerSize = 7;
+                    sp.MarkerColor = System.Drawing.Color.MediumPurple;
+                    sp.LineStyle = LineStyle.Solid;
+                    sp.LineColor = System.Drawing.Color.DarkGray;
+                    sp.LineWidth = 0.5;
+
+
+                    var embedBuilder = new EmbedBuilder()
+                        .WithTitle("Graph for last **"+period+"** days")
+                        .WithDescription(" We had **" + venuesForPeriod.Count() + "** total venues indexed " +
                         "on the last **" + period + "** days! 🤗.\n");
+
+                    await c.Interaction.RespondAsync("Oky lets find out!", embed: embedBuilder.Build());
+                    await c.Interaction.FollowupWithFileAsync(plt.SaveFig(FILE_NAME));
+                }
+
             }
         }
     }
