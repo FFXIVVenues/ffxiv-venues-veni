@@ -91,7 +91,7 @@ namespace FFXIVVenues.Veni.Commands
                         "on the last **" + period + "** days! 🤗.\n");
 
                     await c.Interaction.RespondAsync("Oky lets find out!", embed: embedBuilder.Build());
-                    await c.Interaction.FollowupWithFileAsync(plt.SaveFig(FILE_NAME));
+                    await c.Interaction.Channel.SendFileAsync(plt.SaveFig(FILE_NAME));
                 }
 
             }
