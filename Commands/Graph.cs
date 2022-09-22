@@ -54,36 +54,22 @@ namespace FFXIVVenues.Veni.Commands
                 var date = DateTime.Now;
                 var venues = await this._apiService.GetAllVenuesAsync();
                 var venuesForPeriod = (venues.Where(venue => venue.Added >= date.AddDays((int)-period))).OrderBy(x => x.Added).ToList();
-                var venuesCountByPeriod = venues.Count(venue => venue.Added >= date.AddDays((int)-period));
-                if (venuesCountByPeriod == 0)
+                
+                if (venuesForPeriod.Count == 0)
                     await c.Interaction.RespondAsync("No venue indexed on the past **" + period + "** days :sob:");
                 else
                 {
-                    double[] dataXPeriod = new double[venuesCountByPeriod];
-                    double[] dataYVenue = new double[venuesCountByPeriod];
-                    double venueCount = venues.Count() - venuesCountByPeriod;
+                    double[] dataXPeriod = new double[venuesForPeriod.Count];
+                    double[] dataYVenue = new double[venuesForPeriod.Count];
+                    double venueCount = venues.Count() - venuesForPeriod.Count;
 
-                    for (int i = 0; i < venuesCountByPeriod; i++)
+                    int i = 0;
+                    foreach(var venue in venuesForPeriod)
                     {
-                        dataXPeriod[i] = venuesForPeriod.ElementAt(i).Added.Date.ToOADate();
+                        dataXPeriod[i] = venue.Added.Date.ToOADate();
                         dataYVenue[i] = venueCount++;
+                        i++;
                     }
-
-                    var plt = new ScottPlot.Plot(500, 500);
-                    plt.YAxis.Label("Venues");
-                    plt.XAxis.DateTimeFormat(true);
-
-                    plt.Palette = ScottPlot.Palette.OneHalfDark;
-                    plt.Style(ScottPlot.Style.Gray1);
-                    
-                    var sp = plt.AddScatter(dataXPeriod, dataYVenue);
-                    sp.MarkerShape = MarkerShape.filledCircle;
-                    sp.MarkerSize = 7;
-                    sp.MarkerColor = System.Drawing.Color.MediumPurple;
-                    sp.LineStyle = LineStyle.Solid;
-                    sp.LineColor = System.Drawing.Color.DarkGray;
-                    sp.LineWidth = 0.5;
-
 
                     var embedBuilder = new EmbedBuilder()
                         .WithTitle("Graph for last **"+period+"** days")
@@ -91,10 +77,31 @@ namespace FFXIVVenues.Veni.Commands
                         "on the last **" + period + "** days! 🤗.\n");
 
                     await c.Interaction.RespondAsync("Oky lets find out!", embed: embedBuilder.Build());
-                    await c.Interaction.Channel.SendFileAsync(plt.SaveFig(FILE_NAME));
+                    await c.Interaction.Channel.SendFileAsync(graphBuilder(dataXPeriod, dataYVenue).SaveFig(FILE_NAME));
                 }
+            }
+            private Plot graphBuilder(double[] xs, double[] ys)
+            {
+                var plt = new Plot(500, 500);
 
+                plt.YAxis.Label("Venues");
+                plt.XAxis.DateTimeFormat(true);
+                plt.Palette = Palette.OneHalfDark;
+                plt.Style(Style.Gray1);
+
+                var sp = plt.AddScatter(xs, ys);
+                sp.MarkerShape = MarkerShape.filledCircle;
+                sp.MarkerSize = 7;
+                sp.MarkerColor = System.Drawing.Color.MediumPurple;
+                sp.LineStyle = LineStyle.Solid;
+                sp.LineColor = System.Drawing.Color.DarkGray;
+                sp.LineWidth = 0.5;
+
+                return plt;
             }
         }
+
+        
+
     }
 }
