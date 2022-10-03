@@ -11,11 +11,11 @@ namespace FFXIVVenues.Veni.States
     class ModifyVenueState : IState
     {
 
-        private readonly IIndexersService _indexersService;
+        private readonly IStaffService _staffService;
 
-        public ModifyVenueState(IIndexersService indexersService)
+        public ModifyVenueState(IStaffService staffService)
         {
-            this._indexersService = indexersService;
+            this._staffService = staffService;
         }
 
         public Task Enter(InteractionContext c)
@@ -33,7 +33,7 @@ namespace FFXIVVenues.Veni.States
                     .WithButton("Discord", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<DiscordEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("Banner photo", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<BannerEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
 
-            if (this._indexersService.IsIndexer(c.Interaction.User.Id))
+            if (this._staffService.IsEditor(c.Interaction.User.Id))
                 component.WithButton("Managers", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<ManagerEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
 
             if (c.Interaction.IsDM)

@@ -9,7 +9,7 @@ namespace FFXIVVenues.Veni.Luis
     internal class LuisClient : IDisposable, ILuisClient
     {
 
-        private const double PREDICTION_THRESHOLD = 0.1;
+        private const double PREDICTION_THRESHOLD = 0.2;
 
         private readonly LuisConfiguration _config;
         private LUISRuntimeClient _runtimeClient;

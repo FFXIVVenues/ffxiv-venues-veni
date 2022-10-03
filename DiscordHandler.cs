@@ -22,7 +22,7 @@ namespace FFXIVVenues.Veni
         private readonly ICommandBroker _commandBroker;
         private readonly Pipeline<MessageInteractionContext> _pipeline;
         private readonly ISessionContextProvider _sessionContextProvider;
-        private readonly IIndexersService _indexersService;
+        private readonly IStaffService _staffService;
         private readonly IChronicle _chronicle;
         private readonly IGuildManager _guildManager;
 
@@ -30,14 +30,14 @@ namespace FFXIVVenues.Veni
                               ICommandBroker commandBroker,
                               IServiceProvider serviceProvider,
                               ISessionContextProvider sessionContextProvider,
-                              IIndexersService indexersService, 
+                              IStaffService staffService, 
                               IChronicle chronicle,
                               IGuildManager guildManager)
         {
             this._client = client;
             this._commandBroker = commandBroker;
             this._sessionContextProvider = sessionContextProvider;
-            this._indexersService = indexersService;
+            this._staffService = staffService;
             this._chronicle = chronicle;
             this._guildManager = guildManager;
             this._client.Connected += Connected;
@@ -84,7 +84,7 @@ namespace FFXIVVenues.Veni
         private async Task ComponentExecutedAsync(SocketMessageComponent message)
         {
             await message.DeferAsync();
-            if (await this._indexersService.HandleComponentInteractionAsync(message))
+            if (await this._staffService.HandleComponentInteractionAsync(message))
                 return;
 
             var conversationContext = _sessionContextProvider.GetContext(message.User.Id.ToString());

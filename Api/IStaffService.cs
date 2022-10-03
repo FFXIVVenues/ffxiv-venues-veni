@@ -3,13 +3,17 @@ using Discord.WebSocket;
 
 namespace FFXIVVenues.Veni.Api
 {
-    public interface IIndexersService
+    public interface IStaffService
     {
 
-        ulong[] Indexers { get; }
+        ulong[] Engineers { get; }
+        ulong[] Editors { get; }
+        ulong[] Approvers { get; }
         ulong[] Photographers { get; }
 
-        bool IsIndexer(ulong userId);
+        bool IsEngineer(ulong userId);
+        bool IsEditor(ulong userId);
+        bool IsApprover(ulong userId);
         bool IsPhotographer(ulong userId);
 
         Broadcast Broadcast();

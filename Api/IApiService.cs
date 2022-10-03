@@ -12,6 +12,8 @@ namespace FFXIVVenues.Veni.Api
         Task<IEnumerable<Venue>> GetAllVenuesAsync();
         Task<IEnumerable<Venue>> GetAllVenuesAsync(ulong forContact);
         Task<IEnumerable<Venue>> GetAllVenuesAsync(string searchTerm);
+        Task<IEnumerable<Venue>> GetApprovedVenuesAsync();
+        Task<IEnumerable<Venue>> GetUnapprovedVenuesAsync();
         Task<IEnumerable<Venue>> GetOpenVenuesAsync();
         Task<Venue> GetVenueAsync(string id);
         Task<HttpResponseMessage> PutVenueAsync(Venue venue);

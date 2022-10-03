@@ -14,7 +14,7 @@ namespace FFXIVVenues.Veni.States
     class ConfirmVenueState : IState
     {
         private readonly IApiService _apiService;
-        private readonly IIndexersService _indexersService;
+        private readonly IStaffService _staffService;
         private readonly IGuildManager _guildManager;
         private readonly string _uiUrl;
         private readonly string _apiUrl;
@@ -50,11 +50,11 @@ namespace FFXIVVenues.Veni.States
         public ConfirmVenueState(IApiService apiService,
                                  UiConfiguration uiConfig,
                                  ApiConfiguration apiConfig,
-                                 IIndexersService indexersService,
+                                 IStaffService indexersService,
                                  IGuildManager guildManager)
         {
             this._apiService = apiService;
-            this._indexersService = indexersService;
+            this._staffService = indexersService;
             this._guildManager = guildManager;
             this._uiUrl = uiConfig.BaseUrl;
             this._apiUrl = apiConfig.BaseUrl;
@@ -92,8 +92,9 @@ namespace FFXIVVenues.Veni.States
             if (bannerUrl != null) // changed
                 await this._apiService.PutVenueBannerAsync(venue.Id, bannerUrl);
 
-            var isIndexer = this._indexersService.IsIndexer(c.Interaction.User.Id);
-            if (isIndexer)
+            var isEditorOrIndexer = this._staffService.IsEditor(c.Interaction.User.Id) 
+                                    || this._staffService.IsApprover(c.Interaction.User.Id);
+            if (isEditorOrIndexer)
             {
                 var approvalResponse = await this._apiService.ApproveAsync(venue.Id);
                 if (!approvalResponse.IsSuccessStatusCode)
@@ -110,7 +111,7 @@ namespace FFXIVVenues.Veni.States
                 _ = this._guildManager.FormatDisplayNamesForVenueAsync(venue);
                 await c.Interaction.Channel.SendMessageAsync(_preexisingResponse.PickRandom());
             }
-            else if (isIndexer)
+            else if (isEditorOrIndexer)
             {
                 await c.Interaction.Channel.SendMessageAsync("All done and auto-approved for you. :heart:");
                 await this.ApproveVenueAsync(venue, c.Client);
@@ -118,7 +119,7 @@ namespace FFXIVVenues.Veni.States
             else
             {
                 await c.Interaction.Channel.SendMessageAsync(_successfulNewResponse.PickRandom());
-                await SendToIndexers(venue, bannerUrl);
+                await SendToApprovers(venue, bannerUrl);
             }
 
             _ = c.Session.ClearState(c);
@@ -134,8 +135,8 @@ namespace FFXIVVenues.Veni.States
             return Task.CompletedTask;
         }
 
-        private Task SendToIndexers(Venue venue, string bannerUrl) =>
-            this._indexersService
+        private Task SendToApprovers(Venue venue, string bannerUrl) =>
+            this._staffService
                 .Broadcast()
                 .WithMessage($"Heyo indexers!\nVenue '**{venue.Name}**' ({venue.Id}) needs approving! :heart:")
                 .WithEmbed(venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", bannerUrl))
@@ -148,11 +149,11 @@ namespace FFXIVVenues.Veni.States
                         .WithButton("Approve", approveHandler, ButtonStyle.Success)
                         .WithButton("Reject", rejectHandler, ButtonStyle.Secondary);
                 })
-                .SendToAsync(this._indexersService.Indexers);
+                .SendToAsync(this._staffService.Approvers);
 
         private async Task ApproveVenueHandler(Venue venue, Broadcast.BroadcastInteractionContext approveBic)
         {
-            if (!this._indexersService.IsIndexer(approveBic.Component.User.Id))
+            if (!this._staffService.IsApprover(approveBic.Component.User.Id))
             {
                 await approveBic.Component.RespondAsync("Sorry, only indexers can do this! :sad:");
                 return;
@@ -200,7 +201,7 @@ namespace FFXIVVenues.Veni.States
                                               Broadcast.ComponentContext bcc, 
                                               Broadcast.BroadcastInteractionContext rejectBic)
         {
-            if (!this._indexersService.IsIndexer(rejectBic.Component.User.Id))
+            if (!this._staffService.IsApprover(rejectBic.Component.User.Id))
             {
                 await rejectBic.Component.RespondAsync("Sorry, only indexers can do this! :sad:");
                 return;

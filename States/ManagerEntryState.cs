@@ -12,16 +12,16 @@ namespace FFXIVVenues.Veni.States
 {
     class ManagerEntryState : IState
     {
-        private readonly IIndexersService _indexersService;
+        private readonly IStaffService _staffService;
 
-        public ManagerEntryState(IIndexersService indexersService)
+        public ManagerEntryState(IStaffService staffService)
         {
-            this._indexersService = indexersService;
+            this._staffService = staffService;
         }
 
         public Task Enter(InteractionContext c)
         {
-            if (!this._indexersService.IsIndexer(c.Interaction.User.Id))
+            if (!this._staffService.IsEditor(c.Interaction.User.Id))
                 return c.Session.MoveStateAsync<ConfirmVenueState>(c);
 
             c.Session.RegisterMessageHandler(this.OnMessageReceived);

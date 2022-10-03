@@ -13,17 +13,17 @@ namespace FFXIVVenues.Veni.Intents.Operation
     {
 
         private readonly IApiService _apiService;
-        private readonly IIndexersService _indexersService;
+        private readonly IStaffService _staffService;
         private readonly string _uiUrl;
         private readonly string _apiUrl;
 
         public Search(IApiService apiService,
                     UiConfiguration uiConfig,
                     ApiConfiguration apiConfig,
-                    IIndexersService indexersService)
+                    IStaffService staffService)
         {
             this._apiService = apiService;
-            this._indexersService = indexersService;
+            this._staffService = staffService;
             this._uiUrl = uiConfig.BaseUrl;
             this._apiUrl = apiConfig.BaseUrl;
         }
@@ -53,9 +53,9 @@ namespace FFXIVVenues.Veni.Intents.Operation
             else
             {
                 var venue = venues.Single();
-                var isOwnerOrIndexer = venue.Managers.Contains(asker.ToString()) || this._indexersService.IsIndexer(asker);
+                var isOwnerOrEditor = venue.Managers.Contains(asker.ToString()) || this._staffService.IsEditor(asker);
 
-                if (isOwnerOrIndexer)
+                if (isOwnerOrEditor)
                     await c.Interaction.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
                         component: new ComponentBuilder()
                             .WithButton("Open", c.Session.RegisterComponentHandler(async cm =>
@@ -82,7 +82,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
                                 Task.CompletedTask,
                             ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                             .Build());
-                else if (this._indexersService.IsPhotographer(asker))
+                else if (this._staffService.IsPhotographer(asker))
                     await c.Interaction.RespondAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
                         component: new ComponentBuilder()
                             .WithButton("Edit Banner Photo", c.Session.RegisterComponentHandler(cm =>
