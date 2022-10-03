@@ -19,7 +19,7 @@ namespace FFXIVVenues.Veni.Commands
             {
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)
-                    .WithDescription("Create a new venue! 🥰")
+                    .WithDescription("Message FFXIV Venues staff for help!")
                     .Build();
             }
 

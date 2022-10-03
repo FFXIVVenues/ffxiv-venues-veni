@@ -15,18 +15,18 @@ namespace FFXIVVenues.Veni.Intents.Operation
     {
 
         private readonly IApiService _apiService;
-        private readonly IIndexersService _indexersService;
+        private readonly IStaffService _staffService;
         private readonly string _uiUrl;
         private readonly string _apiUrl;
         private IEnumerable<Venue> _venues;
 
         public ShowOpen(IApiService apiService,
-                    UiConfiguration uiConfig,
-                    ApiConfiguration apiConfig, 
-                    IIndexersService indexersService)
+                        UiConfiguration uiConfig,
+                        ApiConfiguration apiConfig, 
+                        IStaffService staffService)
         {
             this._apiService = apiService;
-            this._indexersService = indexersService;
+            this._staffService = staffService;
             this._uiUrl = uiConfig.BaseUrl;
             this._apiUrl = apiConfig.BaseUrl;
         }
@@ -90,9 +90,9 @@ namespace FFXIVVenues.Veni.Intents.Operation
             var asker = c.Interaction.User.Id;
             var venue = this._venues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            var isOwnerOrIndexer = venue.Managers.Contains(asker.ToString()) || this._indexersService.IsIndexer(asker);
+            var isOwnerOrEditor = venue.Managers.Contains(asker.ToString()) || this._staffService.IsEditor(asker);
 
-            if (isOwnerOrIndexer)
+            if (isOwnerOrEditor)
                 return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
                     components: new ComponentBuilder()
                         .WithButton("Open", c.Session.RegisterComponentHandler(async cm =>
@@ -118,7 +118,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
                         .WithButton("Do nothing", c.Session.RegisterComponentHandler(cm => Task.CompletedTask,
                             ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .Build());
-            else if (this._indexersService.IsPhotographer(asker))
+            else if (this._staffService.IsPhotographer(asker))
                 return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
                     components: new ComponentBuilder()
                         .WithButton("Edit Banner Photo", c.Session.RegisterComponentHandler(cm =>

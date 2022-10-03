@@ -57,7 +57,7 @@ namespace FFXIVVenues.Veni.States
 
             if (invite.expires_at != null)
             {
-                await c.Interaction.Channel.SendMessageAsync($"That invite link is not permanent, it'll expire in {invite.expires_at.Value:m}");
+                await c.Interaction.Channel.SendMessageAsync($"That invite link is not permanent, it'll expire on {invite.expires_at.Value:m}.");
                 return;
             }
 

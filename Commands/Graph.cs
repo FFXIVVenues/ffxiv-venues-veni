@@ -40,6 +40,7 @@ namespace FFXIVVenues.Veni.Commands
                     .Build();
             }
         }
+
         internal class CommandHandler : ICommandHandler
         {
             private readonly IApiService _apiService;

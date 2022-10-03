@@ -5,7 +5,6 @@ using FFXIVVenues.Veni.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.States
@@ -15,8 +14,8 @@ namespace FFXIVVenues.Veni.States
 
         private static string[] _messages = new[]
         {
-            "What time zone would you like to give opening times in?",
-            "What time zone would the venues opening times be in?"
+            "What **time zone** would you like to give opening times in?",
+            "What **time zone** would the venues opening times be in?"
         };
 
         private static Dictionary<string, TimeZoneInfo> _timezones = new()

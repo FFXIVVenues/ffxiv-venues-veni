@@ -74,7 +74,7 @@ serviceCollection.AddSingleton<IRepository>(repository);
 serviceCollection.AddSingleton<ICommandBroker, CommandBroker>();
 serviceCollection.AddSingleton<IApiService, ApiService>();
 serviceCollection.AddSingleton<IGuildManager, GuildManager>();
-serviceCollection.AddSingleton<IIndexersService, IndexersService>();
+serviceCollection.AddSingleton<IStaffService, StaffService>();
 serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
 serviceCollection.AddSingleton<ISessionContextProvider, SessionContextProvider>();
 serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();
@@ -101,6 +101,7 @@ commandBroker.Add<SetWelcomeJoiners.CommandFactory, SetWelcomeJoiners.CommandHan
 commandBroker.Add<SetFormatNames.CommandFactory, SetFormatNames.CommandHandler>(SetFormatNames.COMMAND_NAME);
 commandBroker.Add<ShowCount.CommandFactory, ShowCount.CommandHandler>(ShowCount.COMMAND_NAME);
 commandBroker.Add<Graph.CommandFactory, Graph.CommandHandler>(Graph.COMMAND_NAME);
+commandBroker.Add<GetUnapproved.CommandFactory, GetUnapproved.CommandHandler>(GetUnapproved.COMMAND_NAME);
 
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
 

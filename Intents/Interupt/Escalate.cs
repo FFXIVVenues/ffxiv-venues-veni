@@ -6,21 +6,21 @@ namespace FFXIVVenues.Veni.Intents.Interupt
 {
     internal class Escalate : IntentHandler
     {
-        private readonly IIndexersService _indexersService;
+        private readonly IStaffService _staffService;
 
-        public Escalate(IIndexersService indexersService)
+        public Escalate(IStaffService staffService)
         {
-            this._indexersService = indexersService;
+            this._staffService = staffService;
         }
 
         public override async Task Handle(InteractionContext context)
         {
-            await context.Interaction.RespondAsync($"Alright! I've messaged mom! She or another indexer will contact you soon!");
+            await context.Interaction.RespondAsync($"Alright! I've messaged the family! They'll contact you soon!");
 
-            await this._indexersService
+            await this._staffService
                 .Broadcast()
-                .WithMessage($"Heyo, I need an human indexer! I have {context.Interaction.User.Mention} needing some help. :cry:")
-                .SendToAsync(this._indexersService.Indexers);
+                .WithMessage($"Heyo, I have {context.Interaction.User.Mention} needing some help. :cry:")
+                .SendToAsync(this._staffService.Approvers);
         }
 
     }
