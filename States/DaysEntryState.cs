@@ -35,7 +35,7 @@ namespace FFXIVVenues.Veni.States
             if (this._venue.Openings.Count > 1)
                 component.WithSkipButton<AskIfConsistentTimeEntryState, AskIfConsistentTimeEntryState>(c);
             else if (this._venue.Openings.Count == 1)
-                component.WithSkipButton<ConsistentOpeningEntryState, ConsistentOpeningEntryState>(c);
+                component.WithSkipButton<ConsistentOpeningTimeEntryState, ConsistentOpeningTimeEntryState>(c);
 
             return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskDaysOpenMessage.PickRandom()}", component: component.Build());
         }
@@ -61,7 +61,7 @@ namespace FFXIVVenues.Veni.States
             if (this._venue.Openings.Count > 1)
                 return c.Session.MoveStateAsync<AskIfConsistentTimeEntryState>(c);
 
-            return c.Session.MoveStateAsync<ConsistentOpeningEntryState>(c);
+            return c.Session.MoveStateAsync<ConsistentOpeningTimeEntryState>(c);
         }
 
     }

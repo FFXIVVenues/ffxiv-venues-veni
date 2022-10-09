@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Discord;
 using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States;
@@ -22,8 +23,11 @@ namespace FFXIVVenues.Veni.Intents.Operation
             if (context.Interaction.IsDM)
                 await context.Interaction.RespondAsync(MessageRepository.CreateVenueMessage.PickRandom());
             else
-                await context.Interaction.RespondAsync(MessageRepository.CreateVenueMessage.PickRandom()
-                                                        + Environment.NewLine + MessageRepository.MentionOrReplyToMeMessage.PickRandom());
+                await context.Interaction.RespondAsync(MessageRepository.CreateVenueMessage.PickRandom(),
+                    embed: new EmbedBuilder {
+                        Color = Color.Red,
+                        Description = MessageRepository.MentionOrReplyToMeMessage.PickRandom()
+                    }.Build());
             await context.Session.MoveStateAsync<NameEntryState>(context);
         }
 

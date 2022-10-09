@@ -29,8 +29,7 @@ namespace FFXIVVenues.Veni.Utils
 
         public static string[] MentionOrReplyToMeMessage = new[]
         {
-            "Since we're in a public channel, please **Reply** to my messages **or @ me** with your answers so I know you're talking to _me_ 🥰",
-            "We're in a channel so please **@ me** with your answers so I know you're talking to _me_. 🥰"
+            "You're in a public channel, **@ Veni Ki** with your answers so she knows you're talking to her."
         };
 
         public static string[] AskForNameMessage = new[]
@@ -44,11 +43,10 @@ namespace FFXIVVenues.Veni.Utils
 
         public static string[] AskForDataCenterMessage = new[]
         {
-            "Which **Data Center** are you in? (Aether, Primal, Crystal, Elemental, Gaia, Mana, Chaos, Light)",
-            "And which **Data Center** is it? (Aether, Primal, Crystal, Elemental, Gaia, Mana, Chaos, Light)",
-            "Which **Data Center** is the venue in? (Aether, Primal, Crystal, Elemental, Gaia, Mana, Chaos, Light)"
+            "Which **data center** are you in?",
+            "Which **data center** is your venue in?"
         };
-
+        
         public static string[] AskForWorldMessage = new[]
         {
             "Which **world** are you in?",

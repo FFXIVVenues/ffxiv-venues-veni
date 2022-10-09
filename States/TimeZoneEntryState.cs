@@ -25,6 +25,8 @@ namespace FFXIVVenues.Veni.States
             { "Mountain Standard Time (MST)", TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time") },
             { "Pacific Standard Time (PST)", TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time") },
             { "Atlantic Standard Time (AST)", TimeZoneInfo.FindSystemTimeZoneById("Atlantic Standard Time") },
+            { "Central European Time (CEST)", TimeZoneInfo.FindSystemTimeZoneById("Central Europe Standard Time") },
+            { "Eastern European Time (EEST)", TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time") },
             { "Greenwich Mean Time (GMT)", TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time") },
             { "Coordinated Universal Time (UTC)", TimeZoneInfo.Utc }
         };
