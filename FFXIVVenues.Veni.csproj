@@ -11,6 +11,7 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>.</DockerfileContext>
     <DockerfileBuildArguments>--build-arg NUGET_REPO_PASSWORD=$(FFXIV_VENUES_NUGET_REPO_PASSWORD)</DockerfileBuildArguments>
+    <LangVersion>latestmajor</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
