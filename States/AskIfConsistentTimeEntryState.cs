@@ -20,10 +20,10 @@ namespace FFXIVVenues.Veni.States
                 new ComponentBuilder()
                     .WithBackButton(c)
                     .WithButton("Yes, each day has the same opening/closing time",
-                        c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<ConsistentOpeningEntryState>(cm), 
+                        c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<ConsistentOpeningTimeEntryState>(cm), 
                     ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("No, it's different opening times between days",
-                        c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<InconsistentOpeningEntryState>(cm), 
+                        c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<InconsistentOpeningTimeEntryState>(cm), 
                     ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .Build());
 

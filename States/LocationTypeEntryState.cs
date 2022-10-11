@@ -15,17 +15,17 @@ namespace FFXIVVenues.Veni.States
                 .WithButton("A house", c.Session.RegisterComponentHandler(cm =>
                 {
                     cm.Session.SetItem("locationType", "house");
-                    return cm.Session.MoveStateAsync<WorldEntryState>(cm);
+                    return cm.Session.MoveStateAsync<DataCenterEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .WithButton("A room in a house", c.Session.RegisterComponentHandler(cm =>
                 {
                     cm.Session.SetItem("locationType", "room");
-                    return cm.Session.MoveStateAsync<WorldEntryState>(cm);
+                    return cm.Session.MoveStateAsync<DataCenterEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .WithButton("An apartment", c.Session.RegisterComponentHandler(cm =>
                 {
                     cm.Session.SetItem("locationType", "apartment");
-                    return cm.Session.MoveStateAsync<WorldEntryState>(cm);
+                    return cm.Session.MoveStateAsync<DataCenterEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
