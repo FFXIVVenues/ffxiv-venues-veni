@@ -28,6 +28,7 @@ namespace FFXIVVenues.Veni.States
             ("Pillow talk", "Pillow"),
             ("Photography", "Photography"),
             ("Open stage", "Open stage"),
+            ("Void", "Void"),
             ("VIP available", "VIP"),
             ("Triple triad", "Triple triad"),
             ("RP Heavily Encouraged", "RP Heavy"),
