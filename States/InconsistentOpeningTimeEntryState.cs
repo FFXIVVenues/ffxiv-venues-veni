@@ -5,7 +5,7 @@ using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels.V2022;
-using Venue = FFXIVVenues.Veni.Api.Models.Venue;
+using Venue = FFXIVVenues.Veni.Models.Venue;
 
 namespace FFXIVVenues.Veni.States
 {

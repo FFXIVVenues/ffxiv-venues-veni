@@ -6,7 +6,6 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Luis;
 using FFXIVVenues.Veni.Intents;
@@ -22,6 +21,8 @@ using FFXIVVenues.Veni.Logging;
 using FFXIVVenues.Veni.Persistance;
 using FFXIVVenues.Veni.Persistance.Abstraction;
 using FFXIVVenues.Veni.Managers;
+using FFXIVVenues.Veni.Services;
+using FFXIVVenues.Veni.Models;
 
 const string DISCORD_BOT_CONFIG_KEY = "DiscordBotToken";
 
@@ -74,7 +75,7 @@ serviceCollection.AddSingleton<IRepository>(repository);
 serviceCollection.AddSingleton<ICommandBroker, CommandBroker>();
 serviceCollection.AddSingleton<IApiService, ApiService>();
 serviceCollection.AddSingleton<IGuildManager, GuildManager>();
-serviceCollection.AddSingleton<IStaffService, StaffService>();
+serviceCollection.AddSingleton<IStaffManager, StaffManager>();
 serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
 serviceCollection.AddSingleton<ISessionContextProvider, SessionContextProvider>();
 serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();

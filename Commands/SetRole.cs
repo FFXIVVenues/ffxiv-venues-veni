@@ -28,7 +28,10 @@ namespace FFXIVVenues.Veni.Commands
                    .WithRequired(true)
                    .AddChoice("Crystal", "Crystal")
                    .AddChoice("Aether", "Aether")
-                   .AddChoice("Primal", "Primal");
+                   .AddChoice("Primal", "Primal")
+                   .AddChoice("Dynamis", "Dynamis")
+                   .AddChoice("Light", "Light")
+                   .AddChoice("Chaos", "Chaos");
 
                 var roleArgument = new SlashCommandOptionBuilder()
                    .WithName(OPTION_ROLE)

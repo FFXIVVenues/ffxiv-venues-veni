@@ -1,8 +1,8 @@
 ﻿using Discord;
-using FFXIVVenues.Veni.Api;
-using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Managers;
+using FFXIVVenues.Veni.Models;
+using FFXIVVenues.Veni.Services;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using System.Collections.Generic;
@@ -17,10 +17,10 @@ namespace FFXIVVenues.Veni.States
         private readonly string _apiUrl;
         private readonly string _uiUrl;
         private readonly IApiService _apiService;
-        private readonly IStaffService _staffService;
+        private readonly IStaffManager _staffService;
         private IEnumerable<Venue> _managersVenues;
 
-        public SelectVenueToShowState(UiConfiguration uiConfig, ApiConfiguration apiConfig, IApiService apiService, IStaffService staffService)
+        public SelectVenueToShowState(UiConfiguration uiConfig, ApiConfiguration apiConfig, IApiService apiService, IStaffManager staffService)
         {
             this._uiUrl = uiConfig.BaseUrl;
             this._apiUrl = apiConfig.BaseUrl;

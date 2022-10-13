@@ -1,6 +1,6 @@
-﻿using FFXIVVenues.Veni.Api;
-using FFXIVVenues.Veni.Api.Models;
+﻿using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Services;
 using FFXIVVenues.Veni.States;
 using System.Collections.Generic;
 using System.Linq;

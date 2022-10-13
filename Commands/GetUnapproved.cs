@@ -3,11 +3,12 @@ using Discord;
 using FFXIVVenues.Veni.Commands.Brokerage;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Api;
 using System.Linq;
 using System.Collections.Generic;
-using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.States;
+using FFXIVVenues.Veni.Models;
+using FFXIVVenues.Veni.Managers;
+using FFXIVVenues.Veni.Services;
 
 namespace FFXIVVenues.Veni.Commands
 {
@@ -29,7 +30,7 @@ namespace FFXIVVenues.Veni.Commands
         internal class CommandHandler : ICommandHandler
         {
             private readonly IApiService _apiService;
-            private readonly IStaffService _staffService;
+            private readonly IStaffManager _staffService;
             private readonly string _uiUrl;
             private readonly string _apiUrl;
             private IEnumerable<Venue> _venues;
@@ -37,7 +38,7 @@ namespace FFXIVVenues.Veni.Commands
             public CommandHandler(IApiService _apiService,
                                   UiConfiguration uiConfig,
                                   ApiConfiguration apiConfig,
-                                  IStaffService staffService)
+                                  IStaffManager staffService)
             {
                 this._apiService = _apiService;
                 this._staffService = staffService;

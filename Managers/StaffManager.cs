@@ -3,11 +3,12 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using FFXIVVenues.Veni.Services;
 using Microsoft.Extensions.Configuration;
 
-namespace FFXIVVenues.Veni.Api
+namespace FFXIVVenues.Veni.Managers
 {
-    public class StaffService : IStaffService
+    public class StaffManager : IStaffManager
     {
 
         public ulong[] Engineers { get; private init; }
@@ -18,29 +19,29 @@ namespace FFXIVVenues.Veni.Api
         private readonly DiscordSocketClient _client;
         private readonly ConcurrentDictionary<string, Broadcast> _broadcasts = new();
 
-        public StaffService(DiscordSocketClient client, IConfiguration config)
+        public StaffManager(DiscordSocketClient client, IConfiguration config)
         {
             var engineersStrings = config.GetSection("Engineers")?.GetChildren()?.Select(x => x.Value)?.ToArray();
-            this.Engineers = engineersStrings.Select(s => ulong.Parse(s)).ToArray();
+            Engineers = engineersStrings.Select(s => ulong.Parse(s)).ToArray();
             var editorsStrings = config.GetSection("Editors")?.GetChildren()?.Select(x => x.Value)?.ToArray();
-            this.Editors = editorsStrings.Select(s => ulong.Parse(s)).ToArray();
+            Editors = editorsStrings.Select(s => ulong.Parse(s)).ToArray();
             var approversStrings = config.GetSection("Approvers")?.GetChildren()?.Select(x => x.Value)?.ToArray();
-            this.Approvers = approversStrings.Select(s => ulong.Parse(s)).ToArray();
+            Approvers = approversStrings.Select(s => ulong.Parse(s)).ToArray();
             var photographerStrings = config.GetSection("Photographers")?.GetChildren()?.Select(x => x.Value)?.ToArray();
-            this.Photographers = photographerStrings.Select(s => ulong.Parse(s)).ToArray();
+            Photographers = photographerStrings.Select(s => ulong.Parse(s)).ToArray();
 
-            this._client = client;
+            _client = client;
         }
 
-        public bool IsEngineer(ulong userId) => this.Engineers.Contains(userId);
-        public bool IsApprover(ulong userId) => this.Approvers.Contains(userId);
-        public bool IsEditor(ulong userId) => this.Editors.Contains(userId);
-        public bool IsPhotographer(ulong userId) => this.Photographers.Contains(userId);
+        public bool IsEngineer(ulong userId) => Engineers.Contains(userId);
+        public bool IsApprover(ulong userId) => Approvers.Contains(userId);
+        public bool IsEditor(ulong userId) => Editors.Contains(userId);
+        public bool IsPhotographer(ulong userId) => Photographers.Contains(userId);
 
         public Broadcast Broadcast()
         {
-            var broadcast = new Broadcast(Guid.NewGuid().ToString(), this._client);
-            this._broadcasts[broadcast.Id] = broadcast;
+            var broadcast = new Broadcast(Guid.NewGuid().ToString(), _client);
+            _broadcasts[broadcast.Id] = broadcast;
             return broadcast;
         }
 

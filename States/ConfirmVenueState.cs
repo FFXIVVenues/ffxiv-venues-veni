@@ -1,9 +1,9 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using FFXIVVenues.Veni.Api;
-using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Managers;
+using FFXIVVenues.Veni.Models;
+using FFXIVVenues.Veni.Services;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace FFXIVVenues.Veni.States
     class ConfirmVenueState : IState
     {
         private readonly IApiService _apiService;
-        private readonly IStaffService _staffService;
+        private readonly IStaffManager _staffService;
         private readonly IGuildManager _guildManager;
         private readonly string _uiUrl;
         private readonly string _apiUrl;
@@ -50,7 +50,7 @@ namespace FFXIVVenues.Veni.States
         public ConfirmVenueState(IApiService apiService,
                                  UiConfiguration uiConfig,
                                  ApiConfiguration apiConfig,
-                                 IStaffService indexersService,
+                                 IStaffManager indexersService,
                                  IGuildManager guildManager)
         {
             this._apiService = apiService;

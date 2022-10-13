@@ -1,20 +1,20 @@
 ﻿using FFXIVVenues.Veni.Context;
 using System.Threading.Tasks;
 using System.Linq;
-using FFXIVVenues.Veni.Api;
 using Newtonsoft.Json.Linq;
-using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.States.Abstractions;
 using Discord;
+using FFXIVVenues.Veni.Models;
+using FFXIVVenues.Veni.Managers;
 
 namespace FFXIVVenues.Veni.States
 {
     class ManagerEntryState : IState
     {
-        private readonly IStaffService _staffService;
+        private readonly IStaffManager _staffService;
 
-        public ManagerEntryState(IStaffService staffService)
+        public ManagerEntryState(IStaffManager staffService)
         {
             this._staffService = staffService;
         }

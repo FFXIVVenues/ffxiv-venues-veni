@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Kana.Pipelines;
 using FFXIVVenues.Veni.Middleware;
 using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Commands.Brokerage;
 using FFXIVVenues.Veni.Context.Abstractions;
 using Discord;
@@ -22,7 +21,7 @@ namespace FFXIVVenues.Veni
         private readonly ICommandBroker _commandBroker;
         private readonly Pipeline<MessageInteractionContext> _pipeline;
         private readonly ISessionContextProvider _sessionContextProvider;
-        private readonly IStaffService _staffService;
+        private readonly IStaffManager _staffService;
         private readonly IChronicle _chronicle;
         private readonly IGuildManager _guildManager;
 
@@ -30,7 +29,7 @@ namespace FFXIVVenues.Veni
                               ICommandBroker commandBroker,
                               IServiceProvider serviceProvider,
                               ISessionContextProvider sessionContextProvider,
-                              IStaffService staffService, 
+                              IStaffManager staffService, 
                               IChronicle chronicle,
                               IGuildManager guildManager)
         {

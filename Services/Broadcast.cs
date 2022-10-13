@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 
-namespace FFXIVVenues.Veni.Api
+namespace FFXIVVenues.Veni.Services
 {
     public record Broadcast(string Id, DiscordSocketClient Client)
     {
@@ -20,19 +20,19 @@ namespace FFXIVVenues.Veni.Api
 
         public Broadcast WithMessage(string message)
         {
-            this.Message = message;
+            Message = message;
             return this;
         }
 
         public Broadcast WithComponent(Func<ComponentContext, ComponentBuilder> componentBuilder)
         {
-            this.Component = componentBuilder(new ComponentContext(this));
+            Component = componentBuilder(new ComponentContext(this));
             return this;
         }
 
         public Broadcast WithEmbed(EmbedBuilder embedBuilder)
         {
-            this.Embed = embedBuilder;
+            Embed = embedBuilder;
             return this;
         }
 
@@ -40,22 +40,22 @@ namespace FFXIVVenues.Veni.Api
         {
             foreach (var indexer in users)
             {
-                var user = await this.Client.GetUserAsync(indexer);
+                var user = await Client.GetUserAsync(indexer);
                 var channel = await user.CreateDMChannelAsync();
-                var userMessage = await channel.SendMessageAsync(this.Message,
-                                               components: this.Component?.Build(),
-                                               embed: this.Embed?.Build());
-                this.SentMessages[indexer] = userMessage;
+                var userMessage = await channel.SendMessageAsync(Message,
+                                               components: Component?.Build(),
+                                               embed: Embed?.Build());
+                SentMessages[indexer] = userMessage;
             }
 
         }
 
         public async Task<bool> HandleComponentInteraction(SocketMessageComponent c)
         {
-            if (this._handlers.ContainsKey(c.Data.CustomId))
+            if (_handlers.ContainsKey(c.Data.CustomId))
             {
                 var context = new BroadcastInteractionContext(this, c);
-                await this._handlers[c.Data.CustomId](context);
+                await _handlers[c.Data.CustomId](context);
                 return true;
             }
             return false;
@@ -67,7 +67,7 @@ namespace FFXIVVenues.Veni.Api
             public string RegisterComponentHandler(Func<BroadcastInteractionContext, Task> handler)
             {
                 var key = Guid.NewGuid().ToString();
-                this.Broadcast._handlers[key] = handler;
+                Broadcast._handlers[key] = handler;
                 return key;
             }
 
@@ -76,13 +76,13 @@ namespace FFXIVVenues.Veni.Api
         public record BroadcastInteractionContext(Broadcast Broadcast, SocketMessageComponent Component)
         {
 
-            public IEnumerable<ulong> OtherUsersIds => this.Broadcast.SentMessages.Keys.Where(u => u == this.Component.User.Id);
-            public SocketUser CurrentUser => this.Component.User;
+            public IEnumerable<ulong> OtherUsersIds => Broadcast.SentMessages.Keys.Where(u => u == Component.User.Id);
+            public SocketUser CurrentUser => Component.User;
 
             public async Task ModifyForOtherUsers(Action<MessageProperties, IUserMessage> modifier)
             {
-                var currentUser = this.Component.User.Id;
-                foreach (var sentMessage in this.Broadcast.SentMessages)
+                var currentUser = Component.User.Id;
+                foreach (var sentMessage in Broadcast.SentMessages)
                 {
                     if (sentMessage.Key == currentUser)
                         continue;
@@ -92,8 +92,8 @@ namespace FFXIVVenues.Veni.Api
 
             public async Task ModifyForCurrentUser(Action<MessageProperties, IUserMessage> modifier)
             {
-                var currentUser = this.Component.User.Id;
-                foreach (var sentMessage in this.Broadcast.SentMessages)
+                var currentUser = Component.User.Id;
+                foreach (var sentMessage in Broadcast.SentMessages)
                 {
                     if (sentMessage.Key != currentUser)
                         continue;
