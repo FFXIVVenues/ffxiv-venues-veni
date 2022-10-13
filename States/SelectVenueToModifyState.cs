@@ -1,8 +1,8 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Api;
-using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Models;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using System.Collections.Generic;

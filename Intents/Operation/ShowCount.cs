@@ -1,5 +1,5 @@
-﻿using FFXIVVenues.Veni.Api;
-using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Services;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Intents.Operation

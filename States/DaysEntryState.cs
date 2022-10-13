@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Venue = FFXIVVenues.Veni.Api.Models.Venue;
+using Venue = FFXIVVenues.Veni.Models.Venue;
 
 namespace FFXIVVenues.Veni.States
 {

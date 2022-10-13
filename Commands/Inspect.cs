@@ -1,10 +1,10 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Commands.Brokerage;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
 using FFXIVVenues.Veni.Logging;
+using FFXIVVenues.Veni.Managers;
 using FFXIVVenues.Veni.Utils;
 using NChronicle.Core.Model;
 using System.Threading.Tasks;
@@ -43,10 +43,10 @@ namespace FFXIVVenues.Veni.Commands
 
         internal class CommandHandler : ICommandHandler
         {
-            private readonly IStaffService indexersService;
+            private readonly IStaffManager indexersService;
             private readonly IDiscordChronicleLibrary chronicleLibrary;
 
-            public CommandHandler(IStaffService indexersService, IDiscordChronicleLibrary chronicleLibrary)
+            public CommandHandler(IStaffManager indexersService, IDiscordChronicleLibrary chronicleLibrary)
             {
                 this.indexersService = indexersService;
                 this.chronicleLibrary = chronicleLibrary;

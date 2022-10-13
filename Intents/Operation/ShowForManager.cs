@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Services;
 using FFXIVVenues.Veni.States;
 using Newtonsoft.Json.Linq;
 using System.Linq;

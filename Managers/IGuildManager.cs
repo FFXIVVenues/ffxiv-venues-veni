@@ -1,5 +1,4 @@
 ﻿using Discord;
-using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Models;
 using System.Threading.Tasks;
 

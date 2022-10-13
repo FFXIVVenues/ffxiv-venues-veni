@@ -1,14 +1,14 @@
-﻿using FFXIVVenues.Veni.Api;
-using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Managers;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Intents.Interupt
 {
     internal class Escalate : IntentHandler
     {
-        private readonly IStaffService _staffService;
+        private readonly IStaffManager _staffService;
 
-        public Escalate(IStaffService staffService)
+        public Escalate(IStaffManager staffService)
         {
             this._staffService = staffService;
         }

@@ -1,6 +1,6 @@
 ﻿using Discord;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Managers;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
 using System;
@@ -11,9 +11,9 @@ namespace FFXIVVenues.Veni.States
     class ModifyVenueState : IState
     {
 
-        private readonly IStaffService _staffService;
+        private readonly IStaffManager _staffService;
 
-        public ModifyVenueState(IStaffService staffService)
+        public ModifyVenueState(IStaffManager staffService)
         {
             this._staffService = staffService;
         }

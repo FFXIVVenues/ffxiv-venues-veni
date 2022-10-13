@@ -3,11 +3,11 @@ using Discord;
 using FFXIVVenues.Veni.Commands.Brokerage;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Utils;
 using System;
 using System.Linq;
 using ScottPlot;
+using FFXIVVenues.Veni.Services;
 
 namespace FFXIVVenues.Veni.Commands
 {

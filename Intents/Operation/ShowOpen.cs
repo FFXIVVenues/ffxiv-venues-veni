@@ -1,7 +1,8 @@
 ﻿using Discord;
-using FFXIVVenues.Veni.Api;
-using FFXIVVenues.Veni.Api.Models;
 using FFXIVVenues.Veni.Context;
+using FFXIVVenues.Veni.Managers;
+using FFXIVVenues.Veni.Models;
+using FFXIVVenues.Veni.Services;
 using FFXIVVenues.Veni.States;
 using FFXIVVenues.Veni.Utils;
 using System;
@@ -15,7 +16,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
     {
 
         private readonly IApiService _apiService;
-        private readonly IStaffService _staffService;
+        private readonly IStaffManager _staffService;
         private readonly string _uiUrl;
         private readonly string _apiUrl;
         private IEnumerable<Venue> _venues;
@@ -23,7 +24,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
         public ShowOpen(IApiService apiService,
                         UiConfiguration uiConfig,
                         ApiConfiguration apiConfig, 
-                        IStaffService staffService)
+                        IStaffManager staffService)
         {
             this._apiService = apiService;
             this._staffService = staffService;
