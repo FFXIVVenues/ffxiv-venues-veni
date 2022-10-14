@@ -32,8 +32,8 @@ public static class FfxivWorlds
         { "Dynamis", new[] { "Halicarnassus", "Maduin", "Marilith", "Seraph" }},
 
         // Europe
-        { "Chaos", new [] { "Cerberus", "Louisoix", "Moogle", "Omega", "Ragnarok", "Spriggan" }},
-        { "Light", new [] { "Lich", "Odin", "Phoenix", "Shiva", "Twintania", "Zodiark" }},
+        { "Chaos", new [] { "Cerberus", "Louisoix", "Moogle", "Omega", "Phantom", "Ragnarok", "Sagittarius", "Spriggan" }},
+        { "Light", new [] { "Alpha", "Lich", "Odin", "Phoenix", "Raiden", "Shiva", "Twintania", "Zodiark" }},
             
         // Oceanian
         { "Materia", new[] { "Bismark", "Ravana", "Sephirot", "Sophia", "Zurvan" }},
