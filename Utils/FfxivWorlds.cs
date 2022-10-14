@@ -33,7 +33,7 @@ public static class FfxivWorlds
 
         // Europe
         { "Chaos", new [] { "Cerberus", "Louisoix", "Moogle", "Omega", "Ragnarok", "Spriggan" }},
-        { "Light", new [] { "Lich", "Odin", "Phoenix", "Shiva", "Twintania", "Zodiark", "Light" }},
+        { "Light", new [] { "Lich", "Odin", "Phoenix", "Shiva", "Twintania", "Zodiark" }},
             
         // Oceanian
         { "Materia", new[] { "Bismark", "Ravana", "Sephirot", "Sophia", "Zurvan" }},
