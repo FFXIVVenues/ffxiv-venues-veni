@@ -35,12 +35,21 @@ namespace FFXIVVenues.Veni.States
 
             if (this._staffService.IsEditor(c.Interaction.User.Id))
                 component.WithButton("Managers", c.Session.RegisterComponentHandler(cm => cm.Session.MoveStateAsync<ManagerEntryState>(cm), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
+            else
+                component.WithButton("Managers", c.Session.RegisterComponentHandler(cm => {
+                    cm.Interaction.FollowupAsync("Sowwy. You'll need to speak my owners at FFXIV Venues to change managers on your venue. 🥲");
+                    return Enter(c);
+                }, ComponentPersistence.ClearRow), ButtonStyle.Secondary);
 
             if (c.Interaction.IsDM)
                 return c.Interaction.RespondAsync(MessageRepository.EditVenueMessage.PickRandom(), component: component.Build());
             else
-                return c.Interaction.RespondAsync(MessageRepository.EditVenueMessage.PickRandom() + Environment.NewLine
-                                                  + MessageRepository.MentionOrReplyToMeMessage.PickRandom(),
+                return c.Interaction.RespondAsync(MessageRepository.EditVenueMessage.PickRandom(),
+                                                  embed: new EmbedBuilder
+                                                  {
+                                                      Color = Color.Red,
+                                                      Description = MessageRepository.MentionOrReplyToMeMessage.PickRandom()
+                                                  }.Build(),
                                                   component: component.Build());
         }
 

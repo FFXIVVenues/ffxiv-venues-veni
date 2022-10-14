@@ -1,6 +1,4 @@
 ﻿using Discord;
-using Discord.WebSocket;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Models;
 using FFXIVVenues.Veni.States.Abstractions;
@@ -14,7 +12,7 @@ namespace FFXIVVenues.Veni.States
     class SelectVenueToModifyState : IState
     {
 
-        private static string[] _messages = new[]
+        private static readonly string[] _messages = new[]
         {
             "Which venue would you like to edit?",
             "Which one would you like to change?",
