@@ -1,4 +1,4 @@
-﻿using FFXIVVenues.Veni.Api.Models;
+﻿using FFXIVVenues.Veni.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Services;
 using FFXIVVenues.Veni.States;

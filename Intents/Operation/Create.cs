@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Api.Models;
+using FFXIVVenues.Veni.Models;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States;
 using FFXIVVenues.Veni.Utils;
