@@ -56,15 +56,13 @@ namespace FFXIVVenues.Veni.Commands
                     else if (venue.Location.DataCenter.Equals("Light")) lightSum++;
                 }
 
-                
-
-                await c.Interaction.RespondAsync(" We have **" + (aetherSum + crystalSum + primalSum + chaosSum + lightSum) +
-                        "** total venues! 🤗.\n **" +
-                        "In :regional_indicator_n: :regional_indicator_a:  we have: \n" +
+                await c.Interaction.FollowupAsync(" We have **" + (aetherSum + crystalSum + dynamisSum + primalSum + chaosSum + lightSum) +
+                        "** total venues! 🤗.\n" +
+                        "In **NA**: **" +
                         aetherSum + "** from Aether, **" +
                         crystalSum + "** from Crystal, and **" +
                         primalSum + "** in Primal. \n" +
-                        "In :regional_indicator_e: :regional_indicator_u: : \n" +
+                        "In **EU**: **" +
                         chaosSum + "** from Chaos, and **" +
                         lightSum + "** in Light.");
             }
