@@ -80,6 +80,10 @@ namespace FFXIVVenues.Veni.Models
                                "Mountain Standard Time" => "MST",
                                "Pacific Standard Time" => "PST",
                                "Atlantic Standard Time" => "AST",
+                               "Central Europe Standard Time" => "CEST",
+                               "E. Europe Standard Time" => "EEST",
+                               "GMT Standard Time" => "GMT",
+                               "UTC" => "Server Time",
                                _ => opening.Start.TimeZone
                            }).Append(")");
                     if (opening.Start.NextDay)
