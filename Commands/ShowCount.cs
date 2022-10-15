@@ -41,7 +41,7 @@ namespace FFXIVVenues.Veni.Commands
                 int crystalSum = 0;
                 int primalSum = 0;
                 int aetherSum = 0;
-                int dynamisSum = 0;
+                //int dynamisSum = 0;
                 //EU
                 int chaosSum = 0;
                 int lightSum = 0;
@@ -51,12 +51,12 @@ namespace FFXIVVenues.Veni.Commands
                     if (venue.Location.DataCenter.Equals("Crystal")) crystalSum++;
                     else if (venue.Location.DataCenter.Equals("Primal")) primalSum++;
                     else if (venue.Location.DataCenter.Equals("Aether")) aetherSum++;
-                    else if (venue.Location.DataCenter.Equals("Dynamis")) dynamisSum++;
+                    //else if (venue.Location.DataCenter.Equals("Dynamis")) dynamisSum++;
                     else if (venue.Location.DataCenter.Equals("Chaos")) chaosSum++;
                     else if (venue.Location.DataCenter.Equals("Light")) lightSum++;
                 }
 
-                await c.Interaction.FollowupAsync(" We have **" + (aetherSum + crystalSum + dynamisSum + primalSum + chaosSum + lightSum) +
+                await c.Interaction.FollowupAsync(" We have **" + (aetherSum + crystalSum + primalSum + chaosSum + lightSum) +
                         "** total venues! 🤗.\n" +
                         "In **NA**: **" +
                         aetherSum + "** from Aether, **" +
