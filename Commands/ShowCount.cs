@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using FFXIVVenues.Veni.Commands.Brokerage;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
+using FFXIVVenues.Veni.Services;
 using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.Commands
@@ -24,15 +25,50 @@ namespace FFXIVVenues.Veni.Commands
 
         internal class CommandHandler : ICommandHandler
         {
-            private readonly IIntentHandlerProvider _intentHandlerProvider;
+            private readonly IApiService _apiService;
 
-            public CommandHandler(IIntentHandlerProvider intentHandlerProvider)
+            public CommandHandler(IApiService _apiService)
             {
-                _intentHandlerProvider = intentHandlerProvider;
-            }
+                this._apiService = _apiService;
+            } 
 
-            public Task HandleAsync(SlashCommandInteractionContext slashCommand) => 
-                this._intentHandlerProvider.HandleIntent(IntentNames.Operation.ShowCount, slashCommand);
+            public async Task HandleAsync(SlashCommandInteractionContext c)
+            {
+                await c.Interaction.DeferAsync();
+                var venues = await this._apiService.GetAllVenuesAsync();
+
+                //NA
+                int crystalSum = 0;
+                int primalSum = 0;
+                int aetherSum = 0;
+                int dynamisSum = 0;
+                //EU
+                int chaosSum = 0;
+                int lightSum = 0;
+
+                foreach (var venue in venues)
+                {
+                    if (venue.Location.DataCenter.Equals("Crystal")) crystalSum++;
+                    else if (venue.Location.DataCenter.Equals("Primal")) primalSum++;
+                    else if (venue.Location.DataCenter.Equals("Aether")) aetherSum++;
+                    else if (venue.Location.DataCenter.Equals("Dynamis")) dynamisSum++;
+                    else if (venue.Location.DataCenter.Equals("Chaos")) chaosSum++;
+                    else if (venue.Location.DataCenter.Equals("Light")) lightSum++;
+                }
+
+                
+
+                await c.Interaction.RespondAsync(" We have **" + (aetherSum + crystalSum + primalSum + chaosSum + lightSum) +
+                        "** total venues! 🤗.\n **" +
+                        "In :regional_indicator_n: :regional_indicator_a:  we have: \n" +
+                        aetherSum + "** from Aether, **" +
+                        crystalSum + "** from Crystal, and **" +
+                        primalSum + "** in Primal. \n" +
+                        "In :regional_indicator_e: :regional_indicator_u: : \n" +
+                        chaosSum + "** from Chaos, and **" +
+                        lightSum + "** in Light.");
+            }
+            
         }
     }
 }
