@@ -18,6 +18,7 @@ namespace FFXIVVenues.Veni.States
             "What **time zone** would the venues opening times be in?"
         };
 
+        private static TimeZoneInfo _gmt = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
         private static Dictionary<string, TimeZoneInfo> _timezones = new()
         {
             { "Eastern Standard Time (EST)", TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time") },
@@ -27,8 +28,8 @@ namespace FFXIVVenues.Veni.States
             { "Atlantic Standard Time (AST)", TimeZoneInfo.FindSystemTimeZoneById("Atlantic Standard Time") },
             { "Central European Time (CEST)", TimeZoneInfo.FindSystemTimeZoneById("Central Europe Standard Time") },
             { "Eastern European Time (EEST)", TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time") },
-            { "Greenwich Mean Time (GMT)", TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time") },
-            { "Coordinated Universal Time (UTC)", TimeZoneInfo.Utc }
+            { _gmt.IsDaylightSavingTime(DateTime.UtcNow) ? "GMT Summer Time (GMT)" : "GMT Standard Time", _gmt },
+            { "Server Time (UTC)", TimeZoneInfo.Utc }
         };
 
         public Task Enter(InteractionContext c)
