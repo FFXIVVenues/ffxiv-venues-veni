@@ -33,8 +33,8 @@ namespace FFXIVVenues.Veni.Intents.Operation
             }
             else
             {
-                await _apiService.CloseVenueAsync(venues.Single().Id);
-                await context.Interaction.RespondAsync(MessageRepository.VenueClosedMessage.PickRandom());
+                context.Session.SetItem("venue", venues.First());
+                await context.Session.MoveStateAsync<CloseEntryState>(context);
             }
         }
 

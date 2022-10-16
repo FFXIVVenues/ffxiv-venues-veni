@@ -103,8 +103,8 @@ namespace FFXIVVenues.Veni.Intents.Operation
                         }, ComponentPersistence.ClearRow), ButtonStyle.Primary)
                         .WithButton("Close", c.Session.RegisterComponentHandler(async cm =>
                         {
-                            await this._apiService.CloseVenueAsync(venue.Id);
-                            await cm.Interaction.RespondAsync(MessageRepository.VenueClosedMessage.PickRandom());
+                            //await this._apiService.CloseVenueAsync(venue.Id);
+                            //await cm.Interaction.RespondAsync(MessageRepository.VenueClosedMessage.PickRandom());
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
                         {

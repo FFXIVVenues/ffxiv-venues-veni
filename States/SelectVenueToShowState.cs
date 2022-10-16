@@ -68,8 +68,8 @@ namespace FFXIVVenues.Veni.States
                         }, ComponentPersistence.ClearRow), ButtonStyle.Primary)
                         .WithButton("Close", c.Session.RegisterComponentHandler(async cm =>
                         {
-                            await this._apiService.CloseVenueAsync(venue.Id);
-                            await cm.Interaction.FollowupAsync(MessageRepository.VenueClosedMessage.PickRandom());
+                            //await this._apiService.CloseVenueAsync(venue.Id);
+                            //await cm.Interaction.FollowupAsync(MessageRepository.VenueClosedMessage.PickRandom());
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
                         {
