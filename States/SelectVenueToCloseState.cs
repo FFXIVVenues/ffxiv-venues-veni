@@ -53,11 +53,8 @@ namespace FFXIVVenues.Veni.States
         {
             var selectedVenueId = c.Interaction.Data.Values.Single();
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
-
-            _ = c.Session.ClearState(c);
-
-            await _apiService.CloseVenueAsync(venue.Id);
-            await c.Interaction.FollowupAsync(MessageRepository.VenueClosedMessage.PickRandom());
+            c.Session.SetItem<Venue>("venue", venue);
+            await c.Session.MoveStateAsync<CloseEntryState>(c);
         }
     }
 }

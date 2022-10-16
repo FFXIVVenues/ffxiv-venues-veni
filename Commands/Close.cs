@@ -11,7 +11,6 @@ namespace FFXIVVenues.Veni.Commands
     {
 
         public const string COMMAND_NAME = "close";
-
         internal class CommandFactory : ICommandFactory
         {
 
@@ -20,7 +19,7 @@ namespace FFXIVVenues.Veni.Commands
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)
                     .WithDescription("If open, close the venue early, else, keep the venue closed for the next 18 hours.")
-                    .Build();
+                    .Build(); 
             }
 
         }
