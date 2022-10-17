@@ -34,7 +34,7 @@ namespace FFXIVVenues.Veni.States
 
         public Task Enter(InteractionContext c)
         {
-            this._venue = c.Session.GetItem<Venue>("venue");
+            this._venue = c.Session.GetItem<Venue>("venue"); 
 
             var component = this.BuildTagsComponent(c).WithBackButton(c).WithSkipButton<TagsEntryState, TagsEntryState>(c);
             return c.Interaction.RespondAsync(MessageRepository.AskForCategories.PickRandom(), component.Build());
