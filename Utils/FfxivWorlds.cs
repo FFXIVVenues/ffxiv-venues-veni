@@ -27,7 +27,7 @@ public static class FfxivWorlds
     {
         // North America            
         { "Aether", new [] { "Adamantoise", "Cactuar", "Faerie", "Gilgamesh", "Jenova", "Midgardsormr", "Sargatanas", "Siren" }},
-        { "Primal", new [] { "Behemoth", "Excalibur", "Exodus", "Famfrit", "Hyperion", "Lamia", "Leviathan", "Siren" }},
+        { "Primal", new [] { "Behemoth", "Excalibur", "Exodus", "Famfrit", "Hyperion", "Lamia", "Leviathan", "Ultros" }},
         { "Crystal", new [] { "Balmung", "Brynhildr", "Coeurl", "Diabolos", "Goblin", "Malboro", "Mateus", "Zalera" }},
         { "Dynamis", new[] { "Halicarnassus", "Maduin", "Marilith", "Seraph" }},
 

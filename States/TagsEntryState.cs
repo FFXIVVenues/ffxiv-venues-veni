@@ -29,6 +29,8 @@ namespace FFXIVVenues.Veni.States
             ("Photography", "Photography"),
             ("Open stage", "Open stage"),
             ("Void", "Void"),
+            ("Stylists", "Stylists"),
+            ("Performances", "Performances"),
             ("VIP available", "VIP"),
             ("Triple triad", "Triple triad"),
             ("RP Heavily Encouraged", "RP Heavy"),
