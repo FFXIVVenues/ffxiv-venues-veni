@@ -46,7 +46,7 @@ namespace FFXIVVenues.Veni.States
                 .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
                 .WithMaxValues(Math.Max(2, _availableCategories.Count(t => this._venue.Tags?.Contains(t.Value) ?? false)));
             foreach (var (label, value) in _availableCategories)
-                selectComponent.AddOption(label, value, , isDefault: this._venue.Tags.Contains(value));
+                selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value));
 
             return new ComponentBuilder()
                 .WithSelectMenu(selectComponent);
