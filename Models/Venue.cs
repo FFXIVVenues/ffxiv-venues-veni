@@ -8,7 +8,7 @@ using PrettyPrintNet;
 
 namespace FFXIVVenues.Veni.Models
 {
-    public class Venue : VenueModels.V2022.Venue
+    public class Venue : VenueModels.Venue
     {
 
         public EmbedBuilder ToEmbed(string uiUrl, string bannerUrl)

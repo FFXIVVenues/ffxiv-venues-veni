@@ -2,7 +2,7 @@
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
-using FFXIVVenues.VenueModels.V2022;
+using FFXIVVenues.VenueModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

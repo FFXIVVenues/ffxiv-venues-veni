@@ -4,7 +4,7 @@ using Discord;
 using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.States.Abstractions;
 using FFXIVVenues.Veni.Utils;
-using FFXIVVenues.VenueModels.V2022;
+using FFXIVVenues.VenueModels;
 using Venue = FFXIVVenues.Veni.Models.Venue;
 
 namespace FFXIVVenues.Veni.States
