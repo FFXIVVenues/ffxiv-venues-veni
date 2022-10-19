@@ -27,6 +27,11 @@ namespace FFXIVVenues.Veni.States
                     cm.Session.SetItem("locationType", "apartment");
                     return cm.Session.MoveStateAsync<DataCenterEntryState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                .WithButton("Other", c.Session.RegisterComponentHandler(cm =>
+                {
+                    cm.Session.SetItem("locationType", "other");
+                    return cm.Session.MoveStateAsync<OtherLocationEntryState>(cm);
+                }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
     }

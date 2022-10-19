@@ -9,11 +9,14 @@ using Discord;
 using Image = SixLabors.ImageSharp.Image;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.States.Abstractions;
+// ReSharper disable AccessToDisposedClosure
 
 namespace FFXIVVenues.Veni.States
 {
     class BannerEntryState : IState
     {
+        private const int BANNER_HEIGHT = 300;
+        private const int BANNER_WIDTH = 600;
         private readonly HttpClient _httpClient;
 
         public BannerEntryState(HttpClient httpClient)
@@ -25,7 +28,7 @@ namespace FFXIVVenues.Veni.States
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             c.Session.SetBackClearanceAmount(3);
-            return c.Interaction.RespondAsync("What cute image would you like to use as a **banner**?\nBanners are usually 600x200; I can do the scaling/crop for you :heart:.",
+            return c.Interaction.RespondAsync("What **banner image** would you like to use?\nBanners are 600x300; I'll do the scaling/cropping for you :heart:.",
                 new ComponentBuilder()
                     .WithBackButton(c)
                     .WithSkipButton<ManagerEntryState, ConfirmVenueState>(c)
@@ -51,32 +54,25 @@ namespace FFXIVVenues.Veni.States
             var outStream = new MemoryStream();
             using (var image = await Image.LoadAsync(stream))
             {
-
-                if (image.Height * image.Width > 5_000_000)
+                if (image.Width * image.Height > 15_728_640)
                 {
                     await c.Interaction.Channel.SendMessageAsync("Aaaah, my desk isn't big enough for this! 😓\n Can you send me that a _little_ smaller?");
                     return;
                 }
-
-                if (image.Height < 200 || image.Width < 600)
-                {
-                    await c.Interaction.Channel.SendMessageAsync("Sorry, could you send me something that's bigger than 600px width and 200px height? :blush:");
-                    return;
-                }
-
+                
                 image.Mutate(context =>
                 {
-                    var scale = 600f / image.Width;
-                    if (image.Height * scale < 200)
-                        scale = 200f / image.Height;
+                    var scale = (float) BANNER_WIDTH / image.Width;
+                    if (image.Height * scale < BANNER_HEIGHT)
+                        scale = (float) BANNER_HEIGHT / image.Height;
                     context.Resize((int)(image.Width * scale), (int)(image.Height * scale));
                 });
 
                 image.Mutate(context =>
                 {
-                    var xPoint = (image.Width - 600) / 2;
-                    var yPoint = (image.Height - 200) / 2;
-                    context.Crop(new Rectangle(xPoint, yPoint, 600, 200));
+                    var xPoint = (image.Width - BANNER_WIDTH) / 2;
+                    var yPoint = (image.Height - BANNER_HEIGHT) / 2;
+                    context.Crop(new Rectangle(xPoint, yPoint, BANNER_WIDTH, BANNER_HEIGHT));
                 });
 
                 await image.SaveAsJpegAsync(outStream);
@@ -91,7 +87,7 @@ namespace FFXIVVenues.Veni.States
                 else
                     await cm.Session.MoveStateAsync<ManagerEntryState>(c);
             }, ComponentPersistence.ClearRow));
-            component.WithButton("Let's try another!", c.Session.RegisterComponentHandler(cm => cm.Interaction.RespondAsync("Alrighty, send over another image! :heart:"), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
+            component.WithButton("Let's try another!", c.Session.RegisterComponentHandler(cm => cm.Interaction.FollowupAsync("Alrighty, send over another image! :heart:"), ComponentPersistence.ClearRow), ButtonStyle.Secondary);
             var response = await c.Interaction.Channel.SendFileAsync(outStream, "banner.jpg", "How does this look? :heart:", components: component.Build());
         }
 
