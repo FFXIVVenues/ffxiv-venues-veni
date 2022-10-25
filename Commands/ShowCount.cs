@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using System.Linq;
+using Discord;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Commands.Brokerage;
 using FFXIVVenues.Veni.Context;
@@ -37,29 +38,33 @@ namespace FFXIVVenues.Veni.Commands
                 await c.Interaction.DeferAsync();
                 var venues = await this._apiService.GetAllVenuesAsync();
 
+                var total = 0;
                 //NA
-                int crystalSum = 0;
-                int primalSum = 0;
-                int aetherSum = 0;
-                //int dynamisSum = 0;
+                var crystalSum = 0;
+                var primalSum = 0;
+                var aetherSum = 0;
+                var dynamisSum = 0;
                 //EU
-                int chaosSum = 0;
-                int lightSum = 0;
+                var chaosSum = 0;
+                var lightSum = 0;
 
                 foreach (var venue in venues)
                 {
+                    total++;
+                    if (venue.Location?.DataCenter == null) continue;
                     if (venue.Location.DataCenter.Equals("Crystal")) crystalSum++;
                     else if (venue.Location.DataCenter.Equals("Primal")) primalSum++;
                     else if (venue.Location.DataCenter.Equals("Aether")) aetherSum++;
-                    //else if (venue.Location.DataCenter.Equals("Dynamis")) dynamisSum++;
+                    else if (venue.Location.DataCenter.Equals("Dynamis")) dynamisSum++;
                     else if (venue.Location.DataCenter.Equals("Chaos")) chaosSum++;
                     else if (venue.Location.DataCenter.Equals("Light")) lightSum++;
                 }
 
-                await c.Interaction.FollowupAsync(" We have **" + (aetherSum + crystalSum + primalSum + chaosSum + lightSum) +
+                await c.Interaction.FollowupAsync(" We have **" + total +
                         "** total venues! 🤗.\n" +
                         "In **NA**: **" +
                         aetherSum + "** from Aether, **" +
+                        dynamisSum + "** from Dynamis, **" +
                         crystalSum + "** from Crystal, and **" +
                         primalSum + "** in Primal. \n" +
                         "In **EU**: **" +
