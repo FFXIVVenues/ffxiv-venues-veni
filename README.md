@@ -11,6 +11,6 @@ Veni (or Veni Ki) is a Discord AI with language understanding and modern slash c
 - Send Messages in Threads
 - Use Slash Commands
 
-## Permissions needed for features coming soon
+## Permissions needed for optional features
 - Manage Nicknames
 - Manage Roles
