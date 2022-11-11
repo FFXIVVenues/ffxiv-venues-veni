@@ -64,8 +64,14 @@ namespace FFXIVVenues.Veni.States
                 {
                     var scale = (float) BANNER_WIDTH / image.Width;
                     if (image.Height * scale < BANNER_HEIGHT)
+                    {
                         scale = (float) BANNER_HEIGHT / image.Height;
-                    context.Resize((int)(image.Width * scale), (int)(image.Height * scale));
+                        context.Resize((int)(image.Width * scale), BANNER_HEIGHT);
+                    }
+                    else
+                    {
+                        context.Resize(BANNER_WIDTH, (int)(image.Height * scale));
+                    }
                 });
 
                 image.Mutate(context =>
