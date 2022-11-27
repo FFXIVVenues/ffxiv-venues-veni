@@ -62,7 +62,7 @@ namespace FFXIVVenues.Veni.Commands
                     return;
                 }
 
-                var selectMenuKey = c.Session.RegisterComponentHandler(this.HandleVenueSelection, ComponentPersistence.PersistRow);
+                var selectMenuKey = c.Session.RegisterComponentHandler(this.HandleVenueSelection, ComponentPersistence.ClearRow);
                 var componentBuilder = new ComponentBuilder();
                 var selectMenuBuilder = new SelectMenuBuilder() { CustomId = selectMenuKey };
 
