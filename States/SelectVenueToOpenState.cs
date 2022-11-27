@@ -56,8 +56,9 @@ namespace FFXIVVenues.Veni.States
 
             _ = c.Session.ClearState(c);
 
-            await _apiService.OpenVenueAsync(venue.Id);
-            await c.Interaction.FollowupAsync(MessageRepository.VenueOpenMessage.PickRandom());
+            c.Session.SetItem<Venue>("venue", venue);
+            await c.Session.MoveStateAsync<OpenEntryState>(c);
+
         }
     }
 }

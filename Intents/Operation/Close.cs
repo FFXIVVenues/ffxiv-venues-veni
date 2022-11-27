@@ -23,7 +23,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
             var venues = await this._apiService.GetAllVenuesAsync(user);
 
             if (venues == null || !venues.Any())
-                await context.Interaction.RespondAsync("You don't seem to be an assigned contact for any venues. 🤔");
+                await context.Interaction.RespondAsync("You don't seem to be an assigned manager for any venues. 🤔");
             else if (venues.Count() > 1)
             {
                 if (venues.Count() > 25)
@@ -33,8 +33,8 @@ namespace FFXIVVenues.Veni.Intents.Operation
             }
             else
             {
-                await _apiService.CloseVenueAsync(venues.Single().Id);
-                await context.Interaction.RespondAsync(MessageRepository.VenueClosedMessage.PickRandom());
+                context.Session.SetItem("venue", venues.First());
+                await context.Session.MoveStateAsync<CloseEntryState>(context);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using FFXIVVenues.Veni.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -79,11 +80,11 @@ namespace FFXIVVenues.Veni.Services
         public Task<HttpResponseMessage> DeleteVenueAsync(string id) =>
             _httpClient.DeleteAsync("/venue/" + id);
 
-        public Task<HttpResponseMessage> OpenVenueAsync(string id) =>
-            _httpClient.PutAsJsonAsync($"/venue/{id}/open", true);
+        public Task<HttpResponseMessage> OpenVenueAsync(string id, DateTime until) =>
+            _httpClient.PostAsJsonAsync($"/venue/{id}/open", until);
 
-        public Task<HttpResponseMessage> CloseVenueAsync(string id) =>
-            _httpClient.PutAsJsonAsync($"/venue/{id}/open", false);
+        public Task<HttpResponseMessage> CloseVenueAsync(string id, DateTime until) =>
+            _httpClient.PostAsJsonAsync($"/venue/{id}/close", until);
 
         public Task<HttpResponseMessage> ApproveAsync(string id, bool approval = true) =>
             _httpClient.PutAsJsonAsync($"/venue/{id}/approved", approval);

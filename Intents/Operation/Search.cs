@@ -62,13 +62,13 @@ namespace FFXIVVenues.Veni.Intents.Operation
                         component: new ComponentBuilder()
                             .WithButton("Open", c.Session.RegisterComponentHandler(async cm =>
                             {
-                                await this._apiService.OpenVenueAsync(venue.Id);
-                                await cm.Interaction.RespondAsync(MessageRepository.VenueOpenMessage.PickRandom());
+                                cm.Session.SetItem("venue", venue);
+                                await cm.Session.MoveStateAsync<OpenEntryState>(cm);
                             }, ComponentPersistence.ClearRow), ButtonStyle.Primary)
                             .WithButton("Close", c.Session.RegisterComponentHandler(async cm =>
                             {
-                                await this._apiService.CloseVenueAsync(venue.Id);
-                                await cm.Interaction.RespondAsync(MessageRepository.VenueClosedMessage.PickRandom());
+                                cm.Session.SetItem("venue", venue);
+                                await cm.Session.MoveStateAsync<CloseEntryState>(cm);
                             }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                             .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
                             {
