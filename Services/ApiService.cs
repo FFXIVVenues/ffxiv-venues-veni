@@ -80,8 +80,8 @@ namespace FFXIVVenues.Veni.Services
         public Task<HttpResponseMessage> DeleteVenueAsync(string id) =>
             _httpClient.DeleteAsync("/venue/" + id);
 
-        public Task<HttpResponseMessage> OpenVenueAsync(string id) =>
-            _httpClient.PostAsync($"/venue/{id}/open", null);
+        public Task<HttpResponseMessage> OpenVenueAsync(string id, DateTime until) =>
+            _httpClient.PostAsJsonAsync($"/venue/{id}/open", until);
 
         public Task<HttpResponseMessage> CloseVenueAsync(string id, DateTime until) =>
             _httpClient.PostAsJsonAsync($"/venue/{id}/close", until);

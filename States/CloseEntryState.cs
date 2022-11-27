@@ -15,22 +15,29 @@ namespace FFXIVVenues.Veni.States
     internal class CloseEntryState : IState
     {
         private IApiService _apiService;
+        private Venue _venue;
 
         public CloseEntryState(IApiService _apiService)
         {
             this._apiService = _apiService;
         }
+        
         public Task Enter(InteractionContext c)
         {
-            var component = this.BuildCloseComponent(c);
-            return c.Interaction.RespondAsync("How long you want to stay closed up?", component.Build()); //change text later
+            this._venue = c.Session.GetItem<Venue>("venue");
+            var component = this.BuildCloseComponent(c, this._venue.Open);
+            return c.Interaction.RespondAsync("Aaw, how long do you want to close for? 🥲", component.Build()); //change text later
         }
 
-        private ComponentBuilder BuildCloseComponent(InteractionContext c)
+        private ComponentBuilder BuildCloseComponent(InteractionContext c, bool includeCloseCurrentOpening)
         {
             var selectComponent = new SelectMenuBuilder()
-                .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
-                .AddOption("The next 18 hours", "18")
+                .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow));
+
+            if (includeCloseCurrentOpening)
+                selectComponent.AddOption("Close current opening", "0");
+            
+            selectComponent.AddOption("The next 18 hours", "18")
                 .AddOption("The next 2 days", "48")
                 .AddOption("The next 3 days", "72")
                 .AddOption("The next 5 days", "120")
@@ -46,11 +53,19 @@ namespace FFXIVVenues.Veni.States
 
         private async Task OnComplete(MessageComponentInteractionContext c)
         {
-            
-            var venue = c.Session.GetItem<Venue>("venue");
-
             var until = int.Parse(c.Interaction.Data.Values.Single());
-            await _apiService.CloseVenueAsync(venue.Id, DateTime.UtcNow.AddHours(until));
+
+            if (until == 0)
+            {
+                var end = this._venue.OpenOverrides.FirstOrDefault(o => o.IsNow)?.End ??
+                          this._venue.GetActiveOpening()?.Resolve(DateTime.UtcNow).End;
+                if (end == null)
+                    return;
+                await _apiService.CloseVenueAsync(this._venue.Id, end.Value);
+            }
+            else
+                await _apiService.CloseVenueAsync(this._venue.Id, DateTime.UtcNow.AddHours(until));
+            
             await c.Interaction.FollowupAsync(MessageRepository.VenueClosedMessage.PickRandom());
             _ = c.Session.ClearState(c);
         }
