@@ -8,6 +8,7 @@ using FFXIVVenues.Veni.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Intents.Operation;
 
 namespace FFXIVVenues.Veni.States
 {
@@ -63,13 +64,13 @@ namespace FFXIVVenues.Veni.States
                     components: new ComponentBuilder()
                         .WithButton("Open", c.Session.RegisterComponentHandler(async cm =>
                         {
-                            await this._apiService.OpenVenueAsync(venue.Id);
-                            await cm.Interaction.FollowupAsync(MessageRepository.VenueOpenMessage.PickRandom());
+                            cm.Session.SetItem("venue", venue);
+                            await cm.Session.MoveStateAsync<OpenEntryState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Primary)
                         .WithButton("Close", c.Session.RegisterComponentHandler(async cm =>
                         {
-                            //await this._apiService.CloseVenueAsync(venue.Id);
-                            //await cm.Interaction.FollowupAsync(MessageRepository.VenueClosedMessage.PickRandom());
+                            cm.Session.SetItem("venue", venue);
+                            await cm.Session.MoveStateAsync<CloseEntryState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
                         {
