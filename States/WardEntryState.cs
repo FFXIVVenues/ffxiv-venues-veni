@@ -24,8 +24,8 @@ namespace FFXIVVenues.Veni.States
             var venue = c.Session.GetItem<Venue>("venue");
             var match = new Regex("\\b\\d+\\b").Match(c.Interaction.Content.StripMentions());
 
-            if (!match.Success || !ushort.TryParse(match.Value, out var ward) || ward < 1 || ward > 24)
-                return c.Interaction.Channel.SendMessageAsync("Sorry, I didn't understand that, please enter a number between 1 and 24.");
+            if (!match.Success || !ushort.TryParse(match.Value, out var ward) || ward < 1 || ward > 30)
+                return c.Interaction.Channel.SendMessageAsync("Sorry, I didn't understand that, please enter a number between 1 and 30.");
 
             venue.Location.Ward = ward;
 

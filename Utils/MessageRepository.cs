@@ -61,8 +61,10 @@ namespace FFXIVVenues.Veni.Utils
 
         public static string[] AskForWardMessage = new[]
         {
-            "Which **number ward** are you in? (1-24)",
-            "Which **number ward** is your venue in? (1-24)"
+            "Which **number ward** are you in? (1-30)",
+            "Which **number ward** is your venue in? (1-30)",
+            "Which **ward** are you in, cutie? (1-30)",
+            "What's the ward, hun? (1-30)"
         };
 
         public static string[] AskForRoomMessage = new[]
