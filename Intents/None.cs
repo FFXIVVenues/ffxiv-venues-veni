@@ -1,4 +1,5 @@
-﻿using FFXIVVenues.Veni.Context;
+﻿using FFXIVVenues.Veni.AI;
+using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
 
@@ -19,8 +20,13 @@ namespace FFXIVVenues.Veni.Intents
             "I don't really know how to respond to that. 😅"
         };
 
-        public override Task Handle(InteractionContext context) =>
-            context.Interaction.RespondAsync(_responses.PickRandom());
-
+        public override Task Handle(InteractionContext context)
+        {  
+            string response = new AIHandler().responseHandler(context);
+            if (response == "404")
+                return context.Interaction.RespondAsync(_responses.PickRandom());
+            else
+                return context.Interaction.RespondAsync(response);
+        }
     }
 }
