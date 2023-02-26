@@ -5,12 +5,12 @@ namespace FFXIVVenues.Veni.AI
 {
     internal class AIHandler
     {
-        public string responseHandler(InteractionContext context)
+        public string ResponseHandler(InteractionContext context)
         {
             var messageContent = context.Interaction.Content.Replace($"<@994410006638239795> ", "").Trim();
             var id = context.Interaction.User.Id.ToString();
 
-            return new DavinciProxy().askTheAI("Me: " + new AIRepository().getMyLore(id, messageContent) + ". You: ");
+            return new DavinciProxy().AskTheAI("Me: " + new AIRepository().GetMyLore(id, messageContent) + ". You: ");
         } 
         
     }

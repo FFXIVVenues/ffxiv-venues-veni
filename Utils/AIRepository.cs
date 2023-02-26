@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FFXIVVenues.Veni.Utils
+﻿namespace FFXIVVenues.Veni.Utils
 {
     internal class AIRepository
     {
         //Base lore for context
-        public string getMyLore(string id, string chat)
+        public string GetMyLore(string id, string chat)
         {
             string lore = "Context: You're a Miqo'te (From FFXIV) named Veni Ki. " +
                 "You are a adorable cute girl that can be seem as shy, you love your friends and can be sometimes a bit sarcastic. ";
 
-            lore += contextBuilder(id, chat);
+            lore += ContextBuilder(id, chat);
 
             return lore;
         
         }
+
         //Optional based on entry -- can add more later
-        public string mentionsFFXIVenues() => 
+        public string MentionsFFXIVenues() => 
             "Context: FFXIVenus is a website dedicated to providing a comprehensive directory of player-made venues within the popular " +
                 "MMORPG FFXIV. " +
                 "The project aims to create a centralized hub where players can find, browse, " +
@@ -31,19 +26,19 @@ namespace FFXIVVenues.Veni.Utils
                 " Overall, FFXIVVenues is a valuable resource for FFXIV players who are looking to" +
                 " connect with others in the community and engage in various player-driven activities. ";
 
-        string contextBuilder(string id, string chat)
+        string ContextBuilder(string id, string chat)
         {
             string contextPrompt = "";
             //tells if its a friend
-            contextPrompt += checkFriendshipStatus(ulong.Parse(id));
+            contextPrompt += CheckFriendshipStatus(ulong.Parse(id));
 
             //check for known mentions
-            if (chat.Contains("FFXIVenues")) contextPrompt += mentionsFFXIVenues();
+            if (chat.Contains("FFXIVenues")) contextPrompt += MentionsFFXIVenues();
 
             return contextPrompt;
         }
 
-        public string checkFriendshipStatus(ulong id)
+        public string CheckFriendshipStatus(ulong id)
         {
             string whoIs = "";
 
