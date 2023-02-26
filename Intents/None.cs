@@ -22,11 +22,11 @@ namespace FFXIVVenues.Veni.Intents
 
         public override Task Handle(InteractionContext context)
         {  
-            string response = new AIHandler().responseHandler(context);
+            string response = new AIHandler().ResponseHandler(context);
             if (response == "404")
                 return context.Interaction.RespondAsync(_responses.PickRandom());
             else
-                return context.Interaction.RespondAsync(response);
+                return context.Interaction.RespondAsync(response); 
         }
     }
 }

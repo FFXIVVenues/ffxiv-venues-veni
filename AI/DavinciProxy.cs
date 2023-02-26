@@ -1,21 +1,17 @@
-﻿using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.AI
 {
     internal class DavinciProxy
     {
-        static double maxTokens { get; } = 150;
-        double temperature { get; set; } = 0.7;
-        private readonly string apiKey = "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";//CHANGE TO USE IT ON SECRET
+        private double maxTokens { get; } = 150;
+        private double temperature { get; set; } = 0.7;
+        private readonly string apiKey = "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";//CHANGE TO USE IT ON SECRET
 
-        public String askTheAI (string prompt)
+        public String AskTheAI (string prompt)
         {
             using (var client = new HttpClient())
             {
