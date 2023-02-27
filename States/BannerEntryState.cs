@@ -31,7 +31,7 @@ namespace FFXIVVenues.Veni.States
             return c.Interaction.RespondAsync("What **banner image** would you like to use?\nBanners are 600x300; I'll do the scaling/cropping for you :heart:.",
                 new ComponentBuilder()
                     .WithBackButton(c)
-                    .WithSkipButton<ManagerEntryState, ConfirmVenueState>(c)
+                    .WithNextButton<ManagerEntryState, ConfirmVenueState>(c)
                     .Build());
         }
 

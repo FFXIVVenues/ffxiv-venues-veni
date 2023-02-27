@@ -9,11 +9,11 @@ namespace FFXIVVenues.Veni.Utils
     internal static class ComponentBuilderExtensions
     {
 
-        public static ComponentBuilder WithSkipButton<SkipTarget, ModifyTarget>(this ComponentBuilder builder, Context.IInteractionContext context) 
+        public static ComponentBuilder WithNextButton<SkipTarget, ModifyTarget>(this ComponentBuilder builder, Context.IInteractionContext context) 
             where SkipTarget : IState 
             where ModifyTarget : IState
         {
-            return builder.WithButton("►  Skip", context.Session.RegisterComponentHandler(c =>
+            return builder.WithButton("►  Next/Skip", context.Session.RegisterComponentHandler(c =>
             {
                 if (c.Session.GetItem<bool>("modifying"))
                     return c.Session.MoveStateAsync<ModifyTarget>(c);

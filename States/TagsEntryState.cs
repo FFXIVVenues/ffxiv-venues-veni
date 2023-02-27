@@ -56,7 +56,7 @@ namespace FFXIVVenues.Veni.States
             return new ComponentBuilder()
                 .WithSelectMenu(selectComponent)
                 .WithBackButton(c)
-                .WithSkipButton<WebsiteEntryState, ConfirmVenueState>(c);
+                .WithNextButton<WebsiteEntryState, ConfirmVenueState>(c);
         }
 
         private Task OnComplete(MessageComponentInteractionContext c)
