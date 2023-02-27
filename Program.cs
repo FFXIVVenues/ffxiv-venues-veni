@@ -23,6 +23,7 @@ using FFXIVVenues.Veni.Persistance.Abstraction;
 using FFXIVVenues.Veni.Managers;
 using FFXIVVenues.Veni.Services;
 using FFXIVVenues.Veni.Models;
+using FFXIVVenues.Veni.AI;
 
 const string DISCORD_BOT_CONFIG_KEY = "DiscordBotToken";
 
@@ -40,6 +41,8 @@ var persistenceConfig = new PersistenceConfiguration();
 config.GetSection("Persistence").Bind(persistenceConfig);
 var uiConfig = new UiConfiguration();
 config.GetSection("Ui").Bind(uiConfig);
+var davinciConfig = new DavinciConfiguration();
+config.GetSection("Davinci3").Bind(davinciConfig);
 
 var apiHttpClient = new HttpClient { BaseAddress = new Uri(apiConfig.BaseUrl) };
 apiHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiConfig.AuthorizationKey);
@@ -71,11 +74,15 @@ serviceCollection.AddSingleton<ApiConfiguration>(apiConfig);
 serviceCollection.AddSingleton<PersistenceConfiguration>(persistenceConfig);
 serviceCollection.AddSingleton<UiConfiguration>(uiConfig);
 serviceCollection.AddSingleton<HttpClient>(apiHttpClient);
+serviceCollection.AddSingleton<DavinciConfiguration>(davinciConfig);
 serviceCollection.AddSingleton<IRepository>(repository);
 serviceCollection.AddSingleton<ICommandBroker, CommandBroker>();
 serviceCollection.AddSingleton<IApiService, ApiService>();
 serviceCollection.AddSingleton<IGuildManager, GuildManager>();
 serviceCollection.AddSingleton<IStaffManager, StaffManager>();
+serviceCollection.AddSingleton<IAIHandler, AIHandler>();
+serviceCollection.AddSingleton<IDavinciService, DavinciService>();
+serviceCollection.AddSingleton<IAIContextBuilder, AIContextBuilder>();
 serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
 serviceCollection.AddSingleton<ISessionContextProvider, SessionContextProvider>();
 serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();

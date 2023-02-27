@@ -45,7 +45,7 @@ namespace FFXIVVenues.Veni
             this._client.SelectMenuExecuted += ComponentExecutedAsync;
             this._client.ButtonExecuted += ComponentExecutedAsync;
             this._client.UserJoined += UserJoinedAsync;
-            
+
             this._pipeline = new Pipeline<MessageInteractionContext>()
                 .WithServiceProvider(serviceProvider)
                 .Add<ConversationFilterMiddleware>()
@@ -55,7 +55,9 @@ namespace FFXIVVenues.Veni
                 .Add<StopCallingMeMommyMiddleware>()
                 .Add<InteruptIntentMiddleware>()
                 .Add<StateMiddleware>()
-                .Add<IntentMiddleware>();
+                .Add<IntentMiddleware>()
+                .Add<ChatMiddleware>()
+                .Add<DontUnderstandMiddleware>();
         }
 
 
