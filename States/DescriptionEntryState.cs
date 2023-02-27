@@ -15,7 +15,7 @@ namespace FFXIVVenues.Veni.States
             return c.Interaction.RespondAsync(MessageRepository.AskForDescriptionMessage.PickRandom(),
                 new ComponentBuilder()
                     .WithBackButton(c)
-                    .WithSkipButton<LocationTypeEntryState, ConfirmVenueState>(c)
+                    .WithNextButton<LocationTypeEntryState, ConfirmVenueState>(c)
                     .Build());
         }
 

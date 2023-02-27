@@ -17,7 +17,7 @@ namespace FFXIVVenues.Veni.States
             return c.Interaction.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom(),
                 new ComponentBuilder()
                     .WithBackButton(c)
-                    .WithSkipButton<DiscordEntryState, ConfirmVenueState>(c)
+                    .WithNextButton<DiscordEntryState, ConfirmVenueState>(c)
                     .Build());
         }
 

@@ -33,9 +33,9 @@ namespace FFXIVVenues.Veni.States
 
             var component = this.BuildDaysComponent(c).WithBackButton(c);
             if (this._venue.Openings.Count > 1)
-                component.WithSkipButton<AskIfConsistentTimeEntryState, AskIfConsistentTimeEntryState>(c);
+                component.WithNextButton<AskIfConsistentTimeEntryState, AskIfConsistentTimeEntryState>(c);
             else if (this._venue.Openings.Count == 1)
-                component.WithSkipButton<ConsistentOpeningTimeEntryState, ConsistentOpeningTimeEntryState>(c);
+                component.WithNextButton<ConsistentOpeningTimeEntryState, ConsistentOpeningTimeEntryState>(c);
 
             return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskDaysOpenMessage.PickRandom()}", component: component.Build());
         }

@@ -28,7 +28,7 @@ namespace FFXIVVenues.Veni.States
             return c.Interaction.RespondAsync("Who is/are the manager(s)? :heart:",
                                                new ComponentBuilder()
                                                .WithBackButton(c)
-                                               .WithSkipButton<ConfirmVenueState, ConfirmVenueState>(c)
+                                               .WithNextButton<ConfirmVenueState, ConfirmVenueState>(c)
                                                .Build());
         }
 
