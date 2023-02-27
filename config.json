@@ -7,6 +7,11 @@
 		"AppId": "",
 		"Slot": "Production"
 	},
+
+	"Davinci3": {
+		"ApiKey": ""
+	},
+
 	"Persistence": {
 		"Provider": "InMemory",
 		"ConnectionString": ""

@@ -17,6 +17,9 @@ namespace FFXIVVenues.Veni.Middleware
 
         public Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
         {
+            if (context.Prediction.TopIntent == IntentNames.None) 
+                return next();
+            
             return intentHandlerProvider.HandleIntent(context.Prediction.TopIntent, context);
         }
 
