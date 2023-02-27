@@ -1,17 +1,26 @@
 ﻿using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Utils;
+using System.Threading.Tasks;
 
 namespace FFXIVVenues.Veni.AI
 {
-    internal class AIHandler
+    internal class AIHandler : IAIHandler
     {
-        public string ResponseHandler(InteractionContext context)
-        {
-            var messageContent = context.Interaction.Content.Replace($"<@994410006638239795> ", "").Trim();
-            var id = context.Interaction.User.Id.ToString();
+        private readonly IDavinciService davinciService;
+        private readonly IAIContextBuilder aIContextBuilder;
 
-            return new DavinciProxy().AskTheAI("Me: " + new AIRepository().GetMyLore(id, messageContent) + ". You: ");
-        } 
-        
+        public AIHandler(IDavinciService davinciService, IAIContextBuilder aIContextBuilder)
+        {
+            this.davinciService = davinciService;
+            this.aIContextBuilder = aIContextBuilder;
+        }
+
+        public Task<string> ResponseHandler(MessageInteractionContext context)
+        {
+            var messageContent = context.Interaction.Content;
+            var id = context.Interaction.Author.Id.ToString();
+
+            return this.davinciService.AskTheAI(this.aIContextBuilder.GetContext(id, messageContent));
+        }
+
     }
 }

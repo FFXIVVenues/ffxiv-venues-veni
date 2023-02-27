@@ -19,7 +19,7 @@ namespace FFXIVVenues.Veni.Commands
 
         internal class CommandFactory : ICommandFactory
         {
-
+            
             public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
             {
                 var verbosityLevel = new SlashCommandOptionBuilder()
@@ -55,20 +55,20 @@ namespace FFXIVVenues.Veni.Commands
             public Task HandleAsync(SlashCommandInteractionContext slashCommand)
             {
                 if (!this.indexersService.IsEngineer(slashCommand.Interaction.User.Id))
-                    return slashCommand.Interaction.RespondAsync("Sorry, I only let Engineers do that with me.", ephemeral: true);
+                    return slashCommand.Interaction.Channel.SendMessageAsync("Sorry, I only let Engineers do that with me.");
 
 
                 var subscribed = this.chronicleLibrary.IsSubscribed(slashCommand.Interaction.Channel);
                 if (subscribed)
                 {
                     this.chronicleLibrary.Unsubscribe(slashCommand.Interaction.Channel);
-                    return slashCommand.Interaction.RespondAsync("Oki, I've **stopped inspection**. I hope everything looks good!");
+                    return slashCommand.Interaction.Channel.SendMessageAsync("Oki, I've **stopped inspection**. I hope everything looks good!");
                 }
                 else
                 {
                     var verbosity = slashCommand.GetInt(OPTION_VERBOSITY);
                     this.chronicleLibrary.Subscribe(slashCommand.Interaction.Channel, (ChronicleLevel) (verbosity ?? 3));
-                    return slashCommand.Interaction.RespondAsync("Oki, I've **started inspection**. 👀");
+                    return slashCommand.Interaction.Channel.SendMessageAsync("Oki, I've **started inspection**. 👀");
                 }
             }
 
