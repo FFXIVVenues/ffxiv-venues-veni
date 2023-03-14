@@ -1,6 +1,7 @@
-﻿using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Utils;
+﻿using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
 
 namespace FFXIVVenues.Veni.Intents.Conversation
 {
@@ -23,7 +24,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
 
         public override async Task Handle(InteractionContext context)
         {
-            if (context.Interaction.User.Id == People.Kana)
+            if (context.Interaction.User.Id == People.People.Kana)
                 await context.Interaction.RespondAsync(_kanaMessages.PickRandom());
             else
                 await context.Interaction.RespondAsync(_responses.PickRandom());

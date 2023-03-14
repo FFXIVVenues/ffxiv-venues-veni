@@ -2,14 +2,15 @@
 using System;
 using System.Threading.Tasks;
 using Kana.Pipelines;
-using FFXIVVenues.Veni.Middleware;
-using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Commands.Brokerage;
-using FFXIVVenues.Veni.Context.Abstractions;
 using Discord;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Components;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.Abstractions;
+using FFXIVVenues.Veni.Infrastructure.Context.Session;
+using FFXIVVenues.Veni.Infrastructure.Middleware;
+using FFXIVVenues.Veni.People;
 using NChronicle.Core.Interfaces;
-using FFXIVVenues.Veni.States.Abstractions;
-using FFXIVVenues.Veni.Managers;
 using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni
@@ -19,6 +20,7 @@ namespace FFXIVVenues.Veni
 
         private readonly DiscordSocketClient _client;
         private readonly ICommandBroker _commandBroker;
+        private readonly IComponentBroker _componentBroker;
         private readonly Pipeline<MessageInteractionContext> _pipeline;
         private readonly ISessionContextProvider _sessionContextProvider;
         private readonly IStaffManager _staffService;
@@ -27,6 +29,7 @@ namespace FFXIVVenues.Veni
 
         public DiscordHandler(DiscordSocketClient client,
                               ICommandBroker commandBroker,
+                              IComponentBroker componentBroker,
                               IServiceProvider serviceProvider,
                               ISessionContextProvider sessionContextProvider,
                               IStaffManager staffService, 
@@ -35,6 +38,7 @@ namespace FFXIVVenues.Veni
         {
             this._client = client;
             this._commandBroker = commandBroker;
+            this._componentBroker = componentBroker;
             this._sessionContextProvider = sessionContextProvider;
             this._staffService = staffService;
             this._chronicle = chronicle;
@@ -58,7 +62,6 @@ namespace FFXIVVenues.Veni
                 .Add<IntentMiddleware>();
         }
 
-
         public Task ListenAsync() =>
             _client.StartAsync();
 
@@ -70,13 +73,8 @@ namespace FFXIVVenues.Veni
             var sessionContext = _sessionContextProvider.GetContext(slashCommand.User.Id.ToString());
             var context = new SlashCommandInteractionContext(slashCommand, _client, sessionContext, this._chronicle);
 
-            var stateText = "";
-            IState currentState = null;
-            context.Session.StateStack?.TryPeek(out currentState);
-            if (currentState != null)
-                stateText = " [" + currentState.GetType().Name + "]";
-            this._chronicle.Info($"**{slashCommand.User.Mention}{stateText}**: [Command: /{slashCommand.CommandName}]");
-            
+            LogSlashCommandExecuted(slashCommand, context);
+
             await this._commandBroker.HandleAsync(context);
         }
 
@@ -88,15 +86,32 @@ namespace FFXIVVenues.Veni
 
             var conversationContext = _sessionContextProvider.GetContext(message.User.Id.ToString());
             var context = new MessageComponentInteractionContext(message, _client, conversationContext, this._chronicle);
-
-            var stateText = "";
-            IState currentState = null;
-            context.Session.StateStack?.TryPeek(out currentState);
-            if (currentState != null)
-                stateText = " [" + currentState.GetType().Name + "]";
-            this._chronicle.Info($"**{message.User.Mention}{stateText}**: [Component Interaction]");
+            
+            LogComponentExecuted(message, context);
 
             await conversationContext.HandleComponentInteraction(context);
+            
+            await this._componentBroker.HandleAsync(message);
+        }
+
+        private void LogSlashCommandExecuted(SocketSlashCommand slashCommand, SlashCommandInteractionContext context)
+        {
+            var stateText = "";
+            ISessionState currentSessionState = null;
+            context.Session.StateStack?.TryPeek(out currentSessionState);
+            if (currentSessionState != null)
+                stateText = " [" + currentSessionState.GetType().Name + "]";
+            this._chronicle.Info($"**{slashCommand.User.Mention}{stateText}**: [Command: /{slashCommand.CommandName}]");
+        }
+
+        private void LogComponentExecuted(SocketMessageComponent message, MessageComponentInteractionContext context)
+        {
+            var stateText = "";
+            ISessionState currentSessionState = null;
+            context.Session.StateStack?.TryPeek(out currentSessionState);
+            if (currentSessionState != null)
+                stateText = " [" + currentSessionState.GetType().Name + "]";
+            this._chronicle.Info($"**{message.User.Mention}{stateText}**: [Component Interaction]");
         }
 
         private Task UserJoinedAsync(SocketGuildUser user)

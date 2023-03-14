@@ -1,13 +1,13 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using FFXIVVenues.Veni.Commands.Brokerage;
-using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
-using FFXIVVenues.Veni.Logging;
-using FFXIVVenues.Veni.Managers;
 using FFXIVVenues.Veni.Utils;
 using NChronicle.Core.Model;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Logging;
+using FFXIVVenues.Veni.People;
 
 namespace FFXIVVenues.Veni.Commands
 {

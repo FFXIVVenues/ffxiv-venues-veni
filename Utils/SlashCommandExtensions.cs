@@ -1,7 +1,7 @@
 ﻿using Discord.WebSocket;
-using FFXIVVenues.Veni.Context;
 using System;
 using System.Linq;
+using FFXIVVenues.Veni.Infrastructure.Context;
 
 namespace FFXIVVenues.Veni.Utils
 {

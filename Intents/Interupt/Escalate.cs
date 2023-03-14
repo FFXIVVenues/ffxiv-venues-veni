@@ -1,6 +1,7 @@
-﻿using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Managers;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.People;
 
 namespace FFXIVVenues.Veni.Intents.Interupt
 {

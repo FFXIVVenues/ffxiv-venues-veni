@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Models;
-using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.States;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.SessionStates;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.Intents.Operation
 {
@@ -28,7 +29,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
                         Color = Color.Red,
                         Description = MessageRepository.MentionOrReplyToMeMessage.PickRandom()
                     }.Build());
-            await context.Session.MoveStateAsync<NameEntryState>(context);
+            await context.Session.MoveStateAsync<NameEntrySessionState>(context);
         }
 
     }

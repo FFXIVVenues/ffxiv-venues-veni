@@ -1,6 +1,7 @@
-﻿using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Utils;
+﻿using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
 
 namespace FFXIVVenues.Veni.Intents.Conversation
 {
@@ -49,11 +50,11 @@ namespace FFXIVVenues.Veni.Intents.Conversation
 
         public override Task Handle(InteractionContext context)
         {
-            if (context.Interaction.User.Id == People.Kana)
+            if (context.Interaction.User.Id == People.People.Kana)
                 return context.Interaction.RespondAsync(_kanaMessages.PickRandom());
-            if (context.Interaction.User.Id == People.Sumi)
+            if (context.Interaction.User.Id == People.People.Sumi)
                 return context.Interaction.RespondAsync(_sumiMessages.PickRandom());
-            if (context.Interaction.User.Id == People.Fluffy)
+            if (context.Interaction.User.Id == People.People.Fluffy)
                 return context.Interaction.RespondAsync(_fluffyMessages.PickRandom());
 
             return context.Interaction.RespondAsync(_helloMessage.PickRandom());

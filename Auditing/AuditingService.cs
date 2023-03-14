@@ -1,25 +1,31 @@
-using System;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Threading;
 using System.Threading.Tasks;
-using FFXIVVenues.Veni.Middleware;
-using FFXIVVenues.Veni.Persistance.Abstraction;
-using FFXIVVenues.Veni.Services;
+using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
+using FFXIVVenues.VenueModels;
 using NChronicle.Core.Interfaces;
+using ScottPlot.Renderable;
 
 namespace FFXIVVenues.Veni.Auditing;
 
 internal class AuditingService
 {
+
+    
     private readonly IApiService _apiService;
-    private readonly Task _activeAuditTask;
     private readonly IRepository _repository;
     private readonly IChronicle _chronicle;
+    private readonly IVenueAuditFactory _venueAuditFactory;
+    private Task _activeAuditTask;
 
-    public AuditingService(IApiService apiService, IRepository repository, IChronicle chronicle)
+    public AuditingService(IApiService apiService, IRepository repository, IChronicle chronicle, IVenueAuditFactory venueAuditFactory)
     {
         this._apiService = apiService;
         this._repository = repository;
         this._chronicle = chronicle;
+        this._venueAuditFactory = venueAuditFactory;
     }
 
     public async Task StartAsync()
@@ -27,46 +33,36 @@ internal class AuditingService
         if (this._activeAuditTask != null)
             return;
 
-        var activeAudits = await this._repository.GetWhere<Audit>(a => a.Status == AuditStatus.Active);
+        var activeAudits = await this._repository.GetWhere<AuditRoundState>(a => a.Status == AuditStatus.Active);
         var audit = activeAudits.FirstOrDefault();
         if (audit == null)
         {
-            audit = new Audit();
+            audit = new AuditRoundState();
         }
-        var allVenues = this._apiService.GetAllVenuesAsync();
-        
-        return 
+
+        this._activeAuditTask = new TaskFactory().StartNew(_ => ExecuteAudit(audit), TaskCreationOptions.LongRunning);
     }
-    
+
+    private async Task ExecuteAudit(AuditRoundState auditRound)
+    {
+        var allVenues = await this._apiService.GetAllVenuesAsync();
+        foreach (var venue in allVenues)
+        {
+            var existingRecord = auditRound.VenueAudit.FirstOrDefault(r => r.VenueId == venue.Id);
+            if (existingRecord != null && existingRecord.Status != VenueAuditStatus.Pending)
+                continue;
+
+            var venueRound = this._venueAuditFactory.CreateAuditFor(venue);
+            await venueRound.AuditAsync();
+        }
+    }
+
 }
-
-public class Audit : IEntity
-{
-    public string id { get; }
-    public AuditStatus Status { get; set; }
-    public AuditRecord VenueAudit { get; set; }
-    public DateTime? StartedAt { get; set; }
-    public DateTime? CompletedAt { get; set; }
-
-    public Audit() =>
-        this.id = DateTime.Now.ToString("yyyyMMddHHmm");
-
-}
-
-public record AuditRecord(string VenueId, VenueAuditStatus Status, DateTime StatusSetAt);
 
 public enum AuditStatus
 {
     Inactive,
+    Skipped,
     Active,
     Complete
 }
-
-public enum VenueAuditStatus
-{
-    AwaitingResponse,
-    RespondedEdit,
-    RespondedConfirmed,
-    RespondedDelete
-}
-

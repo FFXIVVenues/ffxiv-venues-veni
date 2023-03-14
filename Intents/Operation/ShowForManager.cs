@@ -1,11 +1,12 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Services;
-using FFXIVVenues.Veni.States;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.SessionStates;
 
 namespace FFXIVVenues.Veni.Intents.Operation
 {
@@ -53,7 +54,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
             if (venues.Count() > 25)
                 venues = venues.Take(25);
             c.Session.SetItem("venues", venues);
-            await c.Session.MoveStateAsync<SelectVenueToShowState>(c);
+            await c.Session.MoveStateAsync<SelectVenueToShowSessionState>(c);
         }
 
     }
