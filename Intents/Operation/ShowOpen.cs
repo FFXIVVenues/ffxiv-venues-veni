@@ -1,14 +1,17 @@
 ﻿using Discord;
-using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Managers;
-using FFXIVVenues.Veni.Models;
-using FFXIVVenues.Veni.Services;
-using FFXIVVenues.Veni.States;
 using FFXIVVenues.Veni.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Configuration;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.Session;
+using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.People;
+using FFXIVVenues.Veni.SessionStates;
+using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.Intents.Operation
 {
@@ -99,22 +102,22 @@ namespace FFXIVVenues.Veni.Intents.Operation
                         .WithButton("Open", c.Session.RegisterComponentHandler(async cm =>
                         {
                             cm.Session.SetItem("venue", venue);
-                            await cm.Session.MoveStateAsync<OpenEntryState>(cm);
+                            await cm.Session.MoveStateAsync<OpenEntrySessionState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Primary)
                         .WithButton("Close", c.Session.RegisterComponentHandler(async cm =>
                         {
                             cm.Session.SetItem("venue", venue);
-                            await cm.Session.MoveStateAsync<CloseEntryState>(cm);
+                            await cm.Session.MoveStateAsync<CloseEntrySessionState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
                         {
                             c.Session.SetItem("venue", venue);
-                            return cm.Session.MoveStateAsync<ModifyVenueState>(cm);
+                            return cm.Session.MoveStateAsync<ModifyVenueSessionState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .WithButton("Delete", c.Session.RegisterComponentHandler(cm =>
                         {
                             c.Session.SetItem("venue", venue);
-                            return cm.Session.MoveStateAsync<DeleteVenueState>(cm);
+                            return cm.Session.MoveStateAsync<DeleteVenueSessionState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
                         .WithButton("Do nothing", c.Session.RegisterComponentHandler(cm => Task.CompletedTask,
                             ComponentPersistence.ClearRow), ButtonStyle.Secondary)
@@ -125,7 +128,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
                         .WithButton("Edit Banner Photo", c.Session.RegisterComponentHandler(cm =>
                         {
                             c.Session.SetItem("venue", venue);
-                            return cm.Session.MoveStateAsync<BannerEntryState>(cm);
+                            return cm.Session.MoveStateAsync<BannerEntrySessionState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .Build());
             else

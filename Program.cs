@@ -6,23 +6,26 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Luis;
-using FFXIVVenues.Veni.Intents;
 using Discord.WebSocket;
 using Discord;
-using FFXIVVenues.Veni.Commands.Brokerage;
+using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Auditing;
+using FFXIVVenues.Veni.Auditing.ComponentHandlers;
 using FFXIVVenues.Veni.Commands;
-using FFXIVVenues.Veni.Context.Abstractions;
+using FFXIVVenues.Veni.Configuration;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Components;
+using FFXIVVenues.Veni.Infrastructure.Context.Abstractions;
+using FFXIVVenues.Veni.Infrastructure.Context.Session;
+using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.Infrastructure.Logging;
+using FFXIVVenues.Veni.Infrastructure.Persistence;
+using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
+using FFXIVVenues.Veni.People;
 using NChronicle.Core.Model;
 using NChronicle.Console.Extensions;
 using NChronicle.Core.Interfaces;
-using FFXIVVenues.Veni.Logging;
-using FFXIVVenues.Veni.Persistance;
-using FFXIVVenues.Veni.Persistance.Abstraction;
-using FFXIVVenues.Veni.Managers;
-using FFXIVVenues.Veni.Services;
-using FFXIVVenues.Veni.Models;
 
 const string DISCORD_BOT_CONFIG_KEY = "DiscordBotToken";
 
@@ -73,6 +76,7 @@ serviceCollection.AddSingleton<UiConfiguration>(uiConfig);
 serviceCollection.AddSingleton<HttpClient>(apiHttpClient);
 serviceCollection.AddSingleton<IRepository>(repository);
 serviceCollection.AddSingleton<ICommandBroker, CommandBroker>();
+serviceCollection.AddSingleton<IComponentBroker, ComponentBroker>();
 serviceCollection.AddSingleton<IApiService, ApiService>();
 serviceCollection.AddSingleton<IGuildManager, GuildManager>();
 serviceCollection.AddSingleton<IStaffManager, StaffManager>();
@@ -80,7 +84,11 @@ serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
 serviceCollection.AddSingleton<ISessionContextProvider, SessionContextProvider>();
 serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();
 serviceCollection.AddSingleton<ILuisClient, LuisClient>();
-serviceCollection.AddSingleton(GetDiscordSocketClient(config, chronicle));
+serviceCollection.AddSingleton<IVenueAuditFactory, VenueAuditFactory>();
+
+var discordClient = GetDiscordSocketClient(config, chronicle);
+serviceCollection.AddSingleton<IDiscordClient>(discordClient);
+serviceCollection.AddSingleton(discordClient);
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -103,6 +111,12 @@ commandBroker.Add<SetFormatNames.CommandFactory, SetFormatNames.CommandHandler>(
 commandBroker.Add<ShowCount.CommandFactory, ShowCount.CommandHandler>(ShowCount.COMMAND_NAME);
 commandBroker.Add<Graph.CommandFactory, Graph.CommandHandler>(Graph.COMMAND_NAME);
 commandBroker.Add<GetUnapproved.CommandFactory, GetUnapproved.CommandHandler>(GetUnapproved.COMMAND_NAME);
+
+var componentBroker = serviceProvider.GetService<IComponentBroker>();
+componentBroker.Add<ConfirmCorrectHandler>(ConfirmCorrectHandler.Key);
+componentBroker.Add<EditVenueHandler>(EditVenueHandler.Key);
+componentBroker.Add<TemporarilyClosedHandler>(TemporarilyClosedHandler.Key);
+componentBroker.Add<PermanentlyClosedHandler>(PermanentlyClosedHandler.Key);
 
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
 

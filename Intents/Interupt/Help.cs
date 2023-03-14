@@ -1,8 +1,9 @@
 ﻿using Discord;
-using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
 using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
 
 namespace FFXIVVenues.Veni.Intents.Interupt
 {
@@ -20,7 +21,7 @@ namespace FFXIVVenues.Veni.Intents.Interupt
 
 "You can also use slash commands; just type `/` in the chat below to see the guided commands available.\n\n" +
 
-$"If you need any help or have any questions about managing your venue, please meow at {MentionUtils.MentionUser(People.Kana)} or {MentionUtils.MentionUser(People.Sumi)} :heart:.");
+$"If you need any help or have any questions about managing your venue, please meow at {MentionUtils.MentionUser(People.People.Kana)} or {MentionUtils.MentionUser(People.People.Sumi)} :heart:.");
 
     }
 }

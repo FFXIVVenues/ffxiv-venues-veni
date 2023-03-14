@@ -1,13 +1,13 @@
 ﻿using Discord.WebSocket;
 using Discord;
-using FFXIVVenues.Veni.Commands.Brokerage;
 using System.Threading.Tasks;
-using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
 using System;
 using System.Linq;
+using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Context;
 using ScottPlot;
-using FFXIVVenues.Veni.Services;
 
 namespace FFXIVVenues.Veni.Commands
 {

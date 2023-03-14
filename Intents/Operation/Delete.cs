@@ -1,10 +1,10 @@
-﻿using FFXIVVenues.Veni.Models;
-using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Services;
-using FFXIVVenues.Veni.States;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.SessionStates;
 
 namespace FFXIVVenues.Veni.Intents.Operation
 {
@@ -30,12 +30,12 @@ namespace FFXIVVenues.Veni.Intents.Operation
                 if (venues.Count() > 25)
                     venues = venues.Take(25);
                 context.Session.SetItem("venues", venues);
-                await context.Session.MoveStateAsync<SelectVenueToDeleteState>(context);
+                await context.Session.MoveStateAsync<SelectVenueToDeleteSessionState>(context);
             }
             else
             {
                 context.Session.SetItem("venue", venues.Single());
-                await context.Session.MoveStateAsync<DeleteVenueState>(context);
+                await context.Session.MoveStateAsync<DeleteVenueSessionState>(context);
             }
         }
 

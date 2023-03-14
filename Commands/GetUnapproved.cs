@@ -1,14 +1,17 @@
 ﻿using Discord.WebSocket;
 using Discord;
-using FFXIVVenues.Veni.Commands.Brokerage;
 using System.Threading.Tasks;
-using FFXIVVenues.Veni.Context;
 using System.Linq;
 using System.Collections.Generic;
-using FFXIVVenues.Veni.States;
-using FFXIVVenues.Veni.Models;
-using FFXIVVenues.Veni.Managers;
-using FFXIVVenues.Veni.Services;
+using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Configuration;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.Session;
+using FFXIVVenues.Veni.People;
+using FFXIVVenues.Veni.SessionStates;
+using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.Commands
 {
@@ -101,12 +104,12 @@ namespace FFXIVVenues.Veni.Commands
                             .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
                             {
                                 c.Session.SetItem("venue", venue);
-                                return cm.Session.MoveStateAsync<ModifyVenueState>(cm);
+                                return cm.Session.MoveStateAsync<ModifyVenueSessionState>(cm);
                             }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                             .WithButton("Delete", c.Session.RegisterComponentHandler(cm =>
                             {
                                 c.Session.SetItem("venue", venue);
-                                return cm.Session.MoveStateAsync<DeleteVenueState>(cm);
+                                return cm.Session.MoveStateAsync<DeleteVenueSessionState>(cm);
                             }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
                             .WithButton("Do nothing", c.Session.RegisterComponentHandler(cm => Task.CompletedTask,
                                 ComponentPersistence.ClearRow), ButtonStyle.Secondary)
