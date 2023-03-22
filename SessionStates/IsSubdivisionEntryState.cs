@@ -9,7 +9,7 @@ namespace FFXIVVenues.Veni.SessionStates
 {
     class IsSubdivisionEntrySessionState : ISessionState
     {
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             return c.Interaction.RespondAsync(MessageRepository.AskForSubdivisionMessage.PickRandom(), new ComponentBuilder()
                 .WithBackButton(c)

@@ -28,7 +28,7 @@ namespace FFXIVVenues.Veni.SessionStates
         private bool? _nowSettingClosing;
         private int? _nowSettingDay;
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetItem<Venue>("venue");
             this._timeZoneId = c.Session.GetItem<string>("timeZoneId");
@@ -60,7 +60,7 @@ namespace FFXIVVenues.Veni.SessionStates
                                                new ComponentBuilder().WithBackButton(c).Build());
         }
 
-        public Task OnMessageReceived(MessageInteractionContext c)
+        public Task OnMessageReceived(MessageVeniInteractionContext c)
         {
             var message = c.Interaction.Content.StripMentions().ToLower();
             var match = _regex.Match(message);

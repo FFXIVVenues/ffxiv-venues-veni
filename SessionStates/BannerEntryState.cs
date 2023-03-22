@@ -25,7 +25,7 @@ namespace FFXIVVenues.Veni.SessionStates
             this._httpClient = httpClient;
         }
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             c.Session.SetBackClearanceAmount(3);
@@ -36,7 +36,7 @@ namespace FFXIVVenues.Veni.SessionStates
                     .Build());
         }
 
-        public async Task OnMessageReceived(MessageInteractionContext c)
+        public async Task OnMessageReceived(MessageVeniInteractionContext c)
         {
             if (!c.Interaction.Attachments.Any())
             {

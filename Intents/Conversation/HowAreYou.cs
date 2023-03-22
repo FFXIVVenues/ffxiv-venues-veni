@@ -17,7 +17,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "Better now you're here. :wink:"
         };
 
-        public override Task Handle(InteractionContext context) =>
+        public override Task Handle(VeniInteractionContext context) =>
             context.Interaction.RespondAsync(_messages.PickRandom());
 
     }

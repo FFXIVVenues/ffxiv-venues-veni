@@ -49,7 +49,7 @@ namespace FFXIVVenues.Veni.Commands
             {
                 this._apiService = _apiService;
             }
-            public async Task HandleAsync(SlashCommandInteractionContext c) 
+            public async Task HandleAsync(SlashCommandVeniInteractionContext c) 
             {
                 var period = (int)c.GetLongArg(OPTION_NAME);
                 var date = DateTime.Now;

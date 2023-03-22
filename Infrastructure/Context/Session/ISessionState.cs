@@ -4,6 +4,6 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.Session
 {
     public interface ISessionState
     {
-        Task Enter(InteractionContext c);
+        Task Enter(VeniInteractionContext c);
     }
 }

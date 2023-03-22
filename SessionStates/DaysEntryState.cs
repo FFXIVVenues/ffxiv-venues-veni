@@ -26,7 +26,7 @@ namespace FFXIVVenues.Veni.SessionStates
 
         private Venue _venue;
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetItem<Venue>("venue");
 
@@ -39,7 +39,7 @@ namespace FFXIVVenues.Veni.SessionStates
             return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskDaysOpenMessage.PickRandom()}", component: component.Build());
         }
 
-        private ComponentBuilder BuildDaysComponent(InteractionContext c)
+        private ComponentBuilder BuildDaysComponent(VeniInteractionContext c)
         {
             var selectComponent = new SelectMenuBuilder()
                 .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
@@ -51,7 +51,7 @@ namespace FFXIVVenues.Veni.SessionStates
             return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
-        private Task OnComplete(MessageComponentInteractionContext c)
+        private Task OnComplete(MessageComponentVeniInteractionContext c)
         {
             this._venue.Openings = c.Interaction.Data.Values
                                     .Select(d => new Opening { Day = Enum.Parse<Day>(d) })

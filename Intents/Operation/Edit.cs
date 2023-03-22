@@ -17,7 +17,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
             this._apiService = apiService;
         }
 
-        public override async Task Handle(InteractionContext context)
+        public override async Task Handle(VeniInteractionContext context)
         {
             var user = context.Interaction.User.Id;
             var venues = await this._apiService.GetAllVenuesAsync(user);

@@ -8,17 +8,18 @@ using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.Session;
 using FFXIVVenues.Veni.People;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.Utils.Broadcasting;
 using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.SessionStates
 {
     class ConfirmVenueSessionState : ISessionState
     {
+        private readonly IVenueRenderer _venueRenderer;
+        private readonly UiConfiguration _uiConfiguration;
         private readonly IApiService _apiService;
-        private readonly IStaffManager _staffService;
+        private readonly IStaffService _staffService;
         private readonly IGuildManager _guildManager;
-        private readonly string _uiUrl;
-        private readonly string _apiUrl;
 
         private static string[] _preexisingResponse = new[]
         {
@@ -48,35 +49,35 @@ namespace FFXIVVenues.Veni.SessionStates
             "Ok! We'll get that approved and get it live soon! 🎉"
         };
 
-        public ConfirmVenueSessionState(IApiService apiService,
-                                 UiConfiguration uiConfig,
-                                 ApiConfiguration apiConfig,
-                                 IStaffManager indexersService,
-                                 IGuildManager guildManager)
+        public ConfirmVenueSessionState(IVenueRenderer venueRenderer, 
+                                UiConfiguration uiConfiguration,
+                                IApiService apiService,
+                                IStaffService indexersService,
+                                IGuildManager guildManager)
         {
+            this._venueRenderer = venueRenderer;
+            this._uiConfiguration = uiConfiguration;
             this._apiService = apiService;
             this._staffService = indexersService;
             this._guildManager = guildManager;
-            this._uiUrl = uiConfig.BaseUrl;
-            this._apiUrl = apiConfig.BaseUrl;
         }
 
-        public async Task Enter(InteractionContext c)
+        public async Task Enter(VeniInteractionContext c)
         {
             var bannerUrl = c.Session.GetItem<string>("bannerUrl");
             var modifying = c.Session.GetItem<bool>("modifying");
             var venue = c.Session.GetItem<Venue>("venue");
 
             await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
-                                    embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", bannerUrl ?? $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
-                                    component: new ComponentBuilder()
-                                        .WithButton("Looks perfect!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
-                                        .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                                        .WithButton("Cancel", c.Session.RegisterComponentHandler(this.Cancel, ComponentPersistence.ClearRow), ButtonStyle.Danger)
-                                        .Build());
+                embed: this._venueRenderer.RenderEmbed(venue, bannerUrl).Build(),
+                component: new ComponentBuilder()
+                    .WithButton("Looks perfect!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
+                    .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("Cancel", c.Session.RegisterComponentHandler(this.Cancel, ComponentPersistence.ClearRow), ButtonStyle.Danger)
+                    .Build());
         }
 
-        private async Task LooksPerfect(MessageComponentInteractionContext c)
+        private async Task LooksPerfect(MessageComponentVeniInteractionContext c)
         {
             var isNewVenue = c.Session.GetItem<bool>("isNewVenue");
             _ = c.Interaction.Channel.SendMessageAsync(_workingOnItResponse.PickRandom());
@@ -126,10 +127,10 @@ namespace FFXIVVenues.Veni.SessionStates
             _ = c.Session.ClearState(c);
         }
 
-        private Task Edit(MessageComponentInteractionContext c) =>
+        private Task Edit(MessageComponentVeniInteractionContext c) =>
             c.Session.MoveStateAsync<ModifyVenueSessionState>(c);
 
-        private Task Cancel(MessageComponentInteractionContext c)
+        private Task Cancel(MessageComponentVeniInteractionContext c)
         {
             _ = c.Interaction.RespondAsync("It's as if it never happened! 😅");
             _ = c.Session.ClearState(c);
@@ -140,7 +141,7 @@ namespace FFXIVVenues.Veni.SessionStates
             this._staffService
                 .Broadcast()
                 .WithMessage($"Heyo indexers!\nVenue '**{venue.Name}**' ({venue.Id}) needs approving! :heart:")
-                .WithEmbed(venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", bannerUrl))
+                .WithEmbed(this._venueRenderer.RenderEmbed(venue, bannerUrl))
                 .WithComponent(bcc =>
                 {
                     ComponentBuilder approveRejectComponent = null;
@@ -190,10 +191,10 @@ namespace FFXIVVenues.Veni.SessionStates
             {
                 var manager = await client.GetUserAsync(ulong.Parse(managerId));
                 var dmChannel = await manager.CreateDMChannelAsync();
-                _ = dmChannel.SendMessageAsync($"Hey hey! :heart:\n**{venue.Name}** has been **approved** and it's live!\n{this._uiUrl}/#{venue.Id}\n" +
+                _ = dmChannel.SendMessageAsync($"Hey hey! :heart:\n**{venue.Name}** has been **approved** and it's live!\n{this._uiConfiguration.BaseUrl}/#{venue.Id}\n" +
                                                $"I've assigned you your Venue Manager discord role too.\n" +
                                                $"Let me know if you'd like anything edited or anything you'd like help with. 🥳",
-                                               embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
+                                               embed: this._venueRenderer.RenderEmbed(venue).Build());
             }
         }
 

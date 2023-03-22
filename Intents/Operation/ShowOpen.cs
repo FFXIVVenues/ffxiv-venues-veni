@@ -19,23 +19,17 @@ namespace FFXIVVenues.Veni.Intents.Operation
     {
 
         private readonly IApiService _apiService;
-        private readonly IStaffManager _staffService;
-        private readonly string _uiUrl;
-        private readonly string _apiUrl;
+        private readonly IVenueRenderer _venueRenderer;
         private IEnumerable<Venue> _venues;
 
         public ShowOpen(IApiService apiService,
-                        UiConfiguration uiConfig,
-                        ApiConfiguration apiConfig, 
-                        IStaffManager staffService)
+                        IVenueRenderer venueRenderer)
         {
             this._apiService = apiService;
-            this._staffService = staffService;
-            this._uiUrl = uiConfig.BaseUrl;
-            this._apiUrl = apiConfig.BaseUrl;
+            this._venueRenderer = venueRenderer;
         }
 
-        public override async Task Handle(InteractionContext c)
+        public override async Task Handle(VeniInteractionContext c)
         {
             var asker = c.Interaction.User.Id;
             this._venues = await this._apiService.GetOpenVenuesAsync();
@@ -88,51 +82,14 @@ namespace FFXIVVenues.Veni.Intents.Operation
             await c.Interaction.RespondAsync(MessageRepository.WhatsOpenMessage.PickRandom(), componentBuilder.Build());
         }
 
-        private Task HandleVenueSelection(MessageComponentInteractionContext c)
+        private Task HandleVenueSelection(MessageComponentVeniInteractionContext context)
         {
-            var selectedVenueId = c.Interaction.Data.Values.Single();
-            var asker = c.Interaction.User.Id;
+            var selectedVenueId = context.Interaction.Data.Values.Single();
+            var asker = context.Interaction.User.Id;
             var venue = this._venues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            var isOwnerOrEditor = venue.Managers.Contains(asker.ToString()) || this._staffService.IsEditor(asker);
-
-            if (isOwnerOrEditor)
-                return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
-                    components: new ComponentBuilder()
-                        .WithButton("Open", c.Session.RegisterComponentHandler(async cm =>
-                        {
-                            cm.Session.SetItem("venue", venue);
-                            await cm.Session.MoveStateAsync<OpenEntrySessionState>(cm);
-                        }, ComponentPersistence.ClearRow), ButtonStyle.Primary)
-                        .WithButton("Close", c.Session.RegisterComponentHandler(async cm =>
-                        {
-                            cm.Session.SetItem("venue", venue);
-                            await cm.Session.MoveStateAsync<CloseEntrySessionState>(cm);
-                        }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                        .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
-                        {
-                            c.Session.SetItem("venue", venue);
-                            return cm.Session.MoveStateAsync<ModifyVenueSessionState>(cm);
-                        }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                        .WithButton("Delete", c.Session.RegisterComponentHandler(cm =>
-                        {
-                            c.Session.SetItem("venue", venue);
-                            return cm.Session.MoveStateAsync<DeleteVenueSessionState>(cm);
-                        }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
-                        .WithButton("Do nothing", c.Session.RegisterComponentHandler(cm => Task.CompletedTask,
-                            ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                        .Build());
-            else if (this._staffService.IsPhotographer(asker))
-                return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
-                    components: new ComponentBuilder()
-                        .WithButton("Edit Banner Photo", c.Session.RegisterComponentHandler(cm =>
-                        {
-                            c.Session.SetItem("venue", venue);
-                            return cm.Session.MoveStateAsync<BannerEntrySessionState>(cm);
-                        }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                        .Build());
-            else
-                return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build());
+            return context.Interaction.RespondAsync(embed: this._venueRenderer.RenderEmbed(venue).Build(),
+                components: this._venueRenderer.RenderActionComponents(context, venue, asker).Build());
         }
     }
 }

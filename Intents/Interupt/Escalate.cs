@@ -7,14 +7,14 @@ namespace FFXIVVenues.Veni.Intents.Interupt
 {
     internal class Escalate : IntentHandler
     {
-        private readonly IStaffManager _staffService;
+        private readonly IStaffService _staffService;
 
-        public Escalate(IStaffManager staffService)
+        public Escalate(IStaffService staffService)
         {
             this._staffService = staffService;
         }
 
-        public override async Task Handle(InteractionContext context)
+        public override async Task Handle(VeniInteractionContext context)
         {
             await context.Interaction.RespondAsync($"Alright! I've messaged the family! They'll contact you soon!");
 

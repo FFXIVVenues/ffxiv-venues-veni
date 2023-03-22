@@ -8,7 +8,7 @@ namespace FFXIVVenues.Veni.SessionStates
 {
     class LocationTypeEntrySessionState : ISessionState
     {
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             return c.Interaction.RespondAsync(MessageRepository.AskForHouseOrApartmentMessage.PickRandom(), new ComponentBuilder()
                 .WithBackButton(c)

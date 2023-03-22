@@ -33,7 +33,7 @@ namespace FFXIVVenues.Veni.Commands
                 this._apiService = _apiService;
             } 
 
-            public async Task HandleAsync(SlashCommandInteractionContext c)
+            public async Task HandleAsync(SlashCommandVeniInteractionContext c)
             {
                 await c.Interaction.DeferAsync();
                 var venues = await this._apiService.GetAllVenuesAsync();

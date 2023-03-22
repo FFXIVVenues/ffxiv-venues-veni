@@ -7,7 +7,7 @@ using Kana.Pipelines;
 
 namespace FFXIVVenues.Veni.Infrastructure.Middleware
 {
-    class StopCallingMeMommyMiddleware : IMiddleware<MessageInteractionContext>
+    class StopCallingMeMommyMiddleware : IMiddleware<MessageVeniInteractionContext>
     {
 
         private static readonly Regex _match = new ("\\bm+o+m+y+\\b", RegexOptions.IgnoreCase);
@@ -19,7 +19,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Middleware
             "Mommy? 😑"
         };
 
-        public async Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
+        public async Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
         {
             var match = _match.Match(context.Interaction.Content);
             if (match.Success)

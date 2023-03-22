@@ -20,7 +20,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "*looks away meekly as she blushes*"
         };
 
-        public override Task Handle(InteractionContext context) =>
+        public override Task Handle(VeniInteractionContext context) =>
             context.Interaction.RespondAsync(_responses.PickRandom());
 
     }

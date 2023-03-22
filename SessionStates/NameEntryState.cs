@@ -8,13 +8,13 @@ namespace FFXIVVenues.Veni.SessionStates
 {
     class NameEntrySessionState : ISessionState
     {
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync(MessageRepository.AskForNameMessage.PickRandom());
         }
 
-        public Task OnMessageReceived(MessageInteractionContext c)
+        public Task OnMessageReceived(MessageVeniInteractionContext c)
         {
             var venue = c.Session.GetItem<Venue>("venue");
             venue.Name = c.Interaction.Content.StripMentions();

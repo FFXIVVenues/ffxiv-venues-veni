@@ -17,7 +17,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "nya. :3"
         };
 
-        public override Task Handle(InteractionContext context) =>
+        public override Task Handle(VeniInteractionContext context) =>
             context.Interaction.RespondAsync(_meowMessages.PickRandom());
 
     }

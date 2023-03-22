@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.Utils.Broadcasting;
 
 namespace FFXIVVenues.Veni.People
 {
-    public interface IStaffManager
+    public interface IStaffService
     {
 
         ulong[] Engineers { get; }

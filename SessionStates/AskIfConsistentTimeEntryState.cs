@@ -15,7 +15,7 @@ namespace FFXIVVenues.Veni.SessionStates
             "Is the scheduled **opening time the same** across all those days?"
         };
 
-        public Task Enter(InteractionContext c) =>
+        public Task Enter(VeniInteractionContext c) =>
             c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {_messages.PickRandom()}",
                 new ComponentBuilder()
                     .WithBackButton(c)

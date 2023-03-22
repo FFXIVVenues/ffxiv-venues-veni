@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -7,65 +6,78 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Auditing.ComponentHandlers;
 using FFXIVVenues.Veni.Configuration;
 using FFXIVVenues.Veni.Infrastructure.Components;
+using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.Utils.Broadcasting;
 using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.Auditing;
 
-public record VenueAudit
+public class VenueAudit
 {
     private const int MIN_DAYS_SINCE_LAST_UPDATE = 52; // 6 weeks
-
-    public string VenueId => this._venue.Id;
-    public VenueAuditStatus Status { get; private set;  }
-
-    private readonly List<VenueAuditLog> _log = new();
+    
+    private readonly VenueAuditRecord _record;
     private readonly Venue _venue;
     private readonly IDiscordClient _discordClient;
-    private readonly string _uiUrl;
-    private readonly string _apiUrl;
+    private readonly IVenueRenderer _venueRenderer;
+    private readonly IRepository _repository;
 
-    public VenueAudit(Venue venue, IDiscordClient discordClient, UiConfiguration uiConfig, ApiConfiguration apiConfig)
+    public VenueAudit(Venue venue, string roundId, IDiscordClient discordClient,
+        IVenueRenderer venueRenderer, IRepository repository) :
+        this(venue, record: new() { VenueId = venue.Id, RoundId = roundId }, 
+            discordClient, venueRenderer, repository) { }
+
+    public VenueAudit(Venue venue,
+        VenueAuditRecord record,
+        IDiscordClient discordClient,
+        IVenueRenderer venueRenderer,
+        IRepository repository)
     {
         this._venue = venue;
+        this._record = record;
         this._discordClient = discordClient;
-        this._uiUrl = uiConfig.BaseUrl;
-        this._apiUrl = apiConfig.BaseUrl;
+        this._venueRenderer = venueRenderer;
+        this._repository = repository;
     }
 
-    public async Task<AuditStatus> AuditAsync(bool doNotSkip = false)
+    public async Task<VenueAuditStatus> AuditAsync(bool doNotSkip = false)
     {
         if (!doNotSkip && !this.ShouldBeAudited())
         {
-            this.Log("Venue audit skipped; it should not be audited.");
-            return AuditStatus.Skipped;
+            this._record.Log("Venue audit skipped; it should not be audited.");
+            this._record.Status = VenueAuditStatus.Skipped;
+            await this._repository.UpsertAsync(this._record);
+            return VenueAuditStatus.Skipped;
         }
 
-#pragma warning disable CS4014
-        await new Broadcast(Guid.NewGuid().ToString(), this._discordClient)
+        var broadcast = new Broadcast(Guid.NewGuid().ToString(), this._discordClient)
             .WithMessage(AuditStrings.Prompt)
-            .WithEmbed(this._venue.ToEmbed($"{this._uiUrl}/#{_venue.Id}", $"{this._apiUrl}/venue/{_venue.Id}/media"))
+            .WithEmbed(this._venueRenderer.RenderEmbed(this._venue))
             .WithComponent(ctx => new ComponentBuilder()
                 .WithButton(new ButtonBuilder()
                     .WithLabel("Confirm Correct")
                     .WithStyle(ButtonStyle.Success)
-                    .WithStaticHandler(ConfirmCorrectHandler.Key))
+                    .WithStaticHandler(ConfirmCorrectHandler.Key, this._record.id))
                 .WithButton(new ButtonBuilder()
                     .WithLabel("Edit Venue")
                     .WithStyle(ButtonStyle.Secondary)
-                    .WithStaticHandler(EditVenueHandler.Key))
+                    .WithStaticHandler(EditVenueHandler.Key, this._record.id))
                 .WithButton(new ButtonBuilder()
                     .WithLabel("Temporarily Close")
                     .WithStyle(ButtonStyle.Secondary)
-                    .WithStaticHandler(TemporarilyClosedHandler.Key))
+                    .WithStaticHandler(TemporarilyClosedHandler.Key, this._record.id))
                 .WithButton(new ButtonBuilder()
                     .WithLabel("Permanently Close (Delete)")
                     .WithStyle(ButtonStyle.Danger)
-                    .WithStaticHandler(PermanentlyClosedHandler.Key)))
-            .SendToAsync(this._venue.Managers.Select(ulong.Parse).ToArray());
-#pragma warning restore CS4014
+                    .WithStaticHandler(PermanentlyClosedHandler.Key, this._record.id)));
+        var broadcastedMessages = await broadcast.SendToAsync(this._venue.Managers.Select(ulong.Parse).ToArray());
 
-        return AuditStatus.Active;
+        this._record.Status = VenueAuditStatus.AwaitingResponse;
+        this._record.SentMessages = broadcastedMessages.Select(m => 
+            new AuditMessage(m.UserId, m.Message.Channel.Id, m.Message.Id, m.Status, m.Log)).ToList();
+        await this._repository.UpsertAsync(this._record);
+        return VenueAuditStatus.AwaitingResponse;
     }
 
     private bool ShouldBeAudited()
@@ -78,28 +90,25 @@ public record VenueAudit
 
         if (venueCreatedAt > boundaryDate)
         {
-            this.Log($"Should not be audited; venue created within the last {MIN_DAYS_SINCE_LAST_UPDATE} days.");
+            this._record.Log($"Should not be audited; venue created within the last {MIN_DAYS_SINCE_LAST_UPDATE} days.");
             return false;
         }
         
         if (venueLastChangedAt > boundaryDate)
         {
-            this.Log($"Should not be audited; venue updated within the last {MIN_DAYS_SINCE_LAST_UPDATE} days.");
+            this._record.Log($"Should not be audited; venue updated within the last {MIN_DAYS_SINCE_LAST_UPDATE} days.");
             return false;
         }
         
         if (venueLastAuditedAt > boundaryDate)
         {
-            this.Log($"Should not be audited; venue audited within the last {MIN_DAYS_SINCE_LAST_UPDATE} days.");
+            this._record.Log($"Should not be audited; venue audited within the last {MIN_DAYS_SINCE_LAST_UPDATE} days.");
             return false;
         }
 
         return true;
     }
 
-    private void Log(string message) =>
-        this._log.Add(new VenueAuditLog(DateTime.UtcNow, message));
-    
 }
 
 public record VenueAuditLog(DateTime date, string message);

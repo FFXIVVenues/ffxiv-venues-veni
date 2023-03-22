@@ -20,7 +20,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
             this._apiService = apiService;
         }
 
-        public Task Handle(MessageInteractionContext context)
+        public Task Handle(MessageVeniInteractionContext context)
         {
             var discordIdStr = (context.Prediction?.Entities["discord-id"] as JArray)?.First.Value<string>();
 
@@ -32,16 +32,16 @@ namespace FFXIVVenues.Veni.Intents.Operation
             return this.Handle(context.ToWrappedInteraction(), discordId);
         }
 
-        public Task Handle(MessageComponentInteractionContext context) =>
+        public Task Handle(MessageComponentVeniInteractionContext context) =>
             Task.CompletedTask;
 
-        public Task Handle(SlashCommandInteractionContext context)
+        public Task Handle(SlashCommandVeniInteractionContext context)
         {
             var user = context.Interaction.Data?.Options?.FirstOrDefault(o => o.Name == "user")?.Value as SocketUser;
             return this.Handle(context.ToWrappedInteraction(), user.Id);
         }
 
-        private async Task Handle(InteractionContext c, ulong discordId)
+        private async Task Handle(VeniInteractionContext c, ulong discordId)
         {
             var venues = await this._apiService.GetAllVenuesAsync(discordId);
 

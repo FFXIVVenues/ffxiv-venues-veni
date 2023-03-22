@@ -7,10 +7,10 @@ using Kana.Pipelines;
 
 namespace FFXIVVenues.Veni.Infrastructure.Middleware
 {
-    class ConversationFilterMiddleware : IMiddleware<MessageInteractionContext>
+    class ConversationFilterMiddleware : IMiddleware<MessageVeniInteractionContext>
     {
 
-        public Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
+        public Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
         {
             if (context.Interaction.Channel is SocketDMChannel || context.Interaction.MentionedUsers.Any(u => u.Id == context.Client.CurrentUser.Id))
                 return next();

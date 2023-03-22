@@ -48,7 +48,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "Fluffy! How's my greedy catboi? ❤️"
         };
 
-        public override Task Handle(InteractionContext context)
+        public override Task Handle(VeniInteractionContext context)
         {
             if (context.Interaction.User.Id == People.People.Kana)
                 return context.Interaction.RespondAsync(_kanaMessages.PickRandom());

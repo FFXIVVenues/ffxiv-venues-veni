@@ -21,9 +21,9 @@ namespace FFXIVVenues.Veni
         private readonly DiscordSocketClient _client;
         private readonly ICommandBroker _commandBroker;
         private readonly IComponentBroker _componentBroker;
-        private readonly Pipeline<MessageInteractionContext> _pipeline;
+        private readonly Pipeline<MessageVeniInteractionContext> _pipeline;
         private readonly ISessionContextProvider _sessionContextProvider;
-        private readonly IStaffManager _staffService;
+        private readonly IStaffService _staffService;
         private readonly IChronicle _chronicle;
         private readonly IGuildManager _guildManager;
 
@@ -32,7 +32,7 @@ namespace FFXIVVenues.Veni
                               IComponentBroker componentBroker,
                               IServiceProvider serviceProvider,
                               ISessionContextProvider sessionContextProvider,
-                              IStaffManager staffService, 
+                              IStaffService staffService, 
                               IChronicle chronicle,
                               IGuildManager guildManager)
         {
@@ -50,7 +50,7 @@ namespace FFXIVVenues.Veni
             this._client.ButtonExecuted += ComponentExecutedAsync;
             this._client.UserJoined += UserJoinedAsync;
             
-            this._pipeline = new Pipeline<MessageInteractionContext>()
+            this._pipeline = new Pipeline<MessageVeniInteractionContext>()
                 .WithServiceProvider(serviceProvider)
                 .Add<ConversationFilterMiddleware>()
                 .Add<StartTypingMiddleware>()
@@ -71,7 +71,7 @@ namespace FFXIVVenues.Veni
         private async Task SlashCommandExecutedAsync(SocketSlashCommand slashCommand)
         {
             var sessionContext = _sessionContextProvider.GetContext(slashCommand.User.Id.ToString());
-            var context = new SlashCommandInteractionContext(slashCommand, _client, sessionContext, this._chronicle);
+            var context = new SlashCommandVeniInteractionContext(slashCommand, _client, sessionContext, this._chronicle);
 
             LogSlashCommandExecuted(slashCommand, context);
 
@@ -85,7 +85,7 @@ namespace FFXIVVenues.Veni
                 return;
 
             var conversationContext = _sessionContextProvider.GetContext(message.User.Id.ToString());
-            var context = new MessageComponentInteractionContext(message, _client, conversationContext, this._chronicle);
+            var context = new MessageComponentVeniInteractionContext(message, _client, conversationContext, this._chronicle);
             
             LogComponentExecuted(message, context);
 
@@ -94,7 +94,7 @@ namespace FFXIVVenues.Veni
             await this._componentBroker.HandleAsync(message);
         }
 
-        private void LogSlashCommandExecuted(SocketSlashCommand slashCommand, SlashCommandInteractionContext context)
+        private void LogSlashCommandExecuted(SocketSlashCommand slashCommand, SlashCommandVeniInteractionContext context)
         {
             var stateText = "";
             ISessionState currentSessionState = null;
@@ -104,7 +104,7 @@ namespace FFXIVVenues.Veni
             this._chronicle.Info($"**{slashCommand.User.Mention}{stateText}**: [Command: /{slashCommand.CommandName}]");
         }
 
-        private void LogComponentExecuted(SocketMessageComponent message, MessageComponentInteractionContext context)
+        private void LogComponentExecuted(SocketMessageComponent message, MessageComponentVeniInteractionContext context)
         {
             var stateText = "";
             ISessionState currentSessionState = null;
@@ -136,7 +136,7 @@ namespace FFXIVVenues.Veni
                 return Task.CompletedTask;
 
             var conversationContext = _sessionContextProvider.GetContext(message.Author.Id.ToString());
-            var context = new MessageInteractionContext(message, _client, conversationContext, this._chronicle);
+            var context = new MessageVeniInteractionContext(message, _client, conversationContext, this._chronicle);
             return _pipeline.RunAsync(context);
         }
 

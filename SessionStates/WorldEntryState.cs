@@ -11,7 +11,7 @@ namespace FFXIVVenues.Veni.SessionStates
     class WorldEntrySessionState : ISessionState
     {
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             var venue = c.Session.GetItem<Venue>("venue");
 
@@ -25,7 +25,7 @@ namespace FFXIVVenues.Veni.SessionStates
                                   new ComponentBuilder().WithSelectMenu(selectMenu).WithBackButton(c).Build());
         }
 
-        public Task Handle(MessageComponentInteractionContext c)
+        public Task Handle(MessageComponentVeniInteractionContext c)
         {
             var venue = c.Session.GetItem<Venue>("venue");
             var world = c.Interaction.Data.Values.Single();

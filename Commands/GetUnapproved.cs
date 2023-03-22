@@ -33,23 +33,20 @@ namespace FFXIVVenues.Veni.Commands
         internal class CommandHandler : ICommandHandler
         {
             private readonly IApiService _apiService;
-            private readonly IStaffManager _staffService;
-            private readonly string _uiUrl;
-            private readonly string _apiUrl;
+            private readonly IVenueRenderer _venueRenderer;
+            private readonly IStaffService _staffService;
             private IEnumerable<Venue> _venues;
 
             public CommandHandler(IApiService _apiService,
-                                  UiConfiguration uiConfig,
-                                  ApiConfiguration apiConfig,
-                                  IStaffManager staffService)
+                                IVenueRenderer venueRenderer,
+                                IStaffService staffService)
             {
                 this._apiService = _apiService;
+                this._venueRenderer = venueRenderer;
                 this._staffService = staffService;
-                this._uiUrl = uiConfig.BaseUrl;
-                this._apiUrl = apiConfig.BaseUrl;
             }
 
-            public async Task HandleAsync(SlashCommandInteractionContext c) 
+            public async Task HandleAsync(SlashCommandVeniInteractionContext c) 
             {
                 var asker = c.Interaction.User.Id;
                 var isEditorOrApprover = this._staffService.IsEditor(asker) || this._staffService.IsApprover(asker);
@@ -84,7 +81,7 @@ namespace FFXIVVenues.Veni.Commands
                 await c.Interaction.RespondAsync("Here you go! 🥰", components: componentBuilder.Build());
             }
 
-            private Task HandleVenueSelection(MessageComponentInteractionContext c)
+            private Task HandleVenueSelection(MessageComponentVeniInteractionContext c)
             {
                 var selectedVenueId = c.Interaction.Data.Values.Single();
                 var asker = c.Interaction.User.Id;
@@ -94,7 +91,7 @@ namespace FFXIVVenues.Veni.Commands
                 if (!isEditorOrApprover)
                     return c.Interaction.FollowupAsync("Sorry, you're not authorized to see unapproved venues. 😢");
 
-                return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
+                return c.Interaction.FollowupAsync(embed: this._venueRenderer.RenderEmbed(venue).Build(),
                         components: new ComponentBuilder()
                             .WithButton("Approve", c.Session.RegisterComponentHandler(async cm =>
                             {

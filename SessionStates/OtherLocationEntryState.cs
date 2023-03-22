@@ -10,14 +10,14 @@ namespace FFXIVVenues.Veni.SessionStates;
 internal class OtherLocationEntrySessionState : ISessionState
 {
     
-    public Task Enter(InteractionContext c)
+    public Task Enter(VeniInteractionContext c)
     {
         c.Session.RegisterMessageHandler(this.MessageHandler);
         return c.Interaction.RespondAsync("Ooo, interesting! In as few characters as possible, where is your venue **located**? 🥰", new ComponentBuilder()
             .WithBackButton(c).Build());
     }
 
-    private Task MessageHandler(MessageInteractionContext c)
+    private Task MessageHandler(MessageVeniInteractionContext c)
     {
         var venue = c.Session.GetItem<Venue>("venue");
         venue.Location = new Location { Override = c.Interaction.Content.StripMentions() };

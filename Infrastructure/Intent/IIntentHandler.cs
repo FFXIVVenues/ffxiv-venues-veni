@@ -6,26 +6,26 @@ namespace FFXIVVenues.Veni.Infrastructure.Intent
     internal interface IIntentHandler
     {
 
-        Task Handle(MessageInteractionContext context);
+        Task Handle(MessageVeniInteractionContext context);
 
-        Task Handle(MessageComponentInteractionContext context);
+        Task Handle(MessageComponentVeniInteractionContext context);
 
-        Task Handle(SlashCommandInteractionContext context);
+        Task Handle(SlashCommandVeniInteractionContext context);
         
     }
 
     abstract class IntentHandler : IIntentHandler
     {
-        public Task Handle(MessageInteractionContext context) =>
+        public Task Handle(MessageVeniInteractionContext context) =>
             this.Handle(context.ToWrappedInteraction());
 
-        public Task Handle(MessageComponentInteractionContext context) =>
+        public Task Handle(MessageComponentVeniInteractionContext context) =>
             this.Handle(context.ToWrappedInteraction());
 
-        public Task Handle(SlashCommandInteractionContext context) => 
+        public Task Handle(SlashCommandVeniInteractionContext context) => 
             this.Handle(context.ToWrappedInteraction());
 
-        public abstract Task Handle(InteractionContext context);
+        public abstract Task Handle(VeniInteractionContext context);
     }
 
 

@@ -11,7 +11,7 @@ namespace FFXIVVenues.Veni.SessionStates
 {
     class WebsiteEntrySessionState : ISessionState
     {
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom(),
@@ -21,7 +21,7 @@ namespace FFXIVVenues.Veni.SessionStates
                     .Build());
         }
 
-        public Task OnMessageReceived(MessageInteractionContext c)
+        public Task OnMessageReceived(MessageVeniInteractionContext c)
         {
             var venue = c.Session.GetItem<Venue>("venue");
             if (new Regex("\\bskip\\b").IsMatch(c.Interaction.Content.ToLower()))

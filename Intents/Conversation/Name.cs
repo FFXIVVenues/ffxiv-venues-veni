@@ -16,7 +16,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "It's Veni. ♥️",
         };
 
-        public override Task Handle(InteractionContext context) =>
+        public override Task Handle(VeniInteractionContext context) =>
             context.Interaction.RespondAsync(_nameMessages.PickRandom());
 
     }

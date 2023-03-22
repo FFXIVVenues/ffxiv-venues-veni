@@ -1,16 +1,18 @@
 ﻿using Discord;
 using System;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.Session;
-using IInteractionContext = FFXIVVenues.Veni.Infrastructure.Context.IInteractionContext;
+using FFXIVVenues.Veni.SessionStates;
+using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.Utils
 {
     internal static class ComponentBuilderExtensions
     {
 
-        public static ComponentBuilder WithSkipButton<SkipTarget, ModifyTarget>(this ComponentBuilder builder, IInteractionContext context) 
+        public static ComponentBuilder WithSkipButton<SkipTarget, ModifyTarget>(this ComponentBuilder builder, IVeniInteractionContext context) 
             where SkipTarget : ISessionState 
             where ModifyTarget : ISessionState
         {
@@ -22,7 +24,7 @@ namespace FFXIVVenues.Veni.Utils
             }, ComponentPersistence.ClearRow), ButtonStyle.Secondary);
         }
 
-        public static ComponentBuilder WithBackButton(this ComponentBuilder builder, IInteractionContext context, Func<Task<bool>> @override = null)
+        public static ComponentBuilder WithBackButton(this ComponentBuilder builder, IVeniInteractionContext context, Func<Task<bool>> @override = null)
         {
             return builder.WithButton("◄  Back", context.Session.RegisterComponentHandler(async c =>
             {
@@ -33,6 +35,8 @@ namespace FFXIVVenues.Veni.Utils
                 else _ = c.Interaction.RespondAsync(embed: new EmbedBuilder().WithDescription("Cannot not go back any more!").Build());
             }, ComponentPersistence.ClearRow), ButtonStyle.Secondary);
         }
+        
+        
 
     }
 }

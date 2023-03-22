@@ -25,7 +25,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.Session
         internal void SetBackClearanceAmount(int amount) =>
             this._backClearance = amount;
 
-        private ConcurrentDictionary<string, Func<MessageInteractionContext, Task>> _messageHandlers = new();
+        private ConcurrentDictionary<string, Func<MessageVeniInteractionContext, Task>> _messageHandlers = new();
 
         public SessionContext(IServiceProvider serviceProvider)
         {
@@ -33,7 +33,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.Session
             _chronicle = serviceProvider.GetService<IChronicle>();
         }
 
-        public async Task MoveStateAsync<T>(InteractionContext context) where T : ISessionState
+        public async Task MoveStateAsync<T>(VeniInteractionContext context) where T : ISessionState
         {
             if (StateStack.TryPeek(out var currentState))
                 this._chronicle.Debug($"Set state from [{currentState?.GetType().Name}] to [{typeof(T).Name}]");
@@ -50,7 +50,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.Session
         public Task MoveStateAsync<T>(IWrappableInteraction context) where T : ISessionState =>
             this.MoveStateAsync<T>(context.ToWrappedInteraction());
 
-        public async Task<bool> TryBackStateAsync(InteractionContext context)
+        public async Task<bool> TryBackStateAsync(VeniInteractionContext context)
         {
             if (!StateStack.TryPop(out var currentState))
                 return false;
@@ -66,7 +66,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.Session
         public Task<bool> TryBackStateAsync(IWrappableInteraction context) =>
             this.TryBackStateAsync(context.ToWrappedInteraction());
 
-        public async Task ClearState(InteractionContext context)
+        public async Task ClearState(VeniInteractionContext context)
         {
             this.Data.Clear();
             await this.ClearComponentHandlers(context);
@@ -94,7 +94,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.Session
             Data.AddOrUpdate(name, item, (s, o) => item);
         }
 
-        public string RegisterComponentHandler(Func<MessageComponentInteractionContext, Task> @delegate, ComponentPersistence persistence)
+        public string RegisterComponentHandler(Func<MessageComponentVeniInteractionContext, Task> @delegate, ComponentPersistence persistence)
         {
             var key = Guid.NewGuid().ToString();
             var registration = new ComponentSessionHandlerRegistration(@delegate, persistence);
@@ -107,13 +107,13 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.Session
             this._componentHandlers.TryRemove(key, out _);
         }
 
-        public async Task ClearComponentHandlers(InteractionContext context)
+        public async Task ClearComponentHandlers(VeniInteractionContext context)
         {
             await this.ClearPreviousComponents(context.Interaction.Channel, context.Client.CurrentUser.Id);
             this._componentHandlers.Clear();
         }
 
-        public Task HandleComponentInteraction(MessageComponentInteractionContext context)
+        public Task HandleComponentInteraction(MessageComponentVeniInteractionContext context)
         {
             if (!this._componentHandlers.TryGetValue(context.Interaction.Data.CustomId, out var handler))
                 return Task.CompletedTask;
@@ -126,7 +126,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.Session
             return handler.Delegate(context);
         }
 
-        public string RegisterMessageHandler(Func<MessageInteractionContext, Task> @delegate)
+        public string RegisterMessageHandler(Func<MessageVeniInteractionContext, Task> @delegate)
         {
             var key = Guid.NewGuid().ToString();
             this._messageHandlers[key] = @delegate;
@@ -144,7 +144,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.Session
             this._messageHandlers.Clear();
         }
 
-        public async Task<bool> HandleMessageAsync(MessageInteractionContext context)
+        public async Task<bool> HandleMessageAsync(MessageVeniInteractionContext context)
         {
             var handled = false;
             foreach (var handler in this._messageHandlers)

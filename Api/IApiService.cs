@@ -8,7 +8,7 @@ using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.Api
 {
-    internal interface IApiService
+    public interface IApiService
     {
         Task<IEnumerable<Venue>> GetAllVenuesAsync();
         Task<IEnumerable<Venue>> GetAllVenuesAsync(ulong forContact);

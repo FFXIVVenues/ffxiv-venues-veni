@@ -10,7 +10,7 @@ namespace FFXIVVenues.Veni.SessionStates
 {
     class HousingDistrictEntrySessionState : ISessionState
     {
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             var districts = new[] { "Mist", "Empyreum", "Goblet", "Lavender Beds", "Shirogane" }
                 .Select(zone => new SelectMenuOptionBuilder(zone, zone)).ToList();
@@ -23,7 +23,7 @@ namespace FFXIVVenues.Veni.SessionStates
                                   new ComponentBuilder().WithSelectMenu(selectMenu).WithBackButton(c).Build());
         }
 
-        public Task Handle(MessageComponentInteractionContext c)
+        public Task Handle(MessageComponentVeniInteractionContext c)
         {
             var district = c.Interaction.Data.Values.Single();
             var venue = c.Session.GetItem<Venue>("venue");

@@ -36,7 +36,7 @@ namespace FFXIVVenues.Veni.Commands
                 this._intentProvider = intentProvider;
             }
 
-            public Task HandleAsync(SlashCommandInteractionContext slashCommand) =>
+            public Task HandleAsync(SlashCommandVeniInteractionContext slashCommand) =>
                 this._intentProvider.HandleIntent(IntentNames.Operation.ShowForManager, slashCommand);
 
         }
