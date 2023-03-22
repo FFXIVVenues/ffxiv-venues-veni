@@ -12,14 +12,14 @@ namespace FFXIVVenues.Veni.SessionStates
 {
     class ManagerEntrySessionState : ISessionState
     {
-        private readonly IStaffManager _staffService;
+        private readonly IStaffService _staffService;
 
-        public ManagerEntrySessionState(IStaffManager staffService)
+        public ManagerEntrySessionState(IStaffService staffService)
         {
             this._staffService = staffService;
         }
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             if (!this._staffService.IsEditor(c.Interaction.User.Id))
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
@@ -32,7 +32,7 @@ namespace FFXIVVenues.Veni.SessionStates
                                                .Build());
         }
 
-        public Task OnMessageReceived(MessageInteractionContext c)
+        public Task OnMessageReceived(MessageVeniInteractionContext c)
         {
             var venue = c.Session.GetItem<Venue>("venue");
 

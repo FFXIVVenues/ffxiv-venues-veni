@@ -22,7 +22,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "*looks away meekly as she blushes*"
         };
 
-        public override async Task Handle(InteractionContext context)
+        public override async Task Handle(VeniInteractionContext context)
         {
             if (context.Interaction.User.Id == People.People.Kana)
                 await context.Interaction.RespondAsync(_kanaMessages.PickRandom());

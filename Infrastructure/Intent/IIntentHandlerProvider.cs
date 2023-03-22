@@ -5,16 +5,16 @@ namespace FFXIVVenues.Veni.Infrastructure.Intent
 {
     internal interface IIntentHandlerProvider
     {
-        Task HandleIteruptIntent(string interupt, MessageInteractionContext context);
+        Task HandleIteruptIntent(string interupt, MessageVeniInteractionContext context);
 
-        Task HandleIteruptIntent(string interupt, MessageComponentInteractionContext context);
+        Task HandleIteruptIntent(string interupt, MessageComponentVeniInteractionContext context);
 
-        Task HandleIteruptIntent(string interupt, SlashCommandInteractionContext context);
+        Task HandleIteruptIntent(string interupt, SlashCommandVeniInteractionContext context);
 
-        Task HandleIntent(string interupt, MessageInteractionContext context);
+        Task HandleIntent(string interupt, MessageVeniInteractionContext context);
 
-        Task HandleIntent(string interupt, MessageComponentInteractionContext context);
+        Task HandleIntent(string interupt, MessageComponentVeniInteractionContext context);
 
-        Task HandleIntent(string interupt, SlashCommandInteractionContext context);
+        Task HandleIntent(string interupt, SlashCommandVeniInteractionContext context);
     }
 }

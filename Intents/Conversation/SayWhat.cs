@@ -14,7 +14,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "whaaat :3",
         };
 
-        public override Task Handle(InteractionContext context) =>
+        public override Task Handle(VeniInteractionContext context) =>
             context.Interaction.RespondAsync(_responses.PickRandom());
 
     }

@@ -37,7 +37,7 @@ namespace FFXIVVenues.Veni.SessionStates
             ("Strictly in-character RP only", "IC RP Only")
         };
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetItem<Venue>("venue");
 
@@ -45,7 +45,7 @@ namespace FFXIVVenues.Veni.SessionStates
             return c.Interaction.RespondAsync(MessageRepository.AskForTags.PickRandom(), component.Build());
         }
 
-        private ComponentBuilder BuildTagsComponent(InteractionContext c)
+        private ComponentBuilder BuildTagsComponent(VeniInteractionContext c)
         {
             var selectComponent = new SelectMenuBuilder()
                 .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
@@ -59,7 +59,7 @@ namespace FFXIVVenues.Veni.SessionStates
                 .WithSkipButton<WebsiteEntrySessionState, ConfirmVenueSessionState>(c);
         }
 
-        private Task OnComplete(MessageComponentInteractionContext c)
+        private Task OnComplete(MessageComponentVeniInteractionContext c)
         {
             var venue = c.Session.GetItem<Venue>("venue");
             venue.Tags = venue.Tags ?? new();

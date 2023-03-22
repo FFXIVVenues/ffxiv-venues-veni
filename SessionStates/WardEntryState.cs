@@ -10,7 +10,7 @@ namespace FFXIVVenues.Veni.SessionStates
 {
     class WardEntrySessionState : ISessionState
     {
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWardMessage.PickRandom()}",
@@ -19,7 +19,7 @@ namespace FFXIVVenues.Veni.SessionStates
                                                 .Build());
         }
 
-        public Task OnMessageReceived(MessageInteractionContext c)
+        public Task OnMessageReceived(MessageVeniInteractionContext c)
         {
             var venue = c.Session.GetItem<Venue>("venue");
             var match = new Regex("\\b\\d+\\b").Match(c.Interaction.Content.StripMentions());

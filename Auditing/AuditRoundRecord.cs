@@ -4,17 +4,16 @@ using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 
 namespace FFXIVVenues.Veni.Auditing;
 
-public class AuditRoundState : IEntity
+public class AuditRoundRecord : IEntity
 {
 
     public string id { get; } = DateTime.Now.ToString("yyyyMMddHHmm");
     public AuditStatus Status { get; private set; } = AuditStatus.Inactive;
-    public List<VenueAudit> VenueAudit { get; private set; } = new();
     public DateTime? StartedAt { get; private set; }
     public DateTime? PausedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
     
-    public List<string> Log { get; private set; }
+    public List<VenueAuditLog> Logs { get; private set; }
 
     public void SetStarted()
     {
@@ -35,5 +34,8 @@ public class AuditRoundState : IEntity
         this.CompletedAt = DateTime.UtcNow;
         this.Status = AuditStatus.Complete;
     }
+
+    public void Log(string message) =>
+        this.Logs.Add(new (DateTime.UtcNow, message));
 
 }

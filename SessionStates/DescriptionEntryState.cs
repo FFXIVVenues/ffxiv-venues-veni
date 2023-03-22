@@ -9,7 +9,7 @@ namespace FFXIVVenues.Veni.SessionStates
 {
     class DescriptionEntrySessionState : ISessionState
     {
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync(MessageRepository.AskForDescriptionMessage.PickRandom(),
@@ -19,7 +19,7 @@ namespace FFXIVVenues.Veni.SessionStates
                     .Build());
         }
 
-        public Task OnMessageReceived(MessageInteractionContext c)
+        public Task OnMessageReceived(MessageVeniInteractionContext c)
         {
             var venue = c.Session.GetItem<Venue>("venue");
             venue.Description = c.Interaction.Content.StripMentions().AsListOfParagraphs();

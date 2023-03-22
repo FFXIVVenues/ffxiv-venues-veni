@@ -3,7 +3,7 @@
     public interface IWrappableInteraction
     {
 
-        InteractionContext ToWrappedInteraction();
+        VeniInteractionContext ToWrappedInteraction();
 
     }
 }

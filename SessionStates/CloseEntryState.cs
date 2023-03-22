@@ -20,14 +20,14 @@ namespace FFXIVVenues.Veni.SessionStates
             this._apiService = _apiService;
         }
         
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetItem<Venue>("venue");
             var component = this.BuildCloseComponent(c, this._venue.Open);
             return c.Interaction.RespondAsync("Aaw, how long do you want to close for? 🥲", component.Build()); //change text later
         }
 
-        private ComponentBuilder BuildCloseComponent(InteractionContext c, bool includeCloseCurrentOpening)
+        private ComponentBuilder BuildCloseComponent(VeniInteractionContext c, bool includeCloseCurrentOpening)
         {
             var selectComponent = new SelectMenuBuilder()
                 .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow));
@@ -49,7 +49,7 @@ namespace FFXIVVenues.Veni.SessionStates
             return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
-        private async Task OnComplete(MessageComponentInteractionContext c)
+        private async Task OnComplete(MessageComponentVeniInteractionContext c)
         {
             var until = int.Parse(c.Interaction.Data.Values.Single());
 

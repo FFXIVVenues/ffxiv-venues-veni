@@ -20,7 +20,7 @@ namespace FFXIVVenues.Veni.Intents
             "I don't really know how to respond to that. 😅"
         };
 
-        public override Task Handle(InteractionContext context) =>
+        public override Task Handle(VeniInteractionContext context) =>
             context.Interaction.RespondAsync(_responses.PickRandom());
 
     }

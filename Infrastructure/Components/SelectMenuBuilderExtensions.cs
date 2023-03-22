@@ -13,7 +13,7 @@ public static class SelectMenuBuilderExtensions
     public static SelectMenuBuilder WithSessionHandler(
         this SelectMenuBuilder builder,
         SessionContext session,
-        Func<MessageComponentInteractionContext, Task> @delegate,
+        Func<MessageComponentVeniInteractionContext, Task> @delegate,
         ComponentPersistence persistence) =>
         builder.WithCustomId(session.RegisterComponentHandler(@delegate, persistence));
 

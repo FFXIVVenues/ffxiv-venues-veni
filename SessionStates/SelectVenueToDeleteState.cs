@@ -21,7 +21,7 @@ namespace FFXIVVenues.Veni.SessionStates
 
         private IEnumerable<Venue> _managersVenues;
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             _managersVenues = c.Session.GetItem<IEnumerable<Venue>>("venues");
 
@@ -42,7 +42,7 @@ namespace FFXIVVenues.Veni.SessionStates
             return c.Interaction.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
         }
 
-        public Task Handle(MessageComponentInteractionContext c)
+        public Task Handle(MessageComponentVeniInteractionContext c)
         {
             var selectedVenueId = c.Interaction.Data.Values.Single();
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);

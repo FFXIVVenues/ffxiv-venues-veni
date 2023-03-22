@@ -59,7 +59,7 @@ namespace FFXIVVenues.Veni.Commands
                 this._repository = repository;
             }
 
-            public async Task HandleAsync(SlashCommandInteractionContext slashCommand)
+            public async Task HandleAsync(SlashCommandVeniInteractionContext slashCommand)
             {
                 var guildId = slashCommand.Interaction.GuildId ?? 0;
                 if (guildId == 0)

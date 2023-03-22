@@ -9,7 +9,7 @@ using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 
 namespace FFXIVVenues.Veni.Infrastructure.Middleware
 {
-    internal class LuisPredictionMiddleware : IMiddleware<MessageInteractionContext>
+    internal class LuisPredictionMiddleware : IMiddleware<MessageVeniInteractionContext>
     {
         private readonly ILuisClient _luisClient;
 
@@ -18,7 +18,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Middleware
             _luisClient = luisClient;
         }
 
-        public async Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
+        public async Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
         {
             var query = context.Interaction.Content.StripMentions(context.Client.CurrentUser.Id);
             if (string.IsNullOrWhiteSpace(query))

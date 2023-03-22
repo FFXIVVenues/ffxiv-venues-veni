@@ -17,7 +17,7 @@ namespace FFXIVVenues.Veni.SessionStates
         static HttpClient _discordClient = new HttpClient();
         static Regex _discordPattern = new Regex(@"(https?:\/\/)?(www\.)?((discord(app)?(\.com|\.io)(\/invite)?)|(discord\.gg))\/(\w+)");
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             return c.Interaction.RespondAsync(MessageRepository.AskForDiscordMessage.PickRandom(),
@@ -27,7 +27,7 @@ namespace FFXIVVenues.Veni.SessionStates
                 .Build());
         }
 
-        public async Task OnMessageReceived(MessageInteractionContext c)
+        public async Task OnMessageReceived(MessageVeniInteractionContext c)
         {
             var venue = c.Session.GetItem<Venue>("venue");
             string message = c.Interaction.Content.StripMentions();

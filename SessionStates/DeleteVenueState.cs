@@ -32,7 +32,7 @@ namespace FFXIVVenues.Veni.SessionStates
             this._apiService = apiService;
         }
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetItem<Venue>("venue");
             return c.Interaction.RespondAsync(string.Format(_messages.PickRandom(), _venue.Name), new ComponentBuilder()

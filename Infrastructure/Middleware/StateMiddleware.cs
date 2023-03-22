@@ -5,10 +5,10 @@ using Kana.Pipelines;
 
 namespace FFXIVVenues.Veni.Infrastructure.Middleware
 {
-    class StateMiddleware : IMiddleware<MessageInteractionContext>
+    class StateMiddleware : IMiddleware<MessageVeniInteractionContext>
     {
 
-        public async Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
+        public async Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
         {
             if (context.Session.StateStack == null)
             {

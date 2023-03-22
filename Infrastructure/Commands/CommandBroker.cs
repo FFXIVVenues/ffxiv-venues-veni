@@ -58,7 +58,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands
             return guild.BulkOverwriteApplicationCommandAsync(commandProperties.ToArray());
         }
 
-        public Task HandleAsync(SlashCommandInteractionContext context) =>
+        public Task HandleAsync(SlashCommandVeniInteractionContext context) =>
             this._handlers.Activate(context.Interaction.CommandName).HandleAsync(context);
 
     }

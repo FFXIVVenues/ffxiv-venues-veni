@@ -5,7 +5,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands
 {
     internal interface ICommandHandler
     {
-        Task HandleAsync(SlashCommandInteractionContext slashCommand);
+        Task HandleAsync(SlashCommandVeniInteractionContext slashCommand);
     }
 
 }

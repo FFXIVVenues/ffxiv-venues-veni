@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 
-namespace FFXIVVenues.Veni.Utils
+namespace FFXIVVenues.Veni.Utils.Broadcasting
 {
     public record Broadcast(string Id, IDiscordClient Client)
     {
-        public ConcurrentDictionary<ulong, IUserMessage> SentMessages { get; private set; } = new();
+
+        private List<BroadcastMessage> _broadcastedMessages;
         public string Message { get; private set; }
         public ComponentBuilder Component { get; private set; }
         public EmbedBuilder Embed { get; private set; }
@@ -36,17 +37,62 @@ namespace FFXIVVenues.Veni.Utils
             return this;
         }
 
-        public async Task SendToAsync(params ulong[] users)
+        public async Task<List<BroadcastMessage>> SendToAsync(params ulong[] users)
         {
-            foreach (var indexer in users)
+            this._broadcastedMessages = new ();
+            foreach (var userId in users)
             {
-                var user = await Client.GetUserAsync(indexer);
-                var channel = await user.CreateDMChannelAsync();
-                var userMessage = await channel.SendMessageAsync(Message,
-                                               components: Component?.Build(),
-                                               embed: Embed?.Build());
-                SentMessages[indexer] = userMessage;
+                var broadcastedMessage = await SendTo(userId);
+                this._broadcastedMessages.Add(broadcastedMessage);
             }
+
+            return this._broadcastedMessages;
+        }
+
+        private async Task<BroadcastMessage> SendTo(ulong userId)
+        {
+            IUser user;
+            IDMChannel channel;
+            IUserMessage message;
+            try
+            {
+                user = await Client.GetUserAsync(userId);
+            }
+            catch (Exception e)
+            {
+                return new(userId, null, MessageStatus.Failed,
+                    $"Could not get user. {e.Message}");
+            }
+
+            if (user.Username.StartsWith("Deleted User"))
+            {
+                return new(userId, null, MessageStatus.FailedUserDeleted,
+                    $"Skipped user. Username indicated user has been deleted.");
+            }
+
+            try
+            {
+                channel = await user.CreateDMChannelAsync();
+            }
+            catch (Exception e)
+            {
+                return new(userId, null, MessageStatus.Failed,
+                    $"Could not create DM channel with user. {e.Message}");
+            }
+
+            try
+            {
+                message = await channel.SendMessageAsync(Message,
+                    components: Component?.Build(),
+                    embed: Embed?.Build());
+            }
+            catch (Exception e)
+            {
+                return new(userId, null, MessageStatus.Failed,
+                    $"Could not send message to user. {e.Message}");
+            }
+
+            return new(userId, message, MessageStatus.Sent, "Broadcast message sent successfully");
         }
 
         public async Task<bool> HandleComponentInteraction(SocketMessageComponent c)
@@ -75,32 +121,29 @@ namespace FFXIVVenues.Veni.Utils
         public record BroadcastInteractionContext(Broadcast Broadcast, SocketMessageComponent Component)
         {
 
-            public IEnumerable<ulong> OtherUsersIds => Broadcast.SentMessages.Keys.Where(u => u == Component.User.Id);
             public SocketUser CurrentUser => Component.User;
 
             public async Task ModifyForOtherUsers(Action<MessageProperties, IUserMessage> modifier)
             {
                 var currentUser = Component.User.Id;
-                foreach (var sentMessage in Broadcast.SentMessages)
+                foreach (var sentMessage in Broadcast._broadcastedMessages)
                 {
-                    if (sentMessage.Key == currentUser)
+                    if (sentMessage.UserId == currentUser)
                         continue;
-                    await sentMessage.Value.ModifyAsync(props => modifier(props, sentMessage.Value));
+                    await sentMessage.Message.ModifyAsync(props => modifier(props, sentMessage.Message));
                 }
             }
 
             public async Task ModifyForCurrentUser(Action<MessageProperties, IUserMessage> modifier)
             {
                 var currentUser = Component.User.Id;
-                foreach (var sentMessage in Broadcast.SentMessages)
+                foreach (var sentMessage in Broadcast._broadcastedMessages)
                 {
-                    if (sentMessage.Key != currentUser)
+                    if (sentMessage.UserId != currentUser)
                         continue;
-                    await sentMessage.Value.ModifyAsync(props => modifier(props, sentMessage.Value));
+                    await sentMessage.Message.ModifyAsync(props => modifier(props, sentMessage.Message));
                 }
             }
-
-
 
         }
     }

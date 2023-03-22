@@ -9,7 +9,7 @@ namespace FFXIVVenues.Veni.SessionStates
 {
     class SfwEntrySessionState : ISessionState
     {
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             return c.Interaction.RespondAsync(MessageRepository.AskForSfwMessage.PickRandom(), new ComponentBuilder()
                 .WithBackButton(c)

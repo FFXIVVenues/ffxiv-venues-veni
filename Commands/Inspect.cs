@@ -43,16 +43,16 @@ namespace FFXIVVenues.Veni.Commands
 
         internal class CommandHandler : ICommandHandler
         {
-            private readonly IStaffManager indexersService;
+            private readonly IStaffService indexersService;
             private readonly IDiscordChronicleLibrary chronicleLibrary;
 
-            public CommandHandler(IStaffManager indexersService, IDiscordChronicleLibrary chronicleLibrary)
+            public CommandHandler(IStaffService indexersService, IDiscordChronicleLibrary chronicleLibrary)
             {
                 this.indexersService = indexersService;
                 this.chronicleLibrary = chronicleLibrary;
             }
 
-            public Task HandleAsync(SlashCommandInteractionContext slashCommand)
+            public Task HandleAsync(SlashCommandVeniInteractionContext slashCommand)
             {
                 if (!this.indexersService.IsEngineer(slashCommand.Interaction.User.Id))
                     return slashCommand.Interaction.RespondAsync("Sorry, I only let Engineers do that with me.", ephemeral: true);

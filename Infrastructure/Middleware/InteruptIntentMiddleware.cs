@@ -6,7 +6,7 @@ using Kana.Pipelines;
 
 namespace FFXIVVenues.Veni.Infrastructure.Middleware
 {
-    class InteruptIntentMiddleware : IMiddleware<MessageInteractionContext>
+    class InteruptIntentMiddleware : IMiddleware<MessageVeniInteractionContext>
     {
 
         private readonly IIntentHandlerProvider intentHandlerProvider;
@@ -16,7 +16,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Middleware
             this.intentHandlerProvider = intentHandlerProvider;
         }
 
-        public Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
+        public Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
         {
             var handleTask = intentHandlerProvider.HandleIteruptIntent(context.Prediction.TopIntent, context);
             if (handleTask == null)

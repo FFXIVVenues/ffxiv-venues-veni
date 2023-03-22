@@ -10,14 +10,14 @@ namespace FFXIVVenues.Veni.SessionStates
     class ModifyVenueSessionState : ISessionState
     {
 
-        private readonly IStaffManager _staffService;
+        private readonly IStaffService _staffService;
 
-        public ModifyVenueSessionState(IStaffManager staffService)
+        public ModifyVenueSessionState(IStaffService staffService)
         {
             this._staffService = staffService;
         }
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             c.Session.SetItem("modifying", true);
 

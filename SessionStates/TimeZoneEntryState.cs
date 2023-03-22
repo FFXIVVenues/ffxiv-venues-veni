@@ -32,7 +32,7 @@ namespace FFXIVVenues.Veni.SessionStates
             { "Server Time (UTC)", TimeZoneInfo.Utc }
         };
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             var component = new ComponentBuilder();
             var timezoneOptions = _timezones.Select(dc => new SelectMenuOptionBuilder(dc.Key, dc.Key)).ToList();
@@ -44,7 +44,7 @@ namespace FFXIVVenues.Veni.SessionStates
                                   component.WithSelectMenu(selectMenu).WithBackButton(c).Build());
         }
 
-        public Task Handle(MessageComponentInteractionContext c)
+        public Task Handle(MessageComponentVeniInteractionContext c)
         {
             var selectedTimezone = c.Interaction.Data.Values.Single();
             var timezone = _timezones[selectedTimezone];

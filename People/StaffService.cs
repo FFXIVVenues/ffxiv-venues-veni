@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.Utils.Broadcasting;
 using Microsoft.Extensions.Configuration;
 
 namespace FFXIVVenues.Veni.People
 {
-    public class StaffManager : IStaffManager
+    public class StaffService : IStaffService
     {
 
         public ulong[] Engineers { get; private init; }
@@ -19,7 +20,7 @@ namespace FFXIVVenues.Veni.People
         private readonly DiscordSocketClient _client;
         private readonly ConcurrentDictionary<string, Broadcast> _broadcasts = new();
 
-        public StaffManager(DiscordSocketClient client, IConfiguration config)
+        public StaffService(DiscordSocketClient client, IConfiguration config)
         {
             var engineersStrings = config.GetSection("Engineers")?.GetChildren()?.Select(x => x.Value)?.ToArray();
             Engineers = engineersStrings.Select(s => ulong.Parse(s)).ToArray();

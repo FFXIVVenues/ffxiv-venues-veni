@@ -14,7 +14,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
 
         private const string CREATE_VALUE_KEY = "venue";
 
-        public override async Task Handle(InteractionContext context)
+        public override async Task Handle(VeniInteractionContext context)
         {
             context.Session.SetItem("isNewVenue", true);
 

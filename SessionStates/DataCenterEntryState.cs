@@ -11,7 +11,7 @@ namespace FFXIVVenues.Veni.SessionStates
     class DataCenterEntrySessionState : ISessionState
     {
 
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             var dataCenters = FfxivWorlds.GetDataCentersFor(FfxivWorlds.GetSupportedRegions())
                 .Select(dc => new SelectMenuOptionBuilder(dc, dc)).ToList();
@@ -23,7 +23,7 @@ namespace FFXIVVenues.Veni.SessionStates
                                   new ComponentBuilder().WithSelectMenu(selectMenu).WithBackButton(c).Build());
         }
 
-        private Task Handle(MessageComponentInteractionContext c)
+        private Task Handle(MessageComponentVeniInteractionContext c)
         {
             var dataCenter = c.Session.GetItem<Venue>("venue");
             var world = c.Interaction.Data.Values.Single();

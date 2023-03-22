@@ -10,7 +10,7 @@ namespace FFXIVVenues.Veni.Intents.Interupt
     internal class Help : IntentHandler
     {
 
-        public override Task Handle(InteractionContext context) =>
+        public override Task Handle(VeniInteractionContext context) =>
             context.Interaction.RespondAsync(
 "Here's what I can do for you!\n\n" +
 "`create my venue`\t\tYou can ask me to create a new venue and place it on the index.\n" +

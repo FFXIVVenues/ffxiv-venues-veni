@@ -7,7 +7,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
     internal class AboutYou : IntentHandler
     {
 
-        public override Task Handle(InteractionContext context)
+        public override Task Handle(VeniInteractionContext context)
         {
             var kana = context.Client.GetUser(236852510688542720);
 

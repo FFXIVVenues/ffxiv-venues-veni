@@ -6,5 +6,6 @@ public enum VenueAuditStatus
     AwaitingResponse,
     RespondedEdit,
     RespondedConfirmed,
-    RespondedDelete
+    RespondedDelete,
+    Skipped
 }

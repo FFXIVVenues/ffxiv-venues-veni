@@ -7,7 +7,7 @@ using NChronicle.Core.Interfaces;
 
 namespace FFXIVVenues.Veni.Infrastructure.Middleware
 {
-    internal class LogMiddleware : IMiddleware<MessageInteractionContext>
+    internal class LogMiddleware : IMiddleware<MessageVeniInteractionContext>
     {
         private readonly IChronicle _chronicle;
 
@@ -16,7 +16,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Middleware
             this._chronicle = chronicle;
         }
 
-        public Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
+        public Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
         {
             var stateText = "";
             ISessionState currentSessionState = null;

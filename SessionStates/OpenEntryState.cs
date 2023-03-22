@@ -20,14 +20,14 @@ namespace FFXIVVenues.Veni.SessionStates
             this._apiService = _apiService;
         }
         
-        public Task Enter(InteractionContext c)
+        public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetItem<Venue>("venue");
             var component = this.BuildOpenComponent(c);
             return c.Interaction.RespondAsync("Yay, how long are we opening for? 🥰", component.Build()); //change text later
         }
 
-        private ComponentBuilder BuildOpenComponent(InteractionContext c)
+        private ComponentBuilder BuildOpenComponent(VeniInteractionContext c)
         {
             var selectComponent = new SelectMenuBuilder()
                 .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow));
@@ -41,7 +41,7 @@ namespace FFXIVVenues.Veni.SessionStates
             return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
-        private async Task OnComplete(MessageComponentInteractionContext c)
+        private async Task OnComplete(MessageComponentVeniInteractionContext c)
         {
             var until = int.Parse(c.Interaction.Data.Values.Single()); 
             await _apiService.OpenVenueAsync(this._venue.Id, DateTime.UtcNow.AddHours(until));
