@@ -16,7 +16,7 @@ public class VenueAuditRecord : IEntity
     public ulong RequestedBy { get; set; }
     public ulong CompletedBy { get; set; }
     public DateTime? CompletedAt { get; set; }
-    public List<AuditMessage> Messages { get; set; }
+    public List<AuditMessage> Messages { get; set; } = new();
     public List<VenueAuditLog> Logs = new();
 
     public void Log(string message) =>
