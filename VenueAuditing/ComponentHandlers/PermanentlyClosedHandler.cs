@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Discord;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
@@ -47,9 +48,9 @@ public class PermanentlyClosedHandler : BaseAuditHandler
 
         if (audit.RoundId == null) 
             NotifyRequesterAsync(context, audit, venue, 
-                $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} deleted the venue. 😭");
-        UpdateAudit(context, audit, VenueAuditStatus.RespondedEdit,
-            $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} deleted the venue.");
+                $"{MentionUtils.MentionUser(audit.CompletedBy)} deleted the venue. 😭");
+        UpdateAudit(context, audit, VenueAuditStatus.RespondedDelete,
+            $"{MentionUtils.MentionUser(audit.CompletedBy)} deleted the venue.");
         await this._repository.UpsertAsync(audit);
     }
     
