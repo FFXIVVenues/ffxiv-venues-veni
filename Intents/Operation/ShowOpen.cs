@@ -89,7 +89,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
             var asker = context.Interaction.User.Id;
             var venue = this._venues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            return context.Interaction.RespondAsync(embed: this._venueRenderer.RenderEmbed(venue).Build(),
+            return context.Interaction.Channel.SendMessageAsync(embed: this._venueRenderer.RenderEmbed(venue).Build(),
                 components: this._venueRenderer.RenderActionComponents(context, venue, asker).Build());
         }
     }
