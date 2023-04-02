@@ -13,14 +13,14 @@ namespace FFXIVVenues.Veni.Commands
 
         public const string COMMAND_NAME = "open";
 
-        internal class CommandFactory : ICommandFactory
+        internal class CommandFactory : ICommandFactory 
         {
 
             public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
             {
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)
-                    .WithDescription("Open your venue! It will show under 'under now' on the website.")
+                    .WithDescription("Open your venue! It will show under 'open now' on the website.")
                     .Build();
             }
 

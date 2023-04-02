@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Context.Session;
+using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using Kana.Pipelines;
 using NChronicle.Core.Interfaces;
 

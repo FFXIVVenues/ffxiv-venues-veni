@@ -3,13 +3,13 @@ using FFXIVVenues.Veni.Utils;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Threading.Tasks;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Configuration;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Context.Session;
 using FFXIVVenues.Veni.Infrastructure.Intent;
 using FFXIVVenues.Veni.People;
+using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.SessionStates;
+using FFXIVVenues.Veni.VenueControl;
 
 namespace FFXIVVenues.Veni.Intents.Operation
 {

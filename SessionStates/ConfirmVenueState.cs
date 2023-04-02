@@ -2,13 +2,15 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Configuration;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Context.Session;
+using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.People;
+using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Utils.Broadcasting;
+using FFXIVVenues.Veni.VenueControl;
+using FFXIVVenues.Veni.VenueControl.SessionStates;
 using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.SessionStates

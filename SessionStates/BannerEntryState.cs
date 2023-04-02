@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Context.Session;
+using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;

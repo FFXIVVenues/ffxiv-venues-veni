@@ -3,9 +3,9 @@ using Discord;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Intents;
 using System.Threading.Tasks;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Services.Api;
 
 namespace FFXIVVenues.Veni.Commands
 {

@@ -3,7 +3,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Context.Session;
+using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 
 namespace FFXIVVenues.Veni.Infrastructure.Components;
 
@@ -12,7 +12,7 @@ public static class ButtonBuilderExtensions
 
     public static ButtonBuilder WithSessionHandler(
         this ButtonBuilder builder,
-        SessionContext session,
+        Session session,
         Func<MessageComponentVeniInteractionContext, Task> @delegate,
         ComponentPersistence persistence) =>
         builder.WithCustomId(session.RegisterComponentHandler(@delegate, persistence));
@@ -26,5 +26,6 @@ public static class ButtonBuilderExtensions
         argCollection.AddRange(args);
         return builder.WithCustomId($"{handler}:{argCollection}");
     }
+
 
 }
