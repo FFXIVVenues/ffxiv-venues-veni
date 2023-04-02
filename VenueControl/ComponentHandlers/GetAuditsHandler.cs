@@ -48,10 +48,10 @@ public class GetAuditsHandler : IComponentHandler
             .WithStaticHandler(GetAuditHandler.Key)
             .WithPlaceholder("What would you like to do?");
 
-        foreach (var audit in audits)
-            dropDown.AddOption(audit.SentTime.ToString("G"), audit.id);
-            // this._repository.DeleteAsync<VenueAuditRecord>(audit.id);
-
+        foreach (var audit in audits.OrderByDescending(a => a.SentTime))
+            dropDown.AddOption($"Audit sent at {audit.SentTime.ToString("G")}", 
+                audit.id, $"Status: {audit.Status}");
+        
         builder.WithSelectMenu(dropDown);
         await context.Interaction.Channel.SendMessageAsync("Okay, here they are! 🥰", components: builder.Build());
     }

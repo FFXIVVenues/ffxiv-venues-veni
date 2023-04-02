@@ -36,8 +36,7 @@ public class GetAuditHandler : IComponentHandler
         if (!this._staffService.IsEditor(user))
             return;
         
-        _ = context.Interaction.ModifyOriginalResponseAsync(props =>
-            props.Components = new ComponentBuilder().Build());
+        _ = context.Interaction.DeleteOriginalResponseAsync();
         
         var auditId = context.Interaction.Data.Values.First();
         var audit = await this._repository.GetByIdAsync<VenueAuditRecord>(auditId);
@@ -46,7 +45,7 @@ public class GetAuditHandler : IComponentHandler
 
         var description = new StringBuilder()
             .Append("**Sent: **")
-            .Append(audit.SentTime.ToString("G"))
+            .AppendLine(audit.SentTime.ToString("G"))
             .Append("**Requested by: **")
             .AppendLine(MentionUtils.MentionUser(audit.RequestedBy))
             .AppendLine()
@@ -75,7 +74,7 @@ public class GetAuditHandler : IComponentHandler
             .WithTitle($"Audit for {(await venueTask).Name}")
             .WithDescription(description.ToString());
         
-        await context.Interaction.Channel.SendMessageAsync("Okay, here they are! 🥰", embed: embed.Build());
+        await context.Interaction.Channel.SendMessageAsync("Okay, here's the audit! 🥰", embed: embed.Build());
     }
     
 }

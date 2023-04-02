@@ -1,14 +1,14 @@
 ﻿using FFXIVVenues.Veni.AI;
-using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
 using Kana.Pipelines;
 using NChronicle.Core.Interfaces;
 using System;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context;
 
-namespace FFXIVVenues.Veni.Middleware
+namespace FFXIVVenues.Veni.Infrastructure.Middleware
 {
-    internal class ChatMiddleware : IMiddleware<MessageInteractionContext>
+    internal class ChatMiddleware : IMiddleware<MessageVeniInteractionContext>
     {
         private readonly IAIHandler aIHandler;
         private readonly IChronicle chronicle;
@@ -29,7 +29,7 @@ namespace FFXIVVenues.Veni.Middleware
             this.aIHandler = aIHandler;
             this.chronicle = chronicle;
         }
-        public async Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
+        public async Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
         {
             try
             {

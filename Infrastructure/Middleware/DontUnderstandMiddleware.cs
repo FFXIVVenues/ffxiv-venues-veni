@@ -1,12 +1,12 @@
-﻿using FFXIVVenues.Veni.Context;
+﻿using System;
+using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Utils;
 using Kana.Pipelines;
-using System;
-using System.Threading.Tasks;
 
-namespace FFXIVVenues.Veni.Middleware
+namespace FFXIVVenues.Veni.Infrastructure.Middleware
 {
-    internal class DontUnderstandMiddleware : IMiddleware<MessageInteractionContext>
+    internal class DontUnderstandMiddleware : IMiddleware<MessageVeniInteractionContext>
     {
         private string[] _responses = new[]
         {
@@ -20,7 +20,7 @@ namespace FFXIVVenues.Veni.Middleware
             "I don't really know how to respond to that. 😅"
         };
 
-        public async Task ExecuteAsync(MessageInteractionContext context, Func<Task> next)
+        public async Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
         {
             await context.Interaction.Channel.SendMessageAsync(_responses.PickRandom());
 
