@@ -45,7 +45,10 @@ public class TemporarilyClosedHandler : BaseAuditHandler
         context.Session.SetItem("venue", venue);
         await context.Session.MoveStateAsync<CloseEntrySessionState>(context);
         
-        CompleteAudit(context, audit, venue, VenueAuditStatus.RespondedClose,
+        if (audit.RoundId == null) 
+            NotifyRequesterAsync(context, audit, venue, 
+                $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} temporarily closed the venue. 😢");
+        UpdateAudit(context, audit, VenueAuditStatus.RespondedEdit,
             $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} temporarily closed the venue.");
         await this._repository.UpsertAsync(audit);
     }

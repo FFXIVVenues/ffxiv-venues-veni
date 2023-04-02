@@ -27,10 +27,10 @@ public class ConfirmCorrectHandler : BaseAuditHandler
 
     private readonly string[] _responses = new[]
     {
-        "🥰 Thanks!",
-        "🥰 Thank you!",
-        "💕 Thankies!",
-        "😘 Thank you so much!"
+        "Thanks! 🥰",
+        "Thank you! 🥰",
+        "Thankies! 💕",
+        "Thank you so much! 💕"
     };
 
     public ConfirmCorrectHandler(IRepository repository,
@@ -55,8 +55,12 @@ public class ConfirmCorrectHandler : BaseAuditHandler
             $"{context.Interaction.User.Username} handled this and confirmed the venue's details. 🥳");
         
         await context.Interaction.Message.Channel.SendMessageAsync(_responses.PickRandom());
-        CompleteAudit(context, audit, venue, VenueAuditStatus.RespondedConfirmed,
-            $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} confirmed the venue details.");
+        
+        if (audit.RoundId == null) 
+            NotifyRequesterAsync(context, audit, venue, 
+                $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} confirmed the venues details. 😘");
+        UpdateAudit(context, audit, VenueAuditStatus.RespondedEdit,
+            $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} confirmed the venues details.");
         await this._repository.UpsertAsync(audit);
     }
 
