@@ -3,7 +3,7 @@ using System;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Context.Session;
+using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.SessionStates;
 using FFXIVVenues.VenueModels;
 
@@ -25,7 +25,7 @@ namespace FFXIVVenues.Veni.Utils
         }
 
         public static ComponentBuilder WithBackButton(this ComponentBuilder builder, IVeniInteractionContext context, Func<Task<bool>> @override = null)
-        {
+        {   
             return builder.WithButton("◄  Back", context.Session.RegisterComponentHandler(async c =>
             {
                 var result = false;
@@ -35,8 +35,6 @@ namespace FFXIVVenues.Veni.Utils
                 else _ = c.Interaction.RespondAsync(embed: new EmbedBuilder().WithDescription("Cannot not go back any more!").Build());
             }, ComponentPersistence.ClearRow), ButtonStyle.Secondary);
         }
-        
-        
 
     }
 }

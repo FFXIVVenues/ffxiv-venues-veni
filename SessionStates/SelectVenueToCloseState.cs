@@ -2,10 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Context.Session;
+using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
+using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.VenueControl.SessionStates;
 using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.SessionStates

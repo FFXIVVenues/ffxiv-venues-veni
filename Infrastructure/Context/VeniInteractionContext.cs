@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Context.InteractionWrappers;
-using FFXIVVenues.Veni.Infrastructure.Context.Session;
+using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using NChronicle.Core.Interfaces;
 using Newtonsoft.Json.Linq;
@@ -14,10 +14,9 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
 
         public T Interaction { get; }
         public DiscordSocketClient Client { get; }
-        public SessionContext Session { get; }
-        
+        public Session Session { get; }
 
-        public VeniInteractionContext(T message, DiscordSocketClient client, SessionContext conversation)
+        public VeniInteractionContext(T message, DiscordSocketClient client, Session conversation)
         {
             Interaction = message;
             Client = client;
@@ -35,12 +34,12 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
 
         public VeniInteractionContext(IInteractionWrapper m,
                                   DiscordSocketClient dsc,
-                                  SessionContext sc)
+                                  Session sc)
             : base(m, dsc, sc) { }
 
         public VeniInteractionContext(IInteractionWrapper m,
                                   DiscordSocketClient dsc,
-                                  SessionContext sc,
+                                  Session sc,
                                   Prediction prediction)
             : base(m, dsc, sc)
         {
@@ -61,7 +60,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
 
         public MessageVeniInteractionContext(SocketMessage m,
                                          DiscordSocketClient dsc,
-                                         SessionContext sc, 
+                                         Session sc, 
                                          IChronicle chronicle) 
             : base(m, dsc, sc)
         {
@@ -87,7 +86,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
 
         public MessageComponentVeniInteractionContext(SocketMessageComponent m,
                                                   DiscordSocketClient dsc,
-                                                  SessionContext sc,
+                                                  Session sc,
                                                   IChronicle chronicle)
             : base(m, dsc, sc)
         {
@@ -111,7 +110,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
 
         public SlashCommandVeniInteractionContext(SocketSlashCommand m,
                                               DiscordSocketClient dsc,
-                                              SessionContext sc,
+                                              Session sc,
                                               IChronicle chronicle)
             : base(m, dsc, sc)
         {

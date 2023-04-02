@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using FFXIVVenues.Veni.Utils;
 using System;
 using System.Linq;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Services.Api;
 using ScottPlot;
 
 namespace FFXIVVenues.Veni.Commands
