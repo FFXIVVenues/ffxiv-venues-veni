@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Discord;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
@@ -41,11 +42,12 @@ public class EditVenueHandler : BaseAuditHandler
             $"{context.Interaction.User.Username} handled this and edited the venue's details. 🥳");
         context.Session.SetItem("venue", venue);
         await context.Session.MoveStateAsync<ModifyVenueSessionState>(context);
+        
         if (audit.RoundId == null) 
             NotifyRequesterAsync(context, audit, venue, 
-        $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} edited the venue details. 😘");
+        $"{MentionUtils.MentionUser(audit.CompletedBy)} edited the venue details. 😘");
         UpdateAudit(context, audit, VenueAuditStatus.RespondedEdit,
-            $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} edited the venue details.");
+            $"{MentionUtils.MentionUser(audit.CompletedBy)} edited the venue details.");
         await this._repository.UpsertAsync(audit);
     }
     

@@ -58,9 +58,9 @@ public class ConfirmCorrectHandler : BaseAuditHandler
         
         if (audit.RoundId == null) 
             NotifyRequesterAsync(context, audit, venue, 
-                $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} confirmed the venues details. 😘");
-        UpdateAudit(context, audit, VenueAuditStatus.RespondedEdit,
-            $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} confirmed the venues details.");
+                $"{MentionUtils.MentionUser(audit.CompletedBy)} confirmed the venues details. 😘");
+        UpdateAudit(context, audit, VenueAuditStatus.RespondedConfirmed,
+            $"{MentionUtils.MentionUser(audit.CompletedBy)} confirmed the venues details.");
         await this._repository.UpsertAsync(audit);
     }
 
