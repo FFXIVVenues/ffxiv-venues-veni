@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.Intents;
 using Kana.Pipelines;
 
 namespace FFXIVVenues.Veni.Infrastructure.Middleware

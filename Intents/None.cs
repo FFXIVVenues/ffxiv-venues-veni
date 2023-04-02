@@ -1,6 +1,4 @@
-﻿using FFXIVVenues.Veni.Utils;
-using FFXIVVenues.Veni.Context;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Intent;
 
