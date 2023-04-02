@@ -1,9 +1,11 @@
-﻿using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Services;
-using FFXIVVenues.Veni.States;
-using FFXIVVenues.Veni.Utils;
+﻿using FFXIVVenues.Veni.Utils;
 using System.Linq;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.Services.Api;
+using FFXIVVenues.Veni.SessionStates;
+using FFXIVVenues.Veni.VenueControl.SessionStates;
 
 namespace FFXIVVenues.Veni.Intents.Operation
 {
@@ -17,7 +19,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
             this._apiService = apiService;
         }
 
-        public override async Task Handle(InteractionContext context)
+        public override async Task Handle(VeniInteractionContext context)
         {
             var user = context.Interaction.User.Id;
             var venues = await this._apiService.GetAllVenuesAsync(user);
@@ -29,12 +31,12 @@ namespace FFXIVVenues.Veni.Intents.Operation
                 if (venues.Count() > 25)
                     venues = venues.Take(25);
                 context.Session.SetItem("venues", venues);
-                await context.Session.MoveStateAsync<SelectVenueToCloseState>(context);
+                await context.Session.MoveStateAsync<SelectVenueToCloseSessionState>(context);
             }
             else
             {
                 context.Session.SetItem("venue", venues.First());
-                await context.Session.MoveStateAsync<CloseEntryState>(context);
+                await context.Session.MoveStateAsync<CloseEntrySessionState>(context);
             }
         }
 

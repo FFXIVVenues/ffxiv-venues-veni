@@ -1,13 +1,13 @@
 ﻿using Discord.WebSocket;
 using Discord;
-using FFXIVVenues.Veni.Commands.Brokerage;
 using System.Threading.Tasks;
-using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Utils;
 using System;
 using System.Linq;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Services.Api;
 using ScottPlot;
-using FFXIVVenues.Veni.Services;
 
 namespace FFXIVVenues.Veni.Commands
 {
@@ -49,7 +49,7 @@ namespace FFXIVVenues.Veni.Commands
             {
                 this._apiService = _apiService;
             }
-            public async Task HandleAsync(SlashCommandInteractionContext c) 
+            public async Task HandleAsync(SlashCommandVeniInteractionContext c) 
             {
                 var period = (int)c.GetLongArg(OPTION_NAME);
                 var date = DateTime.Now;

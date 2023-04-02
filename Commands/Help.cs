@@ -1,9 +1,10 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using FFXIVVenues.Veni.Commands.Brokerage;
-using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
 
 namespace FFXIVVenues.Veni.Commands
 {
@@ -33,7 +34,7 @@ namespace FFXIVVenues.Veni.Commands
                 this._intentProvider = intentProvider;
             }
 
-            public Task HandleAsync(SlashCommandInteractionContext slashCommand) =>
+            public Task HandleAsync(SlashCommandVeniInteractionContext slashCommand) =>
                 this._intentProvider.HandleIteruptIntent(IntentNames.Interupt.Help, slashCommand);
 
         }

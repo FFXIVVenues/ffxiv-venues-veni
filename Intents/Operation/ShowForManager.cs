@@ -1,11 +1,12 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Services;
-using FFXIVVenues.Veni.States;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.Services.Api;
+using FFXIVVenues.Veni.SessionStates;
 
 namespace FFXIVVenues.Veni.Intents.Operation
 {
@@ -19,7 +20,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
             this._apiService = apiService;
         }
 
-        public Task Handle(MessageInteractionContext context)
+        public Task Handle(MessageVeniInteractionContext context)
         {
             var discordIdStr = (context.Prediction?.Entities["discord-id"] as JArray)?.First.Value<string>();
 
@@ -31,16 +32,16 @@ namespace FFXIVVenues.Veni.Intents.Operation
             return this.Handle(context.ToWrappedInteraction(), discordId);
         }
 
-        public Task Handle(MessageComponentInteractionContext context) =>
+        public Task Handle(MessageComponentVeniInteractionContext context) =>
             Task.CompletedTask;
 
-        public Task Handle(SlashCommandInteractionContext context)
+        public Task Handle(SlashCommandVeniInteractionContext context)
         {
             var user = context.Interaction.Data?.Options?.FirstOrDefault(o => o.Name == "user")?.Value as SocketUser;
             return this.Handle(context.ToWrappedInteraction(), user.Id);
         }
 
-        private async Task Handle(InteractionContext c, ulong discordId)
+        private async Task Handle(VeniInteractionContext c, ulong discordId)
         {
             var venues = await this._apiService.GetAllVenuesAsync(discordId);
 
@@ -53,7 +54,7 @@ namespace FFXIVVenues.Veni.Intents.Operation
             if (venues.Count() > 25)
                 venues = venues.Take(25);
             c.Session.SetItem("venues", venues);
-            await c.Session.MoveStateAsync<SelectVenueToShowState>(c);
+            await c.Session.MoveStateAsync<SelectVenueToShowSessionState>(c);
         }
 
     }

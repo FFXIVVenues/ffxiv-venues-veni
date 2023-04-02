@@ -1,12 +1,13 @@
-﻿using FFXIVVenues.Veni.Context;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
 
 namespace FFXIVVenues.Veni.Intents.Conversation
 {
     internal class AboutYou : IntentHandler
     {
 
-        public override Task Handle(InteractionContext context)
+        public override Task Handle(VeniInteractionContext context)
         {
             var kana = context.Client.GetUser(236852510688542720);
 

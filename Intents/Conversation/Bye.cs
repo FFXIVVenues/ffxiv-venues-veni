@@ -1,6 +1,7 @@
-﻿using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Utils;
+﻿using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
 
 namespace FFXIVVenues.Veni.Intents.Conversation
 {
@@ -35,7 +36,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "Cya Niko! ♥️ No more tests, alright? 😅"
         };
 
-        public override Task Handle(InteractionContext context)
+        public override Task Handle(VeniInteractionContext context)
         {
             if (context.Interaction.User.Id == 236852510688542720)
                 return context.Interaction.RespondAsync(_kanaMessages.PickRandom());
