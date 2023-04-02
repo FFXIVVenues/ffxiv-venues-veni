@@ -42,7 +42,7 @@ public class AuditHandler : IComponentHandler
             context.Interaction.Channel.Id,
             context.Interaction.User.Id);
         
-        await audit.AuditAsync();
+        await audit.AuditAsync(true);
         await context.Interaction.Channel.SendMessageAsync("Okay, I've messaged the manager(s)! 🥰");
     }
     

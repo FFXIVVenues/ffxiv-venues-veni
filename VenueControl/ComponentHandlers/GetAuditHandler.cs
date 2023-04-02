@@ -42,7 +42,6 @@ public class GetAuditHandler : IComponentHandler
         var audit = await this._repository.GetByIdAsync<VenueAuditRecord>(auditId);
         var venueTask = this._apiService.GetVenueAsync(audit.VenueId);
 
-
         var description = new StringBuilder()
             .Append("**Sent: **")
             .AppendLine(audit.SentTime.ToString("G"))
