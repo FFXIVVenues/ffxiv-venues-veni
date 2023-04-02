@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
@@ -13,12 +14,12 @@ namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 
 public abstract class BaseAuditHandler : IComponentHandler
 {
-    
+
     public abstract Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args);
-    
-    protected async Task UpdateSentMessages(DiscordSocketClient client, IVenueRenderer render, Venue venue, 
-                                            IUser responder, IEnumerable<AuditMessage> sentMessages, 
-                                            string responderMessage, string othersMessage)
+
+    protected async Task UpdateSentMessages(DiscordSocketClient client, IVenueRenderer render, Venue venue,
+        IUser responder, IEnumerable<AuditMessage> sentMessages,
+        string responderMessage, string othersMessage)
     {
         foreach (var message in sentMessages)
         {
@@ -26,7 +27,7 @@ public abstract class BaseAuditHandler : IComponentHandler
             var newMessage = responderMessage;
             if (message.UserId != responder.Id)
                 newMessage = othersMessage;
-            
+
             var channel = await client.GetChannelAsync(message.ChannelId);
             (channel as IDMChannel)?.ModifyMessageAsync(message.MessageId, props =>
             {
@@ -39,21 +40,28 @@ public abstract class BaseAuditHandler : IComponentHandler
             });
         }
     }
-    
-    protected void CompleteAudit(MessageComponentVeniInteractionContext context, in VenueAuditRecord audit, Venue venue, VenueAuditStatus status, string message)
-    {
-        if (audit.RoundId == null)
-        {
-            var channel = context.Client.GetChannel(audit.RequestedIn);
-            if (channel is SocketDMChannel dmChannel)
-                dmChannel.SendMessageAsync(
-                    $"Heyo! The audit of {venue.Name} you requested has been completed. \n{message} 😘");
-            if (channel is SocketTextChannel textChannel)
-                textChannel.SendMessageAsync(
-                    $"Hey {MentionUtils.MentionUser(audit.RequestedBy)}! The audit of {venue.Name} you requested has been completed. \n{message}");
-        }
 
-        audit.Log(message);
+    protected async Task NotifyRequesterAsync(MessageComponentVeniInteractionContext context, VenueAuditRecord audit,
+        Venue venue, string message) 
+    {
+        var channel = await context.Client.GetChannelAsync(audit.RequestedIn);
+        if (channel == null)
+            channel = await context.Client.GetDMChannelAsync(audit.RequestedIn);
+
+        if (channel is SocketTextChannel sTextChannel)
+            sTextChannel.SendMessageAsync(
+                $"Hey {MentionUtils.MentionUser(audit.RequestedBy)}! The audit of {venue.Name} you requested has been completed. \n{message}");
+        if (channel is RestTextChannel rTextChannel)
+            rTextChannel.SendMessageAsync(
+                $"Hey {MentionUtils.MentionUser(audit.RequestedBy)}! The audit of {venue.Name} you requested has been completed. \n{message}");
+        if (channel is RestDMChannel rdmChannel)
+            rdmChannel.SendMessageAsync($"Heyo! The audit of {venue.Name} you requested has been completed. \n{message}");
+        if (channel is SocketDMChannel sdmChannel)
+            sdmChannel.SendMessageAsync($"Heyo! The audit of {venue.Name} you requested has been completed. \n{message}");
+    }
+
+    protected void UpdateAudit(MessageComponentVeniInteractionContext context, in VenueAuditRecord audit, VenueAuditStatus status, string message)
+    {   audit.Log(message);
         audit.Status = status;
         audit.CompletedBy = context.Interaction.User.Id;
         audit.CompletedAt = DateTime.UtcNow;

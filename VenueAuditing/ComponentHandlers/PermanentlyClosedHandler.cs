@@ -45,7 +45,10 @@ public class PermanentlyClosedHandler : BaseAuditHandler
         context.Session.SetItem("venue", venue);
         await context.Session.MoveStateAsync<DeleteVenueSessionState>(context);
 
-        CompleteAudit(context, audit, venue, VenueAuditStatus.RespondedDelete,
+        if (audit.RoundId == null) 
+            NotifyRequesterAsync(context, audit, venue, 
+                $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} deleted the venue. 😭");
+        UpdateAudit(context, audit, VenueAuditStatus.RespondedEdit,
             $"{context.Interaction.User.Username}#{context.Interaction.User.Discriminator} deleted the venue.");
         await this._repository.UpsertAsync(audit);
     }
