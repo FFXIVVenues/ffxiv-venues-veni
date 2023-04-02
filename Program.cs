@@ -6,14 +6,27 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni;
-using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Luis;
-using FFXIVVenues.Veni.Intents;
 using Discord.WebSocket;
 using Discord;
-using FFXIVVenues.Veni.Commands.Brokerage;
 using FFXIVVenues.Veni.Commands;
-using FFXIVVenues.Veni.Context.Abstractions;
+using FFXIVVenues.Veni.Configuration;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Components;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.Abstractions;
+using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
+using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.Infrastructure.Logging;
+using FFXIVVenues.Veni.Infrastructure.Persistence;
+using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
+using FFXIVVenues.Veni.People;
+using FFXIVVenues.Veni.Services.Api;
+using FFXIVVenues.Veni.Services.Luis;
+using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.VenueAuditing;
+using FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
+using FFXIVVenues.Veni.VenueControl;
+using FFXIVVenues.Veni.VenueControl.ComponentHandlers;
 using NChronicle.Core.Model;
 using NChronicle.Console.Extensions;
 using NChronicle.Core.Interfaces;
@@ -74,20 +87,27 @@ serviceCollection.AddSingleton<ApiConfiguration>(apiConfig);
 serviceCollection.AddSingleton<PersistenceConfiguration>(persistenceConfig);
 serviceCollection.AddSingleton<UiConfiguration>(uiConfig);
 serviceCollection.AddSingleton<HttpClient>(apiHttpClient);
-serviceCollection.AddSingleton<DavinciConfiguration>(davinciConfig);
 serviceCollection.AddSingleton<IRepository>(repository);
 serviceCollection.AddSingleton<ICommandBroker, CommandBroker>();
+serviceCollection.AddSingleton<IComponentBroker, ComponentBroker>();
 serviceCollection.AddSingleton<IApiService, ApiService>();
 serviceCollection.AddSingleton<IGuildManager, GuildManager>();
+serviceCollection.AddSingleton<IStaffService, StaffService>();
 serviceCollection.AddSingleton<IStaffManager, StaffManager>();
 serviceCollection.AddSingleton<IAIHandler, AIHandler>();
 serviceCollection.AddSingleton<IDavinciService, DavinciService>();
 serviceCollection.AddSingleton<IAIContextBuilder, AIContextBuilder>();
 serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
-serviceCollection.AddSingleton<ISessionContextProvider, SessionContextProvider>();
+serviceCollection.AddSingleton<ISessionProvider, SessionProvider>();
 serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();
 serviceCollection.AddSingleton<ILuisClient, LuisClient>();
-serviceCollection.AddSingleton(GetDiscordSocketClient(config, chronicle));
+serviceCollection.AddSingleton<IVenueAuditFactory, VenueAuditFactory>();
+serviceCollection.AddSingleton<IVenueRenderer, VenueRenderer>();
+serviceCollection.AddSingleton<IInteractionContextFactory, InteractionContextFactory>();
+
+var discordClient = GetDiscordSocketClient(config, chronicle);
+serviceCollection.AddSingleton<IDiscordClient>(discordClient);
+serviceCollection.AddSingleton(discordClient);
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -110,6 +130,22 @@ commandBroker.Add<SetFormatNames.CommandFactory, SetFormatNames.CommandHandler>(
 commandBroker.Add<ShowCount.CommandFactory, ShowCount.CommandHandler>(ShowCount.COMMAND_NAME);
 commandBroker.Add<Graph.CommandFactory, Graph.CommandHandler>(Graph.COMMAND_NAME);
 commandBroker.Add<GetUnapproved.CommandFactory, GetUnapproved.CommandHandler>(GetUnapproved.COMMAND_NAME);
+
+var componentBroker = serviceProvider.GetService<IComponentBroker>();
+componentBroker.Add<ConfirmCorrectHandler>(ConfirmCorrectHandler.Key);
+componentBroker.Add<EditVenueHandler>(EditVenueHandler.Key);
+componentBroker.Add<TemporarilyClosedHandler>(TemporarilyClosedHandler.Key);
+componentBroker.Add<PermanentlyClosedHandler>(PermanentlyClosedHandler.Key);
+
+componentBroker.Add<AuditHandler>(AuditHandler.Key);
+componentBroker.Add<GetAuditsHandler>(GetAuditsHandler.Key);
+componentBroker.Add<GetAuditHandler>(GetAuditHandler.Key);
+componentBroker.Add<CloseHandler>(CloseHandler.Key);
+componentBroker.Add<DeleteHandler>(DeleteHandler.Key);
+componentBroker.Add<DismissHandler>(DismissHandler.Key);
+componentBroker.Add<EditHandler>(EditHandler.Key);
+componentBroker.Add<EditPhotoHandler>(EditPhotoHandler.Key);
+componentBroker.Add<OpenHandler>(OpenHandler.Key);
 
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
 

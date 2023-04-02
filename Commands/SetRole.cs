@@ -1,11 +1,11 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using FFXIVVenues.Veni.Commands.Brokerage;
-using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Models;
-using FFXIVVenues.Veni.Persistance.Abstraction;
 using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
+using FFXIVVenues.Veni.People;
 
 namespace FFXIVVenues.Veni.Commands
 {
@@ -59,7 +59,7 @@ namespace FFXIVVenues.Veni.Commands
                 this._repository = repository;
             }
 
-            public async Task HandleAsync(SlashCommandInteractionContext slashCommand)
+            public async Task HandleAsync(SlashCommandVeniInteractionContext slashCommand)
             {
                 var guildId = slashCommand.Interaction.GuildId ?? 0;
                 if (guildId == 0)

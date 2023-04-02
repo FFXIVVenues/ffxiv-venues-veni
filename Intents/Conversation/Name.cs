@@ -1,6 +1,7 @@
-﻿using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.Utils;
+﻿using FFXIVVenues.Veni.Utils;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Intent;
 
 namespace FFXIVVenues.Veni.Intents.Conversation
 {
@@ -15,7 +16,7 @@ namespace FFXIVVenues.Veni.Intents.Conversation
             "It's Veni. ♥️",
         };
 
-        public override Task Handle(InteractionContext context) =>
+        public override Task Handle(VeniInteractionContext context) =>
             context.Interaction.RespondAsync(_nameMessages.PickRandom());
 
     }

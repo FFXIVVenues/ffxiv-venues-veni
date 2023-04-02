@@ -1,14 +1,19 @@
 ﻿using Discord.WebSocket;
 using Discord;
-using FFXIVVenues.Veni.Commands.Brokerage;
 using System.Threading.Tasks;
-using FFXIVVenues.Veni.Context;
 using System.Linq;
 using System.Collections.Generic;
-using FFXIVVenues.Veni.States;
-using FFXIVVenues.Veni.Models;
-using FFXIVVenues.Veni.Managers;
-using FFXIVVenues.Veni.Services;
+using FFXIVVenues.Veni.Configuration;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
+using FFXIVVenues.Veni.People;
+using FFXIVVenues.Veni.Services.Api;
+using FFXIVVenues.Veni.SessionStates;
+using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.VenueControl;
+using FFXIVVenues.Veni.VenueControl.SessionStates;
+using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.Commands
 {
@@ -30,23 +35,20 @@ namespace FFXIVVenues.Veni.Commands
         internal class CommandHandler : ICommandHandler
         {
             private readonly IApiService _apiService;
-            private readonly IStaffManager _staffService;
-            private readonly string _uiUrl;
-            private readonly string _apiUrl;
+            private readonly IVenueRenderer _venueRenderer;
+            private readonly IStaffService _staffService;
             private IEnumerable<Venue> _venues;
 
             public CommandHandler(IApiService _apiService,
-                                  UiConfiguration uiConfig,
-                                  ApiConfiguration apiConfig,
-                                  IStaffManager staffService)
+                                IVenueRenderer venueRenderer,
+                                IStaffService staffService)
             {
                 this._apiService = _apiService;
+                this._venueRenderer = venueRenderer;
                 this._staffService = staffService;
-                this._uiUrl = uiConfig.BaseUrl;
-                this._apiUrl = apiConfig.BaseUrl;
             }
 
-            public async Task HandleAsync(SlashCommandInteractionContext c) 
+            public async Task HandleAsync(SlashCommandVeniInteractionContext c) 
             {
                 var asker = c.Interaction.User.Id;
                 var isEditorOrApprover = this._staffService.IsEditor(asker) || this._staffService.IsApprover(asker);
@@ -81,7 +83,7 @@ namespace FFXIVVenues.Veni.Commands
                 await c.Interaction.RespondAsync("Here you go! 🥰", components: componentBuilder.Build());
             }
 
-            private Task HandleVenueSelection(MessageComponentInteractionContext c)
+            private Task HandleVenueSelection(MessageComponentVeniInteractionContext c)
             {
                 var selectedVenueId = c.Interaction.Data.Values.Single();
                 var asker = c.Interaction.User.Id;
@@ -91,7 +93,7 @@ namespace FFXIVVenues.Veni.Commands
                 if (!isEditorOrApprover)
                     return c.Interaction.FollowupAsync("Sorry, you're not authorized to see unapproved venues. 😢");
 
-                return c.Interaction.FollowupAsync(embed: venue.ToEmbed($"{this._uiUrl}/#{venue.Id}", $"{this._apiUrl}/venue/{venue.Id}/media").Build(),
+                return c.Interaction.FollowupAsync(embed: this._venueRenderer.RenderEmbed(venue).Build(),
                         components: new ComponentBuilder()
                             .WithButton("Approve", c.Session.RegisterComponentHandler(async cm =>
                             {
@@ -101,12 +103,12 @@ namespace FFXIVVenues.Veni.Commands
                             .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
                             {
                                 c.Session.SetItem("venue", venue);
-                                return cm.Session.MoveStateAsync<ModifyVenueState>(cm);
+                                return cm.Session.MoveStateAsync<ModifyVenueSessionState>(cm);
                             }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                             .WithButton("Delete", c.Session.RegisterComponentHandler(cm =>
                             {
                                 c.Session.SetItem("venue", venue);
-                                return cm.Session.MoveStateAsync<DeleteVenueState>(cm);
+                                return cm.Session.MoveStateAsync<DeleteVenueSessionState>(cm);
                             }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
                             .WithButton("Do nothing", c.Session.RegisterComponentHandler(cm => Task.CompletedTask,
                                 ComponentPersistence.ClearRow), ButtonStyle.Secondary)

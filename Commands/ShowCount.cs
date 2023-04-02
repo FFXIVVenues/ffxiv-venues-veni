@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using Discord;
 using Discord.WebSocket;
-using FFXIVVenues.Veni.Commands.Brokerage;
-using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
-using FFXIVVenues.Veni.Services;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Services.Api;
 
 namespace FFXIVVenues.Veni.Commands
 {
@@ -33,7 +33,7 @@ namespace FFXIVVenues.Veni.Commands
                 this._apiService = _apiService;
             } 
 
-            public async Task HandleAsync(SlashCommandInteractionContext c)
+            public async Task HandleAsync(SlashCommandVeniInteractionContext c)
             {
                 await c.Interaction.DeferAsync();
                 var venues = await this._apiService.GetAllVenuesAsync();

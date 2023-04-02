@@ -1,17 +1,20 @@
 ﻿using Discord;
-using FFXIVVenues.Veni.Context;
-using FFXIVVenues.Veni.States.Abstractions;
 using System;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Components;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
+using FFXIVVenues.Veni.SessionStates;
+using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.Utils
 {
     internal static class ComponentBuilderExtensions
     {
 
-        public static ComponentBuilder WithNextButton<SkipTarget, ModifyTarget>(this ComponentBuilder builder, Context.IInteractionContext context) 
-            where SkipTarget : IState 
-            where ModifyTarget : IState
+        public static ComponentBuilder WithSkipButton<SkipTarget, ModifyTarget>(this ComponentBuilder builder, IVeniInteractionContext context) 
+            where SkipTarget : ISessionState 
+            where ModifyTarget : ISessionState
         {
             return builder.WithButton("►  Next/Skip", context.Session.RegisterComponentHandler(c =>
             {
@@ -21,8 +24,8 @@ namespace FFXIVVenues.Veni.Utils
             }, ComponentPersistence.ClearRow), ButtonStyle.Secondary);
         }
 
-        public static ComponentBuilder WithBackButton(this ComponentBuilder builder, Context.IInteractionContext context, Func<Task<bool>> @override = null)
-        {
+        public static ComponentBuilder WithBackButton(this ComponentBuilder builder, IVeniInteractionContext context, Func<Task<bool>> @override = null)
+        {   
             return builder.WithButton("◄  Back", context.Session.RegisterComponentHandler(async c =>
             {
                 var result = false;

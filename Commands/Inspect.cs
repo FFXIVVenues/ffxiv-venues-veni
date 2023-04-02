@@ -1,13 +1,13 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using FFXIVVenues.Veni.Commands.Brokerage;
-using FFXIVVenues.Veni.Context;
 using FFXIVVenues.Veni.Intents;
-using FFXIVVenues.Veni.Logging;
-using FFXIVVenues.Veni.Managers;
 using FFXIVVenues.Veni.Utils;
 using NChronicle.Core.Model;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Logging;
+using FFXIVVenues.Veni.People;
 
 namespace FFXIVVenues.Veni.Commands
 {
@@ -43,16 +43,16 @@ namespace FFXIVVenues.Veni.Commands
 
         internal class CommandHandler : ICommandHandler
         {
-            private readonly IStaffManager indexersService;
+            private readonly IStaffService indexersService;
             private readonly IDiscordChronicleLibrary chronicleLibrary;
 
-            public CommandHandler(IStaffManager indexersService, IDiscordChronicleLibrary chronicleLibrary)
+            public CommandHandler(IStaffService indexersService, IDiscordChronicleLibrary chronicleLibrary)
             {
                 this.indexersService = indexersService;
                 this.chronicleLibrary = chronicleLibrary;
             }
 
-            public Task HandleAsync(SlashCommandInteractionContext slashCommand)
+            public Task HandleAsync(SlashCommandVeniInteractionContext slashCommand)
             {
                 if (!this.indexersService.IsEngineer(slashCommand.Interaction.User.Id))
                     return slashCommand.Interaction.Channel.SendMessageAsync("Sorry, I only let Engineers do that with me.");
