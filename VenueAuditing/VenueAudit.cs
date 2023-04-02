@@ -66,7 +66,7 @@ public class VenueAudit
                     .WithPlaceholder("Select response")
                     .AddOption(new SelectMenuOptionBuilder()
                         .WithLabel("Confirm Correct")
-                        .WithEmote(new Emoji("✅"))
+                        .WithEmote(new Emoji("👍"))
                         .WithDescription("Confirm the details on this venue are correct.")
                         .WithStaticHandler(ConfirmCorrectHandler.Key, this._record.id))
                     .AddOption(new SelectMenuOptionBuilder()
