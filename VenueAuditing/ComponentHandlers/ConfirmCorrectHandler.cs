@@ -17,6 +17,7 @@ namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 
 public class ConfirmCorrectHandler : BaseAuditHandler
 {
+    
     // Change this key and any existing buttons linked to this will die
     public static string Key => "AUDIT_CONFIRM_CORRECT";
     
@@ -56,13 +57,13 @@ public class ConfirmCorrectHandler : BaseAuditHandler
         
         await context.Interaction.Message.Channel.SendMessageAsync(_responses.PickRandom());
         
-        if (audit.RoundId == null) 
-            NotifyRequesterAsync(context, audit, venue, 
-                $"{MentionUtils.MentionUser(audit.CompletedBy)} confirmed the venues details. 😘");
         UpdateAudit(context, audit, VenueAuditStatus.RespondedConfirmed,
             $"{MentionUtils.MentionUser(audit.CompletedBy)} confirmed the venues details.");
         await this._repository.UpsertAsync(audit);
+        
+        if (audit.RoundId == null) 
+            NotifyRequesterAsync(context, audit, venue, 
+                $"{MentionUtils.MentionUser(audit.CompletedBy)} confirmed the venues details. 😘");
     }
-
     
 }
