@@ -30,7 +30,7 @@ public class EditPhotoHandler : IComponentHandler
         var user = context.Interaction.User.Id;
         var venueId = args[0];
         var venue = await this._apiService.GetVenueAsync(venueId);
-        if (!this._staffService.IsEditor(user) && !venue.Managers.Contains(user.ToString()))
+        if (!this._staffService.IsPhotographer(user) && !this._staffService.IsEditor(user) && !venue.Managers.Contains(user.ToString()))
             return;
         
         context.Session.SetItem("venue", venue);
