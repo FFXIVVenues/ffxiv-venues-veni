@@ -266,7 +266,7 @@ namespace FFXIVVenues.Veni.VenueControl
                     .WithLabel("Edit Photo")
                     .WithEmote(new Emoji("📸"))
                     .WithDescription("Update the banner on this venue.")
-                    .WithStaticHandler(EditPhotoHandler.Key));
+                    .WithStaticHandler(EditPhotoHandler.Key, venue.Id));
             }
 
             builder.WithSelectMenu(dropDown);
