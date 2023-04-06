@@ -2,6 +2,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
@@ -19,13 +20,13 @@ public class GetAuditHandler : IComponentHandler
     // Change this key and any existing buttons linked to this will die
     public static string Key => "CONTROL_GET_AUDIT";
 
-    private readonly IStaffService _staffService;
+    private readonly IAuthorizer _authorizer;
     private readonly IApiService _apiService;
     private readonly IRepository _repository;
 
-    public GetAuditHandler(IStaffService staffService, IApiService apiService, IRepository repository)
+    public GetAuditHandler(IAuthorizer authorizer, IApiService apiService, IRepository repository)
     {
-        this._staffService = staffService;
+        this._authorizer = authorizer;
         this._apiService = apiService;
         this._repository = repository;
     }
@@ -33,15 +34,15 @@ public class GetAuditHandler : IComponentHandler
     public async Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args)
     {
         var user = context.Interaction.User.Id;
-        if (!this._staffService.IsEditor(user))
+        var auditId = context.Interaction.Data.Values.First();
+        var audit = await this._repository.GetByIdAsync<VenueAuditRecord>(auditId);
+        var venue = await this._apiService.GetVenueAsync(audit.VenueId);
+        
+        if (!this._authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
             return;
         
         _ = context.Interaction.DeleteOriginalResponseAsync();
         
-        var auditId = context.Interaction.Data.Values.First();
-        var audit = await this._repository.GetByIdAsync<VenueAuditRecord>(auditId);
-        var venueTask = this._apiService.GetVenueAsync(audit.VenueId);
-
         var description = new StringBuilder()
             .Append("**Sent: **")
             .AppendLine(audit.SentTime.ToString("G"))
@@ -70,7 +71,7 @@ public class GetAuditHandler : IComponentHandler
                 .AppendLine(log.Message);
         
         var embed = new EmbedBuilder()
-            .WithTitle($"Audit for {(await venueTask).Name}")
+            .WithTitle($"Audit for {venue.Name}")
             .WithDescription(description.ToString());
         
         await context.Interaction.Channel.SendMessageAsync("Okay, here's the audit! 🥰", embed: embed.Build());

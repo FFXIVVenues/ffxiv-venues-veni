@@ -7,7 +7,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
 {
     internal class SessionProvider : IDisposable, ISessionProvider
     {
-        private readonly RollingCache<Session> _sessions = new();
+        private readonly RollingCache<Session> _sessions = new(10800000 /* 3 hours */, 86400000 /* 24 hours */);
         private readonly IServiceProvider _serviceProvider;
         private bool _disposed;
 

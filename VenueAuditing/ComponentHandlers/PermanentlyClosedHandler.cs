@@ -51,7 +51,7 @@ public class PermanentlyClosedHandler : BaseAuditHandler
         await this._repository.UpsertAsync(audit);
         
         if (audit.RoundId == null) 
-            NotifyRequesterAsync(context, audit, venue, 
+            await NotifyRequesterAsync(context, audit, venue, 
                 $"{MentionUtils.MentionUser(audit.CompletedBy)} deleted the venue. 😭");
     }
     

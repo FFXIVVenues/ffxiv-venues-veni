@@ -49,15 +49,15 @@ public abstract class BaseAuditHandler : IComponentHandler
             channel = await context.Client.GetDMChannelAsync(audit.RequestedIn);
 
         if (channel is SocketTextChannel sTextChannel)
-            sTextChannel.SendMessageAsync(
+            await sTextChannel.SendMessageAsync(
                 $"Hey {MentionUtils.MentionUser(audit.RequestedBy)}! The audit of {venue.Name} you requested has been completed. \n{message}");
         if (channel is RestTextChannel rTextChannel)
-            rTextChannel.SendMessageAsync(
+            await rTextChannel.SendMessageAsync(
                 $"Hey {MentionUtils.MentionUser(audit.RequestedBy)}! The audit of {venue.Name} you requested has been completed. \n{message}");
         if (channel is RestDMChannel rdmChannel)
-            rdmChannel.SendMessageAsync($"Heyo! The audit of {venue.Name} you requested has been completed. \n{message}");
+            await rdmChannel.SendMessageAsync($"Heyo! The audit of {venue.Name} you requested has been completed. \n{message}");
         if (channel is SocketDMChannel sdmChannel)
-            sdmChannel.SendMessageAsync($"Heyo! The audit of {venue.Name} you requested has been completed. \n{message}");
+            await sdmChannel.SendMessageAsync($"Heyo! The audit of {venue.Name} you requested has been completed. \n{message}");
     }
 
     protected void UpdateAudit(MessageComponentVeniInteractionContext context, in VenueAuditRecord audit, VenueAuditStatus status, string message)

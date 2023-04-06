@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 using Discord;
-using FFXIVVenues.Veni.Configuration;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.People;
@@ -18,24 +18,20 @@ namespace FFXIVVenues.Veni.VenueControl
 {
     public class VenueRenderer : IVenueRenderer
     {
-        private readonly IStaffService _staffService;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IVenueAuditFactory _venueAuditFactory;
+        
+        private readonly IAuthorizer _authorizer;
         private readonly UiConfiguration _uiConfig;
-        private readonly ApiConfiguration _apiConfig;
-
-        public VenueRenderer(IStaffService staffService, IServiceProvider serviceProvider, UiConfiguration uiConfig, ApiConfiguration apiConfig)
+        
+        public VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig)
         {
-            this._staffService = staffService;
-            this._serviceProvider = serviceProvider;
+            this._authorizer = authorizer;
             this._uiConfig = uiConfig;
-            this._apiConfig = apiConfig;
         }
 
         public EmbedBuilder RenderEmbed(Venue venue, string bannerUrl = null)
         {
             var uiUrl = $"{this._uiConfig.BaseUrl}/#{venue.Id}"; 
-            bannerUrl ??= $"{this._apiConfig.BaseUrl}/venue/{venue.Id}/media";
+            bannerUrl ??= venue.BannerUri.ToString();
             
             var stringBuilder = new StringBuilder();
             stringBuilder.Append("**Created**: ");
@@ -206,70 +202,77 @@ namespace FFXIVVenues.Veni.VenueControl
 
         public ComponentBuilder RenderActionComponents(IVeniInteractionContext context, Venue venue, ulong user)
         {
-            var isManager = venue.Managers.Contains(user.ToString());
-            var isEditor = this._staffService.IsEditor(user);
-            var isPhotographer = this._staffService.IsPhotographer(user);
-            
             var builder = new ComponentBuilder();
             var dropDown = new SelectMenuBuilder()
                 .WithValueHandlers()
                 .WithPlaceholder("What would you like to do?");
 
-            if (isEditor)
-            {
+            if (this._authorizer.Authorize(user, Permission.AuditVenue, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Audit")
                     .WithEmote(new Emoji("🔍"))
-                    .WithDescription("Send a message to managers to confirm this venue's detail.")
+                    .WithDescription("Message managers to confirm this venue's detail.")
                     .WithStaticHandler(AuditHandler.Key, venue.Id));
-                
+            
+            if (this._authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Get audits")
                     .WithEmote(new Emoji("🔍"))
                     .WithDescription("Get previous audits for this venue.")
                     .WithStaticHandler(GetAuditsHandler.Key, venue.Id));
-            }
+            
 
-            if (isEditor || isManager)
-            {
+            if (this._authorizer.Authorize(user, Permission.OpenVenue, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Open")
                     .WithEmote(new Emoji("📢"))
                     .WithDescription("Open this venue for a given amount of hours.")
                     .WithStaticHandler(OpenHandler.Key, venue.Id));
                 
+            if (this._authorizer.Authorize(user, Permission.CloseVenue, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Close")
                     .WithEmote(new Emoji("🔒"))
                     .WithDescription("Close current opening or go on hiatus.")
                     .WithStaticHandler(CloseHandler.Key, venue.Id));
                 
+            if (this._authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Edit")
                     .WithEmote(new Emoji("✏️"))
                     .WithDescription("Update the details on this venue.")
                     .WithStaticHandler(EditHandler.Key, venue.Id));
+            else {
+                if (this._authorizer.Authorize(user, Permission.AuditVenue, venue).Authorized)
+                    dropDown.AddOption(new SelectMenuOptionBuilder()
+                        .WithLabel("Edit Managers")
+                        .WithEmote(new Emoji("📸"))
+                        .WithDescription("Update the controlling managers on this venue.")
+                        .WithStaticHandler(EditPhotoHandler.Key));
                 
+                if (this._authorizer.Authorize(user, Permission.EditPhotography, venue).Authorized)
+                    dropDown.AddOption(new SelectMenuOptionBuilder()
+                        .WithLabel("Edit Photo")
+                        .WithEmote(new Emoji("📸"))
+                        .WithDescription("Update the banner on this venue.")
+                        .WithStaticHandler(EditPhotoHandler.Key));
+            }
+
+            if (this._authorizer.Authorize(user, Permission.DeleteVenue, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Delete")
                     .WithEmote(new Emoji("❌"))
                     .WithDescription("Delete this venue completely.")
                     .WithStaticHandler(DeleteHandler.Key, venue.Id));
-                
+            
+            if (dropDown.Options.Count > 0)
+            {
                 dropDown.AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Do nothing")
                     .WithStaticHandler(DismissHandler.Key));
+                
+                builder.WithSelectMenu(dropDown);
             }
-            else if (isPhotographer)
-            {
-                dropDown.AddOption(new SelectMenuOptionBuilder()
-                    .WithLabel("Edit Photo")
-                    .WithEmote(new Emoji("📸"))
-                    .WithDescription("Update the banner on this venue.")
-                    .WithStaticHandler(EditPhotoHandler.Key));
-            }
-
-            builder.WithSelectMenu(dropDown);
             return builder;
         }
         

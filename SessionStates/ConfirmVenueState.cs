@@ -1,8 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
-using FFXIVVenues.Veni.Configuration;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.People;
@@ -22,6 +21,7 @@ namespace FFXIVVenues.Veni.SessionStates
         private readonly IApiService _apiService;
         private readonly IStaffService _staffService;
         private readonly IGuildManager _guildManager;
+        private readonly IAuthorizer _authorizer;
 
         private static string[] _preexisingResponse = new[]
         {
@@ -55,13 +55,15 @@ namespace FFXIVVenues.Veni.SessionStates
                                 UiConfiguration uiConfiguration,
                                 IApiService apiService,
                                 IStaffService indexersService,
-                                IGuildManager guildManager)
+                                IGuildManager guildManager,
+                                IAuthorizer authorizer)
         {
             this._venueRenderer = venueRenderer;
             this._uiConfiguration = uiConfiguration;
             this._apiService = apiService;
             this._staffService = indexersService;
             this._guildManager = guildManager;
+            this._authorizer = authorizer;
         }
 
         public async Task Enter(VeniInteractionContext c)
@@ -82,23 +84,35 @@ namespace FFXIVVenues.Veni.SessionStates
         private async Task LooksPerfect(MessageComponentVeniInteractionContext c)
         {
             var isNewVenue = c.Session.GetItem<bool>("isNewVenue");
+            var modifying = c.Session.GetItem<bool>("modifying");
+
             _ = c.Interaction.Channel.SendMessageAsync(_workingOnItResponse.PickRandom());
             _ = c.Interaction.Channel.TriggerTypingAsync();
+            
 
             var venue = c.Session.GetItem<Venue>("venue");
+            var bannerUrl = c.Session.GetItem<string>("bannerUrl");
+            var isApprover = this._authorizer
+                .Authorize(c.Interaction.User.Id, Permission.ApproveVenue, venue)
+                .Authorized;
+            
             var uploadVenueResponse = await this._apiService.PutVenueAsync(venue);
             if (!uploadVenueResponse.IsSuccessStatusCode)
             {
                 _ = c.Interaction.Channel.SendMessageAsync("Ooops! Something went wrong. 😢");
+                await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
+                    embed: this._venueRenderer.RenderEmbed(venue, bannerUrl).Build(),
+                    components: new ComponentBuilder()
+                        .WithButton("Looks perfect!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
+                        .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                        .WithButton("Cancel", c.Session.RegisterComponentHandler(this.Cancel, ComponentPersistence.ClearRow), ButtonStyle.Danger)
+                        .Build());
                 return;
             }
-            var bannerUrl = c.Session.GetItem<string>("bannerUrl");
             if (bannerUrl != null) // changed
                 await this._apiService.PutVenueBannerAsync(venue.Id, bannerUrl);
 
-            var isEditorOrIndexer = this._staffService.IsEditor(c.Interaction.User.Id) 
-                                    || this._staffService.IsApprover(c.Interaction.User.Id);
-            if (isEditorOrIndexer)
+            if (isApprover)
             {
                 var approvalResponse = await this._apiService.ApproveAsync(venue.Id);
                 if (!approvalResponse.IsSuccessStatusCode)
@@ -115,7 +129,7 @@ namespace FFXIVVenues.Veni.SessionStates
                 _ = this._guildManager.FormatDisplayNamesForVenueAsync(venue);
                 await c.Interaction.Channel.SendMessageAsync(_preexisingResponse.PickRandom());
             }
-            else if (isEditorOrIndexer)
+            else if (isApprover)
             {
                 await c.Interaction.Channel.SendMessageAsync("All done and auto-approved for you. :heart:");
                 await this.ApproveVenueAsync(venue, c.Client);
@@ -157,7 +171,10 @@ namespace FFXIVVenues.Veni.SessionStates
 
         private async Task ApproveVenueHandler(Venue venue, Broadcast.BroadcastInteractionContext approveBic)
         {
-            if (!this._staffService.IsApprover(approveBic.Component.User.Id))
+            var isApprover = this._authorizer
+                .Authorize(approveBic.CurrentUser.Id, Permission.ApproveVenue, venue)
+                .Authorized;
+            if (!isApprover)
             {
                 await approveBic.Component.RespondAsync("Sorry, only indexers can do this! :sad:");
                 return;
@@ -205,7 +222,10 @@ namespace FFXIVVenues.Veni.SessionStates
                                               Broadcast.ComponentContext bcc, 
                                               Broadcast.BroadcastInteractionContext rejectBic)
         {
-            if (!this._staffService.IsApprover(rejectBic.Component.User.Id))
+            var isApprover = this._authorizer
+                .Authorize(rejectBic.CurrentUser.Id, Permission.ApproveVenue, venue)
+                .Authorized;
+            if (!isApprover)
             {
                 await rejectBic.Component.RespondAsync("Sorry, only indexers can do this! :sad:");
                 return;

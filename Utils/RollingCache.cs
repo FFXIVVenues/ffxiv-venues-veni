@@ -6,44 +6,67 @@ namespace FFXIVVenues.Veni.Utils
 {
     internal class RollingCache<T> : IDisposable
     {
+        public long TimeoutInMs { get; }
+        public long MaxAgeInMs { get; }
 
+        private readonly ConcurrentDictionary<string, DateTime> _set = new();
         private readonly ConcurrentDictionary<string, DateTime> _lastAccess = new();
-        private readonly ConcurrentDictionary<string, T> _conversationContexts = new();
+        private readonly ConcurrentDictionary<string, T> _items = new();
         private readonly Timer _timer;
         private bool _disposed;
 
-        public RollingCache()
+        public RollingCache(long timeoutInMs, long maxAgeInMs)
         {
-            _timer = new Timer(_ => ExpireContexts(), null, 60_000, 60_000);
+            this.TimeoutInMs = timeoutInMs;
+            this.MaxAgeInMs = maxAgeInMs;
+            _timer = new Timer(_ => ExpireItems(), null, 60_000, 60_000);
         }
 
         public T Get(string key)
         {
+            var exists = _items.TryGetValue(key, out var value);
+            if (exists)
+            {
+                _lastAccess[key] = DateTime.UtcNow;
+                return value;
+            }
+            return default;
+        }
+
+        public void Set(string key, T value)
+        {
             _lastAccess[key] = DateTime.UtcNow;
-            var exists = _conversationContexts.TryGetValue(key, out var value);
-            return exists ? value : default;
+            _set[key] = DateTime.UtcNow;
+            _items[key] = value;
         }
 
         public T GetOrSet(string key, T value)
         {
+            var success = _items.TryGetValue(key, out var item);
             _lastAccess[key] = DateTime.UtcNow;
-            return _conversationContexts.GetOrAdd(key, value);
+            if (success && item != null)
+                return item;
+            _set[key] = DateTime.UtcNow;
+            _items[key] = value;
+            return value;
         }
 
         public T Remove(string key)
         {
             _lastAccess.TryRemove(key, out _);
-            _conversationContexts.TryRemove(key, out var value);
+            _set.TryRemove(key, out _);
+            _items.TryRemove(key, out var value);
             return value;
         }
 
-        private void ExpireContexts()
+        private void ExpireItems()
         {
             foreach (var keyValuePair in _lastAccess)
             {
-                if (keyValuePair.Value > DateTime.UtcNow.AddMinutes(-180))
+                if (keyValuePair.Value > DateTime.UtcNow.AddMilliseconds(-this.TimeoutInMs) 
+                    && _set[keyValuePair.Key] > DateTime.UtcNow.AddMilliseconds(-this.MaxAgeInMs))
                     continue;
-
+                
                 Remove(keyValuePair.Key);
             }
         }

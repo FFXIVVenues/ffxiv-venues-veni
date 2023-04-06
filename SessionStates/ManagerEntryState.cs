@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.People;
@@ -12,16 +13,16 @@ namespace FFXIVVenues.Veni.SessionStates
 {
     class ManagerEntrySessionState : ISessionState
     {
-        private readonly IStaffService _staffService;
+        private readonly IAuthorizer _authorizer;
 
-        public ManagerEntrySessionState(IStaffService staffService)
+        public ManagerEntrySessionState(IAuthorizer authorizer)
         {
-            this._staffService = staffService;
+            this._authorizer = authorizer;
         }
 
         public Task Enter(VeniInteractionContext c)
         {
-            if (!this._staffService.IsEditor(c.Interaction.User.Id))
+            if (!this._authorizer.Authorize(c.Interaction.User.Id, Permission.EditManagers).Authorized)
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
 
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
