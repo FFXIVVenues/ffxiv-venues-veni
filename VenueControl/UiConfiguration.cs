@@ -1,4 +1,4 @@
-﻿namespace FFXIVVenues.Veni.Configuration
+﻿namespace FFXIVVenues.Veni.VenueControl
 {
     public class UiConfiguration
     {

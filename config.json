@@ -22,99 +22,100 @@
   "Api": {
     "BaseUrl": "https://api.ffxivvenues.com"
   },
-"Notifications": {
-  "Approvals": [
-    236852510688542720,
-    252142384303833088,
-    870413151676551178,
-    786407181804896257
-  ]
-},
-"Authorisation": {
-  "Master": [ 236852510688542720, 252142384303833088 ],
-  "PermissionSets": [
-    {
-      "Name": "Engineering",
-      "Permissions": [
-        "AuditVenue",
-        "ViewAuditHistory"
-      ],
-      "Members": [
-        236852510688542720,
-        252142384303833088,
-        265695573527625731
-      ]
-    },
-    {
-      "Name": "Leads",
-      "Permissions": [
-        "ApproveVenue",
-        "AuditVenue",
-        "ViewAuditHistory",
-        "OpenVenue",
-        "CloseVenue"
-      ],
-      "Members": [
-        236852510688542720,
-        252142384303833088,
-        265695573527625731
-      ]
-    },
-    {
-      "Name": "Community Engagement",
-      "Permissions": [
-        "ApproveVenue",
-        "ViewAuditHistory",
-        "AuditVenue",
-        "EditVenue",
-        "EditPhotography",
-        "EditManagers",
-        "OpenVenue",
-        "CloseVenue",
-        "HiatusVenue",
-        "DeleteVenue"
-      ],
-      "Members": [
-        870413151676551178,
-        786407181804896257
-      ]
-    },
-    {
-      "Name": "Community Engagement (Probation)",
-      "Permissions": [
-        "ApproveVenue",
-        "AuditVenue",
-        "ViewAuditHistory",
-        "OpenVenue",
-        "CloseVenue"
-      ],
-      "Members": [
-        811738117761400853
-      ]
-    },
-    {
-      "Name": "Administrators",
-      "Permissions": [
-        "ViewAuditHistory",
-        "EditManagers"
-      ],
-      "Members": [
-        252142384303833088,
-        870413151676551178,
-        265695573527625731
-      ]
-    },
-    {
-      "Name": "Photography",
-      "Permissions": [
-        "ViewAuditHistory",
-        "EditPhotography"
-      ],
-      "Members": [
-        870761195169255525,
-        713047627285004352
-      ]
-    }
-  ]
-}
+  "Notifications": {
+    "Approvals": [
+      236852510688542720,
+      252142384303833088,
+      870413151676551178,
+      786407181804896257
+    ]
+  },
+  "Authorisation": {
+    "Master": [ 236852510688542720, 252142384303833088 ],
+    "PermissionSets": [
+      {
+        "Name": "Engineering",
+        "Permissions": [
+          "AuditVenue",
+          "ViewAuditHistory",
+          "Inspect"
+        ],
+        "Members": [
+          236852510688542720,
+          252142384303833088,
+          265695573527625731
+        ]
+      },
+      {
+        "Name": "Leads",
+        "Permissions": [
+          "ApproveVenue",
+          "AuditVenue",
+          "ViewAuditHistory",
+          "OpenVenue",
+          "CloseVenue"
+        ],
+        "Members": [
+          236852510688542720,
+          252142384303833088,
+          265695573527625731
+        ]
+      },
+      {
+        "Name": "Community Engagement",
+        "Permissions": [
+          "ApproveVenue",
+          "ViewAuditHistory",
+          "AuditVenue",
+          "EditVenue",
+          "EditPhotography",
+          "EditManagers",
+          "OpenVenue",
+          "CloseVenue",
+          "HiatusVenue",
+          "DeleteVenue"
+        ],
+        "Members": [
+          870413151676551178,
+          786407181804896257
+        ]
+      },
+      {
+        "Name": "Community Engagement (Probation)",
+        "Permissions": [
+          "ApproveVenue",
+          "AuditVenue",
+          "ViewAuditHistory",
+          "OpenVenue",
+          "CloseVenue"
+        ],
+        "Members": [
+          811738117761400853
+        ]
+      },
+      {
+        "Name": "Administrators",
+        "Permissions": [
+          "ViewAuditHistory",
+          "EditManagers"
+        ],
+        "Members": [
+          252142384303833088,
+          870413151676551178,
+          265695573527625731
+        ]
+      },
+      {
+        "Name": "Photography",
+        "Permissions": [
+          "ViewAuditHistory",
+          "EditPhotography"
+        ],
+        "Members": [
+          870761195169255525,
+          713047627285004352
+        ]
+      }
+    ]
+  }
 }

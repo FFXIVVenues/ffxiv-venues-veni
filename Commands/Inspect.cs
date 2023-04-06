@@ -4,6 +4,7 @@ using FFXIVVenues.Veni.Intents;
 using FFXIVVenues.Veni.Utils;
 using NChronicle.Core.Model;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Logging;
@@ -43,20 +44,19 @@ namespace FFXIVVenues.Veni.Commands
 
         internal class CommandHandler : ICommandHandler
         {
-            private readonly IStaffService indexersService;
+            private readonly IAuthorizer _authorizer;
             private readonly IDiscordChronicleLibrary chronicleLibrary;
 
-            public CommandHandler(IStaffService indexersService, IDiscordChronicleLibrary chronicleLibrary)
+            public CommandHandler(IAuthorizer authorizer, IDiscordChronicleLibrary chronicleLibrary)
             {
-                this.indexersService = indexersService;
+                this._authorizer = authorizer;
                 this.chronicleLibrary = chronicleLibrary;
             }
 
             public Task HandleAsync(SlashCommandVeniInteractionContext slashCommand)
             {
-                if (!this.indexersService.IsEngineer(slashCommand.Interaction.User.Id))
+                if (!this._authorizer.Authorize(slashCommand.Interaction.User.Id, Permission.Inspect).Authorized)
                     return slashCommand.Interaction.Channel.SendMessageAsync("Sorry, I only let Engineers do that with me.");
-
 
                 var subscribed = this.chronicleLibrary.IsSubscribed(slashCommand.Interaction.Channel);
                 if (subscribed)
