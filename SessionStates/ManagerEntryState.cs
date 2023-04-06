@@ -22,7 +22,9 @@ namespace FFXIVVenues.Veni.SessionStates
 
         public Task Enter(VeniInteractionContext c)
         {
-            if (!this._authorizer.Authorize(c.Interaction.User.Id, Permission.EditManagers).Authorized)
+            var venue = c.Session.GetItem<Venue>("venue");
+
+            if (!this._authorizer.Authorize(c.Interaction.User.Id, Permission.EditManagers, venue).Authorized)
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
 
             c.Session.RegisterMessageHandler(this.OnMessageReceived);

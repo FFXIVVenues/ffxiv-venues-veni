@@ -50,14 +50,14 @@ public abstract class BaseAuditHandler : IComponentHandler
 
         if (channel is SocketTextChannel sTextChannel)
             await sTextChannel.SendMessageAsync(
-                $"Hey {MentionUtils.MentionUser(audit.RequestedBy)}! The audit of {venue.Name} you requested has been completed. \n{message}");
+                $"Hey {MentionUtils.MentionUser(audit.RequestedBy)}! The audit of **{venue.Name}** you requested has been completed. \n{message}");
         if (channel is RestTextChannel rTextChannel)
             await rTextChannel.SendMessageAsync(
-                $"Hey {MentionUtils.MentionUser(audit.RequestedBy)}! The audit of {venue.Name} you requested has been completed. \n{message}");
+                $"Hey {MentionUtils.MentionUser(audit.RequestedBy)}! The audit of **{venue.Name}** you requested has been completed. \n{message}");
         if (channel is RestDMChannel rdmChannel)
-            await rdmChannel.SendMessageAsync($"Heyo! The audit of {venue.Name} you requested has been completed. \n{message}");
+            await rdmChannel.SendMessageAsync($"Heyo! The audit of **{venue.Name}** you requested has been completed. \n{message}");
         if (channel is SocketDMChannel sdmChannel)
-            await sdmChannel.SendMessageAsync($"Heyo! The audit of {venue.Name} you requested has been completed. \n{message}");
+            await sdmChannel.SendMessageAsync($"Heyo! The audit of **{venue.Name}** you requested has been completed. \n{message}");
     }
 
     protected void UpdateAudit(MessageComponentVeniInteractionContext context, in VenueAuditRecord audit, VenueAuditStatus status, string message)

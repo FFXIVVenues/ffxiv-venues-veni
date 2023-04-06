@@ -7,6 +7,7 @@ using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.VenueModels;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using Image = SixLabors.ImageSharp.Image;
@@ -30,7 +31,9 @@ namespace FFXIVVenues.Veni.SessionStates
 
         public Task Enter(VeniInteractionContext c)
         {
-            if (!this._authorizer.Authorize(c.Interaction.User.Id, Permission.EditPhotography).Authorized)
+            var venue = c.Session.GetItem<Venue>("venue");
+
+            if (!this._authorizer.Authorize(c.Interaction.User.Id, Permission.EditPhotography, venue).Authorized)
                 return c.Session.MoveStateAsync<ManagerEntrySessionState>(c);
 
             c.Session.RegisterMessageHandler(this.OnMessageReceived);

@@ -4,7 +4,7 @@ using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.People
 {
-    internal interface IGuildManager
+    public interface IGuildManager
     {
         Task<bool> AssignRolesForVenueAsync(Venue venue);
 
