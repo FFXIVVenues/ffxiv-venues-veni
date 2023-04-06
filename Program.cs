@@ -94,7 +94,7 @@ serviceCollection.AddSingleton<IComponentBroker, ComponentBroker>();
 serviceCollection.AddSingleton<IApiService, ApiService>();
 serviceCollection.AddSingleton<IAuthorizer, Authorizer>();
 serviceCollection.AddSingleton<IGuildManager, GuildManager>();
-serviceCollection.AddSingleton<IStaffService, StaffService>();
+serviceCollection.AddSingleton<IVenueApprovalService, VenueApprovalService>();
 serviceCollection.AddSingleton<IAIHandler, AIHandler>();
 serviceCollection.AddSingleton<IDavinciService, DavinciService>();
 serviceCollection.AddSingleton<IAIContextBuilder, AIContextBuilder>();

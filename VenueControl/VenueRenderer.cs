@@ -31,7 +31,7 @@ namespace FFXIVVenues.Veni.VenueControl
         public EmbedBuilder RenderEmbed(Venue venue, string bannerUrl = null)
         {
             var uiUrl = $"{this._uiConfig.BaseUrl}/#{venue.Id}"; 
-            bannerUrl ??= venue.BannerUri.ToString();
+            bannerUrl ??= venue.BannerUri?.ToString();
             
             var stringBuilder = new StringBuilder();
             stringBuilder.Append("**Created**: ");
@@ -216,7 +216,7 @@ namespace FFXIVVenues.Veni.VenueControl
             
             if (this._authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()
-                    .WithLabel("Get audits")
+                    .WithLabel("View audits")
                     .WithEmote(new Emoji("🔍"))
                     .WithDescription("Get previous audits for this venue.")
                     .WithStaticHandler(GetAuditsHandler.Key, venue.Id));
@@ -243,19 +243,19 @@ namespace FFXIVVenues.Veni.VenueControl
                     .WithDescription("Update the details on this venue.")
                     .WithStaticHandler(EditHandler.Key, venue.Id));
             else {
-                if (this._authorizer.Authorize(user, Permission.AuditVenue, venue).Authorized)
+                if (this._authorizer.Authorize(user, Permission.EditManagers, venue).Authorized)
                     dropDown.AddOption(new SelectMenuOptionBuilder()
                         .WithLabel("Edit Managers")
                         .WithEmote(new Emoji("📸"))
                         .WithDescription("Update the controlling managers on this venue.")
-                        .WithStaticHandler(EditPhotoHandler.Key));
+                        .WithStaticHandler(EditManagersHandler.Key, venue.Id));
                 
                 if (this._authorizer.Authorize(user, Permission.EditPhotography, venue).Authorized)
                     dropDown.AddOption(new SelectMenuOptionBuilder()
                         .WithLabel("Edit Photo")
                         .WithEmote(new Emoji("📸"))
                         .WithDescription("Update the banner on this venue.")
-                        .WithStaticHandler(EditPhotoHandler.Key));
+                        .WithStaticHandler(EditPhotoHandler.Key, venue.Id));
             }
 
             if (this._authorizer.Authorize(user, Permission.DeleteVenue, venue).Authorized)

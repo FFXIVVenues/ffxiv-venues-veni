@@ -24,7 +24,7 @@ namespace FFXIVVenues.Veni
         private readonly IComponentBroker _componentBroker;
         private readonly Pipeline<MessageVeniInteractionContext> _pipeline;
         private readonly ISessionProvider _sessionProvider;
-        private readonly IStaffService _staffService;
+        private readonly IVenueApprovalService _venueApprovalService;
         private readonly IChronicle _chronicle;
         private readonly IGuildManager _guildManager;
 
@@ -34,7 +34,7 @@ namespace FFXIVVenues.Veni
                               IComponentBroker componentBroker,
                               IServiceProvider serviceProvider,
                               ISessionProvider sessionProvider,
-                              IStaffService staffService, 
+                              IVenueApprovalService venueApprovalService, 
                               IChronicle chronicle,
                               IGuildManager guildManager)
         {
@@ -43,7 +43,7 @@ namespace FFXIVVenues.Veni
             this._contextFactory = contextFactory;
             this._componentBroker = componentBroker;
             this._sessionProvider = sessionProvider;
-            this._staffService = staffService;
+            this._venueApprovalService = venueApprovalService;
             this._chronicle = chronicle;
             this._guildManager = guildManager;
             this._client.Connected += Connected;
@@ -95,7 +95,7 @@ namespace FFXIVVenues.Veni
             _ = message.Channel.TriggerTypingAsync();
             
             // Get rid of staff service
-            if (await this._staffService.HandleComponentInteractionAsync(message))
+            if (await this._venueApprovalService.HandleComponentInteractionAsync(message))
                 return;
 
             var context = this._contextFactory.Create(message);

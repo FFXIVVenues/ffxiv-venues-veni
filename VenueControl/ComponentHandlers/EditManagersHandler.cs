@@ -3,8 +3,6 @@ using Discord;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Context.Abstractions;
-using FFXIVVenues.Veni.People;
 using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.SessionStates;
 
