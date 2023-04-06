@@ -25,9 +25,10 @@ namespace FFXIVVenues.Veni.SessionStates
 
         private Task Handle(MessageComponentVeniInteractionContext c)
         {
-            var dataCenter = c.Session.GetItem<Venue>("venue");
+            var venue = c.Session.GetItem<Venue>("venue");
+            venue.Location.Override = null;
             var world = c.Interaction.Data.Values.Single();
-            dataCenter.Location.DataCenter = world;
+            venue.Location.DataCenter = world;
             return c.Session.MoveStateAsync<WorldEntrySessionState>(c);
         }
 
