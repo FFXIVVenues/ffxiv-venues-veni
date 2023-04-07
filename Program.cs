@@ -57,6 +57,7 @@ config.GetSection("Davinci3").Bind(davinciConfig);
 
 var apiHttpClient = new HttpClient { BaseAddress = new Uri(apiConfig.BaseUrl) };
 apiHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiConfig.AuthorizationKey);
+apiHttpClient.Timeout = TimeSpan.FromSeconds(3);
 
 IRepository repository = null;
 if (persistenceConfig.Provider == PersistanceProvider.LiteDb)

@@ -79,7 +79,8 @@ namespace FFXIVVenues.Veni
                 return Task.CompletedTask;
 
             var context = this._contextFactory.Create(message);
-            return _pipeline.RunAsync(context);
+            _ = _pipeline.RunAsync(context);
+            return Task.CompletedTask;
         }
 
         private async Task SlashCommandExecutedAsync(SocketSlashCommand message)
