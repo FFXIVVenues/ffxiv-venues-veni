@@ -26,7 +26,7 @@ namespace FFXIVVenues.Veni.Intents.Interupt
 
             // Create broadcast factory
             _ = new Broadcast(Guid.NewGuid().ToString(), this._discordClient)
-                .WithMessage($"Heyo, I have {context.Interaction.User.Mention} needing some help. :cry:They said\n> {context.Interaction.Content}")
+                .WithMessage($"Heyo, I have {context.Interaction.User.Mention} needing some help. :cry: They said \n> {context.Interaction.Content}")
                 .SendToAsync(this._notificationsConfiguration.Help);
         }
 

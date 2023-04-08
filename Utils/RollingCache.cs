@@ -71,6 +71,13 @@ namespace FFXIVVenues.Veni.Utils
             }
         }
 
+        public void Clear()
+        {
+            this._set.Clear();
+            this._lastAccess.Clear();
+            this._items.Clear();
+        }
+
         public void Dispose()
         {
             if (!_disposed)
