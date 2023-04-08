@@ -1,12 +1,7 @@
-﻿using Discord;
-using FFXIVVenues.Veni.Utils;
-using Newtonsoft.Json.Linq;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using FFXIVVenues.Veni.Configuration;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Intent;
-using FFXIVVenues.Veni.People;
 using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.SessionStates;
 using FFXIVVenues.Veni.VenueControl;

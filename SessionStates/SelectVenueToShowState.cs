@@ -17,14 +17,14 @@ namespace FFXIVVenues.Veni.SessionStates
 
         private readonly IVenueRenderer _venueRenderer;
         private readonly IApiService _apiService;
-        private readonly IStaffService _staffService;
+        private readonly IVenueApprovalService _venueApprovalService;
         private IEnumerable<Venue> _managersVenues;
 
-        public SelectVenueToShowSessionState(IVenueRenderer venueRenderer, IApiService apiService, IStaffService staffService)
+        public SelectVenueToShowSessionState(IVenueRenderer venueRenderer, IApiService apiService, IVenueApprovalService venueApprovalService)
         {
             this._venueRenderer = venueRenderer;
             this._apiService = apiService;
-            this._staffService = staffService;
+            this._venueApprovalService = venueApprovalService;
         }
 
         public Task Enter(VeniInteractionContext c)

@@ -47,12 +47,12 @@ public class TemporarilyClosedHandler : BaseAuditHandler
         await context.Session.MoveStateAsync<CloseEntrySessionState>(context);
         
         UpdateAudit(context, audit, VenueAuditStatus.RespondedClose,
-            $"{MentionUtils.MentionUser(audit.CompletedBy)} temporarily closed the venue.");
+            $"{MentionUtils.MentionUser(context.Interaction.User.Id)} temporarily closed the venue.");
         await this._repository.UpsertAsync(audit);
         
         if (audit.RoundId == null) 
-            NotifyRequesterAsync(context, audit, venue, 
-                $"{MentionUtils.MentionUser(audit.CompletedBy)} temporarily closed the venue. 😢");
+            await NotifyRequesterAsync(context, audit, venue, 
+                $"{MentionUtils.MentionUser(context.Interaction.User.Id)} temporarily closed the venue. 😢");
     }
     
 }

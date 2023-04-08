@@ -3,9 +3,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.VenueModels;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using Image = SixLabors.ImageSharp.Image;
@@ -18,15 +20,22 @@ namespace FFXIVVenues.Veni.SessionStates
     {
         private const int BANNER_HEIGHT = 300;
         private const int BANNER_WIDTH = 600;
+        private readonly IAuthorizer _authorizer;
         private readonly HttpClient _httpClient;
 
-        public BannerEntrySessionState(HttpClient httpClient)
+        public BannerEntrySessionState(IAuthorizer authorizer, HttpClient httpClient)
         {
+            this._authorizer = authorizer;
             this._httpClient = httpClient;
         }
 
         public Task Enter(VeniInteractionContext c)
         {
+            var venue = c.Session.GetItem<Venue>("venue");
+
+            if (!this._authorizer.Authorize(c.Interaction.User.Id, Permission.EditPhotography, venue).Authorized)
+                return c.Session.MoveStateAsync<ManagerEntrySessionState>(c);
+
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
             c.Session.SetBackClearanceAmount(3);
             return c.Interaction.RespondAsync("What **banner image** would you like to use?\nBanners are 600x300; I'll do the scaling/cropping for you :heart:.",

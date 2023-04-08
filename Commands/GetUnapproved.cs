@@ -3,7 +3,7 @@ using Discord;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
-using FFXIVVenues.Veni.Configuration;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
@@ -36,24 +36,28 @@ namespace FFXIVVenues.Veni.Commands
         {
             private readonly IApiService _apiService;
             private readonly IVenueRenderer _venueRenderer;
-            private readonly IStaffService _staffService;
+            private readonly IAuthorizer _authorizer;
             private IEnumerable<Venue> _venues;
 
-            public CommandHandler(IApiService _apiService,
+            public CommandHandler(IApiService apiService,
                                 IVenueRenderer venueRenderer,
-                                IStaffService staffService)
+                                IAuthorizer authorizer)
             {
-                this._apiService = _apiService;
+                this._apiService = apiService;
                 this._venueRenderer = venueRenderer;
-                this._staffService = staffService;
+                this._authorizer = authorizer;
             }
 
             public async Task HandleAsync(SlashCommandVeniInteractionContext c) 
             {
                 var asker = c.Interaction.User.Id;
-                var isEditorOrApprover = this._staffService.IsEditor(asker) || this._staffService.IsApprover(asker);
-
-
+                var auth = this._authorizer.Authorize(asker, Permission.ApproveVenue);
+                if (!auth.Authorized)
+                {
+                    await c.Interaction.FollowupAsync("Sorry, you're not authorized to see unapproved venues. 😢");
+                    return;
+                }
+                
                 this._venues = await this._apiService.GetUnapprovedVenuesAsync();
                 if (this._venues.Count() > 25)
                     this._venues = this._venues.Take(25);
@@ -89,8 +93,8 @@ namespace FFXIVVenues.Veni.Commands
                 var asker = c.Interaction.User.Id;
                 var venue = this._venues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-                var isEditorOrApprover = this._staffService.IsEditor(asker) || this._staffService.IsApprover(asker);
-                if (!isEditorOrApprover)
+                var auth = this._authorizer.Authorize(asker, Permission.ApproveVenue);
+                if (!auth.Authorized)
                     return c.Interaction.FollowupAsync("Sorry, you're not authorized to see unapproved venues. 😢");
 
                 return c.Interaction.FollowupAsync(embed: this._venueRenderer.RenderEmbed(venue).Build(),

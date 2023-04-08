@@ -44,12 +44,12 @@ public class EditVenueHandler : BaseAuditHandler
         
         await context.Session.MoveStateAsync<ModifyVenueSessionState>(context);
         UpdateAudit(context, audit, VenueAuditStatus.RespondedEdit,
-            $"{MentionUtils.MentionUser(audit.CompletedBy)} edited the venue details.");
+            $"{MentionUtils.MentionUser(context.Interaction.User.Id)} edited the venue details.");
         await this._repository.UpsertAsync(audit);
         
         if (audit.RoundId == null) 
-            NotifyRequesterAsync(context, audit, venue, 
-        $"{MentionUtils.MentionUser(audit.CompletedBy)} edited the venue details. 😘");
+            await NotifyRequesterAsync(context, audit, venue, 
+        $"{MentionUtils.MentionUser(context.Interaction.User.Id)} edited the venue details. 😘");
     }
     
 }

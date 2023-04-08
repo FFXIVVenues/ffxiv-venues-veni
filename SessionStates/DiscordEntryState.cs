@@ -39,7 +39,7 @@ namespace FFXIVVenues.Veni.SessionStates
             var match = _discordPattern.Match(rawDiscordString);
             if (!match.Success)
             {
-                await c.Interaction.Channel.SendMessageAsync("That doesn't look like a valid Discord invite to me. :think:");
+                await c.Interaction.Channel.SendMessageAsync("That doesn't look like a valid Discord invite to me. :thinking:");
                 return;
             }
 

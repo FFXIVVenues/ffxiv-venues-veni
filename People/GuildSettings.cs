@@ -3,7 +3,7 @@ using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 
 namespace FFXIVVenues.Veni.People
 {
-    internal class GuildSettings : IEntity
+    public class GuildSettings : IEntity
     {
 
         public string id { get; set; }
