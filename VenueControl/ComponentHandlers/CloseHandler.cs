@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
 using Discord;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Intents.Operation;
 using FFXIVVenues.Veni.People;
 using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.VenueControl.SessionStates;
@@ -14,12 +16,12 @@ public class CloseHandler : IComponentHandler
     // Change this key and any existing buttons linked to this will die
     public static string Key => "CONTROL_CLOSE";
     
-    private readonly IStaffService _staffService;
+    private readonly IAuthorizer _authorizer;
     private readonly IApiService _apiService;
 
-    public CloseHandler(IStaffService staffService, IApiService apiService)
+    public CloseHandler(IAuthorizer authorizer, IApiService apiService)
     {
-        this._staffService = staffService;
+        this._authorizer = authorizer;
         this._apiService = apiService;
     }
     
@@ -29,7 +31,7 @@ public class CloseHandler : IComponentHandler
         var venueId = args[0];
         var venue = await this._apiService.GetVenueAsync(venueId);
         
-        if (!this._staffService.IsEditor(user) && !venue.Managers.Contains(user.ToString()))
+        if (!this._authorizer.Authorize(user, Permission.CloseVenue, venue).Authorized)
             return;
         
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>

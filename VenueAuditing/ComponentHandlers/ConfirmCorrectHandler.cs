@@ -12,6 +12,7 @@ using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Utils.Broadcasting;
 using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.VenueModels;
+using Microsoft.Azure.Cosmos;
 
 namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 
@@ -58,12 +59,12 @@ public class ConfirmCorrectHandler : BaseAuditHandler
         await context.Interaction.Message.Channel.SendMessageAsync(_responses.PickRandom());
         
         UpdateAudit(context, audit, VenueAuditStatus.RespondedConfirmed,
-            $"{MentionUtils.MentionUser(audit.CompletedBy)} confirmed the venues details.");
+            $"{MentionUtils.MentionUser(context.Interaction.User.Id)} confirmed the venues details.");
         await this._repository.UpsertAsync(audit);
         
         if (audit.RoundId == null) 
-            NotifyRequesterAsync(context, audit, venue, 
-                $"{MentionUtils.MentionUser(audit.CompletedBy)} confirmed the venues details. 😘");
+            await NotifyRequesterAsync(context, audit, venue, 
+                $"{MentionUtils.MentionUser(context.Interaction.User.Id)} confirmed the venues details. 😘");
     }
     
 }
