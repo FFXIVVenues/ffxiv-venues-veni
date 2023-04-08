@@ -94,8 +94,7 @@ namespace FFXIVVenues.Veni
         {
             await message.DeferAsync();
             _ = message.Channel.TriggerTypingAsync();
-            
-            // Get rid of staff service
+
             if (await this._venueApprovalService.HandleComponentInteractionAsync(message))
                 return;
 

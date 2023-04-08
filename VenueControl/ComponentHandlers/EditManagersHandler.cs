@@ -10,7 +10,7 @@ namespace FFXIVVenues.Veni.VenueControl.ComponentHandlers;
 
 public class EditManagersHandler : IComponentHandler
 {
-    public static string Key => "CONTROL_EDIT_PHOTO";
+    public static string Key => "CONTROL_EDIT_MANAGERS";
     
     private readonly IAuthorizer _authorizer;
     private readonly IApiService _apiService;

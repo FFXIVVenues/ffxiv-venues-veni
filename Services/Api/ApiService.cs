@@ -66,7 +66,7 @@ namespace FFXIVVenues.Veni.Services.Api
             this._venuesCache.Set("_approved_", result);
             return result;
         }
-
+        
         public async Task<IEnumerable<Venue>> GetUnapprovedVenuesAsync()
         {
             var cached = this._venuesCache.Get("_unapproved_");
@@ -81,7 +81,7 @@ namespace FFXIVVenues.Veni.Services.Api
         public async Task<IEnumerable<Venue>> GetAllVenuesAsync(string searchQuery)
         {
             var cached = this._venuesCache.Get($"_search_{searchQuery}");
-            if (cached != null)
+            if (cached != null) 
                 return cached;
             var response = await _httpClient.GetAsync($"/venue?search={searchQuery}");
             var result = await response.Content.ReadFromJsonAsync<Venue[]>();
@@ -103,6 +103,7 @@ namespace FFXIVVenues.Veni.Services.Api
         public Task<HttpResponseMessage> PutVenueAsync(Venue venue)
         {
             this._venueCache.Remove(venue.Id);
+            this._venuesCache.Clear();
             return _httpClient.PutAsJsonAsync("/venue/" + venue.Id, venue);
         }
 
@@ -110,6 +111,8 @@ namespace FFXIVVenues.Veni.Services.Api
         {
             var response = await _httpClient.GetAsync(url);
             var stream = await response.Content.ReadAsStreamAsync();
+            this._venueCache.Remove(id);
+            this._venuesCache.Clear();
             return await PutVenueBannerAsync(id, stream, response.Content.Headers.ContentType);
         }
 
@@ -117,30 +120,36 @@ namespace FFXIVVenues.Veni.Services.Api
         {
             var streamContent = new StreamContent(stream);
             streamContent.Headers.ContentType = mediaType;
+            this._venueCache.Remove(id);
+            this._venuesCache.Clear();
             return _httpClient.PutAsync("/venue/" + id + "/media", streamContent);
         }
 
         public Task<HttpResponseMessage> DeleteVenueAsync(string id)
         {
             this._venueCache.Remove(id);
+            this._venuesCache.Clear();
             return _httpClient.DeleteAsync("/venue/" + id);
         }
 
         public Task<HttpResponseMessage> OpenVenueAsync(string id, DateTime until)
         {
             this._venueCache.Remove(id);
+            this._venuesCache.Clear();
             return _httpClient.PostAsJsonAsync($"/venue/{id}/open", until);
         }
 
         public Task<HttpResponseMessage> CloseVenueAsync(string id, DateTime until)
         {
             this._venueCache.Remove(id);
+            this._venuesCache.Clear();
             return _httpClient.PostAsJsonAsync($"/venue/{id}/close", until);
         }
 
         public Task<HttpResponseMessage> ApproveAsync(string id, bool approval = true)
         {
             this._venueCache.Remove(id);
+            this._venuesCache.Clear();
             return _httpClient.PutAsJsonAsync($"/venue/{id}/approved", approval);
         }
 

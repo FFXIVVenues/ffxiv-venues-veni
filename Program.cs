@@ -147,6 +147,7 @@ componentBroker.Add<DeleteHandler>(DeleteHandler.Key);
 componentBroker.Add<DismissHandler>(DismissHandler.Key);
 componentBroker.Add<EditHandler>(EditHandler.Key);
 componentBroker.Add<EditPhotoHandler>(EditPhotoHandler.Key);
+componentBroker.Add<EditManagersHandler>(EditManagersHandler.Key);
 componentBroker.Add<OpenHandler>(OpenHandler.Key);
 
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
