@@ -24,110 +24,40 @@
   },
   "Notifications": {
     "Approvals": [
-      236852510688542720,
-      252142384303833088,
-      870413151676551178,
-      786407181804896257
+      
     ],
     "Help": [
-      236852510688542720,
-      252142384303833088,
-      870413151676551178,
-      786407181804896257
+      
     ]
   },
   "Authorisation": {
-    "Master": [ 236852510688542720, 252142384303833088 ],
-    "ManagerPermissions": [
-      "EditVenue",
-      "EditPhotography",
-      "OpenVenue",
-      "CloseVenue",
-      "HiatusVenue",
-      "DeleteVenue",
-      "EditManagers"
-    ],
+    "Master": [ ],
+    "ManagerPermissions": [ ],
     "PermissionSets": [
       {
         "Name": "Engineering",
-        "Permissions": [
-          "AuditVenue",
-          "ViewAuditHistory",
-          "Inspect"
-        ],
-        "Members": [
-          236852510688542720,
-          265695573527625731
-        ]
+        "Permissions": [],
+        "Members": []
       },
       {
         "Name": "Leads",
-        "Permissions": [
-          "ApproveVenue",
-          "AuditVenue",
-          "ViewAuditHistory",
-          "OpenVenue",
-          "CloseVenue"
-        ],
-        "Members": [
-          236852510688542720,
-          265695573527625731
-
-        ]
+        "Permissions": [],
+        "Members": []
       },
       {
         "Name": "Community Engagement",
-        "Permissions": [
-          "ApproveVenue",
-          "ViewAuditHistory",
-          "AuditVenue",
-          "EditVenue",
-          "EditPhotography",
-          "EditManagers",
-          "OpenVenue",
-          "CloseVenue",
-          "HiatusVenue",
-          "DeleteVenue"
-        ],
-        "Members": [
-          870413151676551178,
-          786407181804896257
-        ]
-      },
-      {
-        "Name": "Community Engagement (Probation)",
-        "Permissions": [
-          "ApproveVenue",
-          "AuditVenue",
-          "ViewAuditHistory",
-          "OpenVenue",
-          "CloseVenue"
-        ],
-        "Members": [
-          811738117761400853
-        ]
+        "Permissions": [],
+        "Members": []
       },
       {
         "Name": "Administrators",
-        "Permissions": [
-          "ViewAuditHistory",
-          "EditManagers"
-        ],
-        "Members": [
-          870413151676551178,
-          265695573527625731
-        ]
+        "Permissions": [],
+        "Members": [ ]
       },
       {
         "Name": "Photography",
-        "Permissions": [
-          "ViewAuditHistory",
-          "EditPhotography"
-        ],
-        "Members": [
-          870761195169255525,
-          713047627285004352
-        ]
+        "Permissions": [ ],
+        "Members": [ ]
       }
     ]
   }
