@@ -100,7 +100,7 @@ namespace FFXIVVenues.Veni.Commands
                     Reason = reason
                 };
 
-                await slashCommand.Interaction.FollowupAsync("User added to the blacklist 😢");
+                await slashCommand.Interaction.FollowupAsync("Discord ID added to the blacklist 😢");
                 await db.UpsertAsync(blackListedId);
 
             }
