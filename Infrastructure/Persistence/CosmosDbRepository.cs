@@ -58,7 +58,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
         }
 
         public Task<bool> ExistsAsync<T>(string id) where T : class, IEntity =>
-            this.GetByIdAsync<T>(id).ContinueWith(e => e != null);
+            this.GetByIdAsync<T>(id).ContinueWith(e => e.IsCompletedSuccessfully && e.Result != null);
 
         private async Task<Container> GetContainer(string name)
         {
