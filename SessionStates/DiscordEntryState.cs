@@ -1,11 +1,13 @@
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
+using FFXIVVenues.Veni.Authorisation.Blacklist;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
+using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
 
@@ -13,9 +15,14 @@ namespace FFXIVVenues.Veni.SessionStates
 {
     class DiscordEntrySessionState : ISessionState
     {
-
+        private readonly IRepository db;
         static HttpClient _discordClient = new HttpClient();
         static Regex _discordPattern = new Regex(@"(https?:\/\/)?(www\.)?((discord(app)?(\.com|\.io)(\/invite)?)|(discord\.gg))\/(\w+)");
+
+        public DiscordEntrySessionState(IRepository db)
+        {
+            this.db = db;
+        }
 
         public Task Enter(VeniInteractionContext c)
         {
@@ -30,9 +37,8 @@ namespace FFXIVVenues.Veni.SessionStates
         public async Task OnMessageReceived(MessageVeniInteractionContext c)
         {
             var venue = c.Session.GetItem<Venue>("venue");
-            string message = c.Interaction.Content.StripMentions();
-
             var rawDiscordString = c.Interaction.Content.StripMentions();
+
             if (!new Regex("^https?://").IsMatch(rawDiscordString))
                 rawDiscordString = "https://" + rawDiscordString;
 
@@ -61,7 +67,16 @@ namespace FFXIVVenues.Veni.SessionStates
                 return;
             }
 
-            venue.Discord = new Uri(rawDiscordString);
+
+            if (await db.ExistsAsync<BlacklistEntry>(invite.guild.id))
+            {
+                await c.Interaction.Channel.SendMessageAsync("This Discord server was blacklisted, please contact staff for further information. 😢" +
+                    " Please use a different server or skip this step.");
+                return;
+
+            }
+
+                venue.Discord = new Uri(rawDiscordString);
 
             if (c.Session.GetItem<bool>("modifying"))
             {
@@ -77,5 +92,12 @@ namespace FFXIVVenues.Veni.SessionStates
     public class DiscordInvite
     {
         public DateTime? expires_at { get; set; }
+
+        public Guild guild { get; set; }
+        public class Guild
+        {
+            public string id { get; set; }
+        }
+
     }
 }

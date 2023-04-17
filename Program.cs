@@ -132,6 +132,7 @@ commandBroker.Add<SetFormatNames.CommandFactory, SetFormatNames.CommandHandler>(
 commandBroker.Add<ShowCount.CommandFactory, ShowCount.CommandHandler>(ShowCount.COMMAND_NAME);
 commandBroker.Add<Graph.CommandFactory, Graph.CommandHandler>(Graph.COMMAND_NAME);
 commandBroker.Add<GetUnapproved.CommandFactory, GetUnapproved.CommandHandler>(GetUnapproved.COMMAND_NAME);
+commandBroker.Add<Blacklist.CommandFactory, Blacklist.CommandHandler>(Blacklist.COMMAND_NAME);
 
 var componentBroker = serviceProvider.GetService<IComponentBroker>();
 componentBroker.Add<ConfirmCorrectHandler>(ConfirmCorrectHandler.Key);

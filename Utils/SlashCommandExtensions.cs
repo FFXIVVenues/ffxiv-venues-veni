@@ -35,6 +35,7 @@ namespace FFXIVVenues.Veni.Utils
         public static string GetStringArg(this SlashCommandVeniInteractionContext command, string name)
         {
             var option = command.Interaction.Data.Options.FirstOrDefault(o => o.Name == name);
+            if (option == null) option = command.Interaction.Data.Options.FirstOrDefault()?.Options?.FirstOrDefault(o => o.Name == name);
             if (option == null) return null;
 
             return option.Value as string;
