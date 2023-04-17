@@ -15,5 +15,6 @@ public enum Permission
     CloseVenue = 128,
     HiatusVenue = 256,
     DeleteVenue = 512,
-    Inspect = 1024
+    Inspect = 1024,
+    Blacklist = 2048
 }
