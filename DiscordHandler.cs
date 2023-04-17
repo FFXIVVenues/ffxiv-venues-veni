@@ -12,6 +12,8 @@ using FFXIVVenues.Veni.Infrastructure.Middleware;
 using FFXIVVenues.Veni.People;
 using NChronicle.Core.Interfaces;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
+using FFXIVVenues.Veni.Authorisation.Blacklist;
 
 namespace FFXIVVenues.Veni
 {
@@ -27,6 +29,7 @@ namespace FFXIVVenues.Veni
         private readonly IVenueApprovalService _venueApprovalService;
         private readonly IChronicle _chronicle;
         private readonly IGuildManager _guildManager;
+        private readonly IRepository _db;
 
         public DiscordHandler(DiscordSocketClient client,
                               ICommandBroker commandBroker,
@@ -36,7 +39,8 @@ namespace FFXIVVenues.Veni
                               ISessionProvider sessionProvider,
                               IVenueApprovalService venueApprovalService, 
                               IChronicle chronicle,
-                              IGuildManager guildManager)
+                              IGuildManager guildManager,
+                              IRepository db)
         {
             this._client = client;
             this._commandBroker = commandBroker;
@@ -52,7 +56,9 @@ namespace FFXIVVenues.Veni
             this._client.SelectMenuExecuted += ComponentExecutedAsync;
             this._client.ButtonExecuted += ComponentExecutedAsync;
             this._client.UserJoined += UserJoinedAsync;
-            
+            this._client.GuildAvailable += GuildAvailableAsync;
+            this._db = db;
+
             this._pipeline = new Pipeline<MessageVeniInteractionContext>()
                 .WithServiceProvider(serviceProvider)
                 .Add<ConversationFilterMiddleware>()
@@ -67,24 +73,49 @@ namespace FFXIVVenues.Veni
                 .Add<DontUnderstandMiddleware>();
         }
 
+        private async Task GuildAvailableAsync(SocketGuild guild)
+        {
+            if (await _db.ExistsAsync<BlacklistEntry>(guild.Id.ToString()))
+            {
+                await guild.LeaveAsync();
+                var dm = await _client.GetUser(guild.OwnerId).CreateDMChannelAsync();
+                await dm.SendMessageAsync($"Sorry 😢. Your discord server **{guild.Name}** was blacklisted from FFXIV Venues, so I've left it." +
+                    $" If you think this could be an error please contact my family.");
+            }
+        }
+
         public Task ListenAsync() =>
             _client.StartAsync();
 
         private Task Connected() =>
             this._commandBroker.RegisterAllGloballyAsync();
 
-        private Task MessageReceivedAsync(SocketMessage message)
+        private async Task MessageReceivedAsync(SocketMessage message)
         {
             if (message.Author.Id == _client.CurrentUser.Id)
-                return Task.CompletedTask;
+                return;
+
+            if (await _db.ExistsAsync<BlacklistEntry>(message.Author.Id.ToString()))
+            {
+               var dm = await _client.GetUser(message.Author.Id).CreateDMChannelAsync();
+                await dm.SendMessageAsync("Sorry! 😢. You were blacklisted so I can't give you further access. " +
+                    "If you think this could be an error please contact my family.");
+               return;
+            }
 
             var context = this._contextFactory.Create(message);
             _ = _pipeline.RunAsync(context);
-            return Task.CompletedTask;
         }
 
         private async Task SlashCommandExecutedAsync(SocketSlashCommand message)
         {
+            if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
+            {
+                await message.RespondAsync("Sorry! 😢. You were blacklisted so I can't give you further access. " +
+                    "If you think this could be an error please contact my family.", ephemeral:true) ;
+                return;
+            }
+
             var context = this._contextFactory.Create(message);
             LogSlashCommandExecuted(message, context);
             await this._commandBroker.HandleAsync(context);
@@ -94,6 +125,13 @@ namespace FFXIVVenues.Veni
         {
             await message.DeferAsync();
             _ = message.Channel.TriggerTypingAsync();
+
+            if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
+            {
+                await message.FollowupAsync("Sorry! 😢. You were blacklisted so I can't give you further access. " +
+                    "If you think this could be an error please contact my family.", ephemeral: true);
+                return;
+            }
 
             if (await this._venueApprovalService.HandleComponentInteractionAsync(message))
                 return;
