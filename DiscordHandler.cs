@@ -64,6 +64,7 @@ namespace FFXIVVenues.Veni
                 .Add<ConversationFilterMiddleware>()
                 .Add<StartTypingMiddleware>()
                 .Add<LogMiddleware>()
+                .Add<BlacklistMiddleware>()
                 .Add<LuisPredictionMiddleware>()
                 .Add<StopCallingMeMommyMiddleware>()
                 .Add<InteruptIntentMiddleware>()
@@ -101,14 +102,6 @@ namespace FFXIVVenues.Veni
         {
             if (message.Author.Id == _client.CurrentUser.Id)
                 return;
-
-            if (await _db.ExistsAsync<BlacklistEntry>(message.Author.Id.ToString()))
-            {
-               var dm = await _client.GetUser(message.Author.Id).CreateDMChannelAsync();
-                await dm.SendMessageAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
-                                          $" If you think this was a mistake please let my family know.");
-               return;
-            }
 
             var context = this._contextFactory.Create(message);
             _ = _pipeline.RunAsync(context);
