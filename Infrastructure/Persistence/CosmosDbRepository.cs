@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Authorisation.Blacklist;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils;
 using Microsoft.Azure.Cosmos;
@@ -20,6 +21,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
         {
             var client = new CosmosClient(strConnectionString);
             this._database = client.GetDatabase("ffxivvenues-veni-ki");
+            this._cache.For<BlacklistEntry>(3*60*60*1000, 3*60*60*1000);
         }
 
         public async Task UpsertAsync<T>(T entity) where T : class, IEntity
@@ -41,7 +43,6 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
 
         public async Task<IQueryable<T>> GetWhere<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity
         {
-            predicate.ToString();
             var container = await GetContainer(typeof(T).Name);
             return container.GetItemLinqQueryable<T>(true).Where(predicate);
         }
