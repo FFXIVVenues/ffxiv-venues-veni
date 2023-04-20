@@ -75,13 +75,20 @@ namespace FFXIVVenues.Veni
 
         private async Task GuildAvailableAsync(SocketGuild guild)
         {
-            if (await _db.ExistsAsync<BlacklistEntry>(guild.Id.ToString()))
-            {
-                await guild.LeaveAsync();
-                var dm = await _client.GetUser(guild.OwnerId).CreateDMChannelAsync();
-                await dm.SendMessageAsync($"Sorry 😢. Your discord server **{guild.Name}** was blacklisted from FFXIV Venues, so I've left it." +
-                    $" If you think this could be an error please contact my family.");
-            }
+            if (!await _db.ExistsAsync<BlacklistEntry>(guild.Id.ToString()))
+                return;
+            
+            var ownerId = guild.OwnerId;
+            await guild.LeaveAsync();
+            
+            var owner = await _client.GetUserAsync(ownerId);
+            if (owner == null)
+                return;
+            
+            var dm = await owner.CreateDMChannelAsync();
+            await dm.SendMessageAsync(
+                $"Sorry, I left **{guild.Name}**. My family said I'm not allowed to go there. 😢" +
+                $" If you think this was a mistake please let my family know.");
         }
 
         public Task ListenAsync() =>
@@ -98,8 +105,8 @@ namespace FFXIVVenues.Veni
             if (await _db.ExistsAsync<BlacklistEntry>(message.Author.Id.ToString()))
             {
                var dm = await _client.GetUser(message.Author.Id).CreateDMChannelAsync();
-                await dm.SendMessageAsync("Sorry! 😢. You were blacklisted so I can't give you further access. " +
-                    "If you think this could be an error please contact my family.");
+                await dm.SendMessageAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
+                                          $" If you think this was a mistake please let my family know.");
                return;
             }
 
@@ -111,8 +118,8 @@ namespace FFXIVVenues.Veni
         {
             if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
             {
-                await message.RespondAsync("Sorry! 😢. You were blacklisted so I can't give you further access. " +
-                    "If you think this could be an error please contact my family.", ephemeral:true) ;
+                await message.RespondAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
+                                           $" If you think this was a mistake please let my family know.", ephemeral:true) ;
                 return;
             }
 
@@ -128,8 +135,8 @@ namespace FFXIVVenues.Veni
 
             if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
             {
-                await message.FollowupAsync("Sorry! 😢. You were blacklisted so I can't give you further access. " +
-                    "If you think this could be an error please contact my family.", ephemeral: true);
+                await message.FollowupAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
+                                            $" If you think this was a mistake please let my family know.", ephemeral: true);
                 return;
             }
 
