@@ -26,8 +26,8 @@ namespace FFXIVVenues.Veni.Services.Api
         public async Task<IEnumerable<Venue>> GetAllVenuesAsync()
         {
             var cached = this._venuesCache.Get("*");
-            if (cached != null)
-                return cached;
+            if (cached.Result == CacheResult.CacheHit)
+                return cached.Value;
             var response = await _httpClient.GetAsync($"/venue");
             var result = await response.Content.ReadFromJsonAsync<Venue[]>();
             this._venuesCache.Set("*", result);
@@ -37,8 +37,8 @@ namespace FFXIVVenues.Veni.Services.Api
         public async Task<IEnumerable<Venue>> GetAllVenuesAsync(ulong forContact)
         {
             var cached = this._venuesCache.Get(forContact.ToString());
-            if (cached != null)
-                return cached;
+            if (cached.Result == CacheResult.CacheHit)
+                return cached.Value;
             var response = await _httpClient.GetAsync($"/venue?manager={forContact}");
             var result = await response.Content.ReadFromJsonAsync<Venue[]>();
             this._venuesCache.Set(forContact.ToString(), result);
@@ -48,8 +48,8 @@ namespace FFXIVVenues.Veni.Services.Api
         public async Task<IEnumerable<Venue>> GetOpenVenuesAsync()
         {
             var cached = this._venuesCache.Get("_open_");
-            if (cached != null)
-                return cached;
+            if (cached.Result == CacheResult.CacheHit)
+                return cached.Value;
             var response = await _httpClient.GetAsync($"/venue?open=true");
             var result = await response.Content.ReadFromJsonAsync<Venue[]>();
             this._venuesCache.Set("_open_", result);
@@ -59,8 +59,8 @@ namespace FFXIVVenues.Veni.Services.Api
         public async Task<IEnumerable<Venue>> GetApprovedVenuesAsync()
         {
             var cached = this._venuesCache.Get("_approved_");
-            if (cached != null)
-                return cached;
+            if (cached.Result == CacheResult.CacheHit)
+                return cached.Value;
             var response = await _httpClient.GetAsync($"/venue?approved=true");
             var result = await response.Content.ReadFromJsonAsync<Venue[]>();
             this._venuesCache.Set("_approved_", result);
@@ -70,8 +70,8 @@ namespace FFXIVVenues.Veni.Services.Api
         public async Task<IEnumerable<Venue>> GetUnapprovedVenuesAsync()
         {
             var cached = this._venuesCache.Get("_unapproved_");
-            if (cached != null)
-                return cached;
+            if (cached.Result == CacheResult.CacheHit)
+                return cached.Value;
             var response = await _httpClient.GetAsync($"/venue?approved=false");
             var result = await response.Content.ReadFromJsonAsync<Venue[]>();
             this._venuesCache.Set("_unapproved_", result);
@@ -81,8 +81,8 @@ namespace FFXIVVenues.Veni.Services.Api
         public async Task<IEnumerable<Venue>> GetAllVenuesAsync(string searchQuery)
         {
             var cached = this._venuesCache.Get($"_search_{searchQuery}");
-            if (cached != null) 
-                return cached;
+            if (cached.Result == CacheResult.CacheHit)
+                return cached.Value;
             var response = await _httpClient.GetAsync($"/venue?search={searchQuery}");
             var result = await response.Content.ReadFromJsonAsync<Venue[]>();
             this._venuesCache.Set($"_search_{searchQuery}", result);
@@ -92,8 +92,8 @@ namespace FFXIVVenues.Veni.Services.Api
         public async Task<Venue> GetVenueAsync(string id)
         {
             var cached = this._venueCache.Get(id);
-            if (cached != null)
-                return cached;
+            if (cached.Result == CacheResult.CacheHit)
+                return cached.Value;
             var response = await _httpClient.GetAsync("/venue/" + id);
             var result = await response.Content.ReadFromJsonAsync<Venue>();
             this._venueCache.Set(id, result);

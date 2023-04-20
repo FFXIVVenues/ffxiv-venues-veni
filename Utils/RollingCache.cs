@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace FFXIVVenues.Veni.Utils
 {
-    internal class RollingCache<T> : IDisposable
+    public class RollingCache<T> : IDisposable
     {
         public long TimeoutInMs { get; }
         public long MaxAgeInMs { get; }
@@ -19,18 +19,18 @@ namespace FFXIVVenues.Veni.Utils
         {
             this.TimeoutInMs = timeoutInMs;
             this.MaxAgeInMs = maxAgeInMs;
-            _timer = new Timer(_ => ExpireItems(), null, 60_000, 60_000);
+            this._timer = new Timer(_ => ExpireItems(), null, 60_000, 60_000);
         }
 
-        public T Get(string key)
+        public CacheResult<T> Get(string key)
         {
             var exists = _items.TryGetValue(key, out var value);
             if (exists)
             {
                 _lastAccess[key] = DateTime.UtcNow;
-                return value;
+                return new (CacheResult.CacheHit, value);
             }
-            return default;
+            return new (CacheResult.CacheMiss, default);
         }
 
         public void Set(string key, T value)
@@ -40,15 +40,15 @@ namespace FFXIVVenues.Veni.Utils
             _items[key] = value;
         }
 
-        public T GetOrSet(string key, T value)
+        public CacheResult<T> GetOrSet(string key, T value)
         {
             var success = _items.TryGetValue(key, out var item);
             _lastAccess[key] = DateTime.UtcNow;
-            if (success && item != null)
-                return item;
+            if (success)
+                return new (CacheResult.CacheHit, item);
             _set[key] = DateTime.UtcNow;
             _items[key] = value;
-            return value;
+            return new (CacheResult.CacheMiss, value);
         }
 
         public T Remove(string key)
@@ -61,13 +61,22 @@ namespace FFXIVVenues.Veni.Utils
 
         private void ExpireItems()
         {
-            foreach (var keyValuePair in _lastAccess)
+            try
             {
-                if (keyValuePair.Value > DateTime.UtcNow.AddMilliseconds(-this.TimeoutInMs) 
-                    && _set[keyValuePair.Key] > DateTime.UtcNow.AddMilliseconds(-this.MaxAgeInMs))
-                    continue;
-                
-                Remove(keyValuePair.Key);
+                foreach (var keyValuePair in _lastAccess)
+                {
+                    if (keyValuePair.Value > DateTime.UtcNow.AddMilliseconds(-this.TimeoutInMs)
+                        && _set[keyValuePair.Key] > DateTime.UtcNow.AddMilliseconds(-this.MaxAgeInMs))
+                        continue;
+
+                    Remove(keyValuePair.Key);
+                }
+            } 
+            catch (Exception e)
+            {
+                Console.Error.WriteLineAsync(e.ToString());
+                // If we can't expire cleanly, we'll need to wipe to ensure latest data rather than force cache
+                this.Clear(); 
             }
         }
 
