@@ -15,16 +15,16 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
             _serviceProvider = serviceProvider;
         
         public Session GetSession(SocketMessage message) =>
-            _sessions.GetOrSet(message.Author.Id.ToString(), new Session(_serviceProvider));
+            _sessions.GetOrSet(message.Author.Id.ToString(), new Session(_serviceProvider)).Value;
 
         public Session GetSession(SocketMessageComponent message) =>
-            _sessions.GetOrSet(message.User.Id.ToString(), new Session(_serviceProvider));
+            _sessions.GetOrSet(message.User.Id.ToString(), new Session(_serviceProvider)).Value;
         
         public Session GetSession(SocketSlashCommand message) =>
-            _sessions.GetOrSet(message.User.Id.ToString(), new Session(_serviceProvider));
+            _sessions.GetOrSet(message.User.Id.ToString(), new Session(_serviceProvider)).Value;
         
         public Session GetSession(string key) =>
-            _sessions.GetOrSet(key, new Session(_serviceProvider));
+            _sessions.GetOrSet(key, new Session(_serviceProvider)).Value;
 
         public void Dispose()
         {
