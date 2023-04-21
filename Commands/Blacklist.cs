@@ -114,7 +114,7 @@ namespace FFXIVVenues.Veni.Commands
             private async Task HandleListAsync(SlashCommandVeniInteractionContext slashCommand)
             {
                 await slashCommand.Interaction.DeferAsync();
-                var bannedIdList = await db.GetAll<BlacklistEntry>();
+                var bannedIdList = await db.GetAll<BlacklistEntry>().ContinueWith(t => t.Result.ToList());
                 var description = new StringBuilder();
 
                 if (bannedIdList.Any() == false)

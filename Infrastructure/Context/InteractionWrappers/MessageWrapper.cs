@@ -15,17 +15,14 @@ public class MessageWrapper : IInteractionWrapper
     public bool IsDM => this._message.Channel is IDMChannel;
 
     private readonly SocketMessage _message;
-    private readonly IChronicle _chronicle;
 
-    public MessageWrapper(SocketMessage message, IChronicle chronicle)
+    public MessageWrapper(SocketMessage message)
     {
         this._message = message;
-        this._chronicle = chronicle;
     }
 
     public Task RespondAsync(string message = null, MessageComponent component = null, Embed embed = null)
     {
-        this._chronicle.Info($"**Veni Ki** [bot]: {message} (Components: {component?.Components?.Count ?? 0}) (Embeds: {(embed != null ? "Yes" : "No")})");
         return _message.Channel.SendMessageAsync(message, components: component, embed: embed);
     }
 

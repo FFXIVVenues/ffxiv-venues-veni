@@ -76,7 +76,7 @@ namespace FFXIVVenues.Veni.SessionStates
 
             }
 
-                venue.Discord = new Uri(rawDiscordString);
+            venue.Discord = new Uri(rawDiscordString);
 
             if (c.Session.GetItem<bool>("modifying"))
             {

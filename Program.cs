@@ -59,14 +59,6 @@ var apiHttpClient = new HttpClient { BaseAddress = new Uri(apiConfig.BaseUrl) };
 apiHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiConfig.AuthorizationKey);
 apiHttpClient.Timeout = TimeSpan.FromSeconds(5);
 
-IRepository repository = null;
-if (persistenceConfig.Provider == PersistanceProvider.LiteDb)
-    repository = new LiteDbRepository(persistenceConfig.ConnectionString);
-else if (persistenceConfig.Provider == PersistanceProvider.Cosmos)
-    repository = new CosmosDbRepository(persistenceConfig.ConnectionString);
-else
-    repository = new InMemoryRepository();
-
 var discordChronicleLibrary = new DiscordChronicleLibrary();
 NChronicle.Core.NChronicle.Configure(c => {
     c.WithConsoleLibrary().Configure(c => 
@@ -75,6 +67,14 @@ NChronicle.Core.NChronicle.Configure(c => {
     c.WithLibrary(discordChronicleLibrary);
 });
 var chronicle = new Chronicle();
+
+IRepository repository = null;
+if (persistenceConfig.Provider == PersistanceProvider.LiteDb)
+    repository = new LiteDbRepository(persistenceConfig.ConnectionString);
+else if (persistenceConfig.Provider == PersistanceProvider.Cosmos)
+    repository = new CosmosDbRepository(persistenceConfig.ConnectionString, chronicle);
+else
+    repository = new InMemoryRepository();
 
 var serviceCollection = new ServiceCollection();
 

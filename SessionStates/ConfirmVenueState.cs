@@ -86,7 +86,6 @@ namespace FFXIVVenues.Veni.SessionStates
             _ = c.Interaction.Channel.SendMessageAsync(_workingOnItResponse.PickRandom());
             _ = c.Interaction.Channel.TriggerTypingAsync();
             
-
             var venue = c.Session.GetItem<Venue>("venue");
             var bannerUrl = c.Session.GetItem<string>("bannerUrl");
             var isApprover = this._authorizer
@@ -108,7 +107,6 @@ namespace FFXIVVenues.Veni.SessionStates
             }
             if (bannerUrl != null) // changed
                 await this._apiService.PutVenueBannerAsync(venue.Id, bannerUrl);
-
 
             if (!isNewVenue)
             {

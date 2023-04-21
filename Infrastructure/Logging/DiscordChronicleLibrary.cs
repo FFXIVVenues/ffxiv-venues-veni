@@ -14,7 +14,9 @@ namespace FFXIVVenues.Veni.Infrastructure.Logging
     internal class DiscordChronicleLibrary : IChronicleLibrary, IDiscordChronicleLibrary
     {
 
+        public const string LOG_INIT_SEQUENCE = "#> ";
         private const int BUFFER_TIME = 3_000;
+        
 
         private Dictionary<ulong, (ChronicleLevel MinLevel, ISocketMessageChannel Channel)> _channels = new();
         private Queue<(ChronicleLevel Level, string Message)> _messageBuffer = new();
@@ -59,18 +61,13 @@ namespace FFXIVVenues.Veni.Infrastructure.Logging
 
             var stringBuilder = new StringBuilder();
 
+            stringBuilder.Append(LOG_INIT_SEQUENCE);
             stringBuilder.Append("[");
             stringBuilder.Append(Thread.CurrentThread.ManagedThreadId);
             stringBuilder.Append("] ");
-
-            stringBuilder.Append(record.Level switch {
-                ChronicleLevel.Critical => "🔴 ",
-                ChronicleLevel.Warning => "🟡 ",
-                ChronicleLevel.Info => "⚪ ",
-                ChronicleLevel.Success => "🟢 ",
-                ChronicleLevel.Debug => "⚫ ",
-                _ => "⚫ "
-            });
+            stringBuilder.Append("[");
+            stringBuilder.Append(record.Level);
+            stringBuilder.Append("] ");
 
             if (record.Message != null)
             {
