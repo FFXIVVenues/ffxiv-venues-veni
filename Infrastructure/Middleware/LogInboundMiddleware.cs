@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
@@ -19,12 +20,23 @@ namespace FFXIVVenues.Veni.Infrastructure.Middleware
 
         public Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
         {
-            var stateText = "";
             ISessionState currentSessionState = null;
             context.Session.StateStack?.TryPeek(out currentSessionState);
+            var stateTextBuilder = new StringBuilder();
             if (currentSessionState != null)
-                stateText = "[" + currentSessionState.GetType().Name + "] ";
-            this._chronicle.Info($"{stateText}{context.Interaction.Author.Mention}:\n> {context.Interaction.Content}");
+            {
+                stateTextBuilder.Append("[")
+                    .Append(currentSessionState.GetType().Name)
+                    .Append("] ");
+            }
+
+            var messageBuilder = new StringBuilder();
+            messageBuilder.Append(stateTextBuilder)
+                .Append(context.Interaction.Author.Mention)
+                .Append(":\n> ")
+                .Append(context.Interaction.Content);
+
+            this._chronicle.Info(messageBuilder.ToString());
             
             return next();
         }
