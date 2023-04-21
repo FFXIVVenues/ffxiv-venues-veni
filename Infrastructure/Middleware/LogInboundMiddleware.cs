@@ -3,7 +3,6 @@ using System.Text;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
-using FFXIVVenues.Veni.Infrastructure.Logging;
 using Kana.Pipelines;
 using NChronicle.Core.Interfaces;
 

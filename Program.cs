@@ -57,7 +57,7 @@ config.GetSection("Davinci3").Bind(davinciConfig);
 
 var apiHttpClient = new HttpClient { BaseAddress = new Uri(apiConfig.BaseUrl) };
 apiHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiConfig.AuthorizationKey);
-apiHttpClient.Timeout = TimeSpan.FromSeconds(5);
+apiHttpClient.Timeout = TimeSpan.FromSeconds(10);
 
 var discordChronicleLibrary = new DiscordChronicleLibrary();
 NChronicle.Core.NChronicle.Configure(c => {
