@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Context.InteractionWrappers;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
@@ -15,6 +16,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
         public T Interaction { get; }
         public DiscordSocketClient Client { get; }
         public Session Session { get; }
+        public IDisposable TypingHandle { get; set; }
 
         public VeniInteractionContext(T message, DiscordSocketClient client, Session conversation)
         {
@@ -56,19 +58,14 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
 
         public Prediction Prediction { get; set; }
 
-        private readonly IChronicle _chronicle;
-
         public MessageVeniInteractionContext(SocketMessage m,
                                          DiscordSocketClient dsc,
-                                         Session sc, 
-                                         IChronicle chronicle) 
+                                         Session sc) 
             : base(m, dsc, sc)
-        {
-            this._chronicle = chronicle;
-        }
+        { }
 
         public VeniInteractionContext ToWrappedInteraction() =>
-            new (new MessageWrapper(this.Interaction, this._chronicle),
+            new (new MessageWrapper(this.Interaction),
                                    this.Client,
                                    this.Session,
                                    this.Prediction);
@@ -76,25 +73,18 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
         public override string GetArgument(string name) =>
             (this.Prediction?.Entities[name] as JArray)?.First.Value<string>();
 
-
     }
 
     public class MessageComponentVeniInteractionContext : VeniInteractionContext<SocketMessageComponent>, IWrappableInteraction
     {
 
-        private readonly IChronicle _chronicle;
-
         public MessageComponentVeniInteractionContext(SocketMessageComponent m,
                                                   DiscordSocketClient dsc,
-                                                  Session sc,
-                                                  IChronicle chronicle)
-            : base(m, dsc, sc)
-        {
-            this._chronicle = chronicle;
-        }
+                                                  Session sc)
+            : base(m, dsc, sc) { }
 
         public VeniInteractionContext ToWrappedInteraction() =>
-            new (new MessageComponentWrapper(this.Interaction, this._chronicle),
+            new (new MessageComponentWrapper(this.Interaction),
                                    this.Client,
                                    this.Session);
 
@@ -106,19 +96,13 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
     public class SlashCommandVeniInteractionContext : VeniInteractionContext<SocketSlashCommand>, IWrappableInteraction
     {
 
-        private readonly IChronicle _chronicle;
-
         public SlashCommandVeniInteractionContext(SocketSlashCommand m,
                                               DiscordSocketClient dsc,
-                                              Session sc,
-                                              IChronicle chronicle)
-            : base(m, dsc, sc)
-        {
-            this._chronicle = chronicle;
-        }
+                                              Session sc)
+            : base(m, dsc, sc) { }
 
         public VeniInteractionContext ToWrappedInteraction() =>
-            new (new SlashCommandWrapper(this.Interaction, this._chronicle),
+            new (new SlashCommandWrapper(this.Interaction),
                                    this.Client,
                                    this.Session);
 

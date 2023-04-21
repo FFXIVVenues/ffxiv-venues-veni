@@ -24,12 +24,13 @@ namespace FFXIVVenues.Veni
         private readonly ICommandBroker _commandBroker;
         private readonly IInteractionContextFactory _contextFactory;
         private readonly IComponentBroker _componentBroker;
-        private readonly Pipeline<MessageVeniInteractionContext> _pipeline;
+        private readonly Pipeline<MessageVeniInteractionContext> _messagePipeline;
         private readonly ISessionProvider _sessionProvider;
         private readonly IVenueApprovalService _venueApprovalService;
         private readonly IChronicle _chronicle;
         private readonly IGuildManager _guildManager;
         private readonly IRepository _db;
+        private readonly Pipeline<MessageVeniInteractionContext, bool> _preSessionMessagePipeline;
 
         public DiscordHandler(DiscordSocketClient client,
                               ICommandBroker commandBroker,
@@ -59,12 +60,14 @@ namespace FFXIVVenues.Veni
             this._client.GuildAvailable += GuildAvailableAsync;
             this._db = db;
 
-            this._pipeline = new Pipeline<MessageVeniInteractionContext>()
+            this._messagePipeline = new Pipeline<MessageVeniInteractionContext>()
                 .WithServiceProvider(serviceProvider)
+                .Add<LogOutboundMiddleware>()
+                .Add<FilterSelfMiddleware>()
                 .Add<ConversationFilterMiddleware>()
-                .Add<StartTypingMiddleware>()
-                .Add<LogMiddleware>()
+                .Add<LogInboundMiddleware>()
                 .Add<BlacklistMiddleware>()
+                .Add<StartTypingMiddleware>()
                 .Add<LuisPredictionMiddleware>()
                 .Add<StopCallingMeMommyMiddleware>()
                 .Add<InteruptIntentMiddleware>()
@@ -100,46 +103,54 @@ namespace FFXIVVenues.Veni
 
         private async Task MessageReceivedAsync(SocketMessage message)
         {
-            if (message.Author.Id == _client.CurrentUser.Id)
-                return;
-
             var context = this._contextFactory.Create(message);
-            _ = _pipeline.RunAsync(context);
+            await _messagePipeline.RunAsync(context);
+            context.TypingHandle?.Dispose();
         }
 
         private async Task SlashCommandExecutedAsync(SocketSlashCommand message)
         {
+            var typingHandle = message.Channel.EnterTypingState();
             if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
             {
                 await message.RespondAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
                                            $" If you think this was a mistake please let my family know.", ephemeral:true) ;
+                typingHandle?.Dispose();
                 return;
             }
 
             var context = this._contextFactory.Create(message);
+            context.TypingHandle = typingHandle;
             LogSlashCommandExecuted(message, context);
             await this._commandBroker.HandleAsync(context);
+            typingHandle?.Dispose();
         }
 
         private async Task ComponentExecutedAsync(SocketMessageComponent message)
         {
             await message.DeferAsync();
-            _ = message.Channel.TriggerTypingAsync();
+            var typingHandle = message.Channel.EnterTypingState();
 
             if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
             {
                 await message.FollowupAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
                                             $" If you think this was a mistake please let my family know.", ephemeral: true);
+                typingHandle?.Dispose();
                 return;
             }
 
             if (await this._venueApprovalService.HandleComponentInteractionAsync(message))
+            {
+                typingHandle?.Dispose();
                 return;
+            }
 
             var context = this._contextFactory.Create(message);
+            context.TypingHandle = typingHandle;
             LogComponentExecuted(message, context);
             await context.Session.HandleComponentInteraction(context);
             await this._componentBroker.HandleAsync(context);
+            typingHandle?.Dispose();
         }
 
         private void LogSlashCommandExecuted(SocketSlashCommand slashCommand, SlashCommandVeniInteractionContext context)
@@ -148,8 +159,8 @@ namespace FFXIVVenues.Veni
             ISessionState currentSessionState = null;
             context.Session.StateStack?.TryPeek(out currentSessionState);
             if (currentSessionState != null)
-                stateText = " [" + currentSessionState.GetType().Name + "]";
-            this._chronicle.Info($"**{slashCommand.User.Mention}{stateText}**: [Command: /{slashCommand.CommandName}]");
+                stateText = "[" + currentSessionState.GetType().Name + "] ";
+            this._chronicle.Info($"{stateText} {slashCommand.User.Mention}: [Command: /{slashCommand.CommandName}]");
         }
 
         private void LogComponentExecuted(SocketMessageComponent message, MessageComponentVeniInteractionContext context)
@@ -158,8 +169,8 @@ namespace FFXIVVenues.Veni
             ISessionState currentSessionState = null;
             context.Session.StateStack?.TryPeek(out currentSessionState);
             if (currentSessionState != null)
-                stateText = " [" + currentSessionState.GetType().Name + "]";
-            this._chronicle.Info($"**{message.User.Mention}{stateText}**: [Component Interaction]");
+                stateText = "[" + currentSessionState.GetType().Name + "] ";
+            this._chronicle.Info($"{stateText} {message.User.Mention}: [Component Interaction]");
         }
 
         private Task UserJoinedAsync(SocketGuildUser user)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using Kana.Pipelines;
 
@@ -9,7 +10,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Middleware
     {
         public async Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
         {
-            await context.Interaction.Channel.TriggerTypingAsync();
+            context.TypingHandle = context.Interaction.Channel.EnterTypingState(new RequestOptions());
             await next();
         }
     }
