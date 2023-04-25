@@ -104,26 +104,39 @@ namespace FFXIVVenues.Veni
         private async Task MessageReceivedAsync(SocketMessage message)
         {
             var context = this._contextFactory.Create(message);
-            await _messagePipeline.RunAsync(context);
-            context.TypingHandle?.Dispose();
+            try
+            {
+                await _messagePipeline.RunAsync(context);
+            } 
+            finally
+            {
+                context.TypingHandle?.Dispose();
+            }
         }
 
         private async Task SlashCommandExecutedAsync(SocketSlashCommand message)
         {
             var typingHandle = message.Channel.EnterTypingState();
-            if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
+            try
             {
-                await message.RespondAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
-                                           $" If you think this was a mistake please let my family know.", ephemeral:true) ;
-                typingHandle?.Dispose();
-                return;
-            }
+                if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
+                {
+                    await message.RespondAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
+                                               $" If you think this was a mistake please let my family know.",
+                        ephemeral: true);
+                    typingHandle?.Dispose();
+                    return;
+                }
 
-            var context = this._contextFactory.Create(message);
-            context.TypingHandle = typingHandle;
-            LogSlashCommandExecuted(message, context);
-            await this._commandBroker.HandleAsync(context);
-            typingHandle?.Dispose();
+                var context = this._contextFactory.Create(message);
+                context.TypingHandle = typingHandle;
+                LogSlashCommandExecuted(message, context);
+                await this._commandBroker.HandleAsync(context);
+            }
+            finally
+            {
+                typingHandle?.Dispose();
+            }
         }
 
         private async Task ComponentExecutedAsync(SocketMessageComponent message)
@@ -131,26 +144,33 @@ namespace FFXIVVenues.Veni
             await message.DeferAsync();
             var typingHandle = message.Channel.EnterTypingState();
 
-            if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
+            try
             {
-                await message.FollowupAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
-                                            $" If you think this was a mistake please let my family know.", ephemeral: true);
-                typingHandle?.Dispose();
-                return;
-            }
+                if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
+                {
+                    await message.FollowupAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
+                                                $" If you think this was a mistake please let my family know.",
+                        ephemeral: true);
+                    typingHandle?.Dispose();
+                    return;
+                }
 
-            if (await this._venueApprovalService.HandleComponentInteractionAsync(message))
+                if (await this._venueApprovalService.HandleComponentInteractionAsync(message))
+                {
+                    typingHandle?.Dispose();
+                    return;
+                }
+
+                var context = this._contextFactory.Create(message);
+                context.TypingHandle = typingHandle;
+                LogComponentExecuted(message, context);
+                await context.Session.HandleComponentInteraction(context);
+                await this._componentBroker.HandleAsync(context);
+            }
+            finally
             {
                 typingHandle?.Dispose();
-                return;
             }
-
-            var context = this._contextFactory.Create(message);
-            context.TypingHandle = typingHandle;
-            LogComponentExecuted(message, context);
-            await context.Session.HandleComponentInteraction(context);
-            await this._componentBroker.HandleAsync(context);
-            typingHandle?.Dispose();
         }
 
         private void LogSlashCommandExecuted(SocketSlashCommand slashCommand, SlashCommandVeniInteractionContext context)
