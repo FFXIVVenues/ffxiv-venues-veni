@@ -31,6 +31,7 @@ using NChronicle.Core.Interfaces;
 using FFXIVVenues.Veni.AI;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Authorisation.Configuration;
+using Microsoft.AspNetCore.Builder;
 
 const string DISCORD_BOT_CONFIG_KEY = "DiscordBotToken";
 
@@ -153,6 +154,10 @@ componentBroker.Add<OpenHandler>(OpenHandler.Key);
 
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
 
+var app = WebApplication.Create(args);
+app.MapGet("/", () => "Hi, I'm Veni!");
+app.Run();
+    
 await Task.Delay(Timeout.Infinite);
 
 // Factory
