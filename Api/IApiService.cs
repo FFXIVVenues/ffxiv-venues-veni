@@ -6,7 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using FFXIVVenues.VenueModels;
 
-namespace FFXIVVenues.Veni.Services.Api
+namespace FFXIVVenues.Veni.Api
 {
     public interface IApiService
     {

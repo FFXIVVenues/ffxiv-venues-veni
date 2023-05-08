@@ -1,4 +1,4 @@
-﻿namespace FFXIVVenues.Veni.Services.Api
+﻿namespace FFXIVVenues.Veni.Api
 {
     public class ApiConfiguration
     {

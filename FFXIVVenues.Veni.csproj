@@ -93,7 +93,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services" />
+    <Folder Include="VenueSubscriptions\" />
   </ItemGroup>
 
 </Project>
