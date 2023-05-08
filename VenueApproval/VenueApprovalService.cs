@@ -7,6 +7,7 @@ using Discord;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Authorisation.Configuration;
+using FFXIVVenues.Veni.GuildEngagement;
 using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.Utils.Broadcasting;
 using FFXIVVenues.Veni.VenueControl;
@@ -88,6 +89,9 @@ namespace FFXIVVenues.Veni.People
                     .Concat(new[] { new EmbedBuilder().WithDescription($"You handled this and approved the venue. 🥳").Build() })
                     .ToArray();
             });
+
+            await approveBic.Component.Channel.SendMessageAsync("Wew! Thank you, I've let them know! 💕");
+            
             await ApproveVenueAsync(venue);
         }
 
@@ -148,6 +152,8 @@ namespace FFXIVVenues.Veni.People
                         .Concat(new[] { new EmbedBuilder().WithDescription($"You handled this and rejected the venue.").Build() })
                         .ToArray();
                 });
+                
+                await rejectBic.Component.Channel.SendMessageAsync("Okay! Well, maybe the next one then. 😢");
             });
 
             var cancelHandler = bcc.RegisterComponentHandler(cancelBic =>

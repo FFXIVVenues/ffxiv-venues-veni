@@ -2,7 +2,7 @@
 using Discord;
 using FFXIVVenues.VenueModels;
 
-namespace FFXIVVenues.Veni.People
+namespace FFXIVVenues.Veni.GuildEngagement
 {
     public interface IGuildManager
     {
