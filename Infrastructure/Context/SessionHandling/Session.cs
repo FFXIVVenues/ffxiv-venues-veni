@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using FFXIVVenues.Veni.Infrastructure.Components;
 using Microsoft.Extensions.DependencyInjection;
 using NChronicle.Core.Interfaces;
 
@@ -115,7 +116,11 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
 
         public Task HandleComponentInteraction(MessageComponentVeniInteractionContext context)
         {
-            if (!this._componentHandlers.TryGetValue(context.Interaction.Data.CustomId, out var handler))
+            var key = context.Interaction.Data.CustomId.Split(":");
+            if (key[0] == ComponentBroker.ValuesToHandlersKey)
+                key = context.Interaction.Data.Values?.FirstOrDefault()?.Split(":");
+            
+            if (!this._componentHandlers.TryGetValue(key[0], out var handler))
                 return Task.CompletedTask;
 
             if (handler.Persistence == ComponentPersistence.ClearRow)

@@ -122,7 +122,7 @@ namespace FFXIVVenues.Veni.Services.Api
             return result;
         }
 
-        public async Task<Venue> GetVenueAsync(string id)
+        public async Task<Venue> GetVenueAsync(string id, bool recordView = false)
         {
             var cached = this._venueCache.Get(id);
             if (cached.Result == CacheResult.CacheHit)
@@ -132,7 +132,7 @@ namespace FFXIVVenues.Veni.Services.Api
             }
             this._chronicle.Debug($"ApiService.GetVenue `{id}` (Cache: Miss)");
             
-            var response = await _httpClient.GetAsync("/venue/" + id);
+            var response = await _httpClient.GetAsync("/venue/" + id + "?recordView=" + recordView);
             var result = await response.Content.ReadFromJsonAsync<Venue>();
             this._venueCache.Set(id, result);
             return result;

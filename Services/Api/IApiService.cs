@@ -16,7 +16,7 @@ namespace FFXIVVenues.Veni.Services.Api
         Task<IEnumerable<Venue>> GetApprovedVenuesAsync();
         Task<IEnumerable<Venue>> GetUnapprovedVenuesAsync();
         Task<IEnumerable<Venue>> GetOpenVenuesAsync();
-        Task<Venue> GetVenueAsync(string id);
+        Task<Venue> GetVenueAsync(string id, bool recordView = false);
         Task<HttpResponseMessage> PutVenueAsync(Venue venue);
         Task<HttpResponseMessage> PutVenueBannerAsync(string id, string url);
         Task<HttpResponseMessage> PutVenueBannerAsync(string id, Stream stream, MediaTypeHeaderValue mediaType);

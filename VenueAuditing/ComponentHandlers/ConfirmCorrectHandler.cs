@@ -11,6 +11,7 @@ using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Utils.Broadcasting;
 using FFXIVVenues.Veni.VenueControl;
+using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;
 using Microsoft.Azure.Cosmos;
 

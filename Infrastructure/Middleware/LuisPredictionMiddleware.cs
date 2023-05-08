@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.AI.Luis;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Intents;
-using FFXIVVenues.Veni.Services.Luis;
+using FFXIVVenues.Veni.Infrastructure.Intent;
 using FFXIVVenues.Veni.Utils;
 using Kana.Pipelines;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;

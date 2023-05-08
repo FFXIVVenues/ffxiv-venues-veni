@@ -3,7 +3,7 @@ using FFXIVVenues.Veni.Infrastructure.Context;
 
 namespace FFXIVVenues.Veni.Infrastructure.Commands
 {
-    internal interface ICommandHandler
+    public interface ICommandHandler
     {
         Task HandleAsync(SlashCommandVeniInteractionContext slashCommand);
     }

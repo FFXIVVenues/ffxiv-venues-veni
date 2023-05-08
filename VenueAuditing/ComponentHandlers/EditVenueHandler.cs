@@ -5,7 +5,8 @@ using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.VenueControl;
-using FFXIVVenues.Veni.VenueControl.SessionStates;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates;
+using FFXIVVenues.Veni.VenueRendering;
 
 namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 
@@ -40,9 +41,10 @@ public class EditVenueHandler : BaseAuditHandler
             venue, context.Interaction.User, audit.Messages, 
             $"You handled this and edited the venue's details. 🥳", 
             $"{context.Interaction.User.Username} handled this and edited the venue's details. 🥳");
-        context.Session.SetItem("venue", venue);
         
-        await context.Session.MoveStateAsync<ModifyVenueSessionState>(context);
+        context.Session.SetVenue(venue);
+        await context.Session.MoveStateAsync<EditVenueSessionState>(context);
+        
         UpdateAudit(context, audit, VenueAuditStatus.RespondedEdit,
             $"{MentionUtils.MentionUser(context.Interaction.User.Id)} edited the venue details.");
         await this._repository.UpsertAsync(audit);
