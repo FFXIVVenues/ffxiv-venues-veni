@@ -8,7 +8,7 @@ using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
 
-namespace FFXIVVenues.Veni.People
+namespace FFXIVVenues.Veni.GuildEngagement
 {
     internal class GuildManager : IGuildManager
     {

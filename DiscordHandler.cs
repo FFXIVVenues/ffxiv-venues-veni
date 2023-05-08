@@ -2,7 +2,6 @@
 using System;
 using System.Threading.Tasks;
 using Kana.Pipelines;
-using Discord;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
@@ -14,6 +13,7 @@ using NChronicle.Core.Interfaces;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Authorisation.Blacklist;
+using FFXIVVenues.Veni.GuildEngagement;
 
 namespace FFXIVVenues.Veni
 {
@@ -25,7 +25,6 @@ namespace FFXIVVenues.Veni
         private readonly IInteractionContextFactory _contextFactory;
         private readonly IComponentBroker _componentBroker;
         private readonly Pipeline<MessageVeniInteractionContext> _messagePipeline;
-        private readonly ISessionProvider _sessionProvider;
         private readonly IVenueApprovalService _venueApprovalService;
         private readonly IChronicle _chronicle;
         private readonly IGuildManager _guildManager;
@@ -37,7 +36,6 @@ namespace FFXIVVenues.Veni
                               IInteractionContextFactory contextFactory,
                               IComponentBroker componentBroker,
                               IServiceProvider serviceProvider,
-                              ISessionProvider sessionProvider,
                               IVenueApprovalService venueApprovalService, 
                               IChronicle chronicle,
                               IGuildManager guildManager,
@@ -47,7 +45,6 @@ namespace FFXIVVenues.Veni
             this._commandBroker = commandBroker;
             this._contextFactory = contextFactory;
             this._componentBroker = componentBroker;
-            this._sessionProvider = sessionProvider;
             this._venueApprovalService = venueApprovalService;
             this._chronicle = chronicle;
             this._guildManager = guildManager;

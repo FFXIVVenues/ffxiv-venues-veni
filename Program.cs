@@ -31,7 +31,7 @@ using FFXIVVenues.Veni.AI.Luis;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Authorisation.Configuration;
 using FFXIVVenues.Veni.Engineering;
-using FFXIVVenues.Veni.GuildEngagment;
+using FFXIVVenues.Veni.GuildEngagement;
 using FFXIVVenues.Veni.UserSupport;
 using FFXIVVenues.Veni.VenueApproval;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueCreation.Command;

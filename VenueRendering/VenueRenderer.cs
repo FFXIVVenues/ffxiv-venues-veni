@@ -333,7 +333,10 @@ namespace FFXIVVenues.Veni.VenueRendering
                         .WithLabel("Edit Managers")
                         .WithEmote(new Emoji("👩‍💼"))
                         .WithDescription("The managers able to control this venue.")
-                        .WithStaticHandler(EditManagersHandler.Key, venue.Id));
+                        .WithStaticHandler(EditManagersHandler.Key, venue.Id))
+                    .AddOption(new SelectMenuOptionBuilder()
+                        .WithLabel("Don't edit anything")
+                        .WithStaticHandler(DismissHandler.Key));
 
             return component.WithSelectMenu(selectMenu);
         }

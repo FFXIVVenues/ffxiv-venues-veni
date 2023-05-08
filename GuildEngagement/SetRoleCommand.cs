@@ -4,10 +4,9 @@ using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
-using FFXIVVenues.Veni.People;
 using FFXIVVenues.Veni.Utils;
 
-namespace FFXIVVenues.Veni.GuildEngagment
+namespace FFXIVVenues.Veni.GuildEngagement
 {
     public static class SetRoleMap
     {

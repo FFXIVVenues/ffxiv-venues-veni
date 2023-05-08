@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Authorisation;
+using FFXIVVenues.Veni.GuildEngagement;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.People;
@@ -134,9 +135,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
 
         private Task Cancel(MessageComponentVeniInteractionContext c)
         {
-            _ = c.Interaction.RespondAsync("It's as if it never happened! 😅");
             _ = c.Session.ClearState(c);
-            return Task.CompletedTask;
+            return c.Interaction.RespondAsync("It's as if it never happened! 😅");
         }
 
         private Task SendToApprovers(Venue venue, string bannerUrl) =>
