@@ -45,6 +45,7 @@ public static class RegistrationExtensions
         componentBroker.Add<EditDescriptionHandler>(EditDescriptionHandler.Key);
         componentBroker.Add<EditDiscordHandler>(EditDiscordHandler.Key);
         componentBroker.Add<EditLocationHandler>(EditLocationHandler.Key);
+        componentBroker.Add<EditScheduleHandler>(EditScheduleHandler.Key);
         componentBroker.Add<EditManagersHandler>(EditManagersHandler.Key);
         componentBroker.Add<EditNameHandler>(EditNameHandler.Key);
         componentBroker.Add<EditNsfwHandler>(EditNsfwHandler.Key);
