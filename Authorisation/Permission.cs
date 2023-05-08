@@ -16,5 +16,6 @@ public enum Permission
     HiatusVenue = 256,
     DeleteVenue = 512,
     Inspect = 1024,
-    Blacklist = 2048
+    Blacklist = 2048,
+    DownloadOfflineJson = 4096,
 }

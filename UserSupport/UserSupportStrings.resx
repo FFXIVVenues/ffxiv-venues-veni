@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="HelpResponseMessage" xml:space="preserve">
+        <value>You can use my `/` commands or you can talk me with natural language! 
+Use me to manage your venues on **ffxivvenues.com** or just have a bit of conversation with me. 
+I work hard at being very approachable and easy to work with. ❤️</value>
+    </data>
+    <data name="HelpResponseEmbed" xml:space="preserve">
+        <value>If you're in a channel instead of my DMs, you'll need to @ me with any messages you send if you want me to see them. I don't want to interupt other's conversations. 😅
+
+**Create a venue**
+You can use the `/create` command or say something like "create a venue". You can create as many venues as you like. 🥰
+
+**Edit your venue(s)**
+You can edit your venues using the `/edit` command or say smething like "edit my venue". If you have multiple venues I'll ask you which one you'd like to edit. ☺️
+
+**Show your venue(s)**
+You can see your venues by using `/showmine` or just saying something like "show my venues".
+
+**Open your venue**
+You can use `/open` or say something like "open my venue" or even "throw open the doors!" to make your venue show open on the site. You venue will show as open on the site automatically if you've setup a schedule. I'll ask you which venues you wish to open if you have multiple, and how long I should show you as open for. ❤️
+
+**Close or hiatus your venue**
+Not going to be open for a bit? You can use `/close` or say something like "close my venue" to end a current opening from `/open` or to cancel your schedule for a while. You can close for up to 3 months, if you're haitus longer we recommend deleting your venue and re-adding when you're back. 💖
+
+**Delete your venue**
+I hope you never have to delete your venue, but it's important that you can if you need to. 💜 You can do so by the command `/delete`. To be absolutely sure you want to do that, I won't recognise any natural language as wanting to delete a venue. If you habe multiple venues I will ask you which venue you wish to delete. 
+
+**Audits**
+I know that once you're all setup you may forget I exist 🥲, so I'll check in with you some times just to make sure you're venue still exists and it's details are still correct.
+
+**Need more help?**
+Open a ticket in our discord (https://discord.com/channels/942536163959406632/948381306520227890). 💖</value>
+    </data>
+    <data name="NothingToCancel" xml:space="preserve">
+        <value>Huh? We're not in the middle of anything. :shrug:</value>
+    </data>
+    <data name="Cancelled" xml:space="preserve">
+        <value>Consider it dropped! :sweat_smile:</value>
+    </data>
+</root>

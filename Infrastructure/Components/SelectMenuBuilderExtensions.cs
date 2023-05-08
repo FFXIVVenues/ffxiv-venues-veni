@@ -32,5 +32,14 @@ public static class SelectMenuBuilderExtensions
         argCollection.AddRange(args);
         return builder.WithValue($"{handler}:{argCollection}");
     }
+    
+    public static SelectMenuOptionBuilder WithSessionHandler(
+        this SelectMenuOptionBuilder builder,
+        Session session,
+        Func<MessageComponentVeniInteractionContext, Task> @delegate, ComponentPersistence persistence)
+    {
+        var handler = session.RegisterComponentHandler(@delegate, persistence);
+        return builder.WithValue($"{handler}");
+    }
 
 }

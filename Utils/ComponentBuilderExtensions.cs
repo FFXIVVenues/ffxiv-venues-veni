@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
-using FFXIVVenues.Veni.SessionStates;
 using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.Utils
