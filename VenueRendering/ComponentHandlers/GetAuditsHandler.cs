@@ -1,11 +1,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
-using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.VenueAuditing;
 
 namespace FFXIVVenues.Veni.VenueRendering.ComponentHandlers;

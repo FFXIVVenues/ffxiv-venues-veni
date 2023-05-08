@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
-using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates;
 using FFXIVVenues.Veni.VenueRendering;

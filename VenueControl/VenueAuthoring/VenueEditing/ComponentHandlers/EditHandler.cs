@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Discord;
+using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueRendering;
 

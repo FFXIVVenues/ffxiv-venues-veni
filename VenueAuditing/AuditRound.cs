@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
-using FFXIVVenues.Veni.Services.Api;
 using NChronicle.Core.Interfaces;
 
 namespace FFXIVVenues.Veni.VenueAuditing;

@@ -3,11 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
-using FFXIVVenues.Veni.Services.Api;
+using FFXIVVenues.Veni.People;
 using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates;
 using FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates;
@@ -35,15 +36,18 @@ namespace FFXIVVenues.Veni.VenueApproval
         {
             private readonly IApiService _apiService;
             private readonly IVenueRenderer _venueRenderer;
+            private readonly IVenueApprovalService _venueApprovalService;
             private readonly IAuthorizer _authorizer;
             private IEnumerable<Venue> _venues;
 
             public CommandHandler(IApiService apiService,
                                 IVenueRenderer venueRenderer,
+                                IVenueApprovalService venueApprovalService,
                                 IAuthorizer authorizer)
             {
                 this._apiService = apiService;
                 this._venueRenderer = venueRenderer;
+                this._venueApprovalService = venueApprovalService;
                 this._authorizer = authorizer;
             }
 
@@ -100,9 +104,9 @@ namespace FFXIVVenues.Veni.VenueApproval
                         components: new ComponentBuilder()
                             .WithButton("Approve", c.Session.RegisterComponentHandler(async cm =>
                             {
-                                await this._apiService.ApproveAsync(venue.Id);
+                                await this._venueApprovalService.ApproveVenueAsync(venue);
                                 await cm.Interaction.Channel.SendMessageAsync("Nyya! I've approved the venue! 💝");
-                            }, ComponentPersistence.ClearRow), ButtonStyle.Primary)
+                            }, ComponentPersistence.ClearRow), ButtonStyle.Success)
                             .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
                             {
                                 c.Session.SetVenue(venue);
