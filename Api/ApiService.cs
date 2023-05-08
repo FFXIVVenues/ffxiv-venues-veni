@@ -9,7 +9,7 @@ using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
 using NChronicle.Core.Interfaces;
 
-namespace FFXIVVenues.Veni.Services.Api
+namespace FFXIVVenues.Veni.Api
 {
     internal class ApiService : IApiService
     {

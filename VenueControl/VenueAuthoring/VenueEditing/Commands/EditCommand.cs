@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Intent;
-using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.ComponentHandlers;
 using FFXIVVenues.Veni.VenueRendering;
 
