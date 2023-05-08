@@ -7,7 +7,8 @@ using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Services.Api;
 using FFXIVVenues.Veni.VenueControl;
-using FFXIVVenues.Veni.VenueControl.SessionStates;
+using FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates;
+using FFXIVVenues.Veni.VenueRendering;
 
 namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 
@@ -43,7 +44,7 @@ public class TemporarilyClosedHandler : BaseAuditHandler
             $"You handled this and temporarily closed the venue. 😢", 
             $"{context.Interaction.User.Username} handled this and temporarily closed the venue. 😢");
         
-        context.Session.SetItem("venue", venue);
+        context.Session.SetVenue(venue);
         await context.Session.MoveStateAsync<CloseEntrySessionState>(context);
         
         UpdateAudit(context, audit, VenueAuditStatus.RespondedClose,

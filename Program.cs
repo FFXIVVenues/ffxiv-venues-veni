@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FFXIVVenues.Veni;
 using Discord.WebSocket;
 using Discord;
-using FFXIVVenues.Veni.Commands;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
@@ -20,17 +19,28 @@ using FFXIVVenues.Veni.Infrastructure.Persistence;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.People;
 using FFXIVVenues.Veni.Services.Api;
-using FFXIVVenues.Veni.Services.Luis;
 using FFXIVVenues.Veni.VenueAuditing;
 using FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 using FFXIVVenues.Veni.VenueControl;
-using FFXIVVenues.Veni.VenueControl.ComponentHandlers;
 using NChronicle.Core.Model;
 using NChronicle.Console.Extensions;
 using NChronicle.Core.Interfaces;
 using FFXIVVenues.Veni.AI;
+using FFXIVVenues.Veni.AI.Davinci;
+using FFXIVVenues.Veni.AI.Luis;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Authorisation.Configuration;
+using FFXIVVenues.Veni.Engineering;
+using FFXIVVenues.Veni.GuildEngagment;
+using FFXIVVenues.Veni.UserSupport;
+using FFXIVVenues.Veni.VenueApproval;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueCreation.Command;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.Commands;
+using FFXIVVenues.Veni.VenueControl.VenueClosing.Commands;
+using FFXIVVenues.Veni.VenueControl.VenueDeletion.Commands;
+using FFXIVVenues.Veni.VenueControl.VenueOpening.Command;
+using FFXIVVenues.Veni.VenueDiscovery.Commands;
+using FFXIVVenues.Veni.VenueRendering;
 
 const string DISCORD_BOT_CONFIG_KEY = "DiscordBotToken";
 
@@ -114,42 +124,27 @@ serviceCollection.AddSingleton(discordClient);
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
 var commandBroker = serviceProvider.GetService<ICommandBroker>();
-commandBroker.Add<Close.CommandFactory, Close.CommandHandler>(Close.COMMAND_NAME);
-commandBroker.Add<Create.CommandFactory, Create.CommandHandler>(Create.COMMAND_NAME);
-commandBroker.Add<Delete.CommandFactory, Delete.CommandHandler>(Delete.COMMAND_NAME);
-commandBroker.Add<Edit.CommandFactory, Edit.CommandHandler>(Edit.COMMAND_NAME);
-commandBroker.Add<Escalate.CommandFactory, Escalate.CommandHandler>(Escalate.COMMAND_NAME);
-commandBroker.Add<Find.CommandFactory, Find.CommandHandler>(Find.COMMAND_NAME);
-commandBroker.Add<Help.CommandFactory, Help.CommandHandler>(Help.COMMAND_NAME);
-commandBroker.Add<Open.CommandFactory, Open.CommandHandler>(Open.COMMAND_NAME);
+commandBroker.AddVenueControlCommands();
+commandBroker.Add<EscalateCommand.CommandFactory, EscalateCommand.CommandHandler>(EscalateCommand.COMMAND_NAME);
+commandBroker.Add<FindCommand.CommandFactory, FindCommand.CommandHandler>(FindCommand.COMMAND_NAME);
+commandBroker.Add<HelpCommand.CommandFactory, HelpCommand.CommandHandler>(HelpCommand.COMMAND_NAME);
 commandBroker.Add<ShowOpen.CommandFactory, ShowOpen.CommandHandler>(ShowOpen.COMMAND_NAME);
 commandBroker.Add<ShowFor.CommandFactory, ShowFor.CommandHandler>(ShowFor.COMMAND_NAME);
 commandBroker.Add<ShowMine.CommandFactory, ShowMine.CommandHandler>(ShowMine.COMMAND_NAME);
-commandBroker.Add<Inspect.CommandFactory, Inspect.CommandHandler>(Inspect.COMMAND_NAME);
+commandBroker.Add<InspectCommand.Factory, InspectCommand.Handler>(InspectCommand.COMMAND_NAME);
+commandBroker.Add<OfflineJsonCommand.CommandFactory, OfflineJsonCommand.CommandHandler>(OfflineJsonCommand.COMMAND_NAME);
 commandBroker.Add<SetRoleMap.CommandFactory, SetRoleMap.CommandHandler>(SetRoleMap.COMMAND_NAME);
-commandBroker.Add<SetWelcomeJoiners.CommandFactory, SetWelcomeJoiners.CommandHandler>(SetWelcomeJoiners.COMMAND_NAME);
-commandBroker.Add<SetFormatNames.CommandFactory, SetFormatNames.CommandHandler>(SetFormatNames.COMMAND_NAME);
+commandBroker.Add<SetWelcomeJoinersCommand.CommandFactory, SetWelcomeJoinersCommand.CommandHandler>(SetWelcomeJoinersCommand.COMMAND_NAME);
+commandBroker.Add<SetFormatNamesCommand.CommandFactory, SetFormatNamesCommand.CommandHandler>(SetFormatNamesCommand.COMMAND_NAME);
 commandBroker.Add<ShowCount.CommandFactory, ShowCount.CommandHandler>(ShowCount.COMMAND_NAME);
-commandBroker.Add<Graph.CommandFactory, Graph.CommandHandler>(Graph.COMMAND_NAME);
-commandBroker.Add<GetUnapproved.CommandFactory, GetUnapproved.CommandHandler>(GetUnapproved.COMMAND_NAME);
-commandBroker.Add<Blacklist.CommandFactory, Blacklist.CommandHandler>(Blacklist.COMMAND_NAME);
+commandBroker.Add<GraphCommand.CommandFactory, GraphCommand.CommandHandler>(GraphCommand.COMMAND_NAME);
+commandBroker.Add<GetUnapprovedCommand.CommandFactory, GetUnapprovedCommand.CommandHandler>(GetUnapprovedCommand.COMMAND_NAME);
+commandBroker.Add<BlacklistCommand.CommandFactory, BlacklistCommand.CommandHandler>(BlacklistCommand.COMMAND_NAME);
 
-var componentBroker = serviceProvider.GetService<IComponentBroker>();
-componentBroker.Add<ConfirmCorrectHandler>(ConfirmCorrectHandler.Key);
-componentBroker.Add<EditVenueHandler>(EditVenueHandler.Key);
-componentBroker.Add<TemporarilyClosedHandler>(TemporarilyClosedHandler.Key);
-componentBroker.Add<PermanentlyClosedHandler>(PermanentlyClosedHandler.Key);
-
-componentBroker.Add<AuditHandler>(AuditHandler.Key);
-componentBroker.Add<GetAuditsHandler>(GetAuditsHandler.Key);
-componentBroker.Add<GetAuditHandler>(GetAuditHandler.Key);
-componentBroker.Add<CloseHandler>(CloseHandler.Key);
-componentBroker.Add<DeleteHandler>(DeleteHandler.Key);
-componentBroker.Add<DismissHandler>(DismissHandler.Key);
-componentBroker.Add<EditHandler>(EditHandler.Key);
-componentBroker.Add<EditPhotoHandler>(EditPhotoHandler.Key);
-componentBroker.Add<EditManagersHandler>(EditManagersHandler.Key);
-componentBroker.Add<OpenHandler>(OpenHandler.Key);
+serviceProvider.GetService<IComponentBroker>()
+    .AddVenueAuditingHandlers()
+    .AddVenueControlHandlers()
+    .AddVenueRenderingHandlers();
 
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
 

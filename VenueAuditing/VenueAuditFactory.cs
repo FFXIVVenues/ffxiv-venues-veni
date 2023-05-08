@@ -2,6 +2,7 @@ using Discord;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl;
+using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueAuditing;

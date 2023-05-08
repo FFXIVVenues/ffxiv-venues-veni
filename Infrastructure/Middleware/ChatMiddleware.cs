@@ -4,6 +4,7 @@ using Kana.Pipelines;
 using NChronicle.Core.Interfaces;
 using System;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.AI.Davinci;
 using FFXIVVenues.Veni.Infrastructure.Context;
 
 namespace FFXIVVenues.Veni.Infrastructure.Middleware
