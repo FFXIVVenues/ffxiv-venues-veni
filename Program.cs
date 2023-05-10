@@ -40,6 +40,7 @@ using FFXIVVenues.Veni.VenueControl.VenueClosing.Commands;
 using FFXIVVenues.Veni.VenueControl.VenueDeletion.Commands;
 using FFXIVVenues.Veni.VenueControl.VenueOpening.Command;
 using FFXIVVenues.Veni.VenueDiscovery.Commands;
+using FFXIVVenues.Veni.VenueObservations;
 using FFXIVVenues.Veni.VenueRendering;
 
 const string DISCORD_BOT_CONFIG_KEY = "DiscordBotToken";
@@ -115,6 +116,7 @@ serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();
 serviceCollection.AddSingleton<ILuisClient, LuisClient>();
 serviceCollection.AddSingleton<IVenueAuditFactory, VenueAuditFactory>();
 serviceCollection.AddSingleton<IVenueRenderer, VenueRenderer>();
+serviceCollection.AddSingleton<IApiObservationService, ApiObservationService>();
 serviceCollection.AddSingleton<IInteractionContextFactory, InteractionContextFactory>();
 
 var discordClient = GetDiscordSocketClient(config, chronicle);
@@ -142,9 +144,14 @@ commandBroker.Add<GetUnapprovedCommand.CommandFactory, GetUnapprovedCommand.Comm
 commandBroker.Add<BlacklistCommand.CommandFactory, BlacklistCommand.CommandHandler>(BlacklistCommand.COMMAND_NAME);
 
 serviceProvider.GetService<IComponentBroker>()
+    .AddVenueObservationHandlers()
     .AddVenueAuditingHandlers()
     .AddVenueControlHandlers()
     .AddVenueRenderingHandlers();
+
+_ = serviceProvider.GetService<IApiObservationService>()
+    .AddVenueObservers()
+    .ObserveAsync();
 
 await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
 

@@ -104,6 +104,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
                         .Build());
                 return;
             }
+            
             if (bannerUrl != null) // changed
                 await this._apiService.PutVenueBannerAsync(venue.Id, bannerUrl);
 

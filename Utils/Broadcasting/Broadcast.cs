@@ -37,7 +37,7 @@ namespace FFXIVVenues.Veni.Utils.Broadcasting
             return this;
         }
 
-        public async Task<List<BroadcastMessage>> SendToAsync(params ulong[] users)
+        public async Task<BroadcastReceipt> SendToAsync(params ulong[] users)
         {
             this._broadcastedMessages = new ();
             foreach (var userId in users)
@@ -46,7 +46,7 @@ namespace FFXIVVenues.Veni.Utils.Broadcasting
                 this._broadcastedMessages.Add(broadcastedMessage);
             }
 
-            return this._broadcastedMessages;
+            return new (this.Id, _broadcastedMessages);
         }
 
         private async Task<BroadcastMessage> SendTo(ulong userId)
