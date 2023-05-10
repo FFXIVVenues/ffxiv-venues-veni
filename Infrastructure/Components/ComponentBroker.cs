@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
@@ -27,7 +28,7 @@ public class ComponentBroker : IComponentBroker
         var handler = this._handlers.Activate(key[0]);
         if (handler == default)
             return Task.CompletedTask;
-        return handler.HandleAsync(context, key[1..]);
+        return handler.HandleAsync(context, key[1].Split(','));
     }
 
 }

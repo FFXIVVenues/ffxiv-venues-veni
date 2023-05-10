@@ -19,7 +19,7 @@ public abstract class BaseAuditHandler : IComponentHandler
     public abstract Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args);
 
     protected async Task UpdateSentMessages(DiscordSocketClient client, IVenueRenderer render, Venue venue,
-        IUser responder, IEnumerable<AuditMessage> sentMessages,
+        IUser responder, IEnumerable<BroadcastMessageReceipt> sentMessages,
         string responderMessage, string othersMessage)
     {
         foreach (var message in sentMessages)

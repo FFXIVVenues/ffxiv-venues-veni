@@ -85,12 +85,11 @@ public class VenueAudit
                         .WithEmote(new Emoji("❌"))
                         .WithDescription("Delete this venue completely.")
                         .WithStaticHandler(PermanentlyClosedHandler.Key, this._record.id))));
-        var broadcastMessages = await broadcast.SendToAsync(this._venue.Managers.Select(ulong.Parse).ToArray());
+        var broadcastReceipt = await broadcast.SendToAsync(this._venue.Managers.Select(ulong.Parse).ToArray());
 
-        this._record.Log($"Sent venue audit message to {broadcastMessages.Count(m => m.Status == MessageStatus.Sent)} of {this._venue.Managers.Count} managers.");
+        this._record.Log($"Sent venue audit message to {broadcastReceipt.BroadcastMessages.Count(m => m.Status == MessageStatus.Sent)} of {this._venue.Managers.Count} managers.");
         this._record.Status = VenueAuditStatus.AwaitingResponse;
-        this._record.Messages = broadcastMessages.Select(m => 
-            new AuditMessage(m.UserId, m.Message?.Channel?.Id ?? 0, m.Message?.Id ?? 0, m.Status, m.Log)).ToList();
+        this._record.Messages = broadcastReceipt.BroadcastMessages;
         await this._repository.UpsertAsync(this._record);
         return VenueAuditStatus.AwaitingResponse;
     }

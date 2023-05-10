@@ -45,7 +45,7 @@ namespace FFXIVVenues.Veni.People
             this._guildManager = guildManager;
         }
 
-        public async Task<List<BroadcastMessage>> SendForApproval(Venue venue, string bannerUrl)
+        public async Task<BroadcastReceipt> SendForApproval(Venue venue, string bannerUrl)
         {
             var broadcast = new Broadcast(Guid.NewGuid().ToString(), _client);
             _broadcasts[broadcast.Id] = broadcast;

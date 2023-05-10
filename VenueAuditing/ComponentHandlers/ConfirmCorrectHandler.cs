@@ -60,12 +60,12 @@ public class ConfirmCorrectHandler : BaseAuditHandler
         await context.Interaction.Message.Channel.SendMessageAsync(_responses.PickRandom());
         
         UpdateAudit(context, audit, VenueAuditStatus.RespondedConfirmed,
-            $"{MentionUtils.MentionUser(context.Interaction.User.Id)} confirmed the venues details.");
+            $"{MentionUtils.MentionUser(context.Interaction.User.Id)} confirmed the venue's details.");
         await this._repository.UpsertAsync(audit);
         
         if (audit.RoundId == null) 
             await NotifyRequesterAsync(context, audit, venue, 
-                $"{MentionUtils.MentionUser(context.Interaction.User.Id)} confirmed the venues details. 😘");
+                $"{MentionUtils.MentionUser(context.Interaction.User.Id)} confirmed the venue's details. 😘");
     }
     
 }
