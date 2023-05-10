@@ -9,7 +9,7 @@ namespace FFXIVVenues.Veni.People
     public interface IVenueApprovalService
     {
 
-        Task<List<BroadcastMessage>> SendForApproval(Venue venue, string bannerUrl);
+        Task<BroadcastReceipt> SendForApproval(Venue venue, string bannerUrl);
 
         Task<bool> ApproveVenueAsync(Venue venue);
 

@@ -16,7 +16,7 @@ public class VenueAuditRecord : IEntity
     public ulong RequestedBy { get; set; }
     public ulong CompletedBy { get; set; }
     public DateTime? CompletedAt { get; set; }
-    public List<AuditMessage> Messages { get; set; } = new();
+    public List<BroadcastMessageReceipt> Messages { get; set; } = new();
     public List<VenueAuditLog> Logs = new();
 
     public void Log(string message) =>
@@ -26,5 +26,3 @@ public class VenueAuditRecord : IEntity
         this.id = this.VenueId + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
     
 }
-
-public record AuditMessage(ulong UserId,  ulong ChannelId, ulong MessageId, MessageStatus Status, string Log);
