@@ -65,7 +65,7 @@ namespace FFXIVVenues.Veni
                 .Add<LogInboundMiddleware>()
                 .Add<BlacklistMiddleware>()
                 .Add<StartTypingMiddleware>()
-                .Add<LuisPredictionMiddleware>()
+                .Add<CluPredictionMiddleware>()
                 .Add<StopCallingMeMommyMiddleware>()
                 .Add<InteruptIntentMiddleware>()
                 .Add<StateMiddleware>()

@@ -51,7 +51,7 @@ var config = new ConfigurationBuilder()
                  .AddEnvironmentVariables("FFXIV_VENUES_VENI_")
                  .Build();
 
-var luisConfig = new LuisConfiguration();
+var luisConfig = new CluConfiguration();
 config.GetSection("Luis").Bind(luisConfig);
 var apiConfig = new ApiConfiguration();
 config.GetSection("Api").Bind(apiConfig);
@@ -113,7 +113,7 @@ serviceCollection.AddSingleton<IAIContextBuilder, AIContextBuilder>();
 serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
 serviceCollection.AddSingleton<ISessionProvider, SessionProvider>();
 serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();
-serviceCollection.AddSingleton<ILuisClient, LuisClient>();
+serviceCollection.AddSingleton<ICluClient, CluClient>();
 serviceCollection.AddSingleton<IVenueAuditFactory, VenueAuditFactory>();
 serviceCollection.AddSingleton<IVenueRenderer, VenueRenderer>();
 serviceCollection.AddSingleton<IApiObservationService, ApiObservationService>();

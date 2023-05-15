@@ -37,14 +37,14 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         {
             var venue = c.Session.GetVenue();
 
-            JArray discordIds = null;
-            if (c.Prediction.Entities.ContainsKey("discord-id"))
-                discordIds = c.Prediction.Entities["discord-id"] as JArray;
+            var discordIds = 
+                c.Prediction?.Entities.Where(e => e.Category == "discord-id")?
+                                      .Select(e => e.Text.Trim(' ',','));
 
-            if (discordIds == null || discordIds.Count() == 0)
+            if (discordIds == null || !discordIds.Any())
                 return c.Interaction.Channel.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
 
-            venue.Managers = discordIds.Select(id => id.Value<string>()).ToList();
+            venue.Managers = discordIds.ToList();
             return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
         }
 
