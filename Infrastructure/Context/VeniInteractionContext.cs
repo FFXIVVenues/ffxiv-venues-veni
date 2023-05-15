@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
 using Discord.WebSocket;
+using FFXIVVenues.Veni.AI.Clu.CluModels;
 using FFXIVVenues.Veni.Infrastructure.Context.InteractionWrappers;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
-using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
-using NChronicle.Core.Interfaces;
-using Newtonsoft.Json.Linq;
 
 namespace FFXIVVenues.Veni.Infrastructure.Context
 {
@@ -32,7 +30,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
     public class VeniInteractionContext : VeniInteractionContext<IInteractionWrapper>
     {
 
-        private Prediction _prediction;
+        private CluPrediction _prediction;
 
         public VeniInteractionContext(IInteractionWrapper m,
                                   DiscordSocketClient dsc,
@@ -42,21 +40,21 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
         public VeniInteractionContext(IInteractionWrapper m,
                                   DiscordSocketClient dsc,
                                   Session sc,
-                                  Prediction prediction)
+                                  CluPrediction prediction)
             : base(m, dsc, sc)
         {
             this._prediction = prediction;
         }
 
         public override string GetArgument(string name) =>
-            this.Interaction.GetArgument(name) ?? (this._prediction?.Entities[name] as JArray)?.First.Value<string>();
+            this.Interaction.GetArgument(name) ?? this._prediction?.Entities.FirstOrDefault(e => e.Category == name)?.Text;
 
     }
 
     public class MessageVeniInteractionContext : VeniInteractionContext<SocketMessage>, IWrappableInteraction
     {
 
-        public Prediction Prediction { get; set; }
+        public CluPrediction Prediction { get; set; }
 
         public MessageVeniInteractionContext(SocketMessage m,
                                          DiscordSocketClient dsc,
@@ -71,7 +69,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
                                    this.Prediction);
 
         public override string GetArgument(string name) =>
-            (this.Prediction?.Entities[name] as JArray)?.First.Value<string>();
+            this.Prediction?.Entities.FirstOrDefault(e => e.Category == name)?.Text;
 
     }
 

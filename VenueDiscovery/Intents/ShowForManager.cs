@@ -22,7 +22,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Intents
         // todo: change to stateless handlers (like edit)
         public Task Handle(MessageVeniInteractionContext context)
         {
-            var discordIdStr = (context.Prediction?.Entities["discord-id"] as JArray)?.First.Value<string>();
+            var discordIdStr = context.Prediction?.Entities.FirstOrDefault(e => e.Category == "discord-id")?.Text;
 
             if (string.IsNullOrWhiteSpace(discordIdStr))
                 return context.Interaction.Channel.SendMessageAsync("Which manager am I getting venues for? 🤔");
