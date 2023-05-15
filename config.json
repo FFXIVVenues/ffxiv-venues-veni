@@ -1,11 +1,11 @@
 {
   "DiscordBotToken": "",
 
-  "Luis": {
+  "Clu": {
     "RuntimeKey": "",
     "PredictionEndpoint": "https://centralus.api.cognitive.microsoft.com/",
-    "AppId": "",
-    "Slot": "Production"
+    "Project": "",
+    "Deployment": "Production"
   },
 
   "Davinci3": {

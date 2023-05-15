@@ -52,7 +52,7 @@ var config = new ConfigurationBuilder()
                  .Build();
 
 var luisConfig = new CluConfiguration();
-config.GetSection("Luis").Bind(luisConfig);
+config.GetSection("Clu").Bind(luisConfig);
 var apiConfig = new ApiConfiguration();
 config.GetSection("Api").Bind(apiConfig);
 var persistenceConfig = new PersistenceConfiguration();
