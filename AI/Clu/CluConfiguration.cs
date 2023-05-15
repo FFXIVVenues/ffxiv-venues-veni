@@ -1,10 +1,10 @@
 ﻿namespace FFXIVVenues.Veni.AI.Luis
 {
-    public class LuisConfiguration
+    public class CluConfiguration
     {
         public string RuntimeKey { get; set; }
         public string PredictionEndpoint { get; set; }
-        public string AppId { get; set; }
-        public string Slot { get; set; }
+        public string Project { get; set; }
+        public string Deployment { get; set; }
     }
 }
