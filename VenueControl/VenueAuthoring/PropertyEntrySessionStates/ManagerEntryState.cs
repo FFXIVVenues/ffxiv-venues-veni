@@ -39,7 +39,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
             var discordIds = 
                 c.Prediction?.Entities.Where(e => e.Category == "discord-id")?
-                                      .Select(e => e.Text.Trim(' ',','));
+                                      .SelectMany(e => e.Text.Split(','))
+                                      .Select(e => e.Trim(' ',','));
 
             if (discordIds == null || !discordIds.Any())
                 return c.Interaction.Channel.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
