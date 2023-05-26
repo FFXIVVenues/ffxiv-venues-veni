@@ -18,7 +18,7 @@ namespace FFXIVVenues.Veni.GuildEngagement
         internal class CommandFactory : ICommandFactory
         {
 
-            public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
+            public SlashCommandProperties GetSlashCommand()
             {
                 var dataCenterRole = new SlashCommandOptionBuilder()
                    .WithName(OPTION_DATA_CENTER)

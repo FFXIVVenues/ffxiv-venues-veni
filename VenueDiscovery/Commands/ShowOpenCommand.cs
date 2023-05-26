@@ -7,7 +7,7 @@ using FFXIVVenues.Veni.Infrastructure.Intent;
 
 namespace FFXIVVenues.Veni.VenueDiscovery.Commands
 {
-    public static class ShowOpen
+    public static class ShowOpenCommand
     {
 
         public const string COMMAND_NAME = "showopen";
@@ -54,7 +54,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Commands
         internal class CommandFactory : ICommandFactory
         {
 
-            public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
+            public SlashCommandProperties GetSlashCommand()
             {
                 //var worldOption = new SlashCommandOptionBuilder()
                 //   .WithName(OPTION_WORLD)

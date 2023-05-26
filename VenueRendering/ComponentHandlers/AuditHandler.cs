@@ -42,8 +42,11 @@ public class AuditHandler : IComponentHandler
             context.Interaction.Channel.Id,
             context.Interaction.User.Id);
         
-        await audit.AuditAsync(true);
-        await context.Interaction.Channel.SendMessageAsync("Okay, I've messaged the manager(s)! 🥰");
+        var result = await audit.AuditAsync(true);
+        if (result == VenueAuditStatus.AwaitingResponse)
+            await context.Interaction.Channel.SendMessageAsync("Okay, I've messaged the manager(s)! 🥰");
+        else if (result == VenueAuditStatus.Failed)
+            await context.Interaction.Channel.SendMessageAsync($"I couldn't message any of the managers. 😢");
     }
     
 }

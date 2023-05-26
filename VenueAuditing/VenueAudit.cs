@@ -26,7 +26,7 @@ public class VenueAudit
         IVenueRenderer venueRenderer, IRepository repository) :
         this(venue,
             record: new()
-                { VenueId = venue.Id, RoundId = roundId, RequestedIn = requestedIn, RequestedBy = requestedBy }, 
+                { VenueId = venue.Id, MassAuditId = roundId, RequestedIn = requestedIn, RequestedBy = requestedBy }, 
             discordClient, venueRenderer, repository) { }
 
     public VenueAudit(Venue venue,
@@ -44,54 +44,67 @@ public class VenueAudit
 
     public async Task<VenueAuditStatus> AuditAsync(bool doNotSkip = false)
     {
-        this._record.Log($"Venue audit requested by {MentionUtils.MentionUser(this._record.RequestedBy)}.");
-        if (this._record.RoundId != null)
-            this._record.Log($"Venue audit requested as part of audit round {this._record.RoundId}.");
-        
-        if (!doNotSkip && !await this.ShouldBeAudited())
+        try
         {
-            this._record.Log("Venue audit skipped; it should not be audited.");
-            this._record.Status = VenueAuditStatus.Skipped;
+            this._record.Log($"Venue audit requested by {MentionUtils.MentionUser(this._record.RequestedBy)}.");
+            if (this._record.MassAuditId != null)
+                this._record.Log($"Venue audit requested as part of audit round {this._record.MassAuditId}.");
+
+            if (!doNotSkip && !await this.ShouldBeAudited())
+            {
+                this._record.Log("Venue audit skipped; it should not be audited.");
+                this._record.Status = VenueAuditStatus.Skipped;
+                await this._repository.UpsertAsync(this._record);
+                return VenueAuditStatus.Skipped;
+            }
+
+            this._record.Log($"Sending venue audit message to {this._venue.Managers.Count} managers.");
+
+            var broadcast = new Broadcast(Guid.NewGuid().ToString(), this._discordClient)
+                .WithMessage(AuditStrings.Prompt)
+                .WithEmbed(this._venueRenderer.RenderEmbed(this._venue))
+                .WithComponent(ctx => new ComponentBuilder()
+                    .WithSelectMenu(new SelectMenuBuilder()
+                        .WithValueHandlers()
+                        .WithPlaceholder("Select response")
+                        .AddOption(new SelectMenuOptionBuilder()
+                            .WithLabel("Confirm Correct")
+                            .WithEmote(new Emoji("👍"))
+                            .WithDescription("Confirm the details on this venue are correct.")
+                            .WithStaticHandler(ConfirmCorrectHandler.Key, this._record.id))
+                        .AddOption(new SelectMenuOptionBuilder()
+                            .WithLabel("Edit Venue")
+                            .WithEmote(new Emoji("✏️"))
+                            .WithDescription("Update the details on this venue.")
+                            .WithStaticHandler(EditVenueHandler.Key, this._record.id))
+                        .AddOption(new SelectMenuOptionBuilder()
+                            .WithLabel("Temporarily Close")
+                            .WithEmote(new Emoji("🔒"))
+                            .WithDescription("Put this venue on a hiatus for up to 6 months.")
+                            .WithStaticHandler(TemporarilyClosedHandler.Key, this._record.id))
+                        .AddOption(new SelectMenuOptionBuilder()
+                            .WithLabel("Permanently Close / Delete")
+                            .WithEmote(new Emoji("❌"))
+                            .WithDescription("Delete this venue completely.")
+                            .WithStaticHandler(PermanentlyClosedHandler.Key, this._record.id))));
+            var broadcastReceipt = await broadcast.SendToAsync(this._venue.Managers.Select(ulong.Parse).ToArray());
+
+            var successful = broadcastReceipt.BroadcastMessages.Count(m => m.Status == MessageStatus.Sent);
+            var totalManagers = this._venue.Managers.Count;
+            this._record.Log($"Sent venue audit message to {successful} of {totalManagers} managers.");
+            this._record.Status = successful > 0 ? VenueAuditStatus.AwaitingResponse : VenueAuditStatus.Failed;
+            this._record.Messages = broadcastReceipt.BroadcastMessages;
             await this._repository.UpsertAsync(this._record);
-            return VenueAuditStatus.Skipped;
+            return this._record.Status;
         }
-        
-        this._record.Log($"Sending venue audit message to {this._venue.Managers.Count} managers.");
+        catch (Exception e)
+        {
+            this._record.Log($"Exception occured during venue audit. {e.Message}");
+            this._record.Status = VenueAuditStatus.Failed;
+            await this._repository.UpsertAsync(this._record);
 
-        var broadcast = new Broadcast(Guid.NewGuid().ToString(), this._discordClient)
-            .WithMessage(AuditStrings.Prompt)
-            .WithEmbed(this._venueRenderer.RenderEmbed(this._venue))
-            .WithComponent(ctx => new ComponentBuilder()
-                .WithSelectMenu(new SelectMenuBuilder()
-                    .WithValueHandlers()
-                    .WithPlaceholder("Select response")
-                    .AddOption(new SelectMenuOptionBuilder()
-                        .WithLabel("Confirm Correct")
-                        .WithEmote(new Emoji("👍"))
-                        .WithDescription("Confirm the details on this venue are correct.")
-                        .WithStaticHandler(ConfirmCorrectHandler.Key, this._record.id))
-                    .AddOption(new SelectMenuOptionBuilder()
-                        .WithLabel("Edit Venue")
-                        .WithEmote(new Emoji("✏️"))
-                        .WithDescription("Update the details on this venue.")
-                        .WithStaticHandler(EditVenueHandler.Key, this._record.id))
-                    .AddOption(new SelectMenuOptionBuilder()
-                        .WithLabel("Temporarily Close")
-                        .WithEmote(new Emoji("🔒"))
-                        .WithDescription("Put this venue on a hiatus for up to 6 months.")
-                        .WithStaticHandler(TemporarilyClosedHandler.Key, this._record.id))
-                    .AddOption(new SelectMenuOptionBuilder()
-                        .WithLabel("Permanently Close / Delete")
-                        .WithEmote(new Emoji("❌"))
-                        .WithDescription("Delete this venue completely.")
-                        .WithStaticHandler(PermanentlyClosedHandler.Key, this._record.id))));
-        var broadcastReceipt = await broadcast.SendToAsync(this._venue.Managers.Select(ulong.Parse).ToArray());
-
-        this._record.Log($"Sent venue audit message to {broadcastReceipt.BroadcastMessages.Count(m => m.Status == MessageStatus.Sent)} of {this._venue.Managers.Count} managers.");
-        this._record.Status = VenueAuditStatus.AwaitingResponse;
-        this._record.Messages = broadcastReceipt.BroadcastMessages;
-        await this._repository.UpsertAsync(this._record);
-        return VenueAuditStatus.AwaitingResponse;
+            throw;
+        }
     }
 
     private async Task<bool> ShouldBeAudited()
@@ -103,7 +116,7 @@ public class VenueAudit
         
         var venueLastChangedAt = this._venue.LastModified;
         var venueCreatedAt = this._venue.Added;
-        var venueLastAuditedAt = mostRecentCompletedAudit.CompletedAt;
+        var venueLastAuditedAt = mostRecentCompletedAudit?.CompletedAt;
 
         if (venueCreatedAt > boundaryDate)
         {
