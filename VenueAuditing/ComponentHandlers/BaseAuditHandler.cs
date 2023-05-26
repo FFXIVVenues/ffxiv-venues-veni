@@ -62,7 +62,8 @@ public abstract class BaseAuditHandler : IComponentHandler
     }
 
     protected void UpdateAudit(MessageComponentVeniInteractionContext context, in VenueAuditRecord audit, VenueAuditStatus status, string message)
-    {   audit.Log(message);
+    {   
+        audit.Log(message);
         audit.Status = status;
         audit.CompletedBy = context.Interaction.User.Id;
         audit.CompletedAt = DateTime.UtcNow;

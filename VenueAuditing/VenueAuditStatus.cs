@@ -8,5 +8,6 @@ public enum VenueAuditStatus
     RespondedConfirmed,
     RespondedDelete,
     RespondedClose,
-    Skipped
+    Skipped,
+    Failed
 }

@@ -21,18 +21,18 @@ namespace FFXIVVenues.Veni.Engineering
 
         internal class CommandFactory : ICommandFactory
         {
-            public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
+            public SlashCommandProperties GetSlashCommand()
             {
                 var discordIdOption = new SlashCommandOptionBuilder()
-                                            .WithName("discordid")
-                                            .WithDescription("Discord ID")
-                                            .WithRequired(true)
-                                            .WithType(ApplicationCommandOptionType.String);
+                                        .WithName("discordid")
+                                        .WithDescription("Discord ID")
+                                        .WithRequired(true)
+                                        .WithType(ApplicationCommandOptionType.String);
                 var reasonOption = new SlashCommandOptionBuilder()
-                                            .WithName("reason")
-                                            .WithDescription("Reason for blacklisting")
-                                            .WithRequired(true)
-                                            .WithType(ApplicationCommandOptionType.String);
+                                        .WithName("reason")
+                                        .WithDescription("Reason for blacklisting")
+                                        .WithRequired(true)
+                                        .WithType(ApplicationCommandOptionType.String);
                 var listSubCommand = new SlashCommandOptionBuilder()
                                         .WithName(SUB_COMMAND_LIST)
                                         .WithDescription("List of blacklisted users/servers")
