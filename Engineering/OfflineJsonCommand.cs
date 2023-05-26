@@ -23,7 +23,7 @@ namespace FFXIVVenues.Veni.Engineering
 
         internal class CommandFactory : ICommandFactory
         {
-            public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
+            public SlashCommandProperties GetSlashCommand()
             {
                 var includeManagersOption = new SlashCommandOptionBuilder()
                     .WithName(OPTION_NAME)

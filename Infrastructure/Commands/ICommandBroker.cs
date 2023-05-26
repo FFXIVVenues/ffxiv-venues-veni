@@ -9,9 +9,10 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands
         void Add<TFactory, THandler>(string key)
             where TFactory : ICommandFactory
             where THandler : ICommandHandler;
+
+        void AddFromAssembly();
         Task HandleAsync(SlashCommandVeniInteractionContext context);
         Task RegisterAllGloballyAsync();
-        Task RegisterAllAsync(SocketGuild guild);
     }
 
 }

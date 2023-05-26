@@ -22,6 +22,12 @@ namespace FFXIVVenues.Veni.Utils
             return this;
         }
 
+        public TypeMap<T> Add(string key, Type type)
+        {
+            _typeMap.Add(key, type);
+            return this;
+        }
+        
         public Type Get(string key)
         {
             return _typeMap[key];

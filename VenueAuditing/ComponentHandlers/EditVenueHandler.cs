@@ -49,7 +49,7 @@ public class EditVenueHandler : BaseAuditHandler
             $"{MentionUtils.MentionUser(context.Interaction.User.Id)} edited the venue details.");
         await this._repository.UpsertAsync(audit);
         
-        if (audit.RoundId == null) 
+        if (audit.MassAuditId == null) 
             await NotifyRequesterAsync(context, audit, venue, 
         $"{MentionUtils.MentionUser(context.Interaction.User.Id)} edited the venue details. 😘");
     }

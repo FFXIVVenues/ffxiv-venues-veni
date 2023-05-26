@@ -19,7 +19,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.Commands
         internal class Factory : ICommandFactory
         {
 
-            public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
+            public SlashCommandProperties GetSlashCommand()
             {
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)
@@ -33,7 +33,6 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.Commands
         {
             private readonly IApiService _apiService;
             private readonly IVenueRenderer _venueRenderer;
-            private readonly IIntentHandlerProvider _intentProvider;
 
             public Handler(IApiService apiService, IVenueRenderer venueRenderer)
             {
