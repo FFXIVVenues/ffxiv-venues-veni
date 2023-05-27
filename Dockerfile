@@ -11,5 +11,5 @@ RUN dotnet publish /src/FFXIVVenues.Veni.csproj -c Release -o /src/build
 
 FROM base AS final
 WORKDIR /app
-COPY --from=build /app/build .
+COPY --from=build /src/build .
 ENTRYPOINT ["dotnet", "FFXIVVenues.Veni.dll"]
