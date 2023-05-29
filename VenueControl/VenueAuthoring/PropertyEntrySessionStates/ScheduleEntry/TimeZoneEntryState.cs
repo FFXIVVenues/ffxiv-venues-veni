@@ -6,6 +6,7 @@ using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
+using TimeZoneConverter;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.ScheduleEntry
 {
@@ -18,16 +19,16 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             "What **time zone** would the venues opening times be in?"
         };
 
-        private static TimeZoneInfo _gmt = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+        private static TimeZoneInfo _gmt = TZConvert.GetTimeZoneInfo("GMT Standard Time");
         private static Dictionary<string, TimeZoneInfo> _timezones = new()
         {
-            { "Eastern Standard Time (EST)", TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time") },
-            { "Central Standard Time (CST)", TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time") },
-            { "Mountain Standard Time (MST)", TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time") },
-            { "Pacific Standard Time (PST)", TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time") },
-            { "Atlantic Standard Time (AST)", TimeZoneInfo.FindSystemTimeZoneById("Atlantic Standard Time") },
-            { "Central European Time (CEST)", TimeZoneInfo.FindSystemTimeZoneById("Central Europe Standard Time") },
-            { "Eastern European Time (EEST)", TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time") },
+            { "Eastern Standard Time (EST)", TZConvert.GetTimeZoneInfo("Eastern Standard Time") },
+            { "Central Standard Time (CST)", TZConvert.GetTimeZoneInfo("Central Standard Time") },
+            { "Mountain Standard Time (MST)", TZConvert.GetTimeZoneInfo("Mountain Standard Time") },
+            { "Pacific Standard Time (PST)", TZConvert.GetTimeZoneInfo("Pacific Standard Time") },
+            { "Atlantic Standard Time (AST)", TZConvert.GetTimeZoneInfo("Atlantic Standard Time") },
+            { "Central European Time (CEST)", TZConvert.GetTimeZoneInfo("Central Europe Standard Time") },
+            { "Eastern European Time (EEST)", TZConvert.GetTimeZoneInfo("E. Europe Standard Time") },
             { _gmt.IsDaylightSavingTime(DateTime.UtcNow) ? "GMT Summer Time (GMT)" : "GMT Standard Time", _gmt },
             { "Server Time (UTC)", TimeZoneInfo.Utc }
         };
