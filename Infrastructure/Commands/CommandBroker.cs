@@ -55,8 +55,16 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands
 
         public async Task HandleAsync(SlashCommandVeniInteractionContext context)
         {
-            var commandPath = this.GetCommandName(context);
-            await this._handlers.Activate(commandPath).HandleAsync(context);
+            var handler = this._handlers.Activate(context.Interaction.CommandName);
+            if (handler == null)
+            {
+                var commandPath = this.GetCommandName(context);
+                handler = this._handlers.Activate(commandPath);
+            }
+
+            if (handler != null)
+                await handler.HandleAsync(context);
+                
             context.TypingHandle?.Dispose();
         }
 
