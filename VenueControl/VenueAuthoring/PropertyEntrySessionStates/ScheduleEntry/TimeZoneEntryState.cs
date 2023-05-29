@@ -51,7 +51,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             var timezone = _timezones[selectedTimezone];
 
             c.Session.SetItem("timeZoneKey", selectedTimezone);
-            c.Session.SetItem("timeZoneId", timezone.Id);
+            c.Session.SetItem("timeZoneId", timezone.StandardName);
             var offset = timezone.GetUtcOffset(DateTime.UtcNow);
             c.Session.SetItem("timezoneOffset", offset.Hours);
             return c.Session.MoveStateAsync<DaysEntrySessionState>(c);

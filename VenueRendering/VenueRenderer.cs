@@ -17,6 +17,7 @@ using FFXIVVenues.Veni.VenueRendering.ComponentHandlers;
 using FFXIVVenues.VenueModels;
 using moment.net;
 using PrettyPrintNet;
+using TimeZoneConverter;
 
 namespace FFXIVVenues.Veni.VenueRendering
 {
@@ -107,6 +108,7 @@ namespace FFXIVVenues.Veni.VenueRendering
                             "Atlantic Standard Time" => "AST",
                             "Central Europe Standard Time" => "CEST",
                             "E. Europe Standard Time" => "EEST",
+                            "Greenwich Mean Time" => "GMT",
                             "GMT Standard Time" => "GMT",
                             "UTC" => "Server Time",
                             _ => opening.Start.TimeZone
@@ -136,6 +138,7 @@ namespace FFXIVVenues.Veni.VenueRendering
                                 "Atlantic Standard Time" => "AST",
                                 "Central Europe Standard Time" => "CEST",
                                 "E. Europe Standard Time" => "EEST",
+                                "Greenwich Mean Time" => "GMT",
                                 "GMT Standard Time" => "GMT",
                                 "UTC" => "Server Time",
                                 _ => opening.End.TimeZone
