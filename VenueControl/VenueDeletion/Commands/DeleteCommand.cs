@@ -1,42 +1,40 @@
-﻿using System.Threading.Tasks;
-using Discord;
-using Discord.WebSocket;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.Infrastructure.Commands.Attributes;
+using FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.Commands
 {
-    public static class DeleteCommand
+    [DiscordCommand("delete", "Delete your venue. 😟")]
+    public class DeleteCommandHandler : ICommandHandler
     {
+        private readonly IApiService _apiService;
 
-        public const string COMMAND_NAME = "delete";
-
-        internal class Factory : ICommandFactory
+        public DeleteCommandHandler(IApiService apiService) =>
+            this._apiService = apiService;
+        
+        public async Task HandleAsync(SlashCommandVeniInteractionContext context)
         {
+            var user = context.Interaction.User.Id;
+            var venues = await this._apiService.GetAllVenuesAsync(user);
 
-            public SlashCommandProperties GetSlashCommand()
+            if (venues == null || !venues.Any())
+               await context.Interaction.RespondAsync("You don't seem to be an assigned manager for any venues. 🤔");
+            else if (venues.Count() > 1)
             {
-                return new SlashCommandBuilder()
-                    .WithName(COMMAND_NAME)
-                    .WithDescription("Delete your venue. 😟")
-                    .Build();
+               if (venues.Count() > 25)
+                   venues = venues.Take(25);
+               context.Session.SetItem("venues", venues);
+               await context.Session.MoveStateAsync<SelectVenueToDeleteSessionState>(context);
             }
-
-        }
-
-        internal class Handler : ICommandHandler
-        {
-            private readonly IIntentHandlerProvider _intentProvider;
-
-            public Handler(IIntentHandlerProvider intentProvider)
+            else
             {
-                this._intentProvider = intentProvider;
+               context.Session.SetVenue(venues.Single());
+               await context.Session.MoveStateAsync<DeleteVenueSessionState>(context);
             }
-
-            public Task HandleAsync(SlashCommandVeniInteractionContext slashCommand) =>
-                this._intentProvider.HandleIntent(IntentNames.Operation.Delete, slashCommand);
-
         }
 
     }
