@@ -102,14 +102,22 @@ namespace FFXIVVenues.Veni.VenueRendering
                         .Append(opening.Start.TimeZone switch
                         {
                             "Eastern Standard Time" => "EST",
+                            "America/New_York" => "EST",
                             "Central Standard Time" => "CST",
+                            "America/Chicago" => "CST",
                             "Mountain Standard Time" => "MST",
+                            "America/Denver" => "MST",
                             "Pacific Standard Time" => "PST",
+                            "America/Los_Angeles" => "PST",
                             "Atlantic Standard Time" => "AST",
+                            "America/Halifax" => "AST",
                             "Central Europe Standard Time" => "CEST",
+                            "Europe/Budapest" => "CEST",
                             "E. Europe Standard Time" => "EEST",
+                            "Europe/Chisinau" => "EEST",
                             "Greenwich Mean Time" => "GMT",
                             "GMT Standard Time" => "GMT",
+                            "Europe/London" => "GMT",
                             "UTC" => "Server Time",
                             _ => opening.Start.TimeZone
                         }).Append(")");
@@ -132,16 +140,24 @@ namespace FFXIVVenues.Veni.VenueRendering
                             .Append(opening.End.TimeZone switch
                             {
                                 "Eastern Standard Time" => "EST",
+                                "America/New_York" => "EST",
                                 "Central Standard Time" => "CST",
+                                "America/Chicago" => "CST",
                                 "Mountain Standard Time" => "MST",
+                                "America/Denver" => "MST",
                                 "Pacific Standard Time" => "PST",
+                                "America/Los_Angeles" => "PST",
                                 "Atlantic Standard Time" => "AST",
+                                "America/Halifax" => "AST",
                                 "Central Europe Standard Time" => "CEST",
+                                "Europe/Budapest" => "CEST",
                                 "E. Europe Standard Time" => "EEST",
+                                "Europe/Chisinau" => "EEST",
                                 "Greenwich Mean Time" => "GMT",
                                 "GMT Standard Time" => "GMT",
+                                "Europe/London" => "GMT",
                                 "UTC" => "Server Time",
-                                _ => opening.End.TimeZone
+                                _ => opening.Start.TimeZone
                             })
                             .Append(')');
                         if (opening.End.NextDay)
