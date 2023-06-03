@@ -4,6 +4,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.VenueAuditing;
 
 namespace FFXIVVenues.Veni.VenueRendering.ComponentHandlers;
@@ -29,6 +30,7 @@ public class AuditHandler : IComponentHandler
     {
         var user = context.Interaction.User.Id;
         var venueId = args[0];
+        var force = args[1] == "true";
         var venue = await this._apiService.GetVenueAsync(venueId);
         
         if (!this._authorizer.Authorize(user, Permission.AuditVenue, venue).Authorized)
@@ -42,11 +44,19 @@ public class AuditHandler : IComponentHandler
             context.Interaction.Channel.Id,
             context.Interaction.User.Id);
         
-        var result = await audit.AuditAsync(true);
+        var result = await audit.AuditAsync(force);
         if (result == VenueAuditStatus.AwaitingResponse)
             await context.Interaction.Channel.SendMessageAsync("Okay, I've messaged the manager(s)! 🥰");
         else if (result == VenueAuditStatus.Failed)
             await context.Interaction.Channel.SendMessageAsync($"I couldn't message any of the managers. 😢");
+        else if (result == VenueAuditStatus.Skipped)
+            await context.Interaction.Channel.SendMessageAsync("This venue has been audited recently, should I audit it anyway? 🤔", 
+                components: new ComponentBuilder()
+                    .WithButton(new ButtonBuilder("Audit anyway").WithStaticHandler(AuditHandler.Key, venueId, "true").WithStyle(ButtonStyle.Primary))
+                    .WithButton(new ButtonBuilder("Cancel").WithSessionHandler(context.Session, 
+                        c => context.Interaction.Channel.SendMessageAsync($"Oki, we'll leave it. 😊"),
+                        ComponentPersistence.ClearRow).WithStyle(ButtonStyle.Secondary))
+                    .Build());
     }
     
 }
