@@ -33,6 +33,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             ("Performances", "Performances"),
             ("VIP available", "VIP"),
             ("Triple triad", "Triple triad"),
+            ("LGBTQIA+ focused", "LGBTQIA+"),
             ("RP Heavily Encouraged", "RP Heavy"),
             ("Strictly in-character RP only", "IC RP Only")
         };
