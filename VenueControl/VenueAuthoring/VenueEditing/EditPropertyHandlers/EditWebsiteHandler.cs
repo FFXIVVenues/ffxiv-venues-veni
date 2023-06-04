@@ -32,7 +32,7 @@ public class EditWebsiteHandler : IComponentHandler
         if (!this._authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
         {
             await context.Interaction.FollowupAsync(
-                "Aaaah. You'll need to speak my owners at FFXIV Venues to change the website for your venue. 🥲");
+                "Aaaah. You'll need to speak to my owners at FFXIV Venues to change the website for your venue. 🥲");
             return;
         }
 
