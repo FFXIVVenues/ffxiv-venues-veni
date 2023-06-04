@@ -48,15 +48,15 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
                 .Append("**Audits sent so far**: ").Append(summary.AuditsSent).AppendLine()
                 .Append("**Audits answered so far**: ").Append(summary.AuditsAnswered).AppendLine()
                 .AppendLine()
-                .Append("**Audits awaiting answer**: ").Append(summary.AuditsAwaitingAnswer).AppendLine()
-                .Append("**Audits skipped**: ").Append(summary.AuditsSkipped).AppendLine()
-                .Append("**Audits failed**: ").Append(summary.AuditsFailed).AppendLine()
-                .Append("**Audits in progress**: ").Append(summary.AuditsInProgress).AppendLine()
-                .AppendLine()
                 .Append("**Venues confirmed**: ").Append(summary.VenuesConfirmed).AppendLine()
                 .Append("**Venues edited**: ").Append(summary.VenuesEdited).AppendLine()
                 .Append("**Venues closed**: ").Append(summary.VenuesClosed).AppendLine()
-                .Append("**Venues deleted**: ").Append(summary.VenuesDeleted);
+                .Append("**Venues deleted**: ").Append(summary.VenuesDeleted).AppendLine()
+                .AppendLine()
+                .Append("**Audits awaiting answer**: ").Append(summary.AuditsAwaitingAnswer).AppendLine()
+                .Append("**Audits skipped**: ").Append(summary.AuditsSkipped).AppendLine()
+                .Append("**Audits failed**: ").Append(summary.AuditsFailed).AppendLine()
+                .Append("**Audits in progress**: ").Append(summary.AuditsInProgress);
             var embedBuilder = new EmbedBuilder()
                 .WithTitle("Audit started on " + summary.StartedAt?.ToString("dd MMMM yyyy"))
                 .WithDescription(builder.ToString());
