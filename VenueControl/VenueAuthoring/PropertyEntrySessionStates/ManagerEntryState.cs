@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Authorisation;
@@ -37,10 +38,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         {
             var venue = c.Session.GetVenue();
 
-            var discordIds = 
-                c.Prediction?.Entities.Where(e => e.Category == "discord-id")?
-                                      .SelectMany(e => e.Text.Split(','))
-                                      .Select(e => e.Trim(' ',','));
+            var regex = new Regex("[0-9]{17,}");
+            var discordIds = regex.Matches(c.Interaction.Content).Select(m => m.Value);
 
             if (discordIds == null || !discordIds.Any())
                 return c.Interaction.Channel.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
