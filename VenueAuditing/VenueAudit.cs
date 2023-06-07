@@ -80,7 +80,7 @@ public class VenueAudit
                         .AddOption(new SelectMenuOptionBuilder()
                             .WithLabel("Temporarily Close")
                             .WithEmote(new Emoji("🔒"))
-                            .WithDescription("Put this venue on a hiatus for up to 6 months.")
+                            .WithDescription("Put this venue on a hiatus for up to 3 months.")
                             .WithStaticHandler(TemporarilyClosedHandler.Key, this._record.id))
                         .AddOption(new SelectMenuOptionBuilder()
                             .WithLabel("Permanently Close / Delete")
