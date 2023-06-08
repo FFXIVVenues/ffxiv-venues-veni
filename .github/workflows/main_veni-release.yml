@@ -1,4 +1,4 @@
-name: Build and publish Veni's docker image
+name: Build and publish Production Veni
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build_and_publish:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - uses: actions/checkout@v2
@@ -18,8 +18,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN}}
 
-      - name: Build docker image
-        run: docker build ./ -t ${{ secrets.DOCKER_USERNAME }}/ffxivvenues.veni:latest --build-arg NUGET_REPO_PASSWORD=${{ secrets.NUGET_REPO_PASSWORD }}
+      - name: Prepare builder
+        continue-on-error: true
+        run: docker buildx create --name ffxivvenues-builder --driver docker-container --bootstrap --use
 
-      - name: Push docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/ffxivvenues.veni:latest
+      - name: Build and push docker image
+        run: docker buildx build --push --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKER_USERNAME }}/ffxivvenues.veni:latest ./

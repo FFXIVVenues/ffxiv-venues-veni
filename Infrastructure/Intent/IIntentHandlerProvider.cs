@@ -3,7 +3,7 @@ using FFXIVVenues.Veni.Infrastructure.Context;
 
 namespace FFXIVVenues.Veni.Infrastructure.Intent
 {
-    internal interface IIntentHandlerProvider
+    public interface IIntentHandlerProvider
     {
         Task HandleIteruptIntent(string interupt, MessageVeniInteractionContext context);
 

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Components;
@@ -16,7 +17,8 @@ public class DismissHandler : IComponentHandler
     {
         await context.Interaction.ModifyOriginalResponseAsync(props =>
             props.Components = new ComponentBuilder().Build());
-        await context.Interaction.Channel.SendMessageAsync(VenueControlStrings.Dismissed);
+        if (!await context.Session.TryBackStateAsync(context))
+            await context.Interaction.Channel.SendMessageAsync(VenueControlStrings.Dismissed);
     }
          
 }

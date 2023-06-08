@@ -73,7 +73,7 @@ namespace FFXIVVenues.Veni.Api
                 {
                     result = await this._wsClient.ReceiveAsync(buffer, CancellationToken.None);
                 }
-                catch (WebSocketException e)
+                catch (WebSocketException)
                 {
                     this._chronicle.Warning("Lost connection to observe endpoint.");
                     return;

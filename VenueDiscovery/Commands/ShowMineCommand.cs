@@ -7,20 +7,19 @@ using FFXIVVenues.Veni.Infrastructure.Intent;
 
 namespace FFXIVVenues.Veni.VenueDiscovery.Commands
 {
-    public static class ShowFor
+    public static class ShowMineCommand
     {
 
-        public const string COMMAND_NAME = "showfor";
+        public const string COMMAND_NAME = "showmine";
 
         internal class CommandFactory : ICommandFactory
         {
 
-            public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
+            public SlashCommandProperties GetSlashCommand()
             {
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)
-                    .WithDescription("Show venues for a given manager!")
-                    .AddOption("user", ApplicationCommandOptionType.User, "The manager to list venues of.", isRequired: true)
+                    .WithDescription("Shows your venue(s)!")
                     .Build();
             }
 
@@ -36,7 +35,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Commands
             }
 
             public Task HandleAsync(SlashCommandVeniInteractionContext slashCommand) =>
-                this._intentProvider.HandleIntent(IntentNames.Operation.ShowForManager, slashCommand);
+                this._intentProvider.HandleIntent(IntentNames.Operation.Show, slashCommand);
 
         }
 

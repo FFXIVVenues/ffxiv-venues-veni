@@ -5,7 +5,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands
 {
     public interface ICommandFactory
     {
-        SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null);
+        SlashCommandProperties GetSlashCommand();
     }
 
 }

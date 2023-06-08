@@ -20,7 +20,7 @@ public static class InspectCommand
     internal class Factory : ICommandFactory
     {
             
-        public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
+        public SlashCommandProperties GetSlashCommand()
         {
             var verbosityLevel = new SlashCommandOptionBuilder()
                 .WithName(OPTION_VERBOSITY)

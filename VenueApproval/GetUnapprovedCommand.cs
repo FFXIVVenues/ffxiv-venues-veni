@@ -23,7 +23,7 @@ namespace FFXIVVenues.Veni.VenueApproval
 
         internal class CommandFactory : ICommandFactory
         {
-            public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
+            public SlashCommandProperties GetSlashCommand()
             {
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)
