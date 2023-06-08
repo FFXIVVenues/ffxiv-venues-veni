@@ -17,6 +17,7 @@ using FFXIVVenues.Veni.VenueRendering.ComponentHandlers;
 using FFXIVVenues.VenueModels;
 using moment.net;
 using PrettyPrintNet;
+using TimeZoneConverter;
 
 namespace FFXIVVenues.Veni.VenueRendering
 {
@@ -101,13 +102,22 @@ namespace FFXIVVenues.Veni.VenueRendering
                         .Append(opening.Start.TimeZone switch
                         {
                             "Eastern Standard Time" => "EST",
+                            "America/New_York" => "EST",
                             "Central Standard Time" => "CST",
+                            "America/Chicago" => "CST",
                             "Mountain Standard Time" => "MST",
+                            "America/Denver" => "MST",
                             "Pacific Standard Time" => "PST",
+                            "America/Los_Angeles" => "PST",
                             "Atlantic Standard Time" => "AST",
+                            "America/Halifax" => "AST",
                             "Central Europe Standard Time" => "CEST",
+                            "Europe/Budapest" => "CEST",
                             "E. Europe Standard Time" => "EEST",
+                            "Europe/Chisinau" => "EEST",
+                            "Greenwich Mean Time" => "GMT",
                             "GMT Standard Time" => "GMT",
+                            "Europe/London" => "GMT",
                             "UTC" => "Server Time",
                             _ => opening.Start.TimeZone
                         }).Append(")");
@@ -130,15 +140,24 @@ namespace FFXIVVenues.Veni.VenueRendering
                             .Append(opening.End.TimeZone switch
                             {
                                 "Eastern Standard Time" => "EST",
+                                "America/New_York" => "EST",
                                 "Central Standard Time" => "CST",
+                                "America/Chicago" => "CST",
                                 "Mountain Standard Time" => "MST",
+                                "America/Denver" => "MST",
                                 "Pacific Standard Time" => "PST",
+                                "America/Los_Angeles" => "PST",
                                 "Atlantic Standard Time" => "AST",
+                                "America/Halifax" => "AST",
                                 "Central Europe Standard Time" => "CEST",
+                                "Europe/Budapest" => "CEST",
                                 "E. Europe Standard Time" => "EEST",
+                                "Europe/Chisinau" => "EEST",
+                                "Greenwich Mean Time" => "GMT",
                                 "GMT Standard Time" => "GMT",
+                                "Europe/London" => "GMT",
                                 "UTC" => "Server Time",
-                                _ => opening.End.TimeZone
+                                _ => opening.Start.TimeZone
                             })
                             .Append(')');
                         if (opening.End.NextDay)
@@ -216,7 +235,7 @@ namespace FFXIVVenues.Veni.VenueRendering
                     .WithLabel("Audit")
                     .WithEmote(new Emoji("🔍"))
                     .WithDescription("Message managers to confirm this venue's detail.")
-                    .WithStaticHandler(AuditHandler.Key, venue.Id));
+                    .WithStaticHandler(AuditHandler.Key, venue.Id, "false"));
             
             if (this._authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()

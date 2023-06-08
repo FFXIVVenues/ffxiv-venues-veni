@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -18,24 +17,23 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             "What **time zone** would the venues opening times be in?"
         };
 
-        private static TimeZoneInfo _gmt = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
-        private static Dictionary<string, TimeZoneInfo> _timezones = new()
+        private static Dictionary<string, string> _timezones = new()
         {
-            { "Eastern Standard Time (EST)", TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time") },
-            { "Central Standard Time (CST)", TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time") },
-            { "Mountain Standard Time (MST)", TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time") },
-            { "Pacific Standard Time (PST)", TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time") },
-            { "Atlantic Standard Time (AST)", TimeZoneInfo.FindSystemTimeZoneById("Atlantic Standard Time") },
-            { "Central European Time (CEST)", TimeZoneInfo.FindSystemTimeZoneById("Central Europe Standard Time") },
-            { "Eastern European Time (EEST)", TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time") },
-            { _gmt.IsDaylightSavingTime(DateTime.UtcNow) ? "GMT Summer Time (GMT)" : "GMT Standard Time", _gmt },
-            { "Server Time (UTC)", TimeZoneInfo.Utc }
+            { "America/New_York", "Eastern Standard Time (EST)" },
+            { "America/Chicago", "Central Standard Time (CST)" },
+            { "America/Denver", "Mountain Standard Time (MST)" },
+            { "America/Los_Angeles", "Pacific Standard Time (PST)" },
+            { "America/Halifax", "Atlantic Standard Time (AST)" },
+            { "Europe/Budapest", "Central European Time (CEST)" },
+            { "Europe/Chisinau", "Eastern European Time (EEST)" },
+            { "Europe/London", "GMT Time (GMT)" },
+            { "UTC", "Server Time (UTC)" }
         };
 
         public Task Enter(VeniInteractionContext c)
         {
             var component = new ComponentBuilder();
-            var timezoneOptions = _timezones.Select(dc => new SelectMenuOptionBuilder(dc.Key, dc.Key)).ToList();
+            var timezoneOptions = _timezones.Select(dc => new SelectMenuOptionBuilder(dc.Value, dc.Key)).ToList();
             var selectMenu = new SelectMenuBuilder();
             selectMenu.WithOptions(timezoneOptions);
             selectMenu.WithCustomId(c.Session.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow));
@@ -47,12 +45,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         public Task Handle(MessageComponentVeniInteractionContext c)
         {
             var selectedTimezone = c.Interaction.Data.Values.Single();
-            var timezone = _timezones[selectedTimezone];
-
-            c.Session.SetItem("timeZoneKey", selectedTimezone);
-            c.Session.SetItem("timeZoneId", timezone.Id);
-            var offset = timezone.GetUtcOffset(DateTime.UtcNow);
-            c.Session.SetItem("timezoneOffset", offset.Hours);
+            c.Session.SetItem("timeZoneId", selectedTimezone);
             return c.Session.MoveStateAsync<DaysEntrySessionState>(c);
         }
     }

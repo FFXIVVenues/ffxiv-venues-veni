@@ -6,7 +6,6 @@ using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.ComponentHandler
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.EditPropertyHandlers;
 using FFXIVVenues.Veni.VenueControl.VenueClosing.Commands;
 using FFXIVVenues.Veni.VenueControl.VenueClosing.ComponentHandlers;
-using FFXIVVenues.Veni.VenueControl.VenueDeletion.Commands;
 using FFXIVVenues.Veni.VenueControl.VenueDeletion.ComponentHandlers;
 using FFXIVVenues.Veni.VenueControl.VenueOpening.Command;
 using FFXIVVenues.Veni.VenueControl.VenueOpening.ComponentHandlers;
@@ -24,7 +23,6 @@ public static class RegistrationExtensions
         commandBroker.Add<CreateCommand.Factory, CreateCommand.Handler>(CreateCommand.COMMAND_NAME);
         commandBroker.Add<EditCommand.Factory, EditCommand.Handler>(EditCommand.COMMAND_NAME);
         commandBroker.Add<CloseCommand.Factory, CloseCommand.Handler>(CloseCommand.COMMAND_NAME);
-        commandBroker.Add<DeleteCommand.Factory, DeleteCommand.Handler>(DeleteCommand.COMMAND_NAME);
         commandBroker.Add<OpenCommand.Factory, OpenCommand.Handler>(OpenCommand.COMMAND_NAME);
 
         return commandBroker;

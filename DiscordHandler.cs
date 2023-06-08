@@ -29,7 +29,6 @@ namespace FFXIVVenues.Veni
         private readonly IChronicle _chronicle;
         private readonly IGuildManager _guildManager;
         private readonly IRepository _db;
-        private readonly Pipeline<MessageVeniInteractionContext, bool> _preSessionMessagePipeline;
 
         public DiscordHandler(DiscordSocketClient client,
                               ICommandBroker commandBroker,

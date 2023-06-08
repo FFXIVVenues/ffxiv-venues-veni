@@ -7,13 +7,13 @@ using FFXIVVenues.Veni.Infrastructure.Context;
 
 namespace FFXIVVenues.Veni.VenueDiscovery.Commands
 {
-    internal class ShowCount
+    internal class ShowCountCommand
     {
         public const string COMMAND_NAME = "showcount";
 
         internal class CommandFactory : ICommandFactory
         {
-            public SlashCommandProperties GetSlashCommand (SocketGuild guildContext = null)
+            public SlashCommandProperties GetSlashCommand ()
             {
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)

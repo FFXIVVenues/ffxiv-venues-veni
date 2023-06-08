@@ -20,7 +20,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Commands
 
         internal class CommandFactory : ICommandFactory
         {
-            public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
+            public SlashCommandProperties GetSlashCommand()
             {
                 var periodOption = new SlashCommandOptionBuilder()
                     .WithName(OPTION_NAME)

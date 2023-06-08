@@ -15,7 +15,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Commands
         internal class CommandFactory : ICommandFactory
         {
 
-            public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
+            public SlashCommandProperties GetSlashCommand()
             {
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)

@@ -15,7 +15,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueCreation.Command
         internal class Factory : ICommandFactory
         {
 
-            public SlashCommandProperties GetSlashCommand(SocketGuild guildContext = null)
+            public SlashCommandProperties GetSlashCommand()
             {
                 return new SlashCommandBuilder()
                     .WithName(COMMAND_NAME)

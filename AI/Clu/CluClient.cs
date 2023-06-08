@@ -15,7 +15,6 @@ namespace FFXIVVenues.Veni.AI.Luis
 
         private readonly CluConfiguration _config;
         private readonly ConversationAnalysisClient _client;
-        private bool _disposedValue;
 
         public CluClient(CluConfiguration config)
         {

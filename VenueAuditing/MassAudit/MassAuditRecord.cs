@@ -1,42 +1,49 @@
 using System;
 using System.Collections.Generic;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
+using FFXIVVenues.Veni.VenueAuditing.MassAudit.Models;
 
-namespace FFXIVVenues.Veni.VenueAuditing;
+namespace FFXIVVenues.Veni.VenueAuditing.MassAudit;
 
-public class AuditRoundRecord : IEntity
+public class MassAuditRecord : IEntity
 {
 
-    public string id { get; } = DateTime.Now.ToString("yyyyMMddHHmm");
-    public AuditStatus Status { get; private set; } = AuditStatus.Inactive;
+    public string id { get; init; } = Guid.NewGuid().ToString().Replace("-", "").Substring(8, 8);
+    public MassAuditStatus Status { get; private set; } = MassAuditStatus.Inactive;
     public DateTime? StartedAt { get; private set; }
     public DateTime? PausedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
     public ulong RequestedIn { get; set; }
     public ulong RequestedBy { get; set; }
-    
-    public List<VenueAuditLog> Logs { get; private set; }
+
+    public List<VenueAuditLog> Logs { get; private set; } = new();
 
     public void SetStarted()
     {
         if (this.StartedAt == null) 
             this.StartedAt = DateTime.UtcNow;
         this.PausedAt = null;
-        this.Status = AuditStatus.Active;
+        this.Status = MassAuditStatus.Active;
     }
 
     public void SetPaused()
     {
-        this.Status = AuditStatus.Inactive;
+        this.Status = MassAuditStatus.Inactive;
         this.PausedAt = DateTime.UtcNow;
     }
 
     public void SetCompleted()
     {
         this.CompletedAt = DateTime.UtcNow;
-        this.Status = AuditStatus.Complete;
+        this.Status = MassAuditStatus.Complete;
     }
 
+    public void SetCancelled()
+    {
+        this.CompletedAt = DateTime.UtcNow;
+        this.Status = MassAuditStatus.Cancelled;
+    }
+    
     public void Log(string message) =>
         this.Logs.Add(new (DateTime.UtcNow, message));
 

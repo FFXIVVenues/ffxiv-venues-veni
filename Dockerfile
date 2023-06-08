@@ -1,11 +1,22 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+FROM ubuntu:latest AS base
+ENV TZ=Etc/Utc
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update
+RUN apt install -y libcurl4
+RUN apt install -y dotnet-runtime-6.0
+RUN apt install -y tzdata
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-ARG NUGET_REPO_PASSWORD
-COPY . /app/
-RUN echo ${NUGET_REPO_PASSWORD}
-RUN dotnet nuget add source https://nuget.pkg.github.com/FFXIVVenues/index.json --username kana-ki --password ${NUGET_REPO_PASSWORD} --store-password-in-clear-text
-RUN dotnet publish /app/FFXIVVenues.Veni.csproj -c Release -o /runtime/
-WORKDIR /runtime/
+FROM ubuntu:latest AS build
+COPY . /src
+RUN apt update
+RUN apt install -y libcurl4
+RUN apt install -y dotnet-sdk-6.0
+RUN dotnet publish /src/FFXIVVenues.Veni.csproj -c Release -o /src/build
 
+FROM base AS final
+WORKDIR /app
+COPY --from=build /src/build .
 ENTRYPOINT ["dotnet", "FFXIVVenues.Veni.dll"]
