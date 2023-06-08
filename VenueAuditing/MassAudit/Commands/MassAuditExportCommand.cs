@@ -26,12 +26,14 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
                 await context.Interaction.RespondAsync("Sorry, I can't let you do that. 👀", ephemeral: true);
                 return;
             }
+
             await context.Interaction.DeferAsync();
+            context.TypingHandle?.Dispose();
             
             var report = await this._massAuditService.GetStatusReportAsync();
             if (report == null)
             {
-                await context.Interaction.RespondAsync("There has never been a mass audit to report to.");
+                await context.Interaction.FollowupAsync("There has never been a mass audit to report to.");
                 return;
             }
 

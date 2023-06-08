@@ -30,11 +30,12 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
             }
             
             await context.Interaction.DeferAsync();
+            context.TypingHandle?.Dispose();
 
             var summary = await this._massAuditService.GetStatusSummaryAsync();
             if (summary == null)
             {
-                await context.Interaction.RespondAsync("There has never been a mass audit to summarize.");
+                await context.Interaction.FollowupAsync("There has never been a mass audit to summarize.");
                 return;
             }
 
