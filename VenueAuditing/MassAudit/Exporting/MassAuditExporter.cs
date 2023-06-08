@@ -103,7 +103,6 @@ public class MassAuditExporter : IMassAuditExporter
     {
         var worksheet = package.Workbook.Worksheets.Add("Venues");
         worksheet.Cells[1, 1, 10_000, 15].AutoFilter = true;
-        worksheet.View.ZoomScale = 110;
         worksheet.View.FreezePanes(2, 1);
         worksheet.Rows.Style.Font.Size = 12;
         worksheet.Row(1).Style.Font.Bold = true;
@@ -111,7 +110,7 @@ public class MassAuditExporter : IMassAuditExporter
         worksheet.Row(1).Style.Fill.BackgroundColor.SetColor(0, 64, 64, 64);
         worksheet.Row(1).Style.Font.Color.SetColor(Color.White);
         worksheet.Cells[1, 1].Value = "Id";
-        worksheet.Column(1).Width = 15;
+        worksheet.Column(1).Width = 17;
         worksheet.Cells[1, 2].Value = "Name";
         worksheet.Column(2).Width = 35;
         worksheet.Cells[1, 3].Value = "Added";
@@ -152,7 +151,7 @@ public class MassAuditExporter : IMassAuditExporter
             
             worksheet.Cells[row, 1].Value = venue.Id;
             worksheet.Cells[row, 2].Value = venue.Name;
-            worksheet.Cells[row, 3].Value = venue.Added.ToString("g");
+            worksheet.Cells[row, 3].Value = venue.Added;
             worksheet.Cells[row, 4].Value = venue.Location?.DataCenter ?? "";
             worksheet.Cells[row, 5].Value = venue.Managers != null ? string.Join(",", venue.Managers) : "";
             worksheet.Cells[row, 5].Style.Numberformat.Format = "@";
@@ -187,7 +186,6 @@ public class MassAuditExporter : IMassAuditExporter
             logs.Add((log.Date, audit.VenueId, log.Message));
 
         var worksheet = package.Workbook.Worksheets.Add("Logs");
-        worksheet.View.ZoomScale = 110;
         worksheet.View.FreezePanes(2, 1);
         worksheet.Rows.Style.Font.Size = 12;
         worksheet.Row(1).Style.Font.Bold = true;
@@ -195,17 +193,17 @@ public class MassAuditExporter : IMassAuditExporter
         worksheet.Row(1).Style.Fill.BackgroundColor.SetColor(0, 64, 64, 64);
         worksheet.Row(1).Style.Font.Color.SetColor(Color.White);
         worksheet.Column(1).Width = 25;
-        worksheet.Column(2).Width = 15;
+        worksheet.Column(2).Width = 17;
         worksheet.Column(3).Width = 160;
         worksheet.Cells[1, 1].Value = "Date";
         worksheet.Cells[1, 2].Value = "Venue Id";
         worksheet.Cells[1, 3].Value = "Log Message";
-        worksheet.Cells[1, 2].AutoFilter = true;
+        worksheet.Cells[1, 1, 100_000, 3].AutoFilter = true;
         
         var row = 2;
         foreach (var log in logs.OrderBy(l => l.Date))
         {
-            worksheet.Cells[row, 1].Value = log.Date.ToString("u");
+            worksheet.Cells[row, 1].Value = log.Date;
             worksheet.Cells[row, 2].Value = log.VenueId ?? "";
             worksheet.Cells[row, 3].Value = log.Message;
 
@@ -220,7 +218,6 @@ public class MassAuditExporter : IMassAuditExporter
                                                        ExcelPackage package)
     {
         var worksheet = package.Workbook.Worksheets.Add("Overview");
-        worksheet.View.ZoomScale = 120;
         worksheet.View.FreezePanes(1, 2);
         worksheet.Rows.Style.Font.Size = 12;
         worksheet.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
