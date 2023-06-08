@@ -29,6 +29,8 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
                 return;
             }
             
+            await context.Interaction.DeferAsync();
+
             var summary = await this._massAuditService.GetStatusSummaryAsync();
             if (summary == null)
             {
@@ -61,7 +63,7 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
                 .WithTitle("Audit started on " + summary.StartedAt?.ToString("dd MMMM yyyy"))
                 .WithDescription(builder.ToString());
             
-            await context.Interaction.RespondAsync("Okay, here it is! 🥰", embed: embedBuilder.Build());
+            await context.Interaction.FollowupAsync("Okay, here it is! 🥰", embed: embedBuilder.Build());
         }
     }
 }

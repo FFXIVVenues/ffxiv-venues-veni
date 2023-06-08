@@ -26,6 +26,7 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
                 await context.Interaction.RespondAsync("Sorry, I can't let you do that. 👀", ephemeral: true);
                 return;
             }
+            await context.Interaction.DeferAsync();
             
             var report = await this._massAuditService.GetStatusReportAsync();
             if (report == null)
@@ -34,7 +35,6 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
                 return;
             }
 
-            await context.Interaction.DeferAsync();
             await context.Interaction.FollowupWithFileAsync(report.ContentStream, report.FileName, "Okay, here it is! 👀");
         }
     }
