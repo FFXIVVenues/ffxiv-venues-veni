@@ -152,6 +152,7 @@ public class MassAuditExporter : IMassAuditExporter
             worksheet.Cells[row, 1].Value = venue.Id;
             worksheet.Cells[row, 2].Value = venue.Name;
             worksheet.Cells[row, 3].Value = venue.Added;
+            worksheet.Cells[row, 3].Style.Numberformat.Format = "dd/mm/yyyy hh:mm:ss";
             worksheet.Cells[row, 4].Value = venue.Location?.DataCenter ?? "";
             worksheet.Cells[row, 5].Value = venue.Managers != null ? string.Join(",", venue.Managers) : "";
             worksheet.Cells[row, 5].Style.Numberformat.Format = "@";
@@ -204,6 +205,7 @@ public class MassAuditExporter : IMassAuditExporter
         foreach (var log in logs.OrderBy(l => l.Date))
         {
             worksheet.Cells[row, 1].Value = log.Date;
+            worksheet.Cells[row, 1].Style.Numberformat.Format = "dd/mm/yyyy hh:mm:ss";
             worksheet.Cells[row, 2].Value = log.VenueId ?? "";
             worksheet.Cells[row, 3].Value = log.Message;
 
@@ -239,12 +241,15 @@ public class MassAuditExporter : IMassAuditExporter
         worksheet.Cells[4, 1].Value = "Requested by";
         worksheet.Cells[4, 2].Value = massAudit.RequestedBy.ToString();
         worksheet.Cells[5, 1].Value = "Started At";
-        worksheet.Cells[5, 2].Value = massAudit.StartedAt?.ToString("g") ?? "";
+        worksheet.Cells[5, 2].Value = massAudit.StartedAt;
+        worksheet.Cells[5, 2].Style.Numberformat.Format = "dd/mm/yyyy hh:mm:ss";
         worksheet.Cells[6, 1].Value = "Paused At";
-        worksheet.Cells[6, 2].Value = massAudit.PausedAt?.ToString("g") ?? "";
+        worksheet.Cells[6, 2].Value = massAudit.PausedAt;
+        worksheet.Cells[6, 2].Style.Numberformat.Format = "dd/mm/yyyy hh:mm:ss";
         
         worksheet.Cells[7, 1].Value = "Completed At";
-        worksheet.Cells[7, 2].Value = massAudit.CompletedAt?.ToString("g") ?? ""; 
+        worksheet.Cells[7, 2].Value = massAudit.CompletedAt; 
+        worksheet.Cells[7, 2].Style.Numberformat.Format = "dd/mm/yyyy hh:mm:ss";
 
         worksheet.Cells[9, 1].Value = "Total Venues";
         worksheet.Cells[9, 2].Value = venues.Count();
