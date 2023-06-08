@@ -50,7 +50,7 @@ public class VenueAudit
             if (this._record.MassAuditId != null)
                 this._record.Log($"Venue audit requested as part of audit round {this._record.MassAuditId}.");
 
-            if (!doNotSkip && !await this.ShouldBeAudited())
+            if (!doNotSkip && !await this.IsAuditRequired())
             {
                 this._record.Log("Venue audit skipped; it should not be audited.");
                 this._record.Status = VenueAuditStatus.Skipped;
@@ -109,7 +109,7 @@ public class VenueAudit
         }
     }
 
-    private async Task<bool> ShouldBeAudited()
+    public async Task<bool> IsAuditRequired()
     {
         var boundaryDate = DateTime.UtcNow.AddDays(-MIN_DAYS_SINCE_LAST_UPDATE);
         var previousAudits = await this._repository.GetWhere<VenueAuditRecord>(a => 

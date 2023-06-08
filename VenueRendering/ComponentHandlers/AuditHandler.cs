@@ -43,13 +43,9 @@ public class AuditHandler : IComponentHandler
             roundId: null,
             context.Interaction.Channel.Id,
             context.Interaction.User.Id);
-        
-        var result = await audit.AuditAsync(force);
-        if (result == VenueAuditStatus.AwaitingResponse)
-            await context.Interaction.Channel.SendMessageAsync("Okay, I've messaged the manager(s)! 🥰");
-        else if (result == VenueAuditStatus.Failed)
-            await context.Interaction.Channel.SendMessageAsync($"I couldn't message any of the managers. 😢");
-        else if (result == VenueAuditStatus.Skipped)
+
+        if (!force && !await audit.IsAuditRequired())
+        {
             await context.Interaction.Channel.SendMessageAsync("This venue has been audited recently, should I audit it anyway? 🤔", 
                 components: new ComponentBuilder()
                     .WithButton(new ButtonBuilder("Audit anyway").WithStaticHandler(AuditHandler.Key, venueId, "true").WithStyle(ButtonStyle.Primary))
@@ -57,6 +53,14 @@ public class AuditHandler : IComponentHandler
                         c => context.Interaction.Channel.SendMessageAsync($"Oki, we'll leave it. 😊"),
                         ComponentPersistence.ClearRow).WithStyle(ButtonStyle.Secondary))
                     .Build());
+            return;
+        }
+
+        var result = await audit.AuditAsync(force);
+        if (result == VenueAuditStatus.AwaitingResponse)
+            await context.Interaction.Channel.SendMessageAsync("Okay, I've messaged the manager(s)! 🥰");
+        else if (result == VenueAuditStatus.Failed)
+            await context.Interaction.Channel.SendMessageAsync($"I couldn't message any of the managers. 😢");
     }
     
 }
