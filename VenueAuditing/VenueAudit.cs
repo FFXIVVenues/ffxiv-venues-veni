@@ -91,6 +91,8 @@ public class VenueAudit
 
             var successful = broadcastReceipt.BroadcastMessages.Count(m => m.Status == MessageStatus.Sent);
             var totalManagers = this._venue.Managers.Count;
+            foreach (var message in broadcastReceipt.BroadcastMessages)
+                this._record.Log($"Message to {message.UserId}: {message.Log}");
             this._record.Log($"Sent venue audit message to {successful} of {totalManagers} managers.");
             this._record.Status = successful > 0 ? VenueAuditStatus.AwaitingResponse : VenueAuditStatus.Failed;
             this._record.Messages = broadcastReceipt.BroadcastMessages;
