@@ -223,7 +223,7 @@ internal class MassAuditService :  IMassAuditService
     {
         this._chronicle.Debug($"Mass audit report requested.");
         var activeAuditRounds = await this._repository.GetAll<MassAuditRecord>();
-        var auditRound = activeAuditRounds.OrderByDescending(a => a.StartedAt).FirstOrDefault();
+        var auditRound = activeAuditRounds.OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
         if (auditRound == null)
             return null;
 
