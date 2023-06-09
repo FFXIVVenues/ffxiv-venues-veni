@@ -10,10 +10,10 @@ public interface IMassAuditExporter
 {
 
     MassAuditStatusSummary GetSummaryForMassAudit(MassAuditRecord massAudit, IEnumerable<Venue> allVenues,
-        IQueryable<VenueAuditRecord> audits);
+        IList<VenueAuditRecord> audits);
 
     Task<MassAuditStatusReport> GetExportForMassAuditAsync(MassAuditRecord massAudit,
         IEnumerable<Venue> venues,
-        IQueryable<VenueAuditRecord> audits);
+        IList<VenueAuditRecord> audits);
 
 }

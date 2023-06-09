@@ -17,7 +17,7 @@ public class MassAuditExporter : IMassAuditExporter
 {
 
     public MassAuditStatusSummary GetSummaryForMassAudit(MassAuditRecord massAudit, IEnumerable<Venue> allVenues,
-        IQueryable<VenueAuditRecord> audits)
+        IList<VenueAuditRecord> audits)
     {
         var statusSummary = new MassAuditStatusSummary
         {
@@ -82,7 +82,7 @@ public class MassAuditExporter : IMassAuditExporter
     
     public async Task<MassAuditStatusReport> GetExportForMassAuditAsync(MassAuditRecord massAudit, 
                                                IEnumerable<Venue> venues, 
-                                               IQueryable<VenueAuditRecord> audits)
+                                               IList<VenueAuditRecord> audits)
     {
 
         var summary = this.GetSummaryForMassAudit(massAudit, venues, audits);
@@ -99,7 +99,7 @@ public class MassAuditExporter : IMassAuditExporter
         };
     }
 
-    private static ExcelWorksheet AddVenuesWorksheet(IEnumerable<Venue> venues, IEnumerable<VenueAuditRecord> audits, ExcelPackage package)
+    private static ExcelWorksheet AddVenuesWorksheet(IEnumerable<Venue> venues, IList<VenueAuditRecord> audits, ExcelPackage package)
     {
         var worksheet = package.Workbook.Worksheets.Add("Venues");
         worksheet.Cells[1, 1, 10_000, 15].AutoFilter = true;
@@ -178,7 +178,7 @@ public class MassAuditExporter : IMassAuditExporter
         return worksheet;
     }
     
-    private static ExcelWorksheet AddLogsWorksheet(List<VenueAuditLog> roundLogs, IEnumerable<VenueAuditRecord> audits, ExcelPackage package)
+    private static ExcelWorksheet AddLogsWorksheet(List<VenueAuditLog> roundLogs, IList<VenueAuditRecord> audits, ExcelPackage package)
     {
         List<(DateTime Date, string VenueId, string Message)> logs =
             roundLogs.Select(l => (l.Date, (string)null, l.Message)).ToList();

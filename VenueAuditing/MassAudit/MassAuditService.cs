@@ -61,7 +61,7 @@ internal class MassAuditService :  IMassAuditService
             activeAudits = await this._repository.GetWhere<MassAuditRecord>(a => 
                 a.Status == MassAuditStatus.Active || a.Status == MassAuditStatus.Inactive);
         }
-        var audit = activeAudits.OrderByDescending(a => a.StartedAt).SingleOrDefault();
+        var audit = activeAudits.OrderByDescending(a => a.StartedAt).ToList().SingleOrDefault();
 
         if (audit == null)
         {
@@ -96,7 +96,7 @@ internal class MassAuditService :  IMassAuditService
         var activeAudits = await this._repository.GetWhere<MassAuditRecord>(a => 
             a.Status == MassAuditStatus.Active ||
             a.Status == MassAuditStatus.Inactive);
-        var audit = activeAudits.OrderByDescending(a => a.StartedAt).SingleOrDefault();
+        var audit = activeAudits.OrderByDescending(a => a.StartedAt).ToList().SingleOrDefault();
         
         if (audit != null)
             if (audit.Status == MassAuditStatus.Active)
@@ -138,7 +138,7 @@ internal class MassAuditService :  IMassAuditService
         this._chronicle.Debug("Fetching active and inactive mass audits.");
         var audit = (await this._repository.GetWhere<MassAuditRecord>(a => 
                 a.Status == MassAuditStatus.Active || a.Status == MassAuditStatus.Inactive))
-            .OrderByDescending(a => a.StartedAt).FirstOrDefault();
+            .OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
         
         if (audit == null)
         {
@@ -209,14 +209,14 @@ internal class MassAuditService :  IMassAuditService
     {
         this._chronicle.Debug($"Mass audit summary requested.");
         var activeAuditRounds = await this._repository.GetAll<MassAuditRecord>();
-        var auditRound = activeAuditRounds.OrderByDescending(a => a.StartedAt).FirstOrDefault();
+        var auditRound = activeAuditRounds.OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
         if (auditRound == null)
             return null;
 
         var audits = await this._repository.GetWhere<VenueAuditRecord>(a => a.MassAuditId == auditRound.id);
         var allVenues = await this._apiService.GetAllVenuesAsync();
 
-        return this._massAuditExporter.GetSummaryForMassAudit(auditRound, allVenues, audits);
+        return this._massAuditExporter.GetSummaryForMassAudit(auditRound, allVenues, audits.ToList());
     }
 
     public async Task<MassAuditStatusReport> GetStatusReportAsync()
@@ -230,7 +230,7 @@ internal class MassAuditService :  IMassAuditService
         var audits = await this._repository.GetWhere<VenueAuditRecord>(a => a.MassAuditId == auditRound.id);
         var allVenues = await this._apiService.GetAllVenuesAsync();
 
-        return await this._massAuditExporter.GetExportForMassAuditAsync(auditRound, allVenues, audits);
+        return await this._massAuditExporter.GetExportForMassAuditAsync(auditRound, allVenues, audits.ToList());
     }
 
     private void StartThread(MassAuditRecord massAudit)
@@ -257,7 +257,9 @@ internal class MassAuditService :  IMassAuditService
             this._chronicle.Debug($"Mass audit: fetching all venues.");
             var allVenues = await this._apiService.GetAllVenuesAsync();
             this._chronicle.Debug($"Mass audit: fetching all existing audits for mass audit.");
-            var auditRecords = await this._repository.GetWhere<VenueAuditRecord>(r => r.MassAuditId == massAudit.id);
+            var auditRecordsQuery =
+                await this._repository.GetWhere<VenueAuditRecord>(r => r.MassAuditId == massAudit.id);
+            var auditRecords = auditRecordsQuery.ToList();
             foreach (var venue in allVenues)
             {
                 if (cancellationToken.IsCancellationRequested && this._pause)
