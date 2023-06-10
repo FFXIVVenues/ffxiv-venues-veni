@@ -2,17 +2,17 @@ namespace FFXIVVenues.Veni.VenueAuditing;
 
 public enum VenueAuditStatus
 {
-    Pending,
-    AwaitingResponse,
-    RespondedEdit,
-    RespondedConfirmed,
-    RespondedDelete,
-    RespondedClose,
-    EditedLater,
-    DeletedLater,
-    ClosedLater,
-    Skipped,
-    Failed
+    Pending = 0,
+    AwaitingResponse = 1,
+    RespondedEdit = 2,
+    RespondedConfirmed = 3,
+    RespondedDelete = 4,
+    RespondedClose = 5,
+    EditedLater = 8,
+    DeletedLater = 9,
+    ClosedLater = 10,
+    Skipped = 6,
+    Failed = 7
 }
 
 public static class VenueAuditStatusExtensions
