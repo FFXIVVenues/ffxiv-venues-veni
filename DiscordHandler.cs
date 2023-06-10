@@ -112,27 +112,17 @@ namespace FFXIVVenues.Veni
 
         private async Task SlashCommandExecutedAsync(SocketSlashCommand message)
         {
-            var typingHandle = message.Channel.EnterTypingState();
-            try
+            if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
             {
-                if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
-                {
-                    await message.RespondAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
-                                               $" If you think this was a mistake please let my family know.",
-                        ephemeral: true);
-                    typingHandle?.Dispose();
-                    return;
-                }
+                await message.RespondAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
+                                           $" If you think this was a mistake please let my family know.",
+                    ephemeral: true);
+                return;
+            }
 
-                var context = this._contextFactory.Create(message);
-                context.TypingHandle = typingHandle;
-                LogSlashCommandExecuted(message, context);
-                await this._commandBroker.HandleAsync(context);
-            }
-            finally
-            {
-                typingHandle?.Dispose();
-            }
+            var context = this._contextFactory.Create(message);
+            LogSlashCommandExecuted(message, context);
+            await this._commandBroker.HandleAsync(context);
         }
 
         private async Task ComponentExecutedAsync(SocketMessageComponent message)
