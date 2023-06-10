@@ -7,11 +7,10 @@ using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Utils.Broadcasting;
-using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;
 
-namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
+namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers.AuditResponse;
 
 public abstract class BaseAuditHandler : IComponentHandler
 {

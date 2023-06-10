@@ -6,6 +6,7 @@ using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils.Broadcasting;
 using FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
+using FFXIVVenues.Veni.VenueAuditing.ComponentHandlers.AuditResponse;
 using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;

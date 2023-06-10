@@ -1,16 +1,14 @@
-using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
 using FFXIVVenues.Veni.Api;
-using FFXIVVenues.Veni.Infrastructure.Components;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates;
-using FFXIVVenues.Veni.VenueRendering;
 
-namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
+namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers.AuditResponse;
 
 public class PermanentlyClosedHandler : BaseAuditHandler
 {
@@ -20,18 +18,18 @@ public class PermanentlyClosedHandler : BaseAuditHandler
     
     private readonly IRepository _repository;
     private readonly IApiService _apiService;
-    private readonly DiscordSocketClient _discordClient;
-    private readonly IVenueRenderer _venueRenderer;
+    private readonly IAuthorizer _authorizer;
+    private readonly IVenueAuditService _venueAuditService;
 
     public PermanentlyClosedHandler(IRepository repository,
         IApiService apiService,
-        DiscordSocketClient discordClient,
-        IVenueRenderer venueRenderer)
+        IAuthorizer authorizer,
+        IVenueAuditService venueAuditService)
     {
         this._repository = repository;
         this._apiService = apiService;
-        this._discordClient = discordClient;
-        this._venueRenderer = venueRenderer;
+        this._authorizer = authorizer;
+        this._venueAuditService = venueAuditService;
     }
     
     public override async Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args)
@@ -39,21 +37,21 @@ public class PermanentlyClosedHandler : BaseAuditHandler
         var auditId = args[0];
         var audit = await this._repository.GetByIdAsync<VenueAuditRecord>(auditId);
         var venue = await this._apiService.GetVenueAsync(audit.VenueId);
-        await this.UpdateSentMessages(this._discordClient, this._venueRenderer, 
-            venue, context.Interaction.User, audit.Messages, 
-            $"You handled this and deleted the venue. 😭", 
-            $"{context.Interaction.User.Username} handled this and deleted the venue. 😭");
+        
+        if (!this._authorizer.Authorize(context.Interaction.User.Id, Permission.EditVenue, venue).Authorized)
+        {
+            await context.Interaction.Message.Channel.SendMessageAsync("Sorry, I can't let you do that. 🥲");
+            return;
+        }
         
         context.Session.SetVenue(venue);
         await context.Session.MoveStateAsync<DeleteVenueSessionState>(context);
 
-        UpdateAudit(context, audit, VenueAuditStatus.RespondedDelete,
-            $"{MentionUtils.MentionUser(context.Interaction.User.Id)} deleted the venue.");
-        await this._repository.UpsertAsync(audit);
-        
-        if (audit.MassAuditId == null) 
-            await NotifyRequesterAsync(context, audit, venue, 
-                $"{MentionUtils.MentionUser(context.Interaction.User.Id)} deleted the venue. 😭");
+        await this._venueAuditService.UpdateAuditStatus(audit, venue, context.Interaction.User.Id,
+            VenueAuditStatus.RespondedDelete);
+       
+        if (audit.Messages.All(m => m.MessageId != context.Interaction.Message.Id))
+            await context.Interaction.ModifyOriginalResponseAsync(m => m.Components = new ComponentBuilder().Build());
     }
     
 }

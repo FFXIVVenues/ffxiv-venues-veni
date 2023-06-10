@@ -52,6 +52,7 @@ public class MassAuditExporter : IMassAuditExporter
                     statusSummary.AuditsAwaitingAnswer++;
                     break;
                 case VenueAuditStatus.RespondedEdit:
+                case VenueAuditStatus.EditedLater:
                     statusSummary.AuditsAnswered++;
                     statusSummary.VenuesEdited++;
                     break;
@@ -60,10 +61,12 @@ public class MassAuditExporter : IMassAuditExporter
                     statusSummary.VenuesConfirmed++;
                     break;
                 case VenueAuditStatus.RespondedDelete:
+                case VenueAuditStatus.DeletedLater:
                     statusSummary.AuditsAnswered++;
                     statusSummary.VenuesDeleted++;
                     break;
                 case VenueAuditStatus.RespondedClose:
+                case VenueAuditStatus.ClosedLater:
                     statusSummary.AuditsAnswered++;
                     statusSummary.VenuesClosed++;
                     break;
