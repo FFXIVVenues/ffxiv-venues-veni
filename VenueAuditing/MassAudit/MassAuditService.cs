@@ -40,7 +40,7 @@ internal class MassAuditService :  IMassAuditService
         this._massAuditExporter = massAuditExporter;
     }
 
-    public async Task<ResumeResult> ResumeMassAuditAsync(bool activeOnly = true)
+    public async Task<ResumeResult> ResumeMassAuditAsync(bool activeOnly)
     {
         this._chronicle.Debug("Resume requested for mass audit.");
         if (this._activeAuditTask != null && !this._activeAuditTask.IsCompleted)
@@ -239,8 +239,7 @@ internal class MassAuditService :  IMassAuditService
         this._cancellationTokenSource?.Dispose();
         this._cancellationTokenSource = new CancellationTokenSource();
         this._activeAuditTask?.Dispose();
-        this._activeAuditTask = new TaskFactory().StartNew(_ => ExecuteMassAudit(massAudit, this._cancellationTokenSource.Token),
-            null, TaskCreationOptions.LongRunning);
+        this._activeAuditTask = this.ExecuteMassAudit(massAudit, this._cancellationTokenSource.Token);
     }
     
     private async Task ExecuteMassAudit(MassAuditRecord massAudit, CancellationToken cancellationToken)
@@ -256,6 +255,7 @@ internal class MassAuditService :  IMassAuditService
             
             this._chronicle.Debug($"Mass audit: fetching all venues.");
             var allVenues = await this._apiService.GetAllVenuesAsync();
+            massAudit.TotalVenuesToAudit = allVenues.Count();
             this._chronicle.Debug($"Mass audit: fetching all existing audits for mass audit.");
             var auditRecordsQuery =
                 await this._repository.GetWhere<VenueAuditRecord>(r => r.MassAuditId == massAudit.id);
@@ -281,7 +281,7 @@ internal class MassAuditService :  IMassAuditService
                 massAudit.Log($"Sending audit for {venue.Name}.");
                 var existingRecord = auditRecords.FirstOrDefault(r => r.VenueId == venue.Id);
 
-                VenueAuditStatus auditStatus = VenueAuditStatus.Pending;
+                var auditStatus = VenueAuditStatus.Pending;
                 try
                 {
                     if (existingRecord == null)
@@ -295,6 +295,12 @@ internal class MassAuditService :  IMassAuditService
                     {
                         this._chronicle.Debug($"Mass audit: starting audit for {venue.Name} (picking up pending audit).");
                         auditStatus = await this._venueAuditFactory.CreateAuditFor(venue, existingRecord).AuditAsync();
+                    }
+                    else
+                    {
+                        this._chronicle.Debug($"Mass audit: already sent audit for {venue.Name}.");
+                        massAudit.Log($"Already sent audit for {venue.Name}");
+                        continue;
                     }
                 }
                 catch (Exception e)
@@ -324,7 +330,8 @@ internal class MassAuditService :  IMassAuditService
 
                 await this._repository.UpsertAsync(massAudit);
 
-                await Task.Delay(3000, cancellationToken);
+                if (auditStatus != VenueAuditStatus.Skipped)
+                    await Task.Delay(3000, cancellationToken);
             }
             
             this._chronicle.Debug($"Mass audit: audits sent to all venues.");

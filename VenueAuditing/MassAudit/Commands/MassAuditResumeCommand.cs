@@ -27,20 +27,21 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
                 return;
             }
 
-            var result = await this._massAuditService.ResumeMassAuditAsync();
+            await context.Interaction.DeferAsync();
+            var result = await this._massAuditService.ResumeMassAuditAsync(false);
             switch (result)
             {
                 case ResumeResult.AlreadyRunning:
-                    await context.Interaction.RespondAsync("The mass audit is already running. 😊");
+                    await context.Interaction.FollowupAsync("The mass audit is already running. 😊");
                     break;
                 case ResumeResult.NothingToResume:
-                    await context.Interaction.RespondAsync("There's no current mass audit to resume. 🤔");
+                    await context.Interaction.FollowupAsync("There's no current mass audit to resume. 🤔");
                     break;
                 case ResumeResult.ResumedActive:
-                    await context.Interaction.RespondAsync("A mass audit that did not gracefully stop has been resumed. 🤔");
+                    await context.Interaction.FollowupAsync("A mass audit that did not gracefully stop has been resumed. 🤔");
                     break;
                 case ResumeResult.ResumedInactive:
-                    await context.Interaction.RespondAsync("The mass audit has been resumed. 🥳");
+                    await context.Interaction.FollowupAsync("The mass audit has been resumed. 🥳");
                     break;
             }
             

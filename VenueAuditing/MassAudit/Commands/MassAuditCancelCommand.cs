@@ -27,14 +27,15 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
                 return;
             }
 
+            await context.Interaction.DeferAsync();
             var result = await this._massAuditService.CancelAsync();
             switch (result)
             {
                 case CancelResult.NothingToCancel:
-                    await context.Interaction.RespondAsync("There's no current mass audit to cancel. 🤔");
+                    await context.Interaction.FollowupAsync("There's no current mass audit to cancel. 🤔");
                     break;
                 case CancelResult.Cancelled:
-                    await context.Interaction.RespondAsync("Cancelled! 👀");
+                    await context.Interaction.FollowupAsync("Cancelled! 👀");
                     break;
             }
         }
