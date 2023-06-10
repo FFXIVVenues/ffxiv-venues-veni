@@ -5,8 +5,10 @@ using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.GuildEngagement;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
+using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.People;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.VenueAuditing;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates;
 using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;
@@ -20,6 +22,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
         private readonly IVenueApprovalService _venueApprovalService;
         private readonly IGuildManager _guildManager;
         private readonly IAuthorizer _authorizer;
+        private readonly IRepository _repository;
+        private readonly IVenueAuditService _auditService;
 
         private static string[] _preexisingResponse = new[]
         {
@@ -53,13 +57,17 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
                                 IApiService apiService,
                                 IVenueApprovalService indexersService,
                                 IGuildManager guildManager,
-                                IAuthorizer authorizer)
+                                IAuthorizer authorizer,
+                                IRepository repository,
+                                IVenueAuditService auditService)
         {
             this._venueRenderer = venueRenderer;
             this._apiService = apiService;
             this._venueApprovalService = indexersService;
             this._guildManager = guildManager;
             this._authorizer = authorizer;
+            this._repository = repository;
+            this._auditService = auditService;
         }
 
         public async Task Enter(VeniInteractionContext c)
@@ -113,6 +121,9 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
                 _ = this._guildManager.SyncRolesForVenueAsync(venue);
                 _ = this._guildManager.FormatDisplayNamesForVenueAsync(venue);
                 await c.Interaction.Channel.SendMessageAsync(_preexisingResponse.PickRandom());
+                var latestAudit = await this._auditService.GetLatestRecordFor(venue);
+                if (latestAudit?.Status is VenueAuditStatus.Failed or VenueAuditStatus.Pending or VenueAuditStatus.AwaitingResponse)
+                    await this._auditService.UpdateAuditStatus(latestAudit, venue, c.Interaction.User.Id, VenueAuditStatus.EditedLater);
             }
             else if (isApprover)
             {

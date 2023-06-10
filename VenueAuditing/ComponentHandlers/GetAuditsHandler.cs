@@ -6,9 +6,8 @@ using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
-using FFXIVVenues.Veni.VenueAuditing;
 
-namespace FFXIVVenues.Veni.VenueRendering.ComponentHandlers;
+namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 
 public class GetAuditsHandler : IComponentHandler
 {

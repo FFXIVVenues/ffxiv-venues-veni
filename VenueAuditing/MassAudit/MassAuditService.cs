@@ -17,7 +17,7 @@ internal class MassAuditService :  IMassAuditService
     private readonly IApiService _apiService;
     private readonly IRepository _repository;
     private readonly IChronicle _chronicle;
-    private readonly IVenueAuditFactory _venueAuditFactory;
+    private readonly IVenueAuditService _venueAuditService;
     private readonly IDiscordClient _client;
     private readonly IMassAuditExporter _massAuditExporter;
     private bool _pause = false;
@@ -28,14 +28,14 @@ internal class MassAuditService :  IMassAuditService
     public MassAuditService(IApiService apiService,
         IRepository repository,
         IChronicle chronicle,
-        IVenueAuditFactory venueAuditFactory,
+        IVenueAuditService venueAuditService,
         IDiscordClient client,
         IMassAuditExporter massAuditExporter)
     {
         this._apiService = apiService;
         this._repository = repository;
         this._chronicle = chronicle;
-        this._venueAuditFactory = venueAuditFactory;
+        this._venueAuditService = venueAuditService;
         this._client = client;
         this._massAuditExporter = massAuditExporter;
     }
@@ -287,14 +287,14 @@ internal class MassAuditService :  IMassAuditService
                     if (existingRecord == null)
                     {
                         this._chronicle.Debug($"Mass audit: starting audit for {venue.Name}.");
-                        auditStatus = await this._venueAuditFactory
+                        auditStatus = await this._venueAuditService
                             .CreateAuditFor(venue, massAudit.id, massAudit.RequestedIn, massAudit.RequestedBy)
                             .AuditAsync();
                     }
                     else if (existingRecord.Status == VenueAuditStatus.Pending)
                     {
                         this._chronicle.Debug($"Mass audit: starting audit for {venue.Name} (picking up pending audit).");
-                        auditStatus = await this._venueAuditFactory.CreateAuditFor(venue, existingRecord).AuditAsync();
+                        auditStatus = await this._venueAuditService.CreateAuditFor(venue, existingRecord).AuditAsync();
                     }
                     else
                     {
