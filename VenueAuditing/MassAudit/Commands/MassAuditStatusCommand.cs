@@ -48,7 +48,7 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
                 .Append("**Completed At**: ").Append(summary.CompletedAt?.ToString("g")).AppendLine()
                 .AppendLine()
                 .Append("**Total venues to audit**: ").Append(summary.TotalVenues).AppendLine()
-                .Append("**Audits sent so far**: ").Append(summary.AuditsSent).AppendLine()
+                .Append("**Audits processed so far**: ").Append(summary.AuditsProcessed).AppendLine()
                 .Append("**Audits answered so far**: ").Append(summary.AuditsAnswered).AppendLine()
                 .AppendLine()
                 .Append("**Venues confirmed**: ").Append(summary.VenuesConfirmed).AppendLine()

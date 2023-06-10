@@ -14,7 +14,7 @@ public class MassAuditStatusSummary
     
     
     public int TotalVenues { get; set; }
-    public int AuditsSent { get; set; }
+    public int AuditsProcessed { get; set; }
     public int AuditsAnswered { get; set; }
     
     public int VenuesConfirmed { get; set; }

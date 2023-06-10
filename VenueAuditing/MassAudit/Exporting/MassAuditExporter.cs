@@ -28,7 +28,7 @@ public class MassAuditExporter : IMassAuditExporter
             CompletedAt = massAudit.CompletedAt,
             RequestedBy = massAudit.RequestedBy,
             TotalVenues = allVenues.Count(),
-            AuditsSent = 0,
+            AuditsProcessed = 0,
             AuditsAnswered = 0,
             VenuesConfirmed = 0,
             VenuesEdited = 0,
@@ -42,7 +42,7 @@ public class MassAuditExporter : IMassAuditExporter
 
         foreach (var audit in audits)
         {
-            statusSummary.AuditsSent++;
+            statusSummary.AuditsProcessed++;
             switch (audit.Status)
             {
                 case VenueAuditStatus.Pending:
@@ -75,6 +75,8 @@ public class MassAuditExporter : IMassAuditExporter
                     break;
             }
         }
+        
+        statusSummary.TotalVenues = Math.Max(statusSummary.TotalVenues, statusSummary.AuditsProcessed);
 
         return statusSummary;
     }
@@ -254,7 +256,7 @@ public class MassAuditExporter : IMassAuditExporter
         worksheet.Cells[9, 1].Value = "Total Venues";
         worksheet.Cells[9, 2].Value = venues.Count();
         worksheet.Cells[10, 1].Value = "Audits Sent";
-        worksheet.Cells[10, 2].Value = massAudit.AuditsSent;
+        worksheet.Cells[10, 2].Value = massAudit.AuditsProcessed;
         worksheet.Cells[11, 1].Value = "Audits Answered";
         worksheet.Cells[11, 2].Value = massAudit.AuditsAnswered;
 
