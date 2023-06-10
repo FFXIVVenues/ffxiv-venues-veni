@@ -7,6 +7,7 @@ using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.ComponentHandlers;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.EditPropertyHandlers;

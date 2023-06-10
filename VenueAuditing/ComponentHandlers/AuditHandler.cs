@@ -5,9 +5,8 @@ using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
-using FFXIVVenues.Veni.VenueAuditing;
 
-namespace FFXIVVenues.Veni.VenueRendering.ComponentHandlers;
+namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 
 public class AuditHandler : IComponentHandler
 {
@@ -17,13 +16,13 @@ public class AuditHandler : IComponentHandler
 
     private readonly IAuthorizer _authorizer;
     private readonly IApiService _apiService;
-    private readonly IVenueAuditFactory _auditFactory;
+    private readonly IVenueAuditService _auditService;
 
-    public AuditHandler(IAuthorizer authorizer, IApiService apiService, IVenueAuditFactory auditFactory)
+    public AuditHandler(IAuthorizer authorizer, IApiService apiService, IVenueAuditService auditService)
     {
         this._authorizer = authorizer;
         this._apiService = apiService;
-        this._auditFactory = auditFactory;
+        this._auditService = auditService;
     }
     
     public async Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args)
@@ -39,7 +38,7 @@ public class AuditHandler : IComponentHandler
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
             props.Components = new ComponentBuilder().Build());
         
-        var audit = this._auditFactory.CreateAuditFor(venue,
+        var audit = this._auditService.CreateAuditFor(venue,
             roundId: null,
             context.Interaction.Channel.Id,
             context.Interaction.User.Id);

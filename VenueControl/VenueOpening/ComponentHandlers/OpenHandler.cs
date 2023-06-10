@@ -19,7 +19,7 @@ public class OpenHandler : IComponentHandler
 
     public OpenHandler(IAuthorizer authorizer, IApiService apiService)
     {
-        _authorizer = authorizer;
+        this._authorizer = authorizer;
         this._apiService = apiService;
     }
 

@@ -6,6 +6,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.VenueAuditing;
 using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
@@ -13,11 +14,13 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
     internal class CloseEntrySessionState : ISessionState
     {
         private IApiService _apiService;
+        private readonly IVenueAuditService _auditService;
         private Venue _venue;
 
-        public CloseEntrySessionState(IApiService _apiService)
+        public CloseEntrySessionState(IApiService _apiService, IVenueAuditService auditService)
         {
             this._apiService = _apiService;
+            this._auditService = auditService;
         }
         
         public Task Enter(VeniInteractionContext c)
@@ -65,6 +68,11 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
                 await _apiService.CloseVenueAsync(this._venue.Id, DateTime.UtcNow.AddHours(until));
             
             await c.Interaction.Channel.SendMessageAsync(MessageRepository.VenueClosedMessage.PickRandom());
+            
+            var latestAudit = await this._auditService.GetLatestRecordFor(this._venue);
+            if (latestAudit?.Status is VenueAuditStatus.Failed or VenueAuditStatus.Pending or VenueAuditStatus.AwaitingResponse)
+                await this._auditService.UpdateAuditStatus(latestAudit, this._venue, c.Interaction.User.Id, VenueAuditStatus.ClosedLater);
+            
             _ = c.Session.ClearState(c);
         }
     }

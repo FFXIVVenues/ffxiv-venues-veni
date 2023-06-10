@@ -1,5 +1,6 @@
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
+using FFXIVVenues.Veni.VenueAuditing.ComponentHandlers.AuditResponse;
 
 namespace FFXIVVenues.Veni.VenueAuditing;
 

@@ -112,7 +112,7 @@ serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
 serviceCollection.AddSingleton<ISessionProvider, SessionProvider>();
 serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();
 serviceCollection.AddSingleton<ICluClient, CluClient>();
-serviceCollection.AddSingleton<IVenueAuditFactory, VenueAuditFactory>();
+serviceCollection.AddSingleton<IVenueAuditService, VenueAuditService>();
 serviceCollection.AddSingleton<IVenueRenderer, VenueRenderer>();
 serviceCollection.AddSingleton<IApiObservationService, ApiObservationService>();
 serviceCollection.AddSingleton<IInteractionContextFactory, InteractionContextFactory>();
