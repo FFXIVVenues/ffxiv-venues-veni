@@ -10,10 +10,10 @@ public class MassAuditRecord : IEntity
 
     public string id { get; init; } = Guid.NewGuid().ToString().Replace("-", "").Substring(8, 8);
     public int TotalVenuesToAudit { get; set; }
-    public MassAuditStatus Status { get; private set; } = MassAuditStatus.Inactive;
-    public DateTime? StartedAt { get; private set; }
-    public DateTime? PausedAt { get; private set; }
-    public DateTime? CompletedAt { get; private set; }
+    public MassAuditStatus Status { get; set; } = MassAuditStatus.Inactive;
+    public DateTime? StartedAt { get; set; }
+    public DateTime? PausedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
     public ulong RequestedIn { get; set; }
     public ulong RequestedBy { get; set; }
 
