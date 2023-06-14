@@ -8,6 +8,7 @@ using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.VenueAuditing.ComponentHandlers.AuditResponse;
+using FFXIVVenues.Veni.VenueRendering.ComponentHandlers;
 
 namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 
@@ -77,31 +78,46 @@ public class GetAuditHandler : IComponentHandler
             await context.Interaction.Channel.SendMessageAsync("Okay, here's the audit! 🥰", embed: embed.Build());
             return;
         }
+
+        var selectMenuBuilder = new SelectMenuBuilder()
+            .WithValueHandlers()
+            .WithPlaceholder("Answer audit");
+        
+        if (audit.Status is VenueAuditStatus.Failed or VenueAuditStatus.Pending)
+            selectMenuBuilder
+                .AddOption(new SelectMenuOptionBuilder()
+                    .WithLabel("Retry")
+                    .WithEmote(new Emoji("🔄️"))
+                    .WithDescription("Retry sending this audit to the venue's (current) managers.")
+                    .WithStaticHandler(AuditHandler.Key, venue.Id, "false", audit.id));
+                
+        selectMenuBuilder
+            .AddOption(new SelectMenuOptionBuilder()
+                .WithLabel("Confirm Correct")
+                .WithEmote(new Emoji("👍"))
+                .WithDescription("Confirm the details on this venue are correct.")
+                .WithStaticHandler(ConfirmCorrectHandler.Key, audit.id, "not-via-audit-message"))
+            .AddOption(new SelectMenuOptionBuilder()
+                .WithLabel("Edit Venue")
+                .WithEmote(new Emoji("✏️"))
+                .WithDescription("Update the details on this venue.")
+                .WithStaticHandler(EditVenueHandler.Key, audit.id, "not-via-audit-message"))
+            .AddOption(new SelectMenuOptionBuilder()
+                .WithLabel("Temporarily Close")
+                .WithEmote(new Emoji("🔒"))
+                .WithDescription("Put this venue on a hiatus for up to 3 months.")
+                .WithStaticHandler(TemporarilyClosedHandler.Key, audit.id, "not-via-audit-message"))
+            .AddOption(new SelectMenuOptionBuilder()
+                .WithLabel("Permanently Close / Delete")
+                .WithEmote(new Emoji("❌"))
+                .WithDescription("Delete this venue completely.")
+                .WithStaticHandler(PermanentlyClosedHandler.Key, audit.id, "not-via-audit-message"))
+            .AddOption(new SelectMenuOptionBuilder()
+                .WithLabel("Don't answer")
+                .WithStaticHandler(DismissHandler.Key));
         
         var component = new ComponentBuilder()
-            .WithSelectMenu(new SelectMenuBuilder()
-                .WithValueHandlers()
-                .WithPlaceholder("Answer audit")
-                .AddOption(new SelectMenuOptionBuilder()
-                    .WithLabel("Confirm Correct")
-                    .WithEmote(new Emoji("👍"))
-                    .WithDescription("Confirm the details on this venue are correct.")
-                    .WithStaticHandler(ConfirmCorrectHandler.Key, audit.id, "not-via-audit-message"))
-                .AddOption(new SelectMenuOptionBuilder()
-                    .WithLabel("Edit Venue")
-                    .WithEmote(new Emoji("✏️"))
-                    .WithDescription("Update the details on this venue.")
-                    .WithStaticHandler(EditVenueHandler.Key, audit.id, "not-via-audit-message"))
-                .AddOption(new SelectMenuOptionBuilder()
-                    .WithLabel("Temporarily Close")
-                    .WithEmote(new Emoji("🔒"))
-                    .WithDescription("Put this venue on a hiatus for up to 3 months.")
-                    .WithStaticHandler(TemporarilyClosedHandler.Key, audit.id, "not-via-audit-message"))
-                .AddOption(new SelectMenuOptionBuilder()
-                    .WithLabel("Permanently Close / Delete")
-                    .WithEmote(new Emoji("❌"))
-                    .WithDescription("Delete this venue completely.")
-                    .WithStaticHandler(PermanentlyClosedHandler.Key, audit.id, "not-via-audit-message")));
+            .WithSelectMenu(selectMenuBuilder);
         
         await context.Interaction.Channel.SendMessageAsync("Okay, here's the audit! 🥰", embed: embed.Build(), components: component.Build());
     }

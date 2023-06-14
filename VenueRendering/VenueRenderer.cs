@@ -236,7 +236,7 @@ namespace FFXIVVenues.Veni.VenueRendering
                     .WithLabel("Audit")
                     .WithEmote(new Emoji("🔍"))
                     .WithDescription("Message managers to confirm this venue's detail.")
-                    .WithStaticHandler(AuditHandler.Key, venue.Id, "false"));
+                    .WithStaticHandler(AuditHandler.Key, venue.Id, "false", string.Empty));
             
             if (this._authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()

@@ -30,6 +30,8 @@ public class AuditHandler : IComponentHandler
         var user = context.Interaction.User.Id;
         var venueId = args[0];
         var force = args[1] == "true";
+        var retry = !string.IsNullOrEmpty(args[2]);
+        var retryId = args[2];
         var venue = await this._apiService.GetVenueAsync(venueId);
         
         if (!this._authorizer.Authorize(user, Permission.AuditVenue, venue).Authorized)
@@ -37,17 +39,31 @@ public class AuditHandler : IComponentHandler
         
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
             props.Components = new ComponentBuilder().Build());
-        
-        var audit = this._auditService.CreateAuditFor(venue,
-            roundId: null,
-            context.Interaction.Channel.Id,
-            context.Interaction.User.Id);
+
+        VenueAudit audit;
+        if (retry)
+        {
+            var auditRecord = await this._auditService.GetAudit(retryId);
+            if (auditRecord == null)
+            {
+                await context.Interaction.Channel.SendMessageAsync($"Sorry, that audit no longer exists. 😢");
+                return;
+            }
+            audit = this._auditService.CreateAuditFor(venue, auditRecord);
+        }
+        else
+        {
+            audit = this._auditService.CreateAuditFor(venue,
+                roundId: null,
+                context.Interaction.Channel.Id,
+                context.Interaction.User.Id);
+        }
 
         if (!force && !await audit.IsAuditRequired())
         {
             await context.Interaction.Channel.SendMessageAsync("This venue has been audited recently, should I audit it anyway? 🤔", 
                 components: new ComponentBuilder()
-                    .WithButton(new ButtonBuilder("Audit anyway").WithStaticHandler(AuditHandler.Key, venueId, "true").WithStyle(ButtonStyle.Primary))
+                    .WithButton(new ButtonBuilder("Audit anyway").WithStaticHandler(AuditHandler.Key, venueId, "true", retryId).WithStyle(ButtonStyle.Primary))
                     .WithButton(new ButtonBuilder("Cancel").WithSessionHandler(context.Session, 
                         c => context.Interaction.Channel.SendMessageAsync($"Oki, we'll leave it. 😊"),
                         ComponentPersistence.ClearRow).WithStyle(ButtonStyle.Secondary))
