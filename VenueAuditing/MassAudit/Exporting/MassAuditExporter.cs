@@ -88,15 +88,13 @@ public class MassAuditExporter : IMassAuditExporter
     
     public async Task<MassAuditStatusReport> GetExportForMassAuditAsync(MassAuditRecord massAudit, 
                                                IEnumerable<Venue> venues, 
-                                               IList<VenueAuditRecord> audits,
-                                               HashSet<string> invalidWebsites,
-                                               HashSet<string> invalidDiscords)
+                                               IList<VenueAuditRecord> audits)
     {
         var summary = this.GetSummaryForMassAudit(massAudit, venues, audits);
         using var package = new ExcelPackage();
         AddOverviewWorksheet(summary, venues, package);
         AddLogsWorksheet(massAudit.Logs, audits, package);
-        AddVenuesWorksheet(venues, audits, package, invalidWebsites, invalidDiscords);
+        AddVenuesWorksheet(venues, audits, package);
         
         return new()
         {
@@ -108,9 +106,7 @@ public class MassAuditExporter : IMassAuditExporter
 
     private static ExcelWorksheet AddVenuesWorksheet(IEnumerable<Venue> venues, 
                                                     IList<VenueAuditRecord> audits,
-                                                    ExcelPackage package,
-                                                    HashSet<string> invalidWebsites,
-                                                    HashSet<string> invalidDiscords)
+                                                    ExcelPackage package)
     {
         var worksheet = package.Workbook.Worksheets.Add("Venues");
         worksheet.Cells[1, 1, 10_000, 15].AutoFilter = true;
@@ -164,9 +160,6 @@ public class MassAuditExporter : IMassAuditExporter
         {
             var audit = audits.FirstOrDefault(a => a.VenueId == venue.Id);
             if (audit == null) continue;
-
-            var invalidDiscord = invalidDiscords.Contains(venue.Id);
-            var invalidWebsite = invalidWebsites.Contains(venue.Id);
             
             worksheet.Cells[row, 1].Value = venue.Id;
             worksheet.Cells[row, 2].Value = venue.Name;
@@ -179,10 +172,10 @@ public class MassAuditExporter : IMassAuditExporter
             worksheet.Cells[row, 5].Style.Font.Color.SetColor(Color.CornflowerBlue);
             worksheet.Cells[row, 6].Value = venue.Website;
             worksheet.Cells[row, 6].Hyperlink = venue.Website;
-            worksheet.Cells[row, 6].Style.Font.Color.SetColor(invalidWebsite ? Color.Red : Color.CornflowerBlue);
+            worksheet.Cells[row, 6].Style.Font.Color.SetColor(Color.CornflowerBlue);
             worksheet.Cells[row, 7].Value = venue.Discord;
             worksheet.Cells[row, 7].Hyperlink = venue.Discord;
-            worksheet.Cells[row, 7].Style.Font.Color.SetColor(invalidDiscord ? Color.Red : Color.CornflowerBlue);
+            worksheet.Cells[row, 7].Style.Font.Color.SetColor(Color.CornflowerBlue);
             worksheet.Cells[row, 8].Value = venue.Managers != null ? string.Join(",", venue.Managers) : "";
             worksheet.Cells[row, 8].Style.Numberformat.Format = "@";
             worksheet.Cells[row, 9].Value = venue.Managers?.Count ?? 0;
