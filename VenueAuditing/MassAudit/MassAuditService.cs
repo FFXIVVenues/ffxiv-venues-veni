@@ -255,9 +255,16 @@ internal class MassAuditService :  IMassAuditService
 
             if (venue.Website != null)
             {
-                var siteResult = await this._http.SendAsync(new HttpRequestMessage(HttpMethod.Head, venue.Website));
-                if (!siteResult.IsSuccessStatusCode)
+                try
+                {
+                    var siteResult = await this._http.SendAsync(new HttpRequestMessage(HttpMethod.Head, venue.Website));
+                    if (!siteResult.IsSuccessStatusCode)
+                        invalidSites.Add(venue.Id);
+                }
+                catch
+                {
                     invalidSites.Add(venue.Id);
+                }
             }
         }
 
