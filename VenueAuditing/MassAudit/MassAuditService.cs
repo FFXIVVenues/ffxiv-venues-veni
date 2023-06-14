@@ -236,50 +236,10 @@ internal class MassAuditService :  IMassAuditService
         if (auditRound == null)
             return null;
 
-        var audits = (await this._repository.GetWhere<VenueAuditRecord>(a => a.MassAuditId == auditRound.id)).ToList();
+        var audits = await this._repository.GetWhere<VenueAuditRecord>(a => a.MassAuditId == auditRound.id);
         var allVenues = await this._apiService.GetAllVenuesAsync();
-
-        var invalidDiscords = new HashSet<string>();
-        var invalidSites = new HashSet<string>();
-        foreach (var venue in allVenues)
-        {
-            var audit = audits.FirstOrDefault(a => a.VenueId == venue.Id);
-            if (audit is not { Status: VenueAuditStatus.Failed or VenueAuditStatus.AwaitingResponse })
-                continue;
-
-            if (venue.Discord != null)
-            {
-                this._chronicle.Debug($"Checking discord link for {venue.Id}.");
-                var (validity, _) = await this._discordValidator.CheckInviteAsync(venue.Discord.ToString());
-                if (validity is DiscordCheckResult.InvalidInvite)
-                {
-                    invalidDiscords.Add(venue.Id);
-                    this._chronicle.Debug($"Invalid discord link for {venue.Id}.");
-                }
-            }
-
-            if (venue.Website != null)
-            {
-                this._chronicle.Debug($"Checking website link for {venue.Id}.");
-                try
-                {
-                    var siteResult = await this._http.SendAsync(new HttpRequestMessage(HttpMethod.Head, venue.Website));
-                    if (!siteResult.IsSuccessStatusCode)
-                    {
-                        this._chronicle.Debug($"Invalid website link for {venue.Id}.");
-                        invalidSites.Add(venue.Id);
-                    }
-                }
-                catch
-                {
-                    this._chronicle.Debug($"Invalid website link for {venue.Id}.");
-                    invalidSites.Add(venue.Id);
-                }
-            }
-        }
-
-        return await this._massAuditExporter.GetExportForMassAuditAsync(auditRound, allVenues, audits, 
-            invalidSites, invalidDiscords);
+        
+        return await this._massAuditExporter.GetExportForMassAuditAsync(auditRound, allVenues, audits.ToList());
     }
 
     private void StartThread(MassAuditRecord massAudit)
