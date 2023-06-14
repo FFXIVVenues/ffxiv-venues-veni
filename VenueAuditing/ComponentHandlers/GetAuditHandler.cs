@@ -87,7 +87,7 @@ public class GetAuditHandler : IComponentHandler
             selectMenuBuilder
                 .AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Retry")
-                    .WithEmote(new Emoji("🔄️"))
+                    .WithEmote(new Emoji("🔄"))
                     .WithDescription("Retry sending this audit to the venue's (current) managers.")
                     .WithStaticHandler(AuditHandler.Key, venue.Id, "false", audit.id));
                 
