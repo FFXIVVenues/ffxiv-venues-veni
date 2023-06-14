@@ -14,8 +14,6 @@ public interface IMassAuditExporter
 
     Task<MassAuditStatusReport> GetExportForMassAuditAsync(MassAuditRecord massAudit,
         IEnumerable<Venue> venues,
-        IList<VenueAuditRecord> audits,
-        HashSet<string> invalidWebsite, 
-        HashSet<string> invalidDiscords);
+        IList<VenueAuditRecord> audits);
 
 }
