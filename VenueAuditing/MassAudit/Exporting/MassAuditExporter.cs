@@ -157,6 +157,7 @@ public class MassAuditExporter : IMassAuditExporter
         foreach (var venue in venues)
         {
             var audit = audits.FirstOrDefault(a => a.VenueId == venue.Id);
+            if (audit == null) continue;
             
             worksheet.Cells[row, 1].Value = venue.Id;
             worksheet.Cells[row, 2].Value = venue.Name;
