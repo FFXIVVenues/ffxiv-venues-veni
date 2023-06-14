@@ -119,7 +119,7 @@ public class MassAuditExporter : IMassAuditExporter
         worksheet.Cells[1, 2].Value = "Name";
         worksheet.Column(2).Width = 35;
         worksheet.Cells[1, 3].Value = "Added";
-        worksheet.Column(3).Width = 20;
+        worksheet.Column(3).Width = 23;
         worksheet.Cells[1, 4].Value = "Data Center";
         worksheet.Column(4).Width = 10;
         worksheet.Cells[1, 5].Value = "System Uri";
@@ -142,7 +142,7 @@ public class MassAuditExporter : IMassAuditExporter
         worksheet.Cells[1, 12].Value = "Audit Status";
         worksheet.Column(12).Width = 21;
         worksheet.Cells[1, 13].Value = "Audit Sent At";
-        worksheet.Column(13).Width = 20;
+        worksheet.Column(13).Width = 23;
         worksheet.Cells[1, 14].Value = "Audit Sent To";
         worksheet.Column(14).Width = 23;
         worksheet.Cells[1, 15].Value = "Audit Sent To Count";
@@ -161,7 +161,8 @@ public class MassAuditExporter : IMassAuditExporter
             worksheet.Cells[row, 1].Value = venue.Id;
             worksheet.Cells[row, 2].Value = venue.Name;
             worksheet.Cells[row, 3].Value = venue.Added;
-            worksheet.Cells[row, 3].Style.Numberformat.Format = "dd/mm/yyyy hh:mm:ss";
+            worksheet.Cells[row, 3].Style.Numberformat.Format = "yyyy/mm/dd hh:mm:ss";
+            worksheet.Cells[row, 3].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
             worksheet.Cells[row, 4].Value = venue.Location?.DataCenter ?? "";
             worksheet.Cells[row, 5].Value = $"https://ffxivvenues.com/#{venue.Id}";
             worksheet.Cells[row, 5].Hyperlink = new Uri($"https://ffxivvenues.com/#{venue.Id}");
@@ -178,12 +179,16 @@ public class MassAuditExporter : IMassAuditExporter
             worksheet.Cells[row, 10].Value = venue.Openings?.Count ?? 0;
             worksheet.Cells[row, 11].Value = audit?.id ?? "";
             worksheet.Cells[row, 12].Value = audit?.Status;
-            worksheet.Cells[row, 13].Value = audit?.SentTime.ToString("g") ?? "";
+            worksheet.Cells[row, 13].Value = audit?.SentTime;
+            worksheet.Cells[row, 13].Style.Numberformat.Format = "yyyy/mm/dd hh:mm:ss";
+            worksheet.Cells[row, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
             worksheet.Cells[row, 14].Value = audit?.Messages != null
                 ? string.Join(",", audit.Messages.Where(m => m.Status == MessageStatus.Sent).Select(m => m.UserId))
                 : "";
             worksheet.Cells[row, 15].Value = audit?.Messages?.Count(m => m.Status == MessageStatus.Sent) ?? 0;
-            worksheet.Cells[row, 16].Value = audit?.CompletedAt?.ToString("g") ?? "";
+            worksheet.Cells[row, 16].Value = audit?.CompletedAt;
+            worksheet.Cells[row, 16].Style.Numberformat.Format = "yyyy/mm/dd hh:mm:ss";
+            worksheet.Cells[row, 16].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
             worksheet.Cells[row, 17].Value = audit?.CompletedBy == 0 ?  "" : audit?.CompletedBy.ToString();
             worksheet.Cells[row, 17].Style.Numberformat.Format = "@";
 
