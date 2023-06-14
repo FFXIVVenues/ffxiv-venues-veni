@@ -63,7 +63,13 @@ namespace FFXIVVenues.Veni.Utils.Broadcasting
                 return new(userId, null, MessageStatus.Failed,
                     $"Could not get user. {e.Message}");
             }
-
+            
+            if (user == null)
+            {
+                return new(userId, null, MessageStatus.Failed,
+                    $"User was not found.");
+            }
+            
             if (user.Username.StartsWith("Deleted User"))
             {
                 return new(userId, null, MessageStatus.FailedUserDeleted,

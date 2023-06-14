@@ -5,13 +5,14 @@ using FFXIVVenues.Veni.Utils.Broadcasting;
 
 namespace FFXIVVenues.Veni.VenueAuditing;
 
+[Serializable]
 public class VenueAuditRecord : IEntity
 {
     public string id { get; init; }
     public string VenueId { get; init; }
     public string MassAuditId { get; init; }
     public VenueAuditStatus Status { get; set; }
-    public DateTime SentTime { get; set; } = DateTime.UtcNow;
+    public DateTime SentTime { get; set; }
     public ulong RequestedIn { get; set; }
     public ulong RequestedBy { get; set; }
     public ulong CompletedBy { get; set; }

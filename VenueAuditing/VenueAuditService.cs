@@ -34,6 +34,9 @@ public class VenueAuditService : IVenueAuditService
     public VenueAudit CreateAuditFor(Venue venue, VenueAuditRecord record) =>
         new (venue, record, this._client, this._venueRenderer, this._repository);
 
+    public Task<VenueAuditRecord> GetAudit(string auditId) =>
+        this._repository.GetByIdAsync<VenueAuditRecord>(auditId);
+    
     public Task<VenueAuditRecord> GetLatestRecordFor(Venue venue) =>
         this.GetLatestRecordFor(venue.Id);
 

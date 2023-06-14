@@ -5,6 +5,7 @@ using FFXIVVenues.Veni.VenueAuditing.MassAudit.Models;
 
 namespace FFXIVVenues.Veni.VenueAuditing.MassAudit;
 
+[Serializable]
 public class MassAuditRecord : IEntity
 {
 
