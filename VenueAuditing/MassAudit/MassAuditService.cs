@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
@@ -7,6 +10,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Exporting;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Models;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring;
 using NChronicle.Core.Interfaces;
 
 namespace FFXIVVenues.Veni.VenueAuditing.MassAudit;
@@ -20,17 +24,20 @@ internal class MassAuditService :  IMassAuditService
     private readonly IVenueAuditService _venueAuditService;
     private readonly IDiscordClient _client;
     private readonly IMassAuditExporter _massAuditExporter;
+    private readonly IDiscordValidator _discordValidator;
     private bool _pause = false;
     private bool _cancel = false;
     private Task _activeAuditTask;
     private CancellationTokenSource _cancellationTokenSource;
+    private readonly HttpClient _http;
 
     public MassAuditService(IApiService apiService,
         IRepository repository,
         IChronicle chronicle,
         IVenueAuditService venueAuditService,
         IDiscordClient client,
-        IMassAuditExporter massAuditExporter)
+        IMassAuditExporter massAuditExporter, 
+        IDiscordValidator discordValidator)
     {
         this._apiService = apiService;
         this._repository = repository;
@@ -38,6 +45,8 @@ internal class MassAuditService :  IMassAuditService
         this._venueAuditService = venueAuditService;
         this._client = client;
         this._massAuditExporter = massAuditExporter;
+        this._discordValidator = discordValidator;
+        this._http = new HttpClient();
     }
 
     public async Task<ResumeResult> ResumeMassAuditAsync(bool activeOnly)
@@ -230,7 +239,30 @@ internal class MassAuditService :  IMassAuditService
         var audits = await this._repository.GetWhere<VenueAuditRecord>(a => a.MassAuditId == auditRound.id);
         var allVenues = await this._apiService.GetAllVenuesAsync();
 
-        return await this._massAuditExporter.GetExportForMassAuditAsync(auditRound, allVenues, audits.ToList());
+        var invalidDiscords = new HashSet<string>();
+        var invalidSites = new HashSet<string>();
+        foreach (var venue in allVenues)
+        {
+            var audit = audits.FirstOrDefault(a => a.VenueId == venue.Id);
+            if (audit is not { Status: VenueAuditStatus.Failed or VenueAuditStatus.AwaitingResponse })
+                continue;
+
+            if (venue.Discord != null)
+            {
+                var (validity, _) = await this._discordValidator.CheckInviteAsync(venue.Discord.ToString());
+                if (validity is DiscordCheckResult.InvalidInvite) invalidDiscords.Add(venue.Id);
+            }
+
+            if (venue.Website != null)
+            {
+                var siteResult = await this._http.SendAsync(new HttpRequestMessage(HttpMethod.Head, venue.Website));
+                if (!siteResult.IsSuccessStatusCode)
+                    invalidSites.Add(venue.Id);
+            }
+        }
+
+        return await this._massAuditExporter.GetExportForMassAuditAsync(auditRound, allVenues, audits.ToList(), 
+            invalidSites, invalidDiscords);
     }
 
     private void StartThread(MassAuditRecord massAudit)

@@ -34,6 +34,7 @@ using FFXIVVenues.Veni.UserSupport;
 using FFXIVVenues.Veni.VenueApproval;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Exporting;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring;
 using FFXIVVenues.Veni.VenueDiscovery.Commands;
 using FFXIVVenues.Veni.VenueObservations;
 using FFXIVVenues.Veni.VenueRendering;
@@ -119,6 +120,7 @@ serviceCollection.AddSingleton<IInteractionContextFactory, InteractionContextFac
 serviceCollection.AddSingleton<ICommandCartographer, CommandCartographer>();
 serviceCollection.AddSingleton<IMassAuditService, MassAuditService>();
 serviceCollection.AddSingleton<IMassAuditExporter, MassAuditExporter>();
+serviceCollection.AddSingleton<IDiscordValidator, DiscordValidator>();
 
 var discordClient = GetDiscordSocketClient(config, chronicle);
 serviceCollection.AddSingleton<IDiscordClient>(discordClient);
