@@ -236,7 +236,7 @@ internal class MassAuditService :  IMassAuditService
         if (auditRound == null)
             return null;
 
-        var audits = await this._repository.GetWhere<VenueAuditRecord>(a => a.MassAuditId == auditRound.id);
+        var audits = (await this._repository.GetWhere<VenueAuditRecord>(a => a.MassAuditId == auditRound.id)).ToList();
         var allVenues = await this._apiService.GetAllVenuesAsync();
 
         var invalidDiscords = new HashSet<string>();
@@ -261,7 +261,7 @@ internal class MassAuditService :  IMassAuditService
             }
         }
 
-        return await this._massAuditExporter.GetExportForMassAuditAsync(auditRound, allVenues, audits.ToList(), 
+        return await this._massAuditExporter.GetExportForMassAuditAsync(auditRound, allVenues, audits, 
             invalidSites, invalidDiscords);
     }
 
