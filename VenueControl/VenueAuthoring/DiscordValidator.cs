@@ -15,7 +15,7 @@ public class DiscordValidator : IDiscordValidator
 {
     
     static HttpClient _discordClient = new HttpClient();
-    static Regex _discordPattern = new Regex(@"(https?:\/\/)?(www\.)?((discord(app)?(\.com|\.io)(\/invite)?)|(discord\.gg))\/(\w+)");
+    static Regex _discordPattern = new Regex(@"(https?:\/\/)?(www\.)?((discord(app)?(\.com|\.io)(\/invite)?)|(discord\.gg))\/([\w-]+)");
 
     public async Task<(DiscordCheckResult, DiscordInvite)> CheckInviteAsync(string rawDiscordString)
     {
