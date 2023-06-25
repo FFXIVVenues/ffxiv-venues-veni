@@ -61,25 +61,25 @@ namespace FFXIVVenues.Veni.Utils
 
         public static string[] AskForWardMessage = new[]
         {
-            "Which **number ward** are you in? (1-30)",
-            "Which **number ward** is your venue in? (1-30)",
-            "Which **ward** are you in, cutie? (1-30)",
-            "What's the ward, hun? (1-30)"
+            "Which **number ward** are you in? (type 1-30)",
+            "Which **number ward** is your venue in? (type 1-30)",
+            "Which **ward** are you in, cutie? (type 1-30)",
+            "What's the ward, hun? (type 1-30)"
         };
 
         public static string[] AskForRoomMessage = new[]
         {
-            "and the **room number**? (1-60)",
-            "Which **number room** are you? (1-60)",
-            "Which **number room** is your venue? (1-60)"
+            "and the **room number**? (type 1-60)",
+            "Which **number room** are you? (type 1-60)",
+            "Which **number room** is your venue? (type 1-60)"
         };
 
 
         public static string[] AskForPlotMessage = new[]
         {
-            "and the **plot number**? (1-60)",
-            "Which **number plot** are you? (1-60)",
-            "Which **number plot** is your venue? (1-60)"
+            "and the **plot number**? (type 1-60)",
+            "Which **number plot** are you? (type 1-60)",
+            "Which **number plot** is your venue? (type 1-60)"
         };
 
         public static string[] AskForSubdivisionMessage = new[]

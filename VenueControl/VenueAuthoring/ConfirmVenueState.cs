@@ -79,7 +79,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
             await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
                 embed: this._venueRenderer.RenderEmbed(venue, bannerUrl).Build(),
                 component: new ComponentBuilder()
-                    .WithButton("Looks perfect!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
+                    .WithButton("Looks perfect! Save!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
                     .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .WithButton("Cancel", c.Session.RegisterComponentHandler(this.Cancel, ComponentPersistence.ClearRow), ButtonStyle.Danger)
                     .Build());
@@ -106,7 +106,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
                 await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
                     embed: this._venueRenderer.RenderEmbed(venue, bannerUrl).Build(),
                     components: new ComponentBuilder()
-                        .WithButton("Looks perfect!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
+                        .WithButton("Looks perfect! Save!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
                         .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                         .WithButton("Cancel", c.Session.RegisterComponentHandler(this.Cancel, ComponentPersistence.ClearRow), ButtonStyle.Danger)
                         .Build());
