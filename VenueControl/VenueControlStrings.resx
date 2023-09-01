@@ -26,7 +26,7 @@
     </data>
     <data name="AskForDescriptionMessage" xml:space="preserve">
         <value>Could you give me an ad or **description** of the venue? Something for players to read when they click on your venue.
-_(@Veni Ki Veni's Mainframe is the premiere party location...)_</value>
+`(example: @Veni Ki Veni's Mainframe is the premiere party location...)`</value>
     </data>
     <data name="AskForDescriptionDirectMessage" xml:space="preserve">
         <value>Could you give me an ad or **description** of the venue? Something for players to read when they click on your venue.</value>
@@ -36,14 +36,14 @@ _(@Veni Ki Veni's Mainframe is the premiere party location...)_</value>
     </data>
     <data name="AskForNameMessage" xml:space="preserve">
         <value>Great, what is the **name**? 🙂
-_(@Veni Ki Veni's Mainframe)_</value>
+`(example: @Veni Ki Veni's Mainframe)`</value>
     </data>
     <data name="AskIfHasMareMessage" xml:space="preserve">
         <value>Does your venue have a public **Mare SyncShell**?</value>
     </data>
     <data name="AskForMareIdMessage" xml:space="preserve">
         <value>Nicuu! 💕 What's the **SyncShell ID/Alias**?
-_(@Veni Ki MSS-123456789ABC)_</value>
+`(example: @Veni Ki MSS-123456789ABC)`</value>
     </data>
     <data name="AskForMareIdDirectMessage" xml:space="preserve">
         <value>Nicuu! 💕 What's the **SyncShell ID/Alias**?</value>
@@ -53,6 +53,38 @@ _(@Veni Ki MSS-123456789ABC)_</value>
     </data>
     <data name="AskForMarePasswordMessage" xml:space="preserve">
         <value>and the **SyncShell password**? 
-_(@Veni Ki MyV3nu3SyncShell)_</value>
+`(example: @Veni Ki MyV3nu3SyncShell)`</value>
+    </data>
+    <data name="AskForOpenTimeDirectMessage" xml:space="preserve">
+        <value>What time do you **open**?
+`(example: 6:30pm, 9pm or 1:30am)`</value>
+    </data>
+    <data name="AskForOpenTimeMessage" xml:space="preserve">
+        <value>What time do you **open**?
+`(examples: @Veni Ki 6:30pm or @Veni Ki 9pm)`</value>
+    </data>
+    <data name="AskForCloseTimeDirectMessage" xml:space="preserve">
+        <value>What time do you **close**?
+`(example: 6:30pm, 9pm or 1:30am)`</value>
+    </data>
+    <data name="AskForCloseTimeMessage" xml:space="preserve">
+        <value>What time do you **close**?
+`(examples: @Veni Ki 6:30pm or @Veni Ki 9pm)`</value>
+    </data>
+    <data name="AskForOpenTimeOnDayMessage" xml:space="preserve">
+        <value>What time do you **open** on **{0}**?
+`(examples: @Veni Ki 6:30pm or @Veni Ki 9pm)`</value>
+    </data>
+    <data name="AskForOpenTimeOnDayDirectMessage" xml:space="preserve">
+        <value>What time do you **open** on **{0}**?
+`(example: 6:30pm, 9pm or 1:30am)`</value>
+    </data>
+    <data name="AskForCloseTimeOnDayMessage" xml:space="preserve">
+        <value>What time do you **close** on **{0}**?
+`(examples: @Veni Ki 6:30pm or @Veni Ki 9pm)`</value>
+    </data>
+    <data name="AskForCloseTimeOnDayDirectMessage" xml:space="preserve">
+        <value>What time do you **close** on **{0}**?
+`(example: 6:30pm, 9pm or 1:30am)`</value>
     </data>
 </root>
