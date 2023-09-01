@@ -148,7 +148,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
         private Task Cancel(MessageComponentVeniInteractionContext c)
         {
             _ = c.Session.ClearState(c);
-            return c.Interaction.RespondAsync("It's as if it never happened! 😅");
+            return c.Interaction.Channel.SendMessageAsync("It's as if it never happened! 😅");
         }
 
         private Task SendToApprovers(Venue venue, string bannerUrl) =>
