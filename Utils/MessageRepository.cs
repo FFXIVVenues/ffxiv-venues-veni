@@ -35,8 +35,8 @@ namespace FFXIVVenues.Veni.Utils
         public static string[] AskForNameMessage = new[]
         {
             "Let's get started. What is the **name** of your venue?",
-            "What are we **naming** it?",
-            "Alrighty, what is the **name**? :smile:",
+            "Great, what are we **naming** it?",
+            "Great, what is the **name**? :smile:",
             "What's the **name** of your venue?",
             "Please, tell me the **name**!"
         };
@@ -97,7 +97,7 @@ namespace FFXIVVenues.Veni.Utils
 
         public static string[] AskForDescriptionMessage = new[]
         {
-            "Could you give me an ad or **description** of the venue? Something for players to read when they click on your venue.",
+            "",
             "Could you write a **introduction/advertisement** of the venue? Players will see it in your card on the index. :)"
         };
 

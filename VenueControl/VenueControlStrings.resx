@@ -24,4 +24,35 @@
     <data name="Dismissed" xml:space="preserve">
         <value>Okay! Let me know if you need anything. 💕 </value>
     </data>
+    <data name="AskForDescriptionMessage" xml:space="preserve">
+        <value>Could you give me an ad or **description** of the venue? Something for players to read when they click on your venue.
+_(@Veni Ki Veni's Mainframe is the premiere party location...)_</value>
+    </data>
+    <data name="AskForDescriptionDirectMessage" xml:space="preserve">
+        <value>Could you give me an ad or **description** of the venue? Something for players to read when they click on your venue.</value>
+    </data>
+    <data name="AskForNameDirectMessage" xml:space="preserve">
+        <value>Great, what is the **name**? 🙂</value>
+    </data>
+    <data name="AskForNameMessage" xml:space="preserve">
+        <value>Great, what is the **name**? 🙂
+_(@Veni Ki Veni's Mainframe)_</value>
+    </data>
+    <data name="AskIfHasMareMessage" xml:space="preserve">
+        <value>Does your venue have a public **Mare SyncShell**?</value>
+    </data>
+    <data name="AskForMareIdMessage" xml:space="preserve">
+        <value>Nicuu! 💕 What's the **SyncShell ID/Alias**?
+_(@Veni Ki MSS-123456789ABC)_</value>
+    </data>
+    <data name="AskForMareIdDirectMessage" xml:space="preserve">
+        <value>Nicuu! 💕 What's the **SyncShell ID/Alias**?</value>
+    </data>
+    <data name="AskForMarePasswordDirectMessage" xml:space="preserve">
+        <value>and the **SyncShell password**? </value>
+    </data>
+    <data name="AskForMarePasswordMessage" xml:space="preserve">
+        <value>and the **SyncShell password**? 
+_(@Veni Ki MyV3nu3SyncShell)_</value>
+    </data>
 </root>
