@@ -4,6 +4,7 @@ using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.MareEntry;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.LocationEntry
 {
@@ -30,7 +31,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             if (c.Session.GetItem<bool>("modifying"))
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
 
-            return c.Session.MoveStateAsync<SfwEntrySessionState>(c);
+            return c.Session.MoveStateAsync<HasMareEntrySessionState>(c);
         }
 
     }
