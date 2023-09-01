@@ -10,17 +10,6 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 {
     class ConsistentOpeningTimeEntrySessionState : ISessionState
     {
-
-        private static string[] _openingMessages = new[]
-        {
-            "What time do you **open**? (for example 8:30pm, 9pm or 1:30am)"
-        };
-
-        private static string[] _closingMessages = new[]
-        {
-            "What time do you **close**? (for example 8:30pm, 9pm or 1:30am)"
-        };
-
         private static Regex _regex = new Regex("(?<hour>[0-9]|(1[0-2]))(:?(?<minute>[0-5][0-9]))? ?(?<meridiem>am|pm)");
 
         private Venue _venue;
@@ -43,8 +32,11 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
 
-            var messages = !this._nowSettingClosing.Value ? _openingMessages : _closingMessages;
-            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {messages.PickRandom()}",
+            var message = !this._nowSettingClosing.Value ? VenueControlStrings.AskForOpenTimeMessage : VenueControlStrings.AskForCloseTimeMessage;
+            if (c.Interaction.Channel is IDMChannel)
+                message = !this._nowSettingClosing.Value ? VenueControlStrings.AskForOpenTimeDirectMessage : VenueControlStrings.AskForCloseTimeDirectMessage;
+
+            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {message}",
                                                 new ComponentBuilder().WithBackButton(c).Build());
         }
 

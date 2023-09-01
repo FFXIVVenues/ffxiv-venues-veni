@@ -7,6 +7,7 @@ using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueAuditing;
+using FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates;
 using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
@@ -48,14 +49,21 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
                 .AddOption("The next 4 weeks", "672")
                 .AddOption("The next 6 weeks", "1008")
                 .AddOption("The next 2 months", "1344")
-                .AddOption("The next 3 months", "2016");
+                .AddOption("The next 3 months", "2016")
+                .AddOption("Permanently (delete)", "perm");
             return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
         private async Task OnComplete(MessageComponentVeniInteractionContext c)
         {
-            var until = int.Parse(c.Interaction.Data.Values.Single());
-
+            var value = c.Interaction.Data.Values.Single();
+            if (value == "perm")
+            {
+                await c.Session.MoveStateAsync<DeleteVenueSessionState>(c);
+                return;
+            }
+                
+            var until = int.Parse(value);
             if (until == 0)
             {
                 var end = this._venue.OpenOverrides.FirstOrDefault(o => o.IsNow)?.End ??
