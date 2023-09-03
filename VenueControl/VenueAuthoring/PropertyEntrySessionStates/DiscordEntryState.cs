@@ -51,7 +51,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                     return;
                 case DiscordCheckResult.IsTemporaryInvite:
                     await c.Interaction.Channel.SendMessageAsync(
-                        $"That invite link is not permanent, it'll expire on {invite.expires_at.Value:m}.");
+                        $" I'm sorry, that invite link is not permanent, it'll expire on {invite.expires_at.Value:m}. 🥲");
                     return;
             }
 
