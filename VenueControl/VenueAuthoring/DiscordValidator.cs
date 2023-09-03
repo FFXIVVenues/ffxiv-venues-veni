@@ -33,7 +33,7 @@ public class DiscordValidator : IDiscordValidator
         var invite = await JsonSerializer.DeserializeAsync<DiscordInvite>(response);
 
         if (invite.expires_at != null)
-            return (DiscordCheckResult.IsTemporaryInvite, null);
+            return (DiscordCheckResult.IsTemporaryInvite, invite);
 
         return (DiscordCheckResult.Valid, invite);
     }
