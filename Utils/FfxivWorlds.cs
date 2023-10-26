@@ -10,7 +10,7 @@ public static class FfxivWorlds
     private static readonly Dictionary<string, bool> Regions = new()
     {
         { "North America", true },
-        { "Oceania", false },
+        { "Oceania", true },
         { "Europe", true },
         { "Japan", false },
     };
