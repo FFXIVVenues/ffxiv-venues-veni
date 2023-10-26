@@ -124,6 +124,9 @@ namespace FFXIVVenues.Veni.VenueRendering
                             "GMT Standard Time" => "GMT",
                             "Europe/London" => "GMT",
                             "UTC" => "Server Time",
+                            "Australia/Perth" => "AWT",
+                            "Australia/Adelaide" => "ACT",
+                            "Australia/Sydney" => "AET",
                             _ => opening.Start.TimeZone
                         }).Append(")");
                     if (opening.Start.NextDay)
@@ -162,6 +165,9 @@ namespace FFXIVVenues.Veni.VenueRendering
                                 "GMT Standard Time" => "GMT",
                                 "Europe/London" => "GMT",
                                 "UTC" => "Server Time",
+                                "Australia/Perth" => "AWT",
+                                "Australia/Adelaide" => "ACT",
+                                "Australia/Sydney" => "AET",
                                 _ => opening.Start.TimeZone
                             })
                             .Append(')');
