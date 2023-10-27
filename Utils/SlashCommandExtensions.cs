@@ -11,6 +11,7 @@ namespace FFXIVVenues.Veni.Utils
         public static long? GetLongArg(this SlashCommandVeniInteractionContext command, string name)
         {
             var option = command.Interaction.Data.Options.FirstOrDefault(o => o.Name == name);
+            if (option == null) option = command.Interaction.Data.Options.FirstOrDefault()?.Options?.FirstOrDefault(o => o.Name == name);
             if (option == null) return null;
 
             return (long)option.Value;
@@ -19,6 +20,7 @@ namespace FFXIVVenues.Veni.Utils
         public static int? GetInt(this SlashCommandVeniInteractionContext command, string name)
         {
             var option = command.Interaction.Data.Options.FirstOrDefault(o => o.Name == name);
+            if (option == null) option = command.Interaction.Data.Options.FirstOrDefault()?.Options?.FirstOrDefault(o => o.Name == name);
             if (option == null) return null;
 
             return (int) (double) option.Value;
@@ -27,6 +29,7 @@ namespace FFXIVVenues.Veni.Utils
         public static bool? GetBoolArg(this SlashCommandVeniInteractionContext command, string name)
         {
             var option = command.Interaction.Data.Options.FirstOrDefault(o => o.Name == name);
+            if (option == null) option = command.Interaction.Data.Options.FirstOrDefault()?.Options?.FirstOrDefault(o => o.Name == name);
             if (option == null) return null;
 
             return (bool) option.Value;
@@ -43,7 +46,9 @@ namespace FFXIVVenues.Veni.Utils
 
         public static T GetObjectArg<T>(this SlashCommandVeniInteractionContext command, string name) where T : class
         {
+            
             var option = command.Interaction.Data.Options.FirstOrDefault(o => o.Name == name);
+            if (option == null) option = command.Interaction.Data.Options.FirstOrDefault()?.Options?.FirstOrDefault(o => o.Name == name);
             if (option == null) return null;
 
             return option.Value as T;
@@ -52,6 +57,7 @@ namespace FFXIVVenues.Veni.Utils
         public static T? GetEnumArg<T>(this SlashCommandVeniInteractionContext command, string name) where T : struct, Enum
         {
             var option = command.Interaction.Data.Options.FirstOrDefault(o => o.Name == name);
+            if (option == null) option = command.Interaction.Data.Options.FirstOrDefault()?.Options?.FirstOrDefault(o => o.Name == name);
             if (option == null) return null;
 
             var value = (long)option?.Value;
