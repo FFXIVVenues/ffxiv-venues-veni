@@ -137,15 +137,11 @@ commandBroker.Add<HelpCommand.CommandFactory, HelpCommand.CommandHandler>(HelpCo
 commandBroker.Add<ShowOpenCommand.CommandFactory, ShowOpenCommand.CommandHandler>(ShowOpenCommand.COMMAND_NAME);
 commandBroker.Add<ShowForCommand.CommandFactory, ShowForCommand.CommandHandler>(ShowForCommand.COMMAND_NAME);
 commandBroker.Add<ShowMineCommand.CommandFactory, ShowMineCommand.CommandHandler>(ShowMineCommand.COMMAND_NAME);
-commandBroker.Add<InspectCommand.Factory, InspectCommand.Handler>(InspectCommand.COMMAND_NAME);
-commandBroker.Add<OfflineJsonCommand.CommandFactory, OfflineJsonCommand.CommandHandler>(OfflineJsonCommand.COMMAND_NAME);
-commandBroker.Add<SetRoleMap.CommandFactory, SetRoleMap.CommandHandler>(SetRoleMap.COMMAND_NAME);
 commandBroker.Add<SetWelcomeJoinersCommand.CommandFactory, SetWelcomeJoinersCommand.CommandHandler>(SetWelcomeJoinersCommand.COMMAND_NAME);
 commandBroker.Add<SetFormatNamesCommand.CommandFactory, SetFormatNamesCommand.CommandHandler>(SetFormatNamesCommand.COMMAND_NAME);
 commandBroker.Add<ShowCountCommand.CommandFactory, ShowCountCommand.CommandHandler>(ShowCountCommand.COMMAND_NAME);
 commandBroker.Add<GraphCommand.CommandFactory, GraphCommand.CommandHandler>(GraphCommand.COMMAND_NAME);
 commandBroker.Add<GetUnapprovedCommand.CommandFactory, GetUnapprovedCommand.CommandHandler>(GetUnapprovedCommand.COMMAND_NAME);
-commandBroker.Add<BlacklistCommand.CommandFactory, BlacklistCommand.CommandHandler>(BlacklistCommand.COMMAND_NAME);
 
 serviceProvider.GetService<IComponentBroker>()
     .AddVenueObservationHandlers()
