@@ -3,7 +3,7 @@ using NChronicle.Core.Model;
 
 namespace FFXIVVenues.Veni.Infrastructure.Logging
 {
-    internal interface IDiscordChronicleLibrary
+    public interface IDiscordChronicleLibrary
     {
         void Clear();
         bool IsSubscribed(ISocketMessageChannel channel);

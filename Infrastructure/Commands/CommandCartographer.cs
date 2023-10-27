@@ -25,8 +25,9 @@ public class CommandCartographer : ICommandCartographer
 
         foreach (var @type in types)
         {
-            var commandAttributes = type.GetCustomAttributes<DiscordCommandAttribute>()!;
-            var argAttributes = @type.GetCustomAttributes<DiscordCommandArgumentAttribute>().ToArray();
+            var commandAttributes = @type.GetCustomAttributes<DiscordCommandAttribute>()!;
+            var optionAttributes = @type.GetCustomAttributes<DiscordCommandOptionAttribute>().ToArray();
+            var optionChoiceAttributes = @type.GetCustomAttributes<DiscordCommandOptionChoiceAttribute>().ToArray();
             
             foreach (var commandAttribute in commandAttributes)
             {
@@ -34,23 +35,65 @@ public class CommandCartographer : ICommandCartographer
                 var commandPath = commandAttribute.Command.Split(' ');
                 handlers.Add(string.Join(' ', commandPath), @type);
                 var command = GetOrCreateCommand(commands, commandPath[0]);
+                command.WithDMPermission(command.IsDMEnabled && commandAttribute.DmPermission)
+                    .WithDefaultMemberPermissions(command.DefaultMemberPermissions | commandAttribute.MemberPermissions);
                 if (commandPath.Length == 1)
                 {
-                    command.WithDescription(commandAttribute.Description);
-                    foreach (var arg in argAttributes)
-                        command.AddOption(arg.Name, arg.Type, arg.Description, arg.Required);
+                    command.WithDescription(commandAttribute.Description)
+                        .WithDMPermission(commandAttribute.DmPermission)
+                        .WithDefaultMemberPermissions(commandAttribute.MemberPermissions);
+                    command.AddOptions(AddCommandOptions(optionAttributes, optionChoiceAttributes).ToArray());
                 }
                 else
                 {
                     var subCommand = GetOrCreateSubCommand(command, commandPath[1..]);
                     subCommand.WithDescription(commandAttribute.Description);
-                    foreach (var arg in argAttributes)
-                        subCommand.AddOption(arg.Name, arg.Type, arg.Description, arg.Required);
+                    subCommand.AddOptions(AddCommandOptions(optionAttributes, optionChoiceAttributes).ToArray());
                 }
             }
         }
 
         return (commands.ToArray(), handlers);
+    }
+
+    private static List<SlashCommandOptionBuilder> AddCommandOptions(DiscordCommandOptionAttribute[] optionAttributes,
+        DiscordCommandOptionChoiceAttribute[] optionChoiceAttributes)
+    {
+        var options = new List<SlashCommandOptionBuilder>();
+        foreach (var optionAttribute in optionAttributes)
+        {
+            var option = new SlashCommandOptionBuilder()
+                .WithName(optionAttribute.Name)
+                .WithDescription(optionAttribute.Description)
+                .WithType(optionAttribute.Type)
+                .WithRequired(optionAttribute.Required);
+            foreach (var optionChoice in optionChoiceAttributes)
+            {
+                if (optionChoice.OptionName != optionAttribute.Name) continue;
+                switch (optionChoice.ChoiceValue)
+                {
+                    case int value:
+                        option.AddChoice(optionChoice.ChoiceName, value);
+                        break;
+                    case string value:
+                        option.AddChoice(optionChoice.ChoiceName, value);
+                        break;
+                    case double value:
+                        option.AddChoice(optionChoice.ChoiceName, value);
+                        break;
+                    case float value:
+                        option.AddChoice(optionChoice.ChoiceName, value);
+                        break;
+                    case long value:
+                        option.AddChoice(optionChoice.ChoiceName, value);
+                        break;
+                }
+            }
+
+            options.Add(option);
+        }
+
+        return options;
     }
 
     private static SlashCommandBuilder GetOrCreateCommand(in List<SlashCommandBuilder> commands, string commandName)
