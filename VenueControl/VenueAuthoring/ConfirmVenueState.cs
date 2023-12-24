@@ -74,10 +74,11 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
         {
             var bannerUrl = c.Session.GetItem<string>("bannerUrl");
             var modifying = c.Session.GetItem<bool>("modifying");
+            var isBiweeklySchedule = c.Session.GetItem<bool>("hasBiweeklySchedule");
             var venue = c.Session.GetVenue();
-
+            
             await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
-                embed: this._venueRenderer.RenderEmbed(venue, bannerUrl).Build(),
+                embed: this._venueRenderer.RenderEmbed(venue, bannerUrl, VenueRenderFlags.AddBiweeklyScheduleUserMessage).Build(),
                 component: new ComponentBuilder()
                     .WithButton("Looks perfect! Save!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
                     .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
@@ -89,6 +90,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
         {
             var isNewVenue = c.Session.GetItem<bool>("isNewVenue");
             var modifying = c.Session.GetItem<bool>("modifying");
+            var isBiweeklySchedule = c.Session.GetItem<bool>("hasBiweeklySchedule");
+
 
             _ = c.Interaction.Channel.SendMessageAsync(_workingOnItResponse.PickRandom());
             _ = c.Interaction.Channel.TriggerTypingAsync();
@@ -104,7 +107,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
             {
                 _ = c.Interaction.Channel.SendMessageAsync("Ooops! Something went wrong. 😢");
                 await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
-                    embed: this._venueRenderer.RenderEmbed(venue, bannerUrl).Build(),
+                    embed: this._venueRenderer.RenderEmbed(venue, bannerUrl, VenueRenderFlags.AddBiweeklyScheduleUserMessage).Build(),
                     components: new ComponentBuilder()
                         .WithButton("Looks perfect! Save!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
                         .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
@@ -136,7 +139,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
             else
             {
                 await c.Interaction.Channel.SendMessageAsync(_successfulNewResponse.PickRandom());
-                await SendToApprovers(venue, bannerUrl);
+                await SendToApprovers(venue, bannerUrl, isBiweeklySchedule);
             }
 
             _ = c.Session.ClearState(c);
@@ -151,8 +154,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
             return c.Interaction.Channel.SendMessageAsync("It's as if it never happened! 😅");
         }
 
-        private Task SendToApprovers(Venue venue, string bannerUrl) =>
-            this._venueApprovalService.SendForApproval(venue, bannerUrl);
+        private Task SendToApprovers(Venue venue, string bannerUrl, bool needsBiweeklyAdding) =>
+            this._venueApprovalService.SendForApproval(venue, bannerUrl, VenueRenderFlags.AddBiweeklyScheduleStaffMessage);
 
     }
 }

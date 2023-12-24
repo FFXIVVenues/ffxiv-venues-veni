@@ -60,6 +60,33 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to We have a set biweekly+ schedule.
+        /// </summary>
+        internal static string AnswerHasBiweeklySchedule {
+            get {
+                return ResourceManager.GetString("AnswerHasBiweeklySchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No, we don&apos;t have a set schedule.
+        /// </summary>
+        internal static string AnswerHasNoSchedule {
+            get {
+                return ResourceManager.GetString("AnswerHasNoSchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes, we have a set weekly schedule.
+        /// </summary>
+        internal static string AnswerHasWeeklySchedule {
+            get {
+                return ResourceManager.GetString("AnswerHasWeeklySchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to What time do you **close**?
         ///`(example: 6:30pm, 9pm or 1:30am)`.
         /// </summary>
@@ -225,11 +252,29 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Oki! Do you have a weekly opening schedule?.
+        /// </summary>
+        internal static string AskIfHasSchedule {
+            get {
+                return ResourceManager.GetString("AskIfHasSchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Okay! Let me know if you need anything. 💕 .
         /// </summary>
         internal static string Dismissed {
             get {
                 return ResourceManager.GetString("Dismissed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Okay! ⚠️ After you&apos;ve saved your venue you&apos;ll need to create a ticket in our discord server and speak to our staff to set that up for you..
+        /// </summary>
+        internal static string RespondContactStaffForBiweekly {
+            get {
+                return ResourceManager.GetString("RespondContactStaffForBiweekly", resourceCulture);
             }
         }
         

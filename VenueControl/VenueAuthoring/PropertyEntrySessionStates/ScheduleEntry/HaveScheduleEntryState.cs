@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
@@ -9,34 +10,38 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
     class HaveScheduleEntrySessionState : ISessionState
     {
 
-        private static string[] _messages = new[]
-        {
-            "Oki! Do you have a weekly opening schedule?",
-            "Great! Does your venue have a weekly schedule for opening?",
-            "Is your venue generally open at the same days and times every week?",
-        };
-
         public Task Enter(VeniInteractionContext c)
         {
-            return c.Interaction.RespondAsync(_messages.PickRandom(),
+            return c.Interaction.RespondAsync(VenueControlStrings.AskIfHasSchedule,
                 new ComponentBuilder()
                     .WithBackButton(c)
-                    .WithButton("Yes, we have a set weekly schedule",
+                    .WithButton(VenueControlStrings.AnswerHasWeeklySchedule,
                         c.Session.RegisterComponentHandler(cm => 
                             cm.Session.MoveStateAsync<TimeZoneEntrySessionState>(cm), 
                         ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("No, we don't have a set weekly schedule",
-                        c.Session.RegisterComponentHandler(cm =>
-                        {
-                            var venue = c.Session.GetVenue();
-                            venue.Openings = new();
-
-                            if (cm.Session.GetItem<bool>("modifying"))
-                                return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
-                            return cm.Session.MoveStateAsync<BannerEntrySessionState>(cm);
-                        }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton(VenueControlStrings.AnswerHasBiweeklySchedule,
+                        c.Session.RegisterComponentHandler(async cm =>
+                            {
+                                cm.Session.SetItem("hasBiweeklySchedule", true);
+                                await cm.Interaction.Channel.SendMessageAsync(VenueControlStrings.RespondContactStaffForBiweekly);
+                                await NoWeeklySchedule(c, cm);
+                            }, 
+                            ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton(VenueControlStrings.AnswerHasNoSchedule,
+                        c.Session.RegisterComponentHandler(cm => NoWeeklySchedule(c, cm), 
+                            ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
 
+        private static async Task NoWeeklySchedule(VeniInteractionContext c, MessageComponentVeniInteractionContext cm)
+        {
+            var venue = c.Session.GetVenue();
+            venue.Schedule = new();
+
+            if (cm.Session.GetItem<bool>("modifying"))
+                await cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
+            else
+                await cm.Session.MoveStateAsync<BannerEntrySessionState>(cm);
+        }
     }
 }

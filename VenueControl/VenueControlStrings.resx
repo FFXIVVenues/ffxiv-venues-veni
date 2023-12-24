@@ -87,4 +87,19 @@
         <value>What time do you **close** on **{0}**?
 `(example: 6:30pm, 9pm or 1:30am)`</value>
     </data>
+    <data name="AskIfHasSchedule" xml:space="preserve">
+        <value>Oki! Do you have a weekly opening schedule?</value>
+    </data>
+    <data name="AnswerHasWeeklySchedule" xml:space="preserve">
+        <value>Yes, we have a set weekly schedule</value>
+    </data>
+    <data name="AnswerHasBiweeklySchedule" xml:space="preserve">
+        <value>We have a set biweekly+ schedule</value>
+    </data>
+    <data name="AnswerHasNoSchedule" xml:space="preserve">
+        <value>No, we don't have a set schedule</value>
+    </data>
+    <data name="RespondContactStaffForBiweekly" xml:space="preserve">
+        <value>Okay! ⚠️ After you've saved your venue you'll need to create a ticket in our discord server and speak to our staff to set that up for you.</value>
+    </data>
 </root>

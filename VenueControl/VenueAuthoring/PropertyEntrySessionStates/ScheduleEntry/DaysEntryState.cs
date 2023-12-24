@@ -31,9 +31,9 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             this._venue = c.Session.GetVenue();
 
             var component = this.BuildDaysComponent(c).WithBackButton(c);
-            if (this._venue.Openings.Count > 1)
+            if (this._venue.Schedule.Count > 1)
                 component.WithSkipButton<AskIfConsistentTimeEntrySessionState, AskIfConsistentTimeEntrySessionState>(c);
-            else if (this._venue.Openings.Count == 1)
+            else if (this._venue.Schedule.Count == 1)
                 component.WithSkipButton<ConsistentOpeningTimeEntrySessionState, ConsistentOpeningTimeEntrySessionState>(c);
 
             return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskDaysOpenMessage.PickRandom()}", component: component.Build());
@@ -46,18 +46,18 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 .WithMinValues(1)
                 .WithMaxValues(_availableDays.Count);
             foreach (var (label, value) in _availableDays)
-                selectComponent.AddOption(label, value.ToString(), isDefault: this._venue.Openings.Any(o => o.Day == value));
+                selectComponent.AddOption(label, value.ToString(), isDefault: this._venue.Schedule.Any(o => o.Day == value));
 
             return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
         private Task OnComplete(MessageComponentVeniInteractionContext c)
         {
-            this._venue.Openings = c.Interaction.Data.Values
-                                    .Select(d => new Opening { Day = Enum.Parse<Day>(d) })
+            this._venue.Schedule = c.Interaction.Data.Values
+                                    .Select(d => new Schedule { Day = Enum.Parse<Day>(d) })
                                     .ToList();
 
-            if (this._venue.Openings.Count > 1)
+            if (this._venue.Schedule.Count > 1)
                 return c.Session.MoveStateAsync<AskIfConsistentTimeEntrySessionState>(c);
 
             return c.Session.MoveStateAsync<ConsistentOpeningTimeEntrySessionState>(c);

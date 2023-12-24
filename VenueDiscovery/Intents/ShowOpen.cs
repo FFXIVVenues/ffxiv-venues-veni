@@ -40,27 +40,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Intents
             }
 
             var venueModels = this._venues
-                .Select(v => {
-                    DateTime? activeOpeningStart = null;
-                    DateTime? activeOpeningEnd = null;
-                    foreach (var opening in v.Openings)
-                    {
-                        var resolve = opening.Resolve(DateTime.UtcNow);
-                        if (resolve.Open)
-                        {
-                            (_, activeOpeningStart, activeOpeningEnd) = resolve;
-                            break;
-                        }
-                    }
-                    var @override = v.OpenOverrides?.FirstOrDefault(o => o.Open && o.IsNow);
-
-                    return new { 
-                        Venue = v, 
-                        Start = activeOpeningStart != null ? activeOpeningStart.Value : @override.Start,
-                        End = activeOpeningEnd != null ? activeOpeningEnd.Value : @override.End
-                    };
-                })
-                .OrderBy(v => v.Start)
+                .OrderBy(v => v.Resolution.Start)
                 .Take(25);
 
             var selectMenuKey = c.Session.RegisterComponentHandler(this.HandleVenueSelection, ComponentPersistence.PersistRow);
@@ -70,9 +50,9 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Intents
             {
                 var selectMenuOption = new SelectMenuOptionBuilder
                 {
-                    Label = venue.Venue.Name,
-                    Description = $"Open for the next {PrettyPrintNet.TimeSpanExtensions.ToPrettyString(venue.End - DateTime.UtcNow)}",
-                    Value = venue.Venue.Id
+                    Label = venue.Name,
+                    Description = $"Open for the next {PrettyPrintNet.TimeSpanExtensions.ToPrettyString(venue.Resolution.End - DateTimeOffset.Now)}",
+                    Value = venue.Id
                 };
                 selectMenuBuilder.AddOption(selectMenuOption);
             }

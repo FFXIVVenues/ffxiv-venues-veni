@@ -45,13 +45,13 @@ namespace FFXIVVenues.Veni.People
             this._guildManager = guildManager;
         }
 
-        public async Task<BroadcastReceipt> SendForApproval(Venue venue, string bannerUrl)
+        public async Task<BroadcastReceipt> SendForApproval(Venue venue, string bannerUrl, VenueRenderFlags renderFlags)
         {
             var broadcast = new Broadcast(Guid.NewGuid().ToString(), _client);
             _broadcasts[broadcast.Id] = broadcast;
             return await broadcast
                 .WithMessage($"Heyo indexers!\nVenue '**{venue.Name}**' ({venue.Id}) needs approving! :heart:")
-                .WithEmbed(this._venueRenderer.RenderEmbed(venue, bannerUrl))
+                .WithEmbed(this._venueRenderer.RenderEmbed(venue, bannerUrl, renderFlags))
                 .WithComponent(bcc =>
                 {
                     ComponentBuilder approveRejectComponent = null;
