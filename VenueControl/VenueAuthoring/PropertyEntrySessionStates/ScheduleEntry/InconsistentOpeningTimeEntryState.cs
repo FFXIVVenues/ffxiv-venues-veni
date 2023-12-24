@@ -47,7 +47,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             if (c.Interaction.Channel is IDMChannel)
                 message = !this._nowSettingClosing.Value ? VenueControlStrings.AskForOpenTimeOnDayDirectMessage : VenueControlStrings.AskForCloseTimeOnDayDirectMessage;
 
-            var openingForDayMessage = string.Format(message, _venue.Openings[this._nowSettingDay.Value].Day);
+            var openingForDayMessage = string.Format(message, _venue.Schedule[this._nowSettingDay.Value].Day);
             
             return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {openingForDayMessage}",
                                                new ComponentBuilder().WithBackButton(c).Build());
@@ -69,7 +69,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             else if (meridiem == "pm" && hour != 12)
                 hour += 12;
 
-            var opening = _venue.Openings[this._nowSettingDay.Value];
+            var opening = _venue.Schedule[this._nowSettingDay.Value];
             if (!this._nowSettingClosing.Value)
             {
                 opening.Start = new Time { Hour = hour, Minute = minute, NextDay = false, TimeZone = _timeZoneId };
@@ -81,7 +81,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             // setting closing time per day
             opening.End = new Time { Hour = hour, Minute = minute, NextDay = hour < opening.Start.Hour, TimeZone = _timeZoneId };
 
-            var thisWasLastDay = this._nowSettingDay + 1 == _venue.Openings.Count;
+            var thisWasLastDay = this._nowSettingDay + 1 == _venue.Schedule.Count;
             if (!thisWasLastDay)
             {
                 c.Session.SetItem("nowSettingDay", this._nowSettingDay + 1);

@@ -21,8 +21,8 @@ namespace FFXIVVenues.Veni.Api
         Task<HttpResponseMessage> PutVenueBannerAsync(string id, string url);
         Task<HttpResponseMessage> PutVenueBannerAsync(string id, Stream stream, MediaTypeHeaderValue mediaType);
         Task<HttpResponseMessage> DeleteVenueAsync(string id);
-        Task<HttpResponseMessage> OpenVenueAsync(string id, DateTime until);
-        Task<HttpResponseMessage> CloseVenueAsync(string id, DateTime until);
+        Task<HttpResponseMessage> OpenVenueAsync(string id, DateTimeOffset until);
+        Task<HttpResponseMessage> CloseVenueAsync(string id, DateTimeOffset until);
         Task<HttpResponseMessage> ApproveAsync(string id, bool approval = true);
     }
 }

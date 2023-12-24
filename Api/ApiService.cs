@@ -182,7 +182,7 @@ namespace FFXIVVenues.Veni.Api
             return response;
         }
 
-        public async Task<HttpResponseMessage> OpenVenueAsync(string id, DateTime until)
+        public async Task<HttpResponseMessage> OpenVenueAsync(string id, DateTimeOffset until)
         {
             this._chronicle.Debug($"ApiService.OpenVenue `{id}`");
             this._venueCache.Remove(id);
@@ -193,7 +193,7 @@ namespace FFXIVVenues.Veni.Api
             return response;
         }
 
-        public async Task<HttpResponseMessage> CloseVenueAsync(string id, DateTime until)
+        public async Task<HttpResponseMessage> CloseVenueAsync(string id, DateTimeOffset until)
         {
             this._chronicle.Debug($"ApiService.CloseVenue `{id}`");
             this._venueCache.Remove(id);
