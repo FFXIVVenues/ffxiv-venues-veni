@@ -27,7 +27,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
         public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetVenue();
-            var component = this.BuildCloseComponent(c, this._venue.Open);
+            var component = this.BuildCloseComponent(c, this._venue.Resolution?.IsNow ?? false);
             return c.Interaction.RespondAsync("Aaw, how long do you want to close for? 🥲", component.Build()); //change text later
         }
 
@@ -66,11 +66,9 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
             var until = int.Parse(value);
             if (until == 0)
             {
-                var end = this._venue.OpenOverrides.FirstOrDefault(o => o.IsNow)?.End ??
-                          this._venue.GetActiveOpening()?.Resolve(DateTime.UtcNow).End;
-                if (end == null)
+                if (this._venue.Resolution == null)
                     return;
-                await _apiService.CloseVenueAsync(this._venue.Id, end.Value);
+                await _apiService.CloseVenueAsync(this._venue.Id, this._venue.Resolution.End);
             }
             else
                 await _apiService.CloseVenueAsync(this._venue.Id, DateTime.UtcNow.AddHours(until));

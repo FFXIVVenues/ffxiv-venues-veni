@@ -59,7 +59,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             if (!this._nowSettingClosing!.Value)
             {
                 // setting opening times
-                foreach (var opening in _venue.Openings)
+                foreach (var opening in _venue.Schedule)
                 {
                     opening.Start = new Time { Hour = hour, Minute = minute, NextDay = false, TimeZone = _timeZoneId };
                 }
@@ -69,7 +69,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             }
 
             // setting closing times
-            foreach (var opening in _venue.Openings)
+            foreach (var opening in _venue.Schedule)
                 opening.End = new Time { Hour = hour, Minute = minute, NextDay = hour < opening.Start.Hour, TimeZone = _timeZoneId };
 
             c.Session.ClearItem("nowSettingClosing");

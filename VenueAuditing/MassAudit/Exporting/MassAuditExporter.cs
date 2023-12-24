@@ -184,7 +184,7 @@ public class MassAuditExporter : IMassAuditExporter
             worksheet.Cells[row, 9].Value = venue.Managers != null ? string.Join(",", venue.Managers) : "";
             worksheet.Cells[row, 9].Style.Numberformat.Format = "@";
             worksheet.Cells[row, 10].Value = venue.Managers?.Count ?? 0;
-            worksheet.Cells[row, 11].Value = venue.Openings?.Count ?? 0;
+            worksheet.Cells[row, 11].Value = venue.Schedule?.Count ?? 0;
             worksheet.Cells[row, 12].Value = audit?.id ?? "";
             worksheet.Cells[row, 13].Value = audit?.Status;
             worksheet.Cells[row, 14].Value = audit?.SentTime;
