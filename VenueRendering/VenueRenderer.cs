@@ -108,7 +108,7 @@ public class VenueRenderer : IVenueRenderer
         {
             foreach (var schedule in venue.Schedule)
             {
-                if (schedule.Interval.IntervalArgument > 1)
+                if (schedule.Interval is { IntervalArgument: > 1 })
                 {
                     stringBuilder.Append("Every ");
                     stringBuilder.Append(schedule.Interval.IntervalArgument);
@@ -119,7 +119,7 @@ public class VenueRenderer : IVenueRenderer
                 stringBuilder
                     .Append(schedule.Day.ToString());
 
-                if (schedule.Interval.IntervalArgument == 1)
+                if (schedule.Interval is not { IntervalArgument: > 1 })
                     stringBuilder.Append("s");
                         
                 stringBuilder

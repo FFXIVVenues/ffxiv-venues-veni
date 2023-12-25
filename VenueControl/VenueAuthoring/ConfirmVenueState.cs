@@ -78,7 +78,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
             var venue = c.Session.GetVenue();
             
             await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
-                embed: this._venueRenderer.RenderEmbed(venue, bannerUrl, VenueRenderFlags.AddBiweeklyScheduleUserMessage).Build(),
+                embed: this._venueRenderer.RenderEmbed(venue, bannerUrl, isBiweeklySchedule ? VenueRenderFlags.AddBiweeklyScheduleUserMessage : VenueRenderFlags.None).Build(),
                 component: new ComponentBuilder()
                     .WithButton("Looks perfect! Save!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
                     .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
@@ -155,7 +155,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
         }
 
         private Task SendToApprovers(Venue venue, string bannerUrl, bool needsBiweeklyAdding) =>
-            this._venueApprovalService.SendForApproval(venue, bannerUrl, VenueRenderFlags.AddBiweeklyScheduleStaffMessage);
+            this._venueApprovalService.SendForApproval(venue, bannerUrl, needsBiweeklyAdding ? VenueRenderFlags.AddBiweeklyScheduleStaffMessage : VenueRenderFlags.None);
 
     }
 }
