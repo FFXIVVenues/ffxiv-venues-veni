@@ -1,11 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Intent;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.ComponentHandlers;
 using FFXIVVenues.Veni.VenueRendering;
 
@@ -59,11 +57,11 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.Commands
                     var venue = venues.Single();
                     await context.Interaction.RespondAsync(embed: this._venueRenderer.RenderEmbed(venue).Build(),
                         components: this._venueRenderer.RenderEditComponents(venue, user).Build());
+                    return;
                 }
                 
                 if (venues.Count() > 25)
                     venues = venues.Take(25);
-                
                 await context.Interaction.RespondAsync(VenueControlStrings.SelectVenueToEdit,
                     components: this._venueRenderer.RenderVenueSelection(venues, SelectVenueToEditHandler.Key).Build());
             }
