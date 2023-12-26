@@ -71,6 +71,7 @@ namespace FFXIVVenues.Veni
 
         private async Task GuildAvailableAsync(SocketGuild guild)
         {
+            Log.Information("Connected to guild {GuildId} {GuildName}.", guild.Id, guild.Name);
             if (!await _db.ExistsAsync<BlacklistEntry>(guild.Id.ToString()))
                 return;
             
