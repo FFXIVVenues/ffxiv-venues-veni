@@ -11,7 +11,8 @@ using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Exporting;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Models;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring;
-using NChronicle.Core.Interfaces;
+using Serilog;
+
 
 namespace FFXIVVenues.Veni.VenueAuditing.MassAudit;
 
@@ -20,7 +21,6 @@ internal class MassAuditService :  IMassAuditService
     
     private readonly IApiService _apiService;
     private readonly IRepository _repository;
-    private readonly IChronicle _chronicle;
     private readonly IVenueAuditService _venueAuditService;
     private readonly IDiscordClient _client;
     private readonly IMassAuditExporter _massAuditExporter;
@@ -33,7 +33,6 @@ internal class MassAuditService :  IMassAuditService
 
     public MassAuditService(IApiService apiService,
         IRepository repository,
-        IChronicle chronicle,
         IVenueAuditService venueAuditService,
         IDiscordClient client,
         IMassAuditExporter massAuditExporter, 
@@ -41,7 +40,6 @@ internal class MassAuditService :  IMassAuditService
     {
         this._apiService = apiService;
         this._repository = repository;
-        this._chronicle = chronicle;
         this._venueAuditService = venueAuditService;
         this._client = client;
         this._massAuditExporter = massAuditExporter;
@@ -51,22 +49,22 @@ internal class MassAuditService :  IMassAuditService
 
     public async Task<ResumeResult> ResumeMassAuditAsync(bool activeOnly)
     {
-        this._chronicle.Debug("Resume requested for mass audit.");
+        Log.Debug("Resume requested for mass audit.");
         if (this._activeAuditTask != null && !this._activeAuditTask.IsCompleted)
         {
-            this._chronicle.Debug("Mass audit already running.");
+            Log.Debug("Mass audit already running.");
             return ResumeResult.AlreadyRunning;
         }
 
         IQueryable<MassAuditRecord> activeAudits;
         if (activeOnly)
         {
-            this._chronicle.Debug("Fetching active mass audits.");
+            Log.Debug("Fetching active mass audits.");
             activeAudits = await this._repository.GetWhere<MassAuditRecord>(a => a.Status == MassAuditStatus.Active);
         }
         else
         {
-            this._chronicle.Debug("Fetching active and inactive mass audits.");
+            Log.Debug("Fetching active and inactive mass audits.");
             activeAudits = await this._repository.GetWhere<MassAuditRecord>(a => 
                 a.Status == MassAuditStatus.Active || a.Status == MassAuditStatus.Inactive);
         }
@@ -74,7 +72,7 @@ internal class MassAuditService :  IMassAuditService
 
         if (audit == null)
         {
-            this._chronicle.Debug("No mass audit to resume.");
+            Log.Debug("No mass audit to resume.");
             return ResumeResult.NothingToResume;
         }
 
@@ -84,24 +82,24 @@ internal class MassAuditService :  IMassAuditService
 
         if (status == MassAuditStatus.Active)
         {
-            this._chronicle.Debug("Active mass audit resumed.");
+            Log.Debug("Active mass audit resumed.");
             return ResumeResult.ResumedActive;
         }
         
-        this._chronicle.Info($"Inactive mass audit {audit.id} resumed.");
+        Log.Information("Inactive mass audit {AuditId} resumed.", audit.id);
         return ResumeResult.ResumedInactive;
     }
 
     public async Task<StartResult> StartMassAuditAsync(ulong requestedIn, ulong requestedBy)
     {
-        this._chronicle.Debug("Start request for mass audit.");
+        Log.Debug("Start request for mass audit.");
         if (this._activeAuditTask != null && !this._activeAuditTask.IsCompleted)
         {
-            this._chronicle.Debug("Active mass audit already exists.");
+            Log.Debug("Active mass audit already exists.");
             return StartResult.ActiveExists;
         }
 
-        this._chronicle.Debug("Fetching active and inactive mass audits.");
+        Log.Debug("Fetching active and inactive mass audits.");
         var activeAudits = await this._repository.GetWhere<MassAuditRecord>(a => 
             a.Status == MassAuditStatus.Active ||
             a.Status == MassAuditStatus.Inactive);
@@ -110,12 +108,12 @@ internal class MassAuditService :  IMassAuditService
         if (audit != null)
             if (audit.Status == MassAuditStatus.Active)
             {
-                this._chronicle.Debug("Active mass audit already exists (but is not running).");
+                Log.Debug("Active mass audit already exists (but is not running).");
                 return StartResult.ActiveExists;
             }
             else
             {
-                this._chronicle.Debug("Inactive mass audit already exists.");
+                Log.Debug("Inactive mass audit already exists.");
                 return StartResult.InactiveExists;
             }
                 
@@ -127,41 +125,41 @@ internal class MassAuditService :  IMassAuditService
         
         this.StartThread(audit);
         
-        this._chronicle.Info($"Mass audit {audit.id} started.");
+        Log.Information("Mass audit {AuditId} started.", audit.id);
         return StartResult.Started;
     }
 
     public async Task<PauseResult> PauseAsync()
     {
-        this._chronicle.Debug("Pause request for mass audit.");
+        Log.Debug("Pause request for mass audit.");
         var pausedViaTask = false;
         if (this._activeAuditTask != null && !this._activeAuditTask.IsCompleted)
         {
-            this._chronicle.Debug("Mass audit cancellation token triggered.");
+            Log.Debug("Mass audit cancellation token triggered.");
             this._pause = true;
             this._cancellationTokenSource.Cancel();
             await this._activeAuditTask;
             pausedViaTask = true;
         }
         
-        this._chronicle.Debug("Fetching active and inactive mass audits.");
+        Log.Debug("Fetching active and inactive mass audits.");
         var audit = (await this._repository.GetWhere<MassAuditRecord>(a => 
                 a.Status == MassAuditStatus.Active || a.Status == MassAuditStatus.Inactive))
             .OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
         
         if (audit == null)
         {
-            this._chronicle.Debug("No mass audits to pause.");
+            Log.Debug("No mass audits to pause.");
             return PauseResult.NothingToPause;
         }
         
         if (audit.Status == MassAuditStatus.Inactive)
         {
             if (!pausedViaTask) {
-                this._chronicle.Debug("Mass audit already paused.");
+                Log.Debug("Mass audit already paused.");
                 return PauseResult.AlreadyPaused;
             }
-            this._chronicle.Debug("Mass audit paused.");
+            Log.Debug("Mass audit paused.");
             return PauseResult.Paused;
         }
         
@@ -169,24 +167,24 @@ internal class MassAuditService :  IMassAuditService
         audit.Log("Mass audit paused.");
         await this._repository.UpsertAsync(audit);
         
-        this._chronicle.Info($"Mass audit {audit.id} paused.");
+        Log.Information("Mass audit {AuditId} paused.", audit.id);
         return PauseResult.Paused;
     }
 
     public async Task<CancelResult> CancelAsync()
     {
-        this._chronicle.Debug("Cancel request for mass audit.");
+        Log.Debug("Cancel request for mass audit.");
         var cancelledViaTask = false;
         if (this._activeAuditTask != null && !this._activeAuditTask.IsCompleted)
         {
-            this._chronicle.Debug("Mass audit cancellation token triggered.");
+            Log.Debug("Mass audit cancellation token triggered.");
             this._cancel = true;
             this._cancellationTokenSource.Cancel();
             await this._activeAuditTask;
             cancelledViaTask = true;
         }
         
-        this._chronicle.Debug("Fetching active and inactive mass audits.");
+        Log.Debug("Fetching active and inactive mass audits.");
         var activeAudits = (await this._repository.GetWhere<MassAuditRecord>(a => 
                     a.Status == MassAuditStatus.Active || a.Status == MassAuditStatus.Inactive))
             .OrderByDescending(a => a.StartedAt);
@@ -195,10 +193,10 @@ internal class MassAuditService :  IMassAuditService
         {
             if (cancelledViaTask)
             {
-                this._chronicle.Debug("Mass audit cancelled.");
+                Log.Debug("Mass audit cancelled.");
                 return CancelResult.Cancelled;
             }
-            this._chronicle.Debug("No mass audits to cancel.");
+            Log.Debug("No mass audits to cancel.");
             return CancelResult.NothingToCancel;
         }
 
@@ -207,16 +205,16 @@ internal class MassAuditService :  IMassAuditService
             audit.SetCancelled();
             audit.Log("Mass audit cancelled.");
             await this._repository.UpsertAsync(audit);
-            this._chronicle.Debug($"Mass audit {audit.id} cancelled.");
+            Log.Debug($"Mass audit {audit.id} cancelled.");
         }
 
-        this._chronicle.Info($"All active/inactive mass audits cancelled.");
+        Log.Information("All active/inactive mass audits cancelled.");
         return CancelResult.Cancelled;
     }
 
     public async Task<MassAuditStatusSummary> GetStatusSummaryAsync()
     {
-        this._chronicle.Debug($"Mass audit summary requested.");
+        Log.Debug("Mass audit summary requested.");
         var activeAuditRounds = await this._repository.GetAll<MassAuditRecord>();
         var auditRound = activeAuditRounds.OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
         if (auditRound == null)
@@ -230,7 +228,7 @@ internal class MassAuditService :  IMassAuditService
 
     public async Task<MassAuditStatusReport> GetStatusReportAsync()
     {
-        this._chronicle.Debug($"Mass audit report requested.");
+        Log.Debug("Mass audit report requested.");
         var activeAuditRounds = await this._repository.GetAll<MassAuditRecord>();
         var auditRound = activeAuditRounds.OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
         if (auditRound == null)
@@ -244,7 +242,7 @@ internal class MassAuditService :  IMassAuditService
 
     private void StartThread(MassAuditRecord massAudit)
     {
-        this._chronicle.Debug("Start mass audit thread.");
+        Log.Debug("Start mass audit thread.");
         this._cancellationTokenSource?.Dispose();
         this._cancellationTokenSource = new CancellationTokenSource();
         this._activeAuditTask?.Dispose();
@@ -257,15 +255,15 @@ internal class MassAuditService :  IMassAuditService
             this._pause = false;
             this._cancel = false;
             
-            this._chronicle.Debug($"Mass audit: started executing.");
+            Log.Debug($"Mass audit: started executing.");
             massAudit.SetStarted();
             massAudit.Log("Mass audit started/resumed.");
             await this._repository.UpsertAsync(massAudit);
             
-            this._chronicle.Debug($"Mass audit: fetching all venues.");
+            Log.Debug($"Mass audit: fetching all venues.");
             var allVenues = await this._apiService.GetAllVenuesAsync();
             massAudit.TotalVenuesToAudit = allVenues.Count();
-            this._chronicle.Debug($"Mass audit: fetching all existing audits for mass audit.");
+            Log.Debug($"Mass audit: fetching all existing audits for mass audit.");
             var auditRecordsQuery =
                 await this._repository.GetWhere<VenueAuditRecord>(r => r.MassAuditId == massAudit.id);
             var auditRecords = auditRecordsQuery.ToList();
@@ -295,26 +293,26 @@ internal class MassAuditService :  IMassAuditService
                 {
                     if (existingRecord == null)
                     {
-                        this._chronicle.Debug($"Mass audit: starting audit for {venue.Name}.");
+                        Log.Debug("Mass audit: starting audit for {Venue}.", venue);
                         auditStatus = await this._venueAuditService
                             .CreateAuditFor(venue, massAudit.id, massAudit.RequestedIn, massAudit.RequestedBy)
                             .AuditAsync();
                     }
                     else if (existingRecord.Status == VenueAuditStatus.Pending)
                     {
-                        this._chronicle.Debug($"Mass audit: starting audit for {venue.Name} (picking up pending audit).");
+                        Log.Debug("Mass audit: starting audit for {Venue} (picking up pending audit).", venue);
                         auditStatus = await this._venueAuditService.CreateAuditFor(venue, existingRecord).AuditAsync();
                     }
                     else
                     {
-                        this._chronicle.Debug($"Mass audit: already sent audit for {venue.Name}.");
+                        Log.Debug("Mass audit: already sent audit for {Venue}.", venue);
                         massAudit.Log($"Already sent audit for {venue.Name}");
                         continue;
                     }
                 }
                 catch (Exception e)
                 {
-                    this._chronicle.Warning($"Mass audit: exception occured while auditing {venue.Name}.", e);
+                    Log.Warning("Mass audit: exception occured while auditing {Venue}.", venue, e);
                     massAudit.Log($"Exception while sending audit for {venue.Name}. {e.Message}");
                     await this._repository.UpsertAsync(massAudit);
                     await Task.Delay(3000, cancellationToken);
@@ -323,17 +321,17 @@ internal class MassAuditService :  IMassAuditService
 
                 if (auditStatus == VenueAuditStatus.AwaitingResponse)
                 {
-                    this._chronicle.Debug($"Mass audit: sent audit for {venue.Name}.");
+                    Log.Debug("Mass audit: sent audit for {Venue}.", venue);
                     massAudit.Log($"Sent audit for {venue.Name}.");
                 }
                 else if (auditStatus == VenueAuditStatus.Skipped)
                 {
-                    this._chronicle.Debug($"Mass audit: skipped audit for {venue.Name}.");
+                    Log.Debug("Mass audit: skipped audit for {Venue}.", venue);
                     massAudit.Log($"Skipped audit for {venue.Name}.");
                 } 
                 else if (auditStatus == VenueAuditStatus.Failed)
                 {
-                    this._chronicle.Debug($"Mass audit: failed to send audit for {venue.Name}.");
+                    Log.Debug("Mass audit: failed to send audit for {Venue}.", venue);
                     massAudit.Log($"Failed to send audit for {venue.Name}.");
                 }
 
@@ -343,21 +341,21 @@ internal class MassAuditService :  IMassAuditService
                     await Task.Delay(3000, cancellationToken);
             }
             
-            this._chronicle.Debug($"Mass audit: audits sent to all venues.");
+            Log.Debug("Mass audit: audits sent to all venues.");
             massAudit.SetCompleted();
             massAudit.Log("Mass audit complete.");
             await this._repository.UpsertAsync(massAudit);
 
-            this._chronicle.Debug($"Mass audit: sending completion notification.");
+            Log.Debug("Mass audit: sending completion notification.");
             if (await this._client.GetChannelAsync(massAudit.RequestedIn) is not IMessageChannel channel)
                 channel = await this._client.GetDMChannelAsync(massAudit.RequestedIn);
             await channel.SendMessageAsync($"Hey {MentionUtils.MentionUser(massAudit.RequestedBy)}, I've completed sending all audits!");
             
-            this._chronicle.Debug($"Mass audit: complete.");
+            Log.Debug($"Mass audit: complete.");
         } 
         catch (Exception e)
         {
-            this._chronicle.Critical("Exception occured in mass audit execution.", e);
+            Log.Error("Exception occured in mass audit execution.", e);
         } 
     }
 

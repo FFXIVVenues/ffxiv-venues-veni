@@ -7,7 +7,8 @@ using Discord;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using Microsoft.Extensions.DependencyInjection;
-using NChronicle.Core.Interfaces;
+using Serilog;
+
 
 namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
 {
@@ -19,7 +20,6 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
 
 
         private readonly IServiceProvider _serviceProvider;
-        private IChronicle _chronicle;
         private ConcurrentDictionary<string, ComponentSessionHandlerRegistration> _componentHandlers = new();
         private int _backClearance = 2;
 
@@ -31,15 +31,14 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
         public Session(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _chronicle = serviceProvider.GetService<IChronicle>();
         }
 
         public async Task MoveStateAsync<T>(VeniInteractionContext context) where T : ISessionState
         {
             if (StateStack.TryPeek(out var currentState))
-                this._chronicle.Debug($"Set state from [{currentState?.GetType().Name}] to [{typeof(T).Name}]");
+                Log.Debug("Set state from [{PreviousState}] to {State}", currentState?.GetType().Name, typeof(T).Name);
             else
-                this._chronicle.Debug($"Set state to [{typeof(T).Name}]");
+                Log.Debug("Set state to [{State}]", typeof(T).Name);
 
             await this.ClearComponentHandlers(context);
             this.ClearMessageHandlers();
@@ -57,7 +56,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
                 return false;
             if (!StateStack.TryPeek(out var newState))
                 return false;
-            this._chronicle.Debug($"Back state from [{currentState?.GetType().Name}] to [{newState?.GetType().Name}]");
+            Log.Debug("Back state from [{PreviousState}] to [{State}]", currentState?.GetType().Name, newState?.GetType().Name);
             await this.ClearComponentHandlers(context);
             this.ClearMessageHandlers();
             await newState.Enter(context);

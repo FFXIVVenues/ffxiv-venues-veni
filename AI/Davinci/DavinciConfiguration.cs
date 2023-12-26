@@ -1,6 +1,6 @@
 ﻿namespace FFXIVVenues.Veni.AI.Davinci
 {
-    internal class DavinciConfiguration
+    public class DavinciConfiguration
     {
         public string ApiKey { get; set; }
     }

@@ -5,15 +5,14 @@ using Kana.Pipelines;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Context.Abstractions;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Infrastructure.Middleware;
 using FFXIVVenues.Veni.People;
-using NChronicle.Core.Interfaces;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Authorisation.Blacklist;
 using FFXIVVenues.Veni.GuildEngagement;
+using Serilog;
 
 namespace FFXIVVenues.Veni
 {
@@ -26,7 +25,6 @@ namespace FFXIVVenues.Veni
         private readonly IComponentBroker _componentBroker;
         private readonly Pipeline<MessageVeniInteractionContext> _messagePipeline;
         private readonly IVenueApprovalService _venueApprovalService;
-        private readonly IChronicle _chronicle;
         private readonly IGuildManager _guildManager;
         private readonly IRepository _db;
 
@@ -36,7 +34,6 @@ namespace FFXIVVenues.Veni
                               IComponentBroker componentBroker,
                               IServiceProvider serviceProvider,
                               IVenueApprovalService venueApprovalService, 
-                              IChronicle chronicle,
                               IGuildManager guildManager,
                               IRepository db)
         {
@@ -45,7 +42,6 @@ namespace FFXIVVenues.Veni
             this._contextFactory = contextFactory;
             this._componentBroker = componentBroker;
             this._venueApprovalService = venueApprovalService;
-            this._chronicle = chronicle;
             this._guildManager = guildManager;
             this._client.Connected += Connected;
             this._client.SlashCommandExecuted += SlashCommandExecutedAsync;
@@ -161,22 +157,18 @@ namespace FFXIVVenues.Veni
 
         private void LogSlashCommandExecuted(SocketSlashCommand slashCommand, SlashCommandVeniInteractionContext context)
         {
-            var stateText = "";
             ISessionState currentSessionState = null;
             context.Session.StateStack?.TryPeek(out currentSessionState);
-            if (currentSessionState != null)
-                stateText = "[" + currentSessionState.GetType().Name + "] ";
-            this._chronicle.Info($"{stateText} {slashCommand.User.Mention}: [Command: /{slashCommand.CommandName}]");
+            if (currentSessionState is not null) Log.Information("[{State}] {Username} used command /{Command}.", currentSessionState.GetType().Name, slashCommand.User.Username, slashCommand.CommandName);
+            else Log.Information("{Username} used command /{Command}.", slashCommand.User.Username, slashCommand.CommandName);
         }
 
         private void LogComponentExecuted(SocketMessageComponent message, MessageComponentVeniInteractionContext context)
         {
-            var stateText = "";
             ISessionState currentSessionState = null;
             context.Session.StateStack?.TryPeek(out currentSessionState);
-            if (currentSessionState != null)
-                stateText = "[" + currentSessionState.GetType().Name + "] ";
-            this._chronicle.Info($"{stateText} {message.User.Mention}: [Component Interaction]");
+            if (currentSessionState is not null) Log.Information("[{State}] {Username} interacted with a component.", currentSessionState.GetType().Name, message.User.Username);
+            else Log.Information("{Username} interacted with a component.", message.User.Username);
         }
 
         private Task UserJoinedAsync(SocketGuildUser user)

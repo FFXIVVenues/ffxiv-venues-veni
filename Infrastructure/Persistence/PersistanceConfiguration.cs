@@ -1,6 +1,6 @@
 ﻿namespace FFXIVVenues.Veni.Infrastructure.Persistence
 {
-    internal class PersistenceConfiguration
+    public class PersistenceConfiguration
     {
 
         public PersistanceProvider Provider { get; set; }
@@ -9,7 +9,7 @@
 
     }
 
-    internal enum PersistanceProvider
+    public enum PersistanceProvider
     {
         InMemory,
         LiteDb,
