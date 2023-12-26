@@ -1,18 +1,17 @@
-﻿using FFXIVVenues.Veni.AI;
-using FFXIVVenues.Veni.Utils;
+﻿using FFXIVVenues.Veni.Utils;
 using Kana.Pipelines;
-using NChronicle.Core.Interfaces;
 using System;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.AI.Davinci;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using Serilog;
 
 namespace FFXIVVenues.Veni.Infrastructure.Middleware
 {
     internal class ChatMiddleware : IMiddleware<MessageVeniInteractionContext>
     {
         private readonly IAIHandler aIHandler;
-        private readonly IChronicle chronicle;
+        
 
         private static string[] _emotes = new[]
         {
@@ -25,11 +24,11 @@ namespace FFXIVVenues.Veni.Infrastructure.Middleware
             " 💞"
         };
 
-        public ChatMiddleware(IAIHandler aIHandler, IChronicle chronicle)
+        public ChatMiddleware(IAIHandler aIHandler)
         {
             this.aIHandler = aIHandler;
-            this.chronicle = chronicle;
         }
+        
         public async Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
         {
             try
@@ -39,7 +38,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Middleware
             }
             catch (Exception ex)
             {
-                chronicle.Warning(ex);
+                Log.Warning(ex.Message, ex);
                 await next();
             }
 
