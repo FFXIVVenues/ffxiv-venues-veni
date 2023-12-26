@@ -8,26 +8,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using FFXIVVenues.VenueModels.Observability;
 using Microsoft.Extensions.DependencyInjection;
-using NChronicle.Core.Interfaces;
+using Serilog;
 
 namespace FFXIVVenues.Veni.Api
 {
     internal class ApiObservationService : IApiObservationService, IDisposable
     {
         private readonly ObserveRequest _observeRequest;
-        private readonly IChronicle _chronicle;
         private readonly IServiceProvider _serviceProvider;
         private readonly Uri _wsUri;
         private readonly List<(ObserveRequest Request, Type ObserverType)> _observers;
         private ClientWebSocket _wsClient;
         private Task _task;
 
-        public ApiObservationService(IChronicle chronicle, ApiConfiguration config, IServiceProvider serviceProvider)
+        public ApiObservationService(ApiConfiguration config, IServiceProvider serviceProvider)
         {
             this._observeRequest = new (new ObservableOperation[] {  }, null, null);
             this._observers = new ();
             this._wsUri = new Uri(config.BaseUrl.Replace("http", "ws") + "/venue/observe");
-            this._chronicle = chronicle;
             this._serviceProvider = serviceProvider;
         }
 
@@ -39,7 +37,7 @@ namespace FFXIVVenues.Veni.Api
             this._observeRequest.OperationCriteria = this._observeRequest.OperationCriteria.Union(operations);
             _ = this.SendObservationRequestAsync();
             var @type = typeof(T);
-            this._chronicle.Debug($"Observer {@type.Name} is observing.");
+            Log.Debug("Observer {Observer} is observing.", @type.Name);
             this._observers.Add((new(operations, null, null), @type));
             return this;
         }
@@ -56,7 +54,7 @@ namespace FFXIVVenues.Veni.Api
                 }
                 catch (Exception e)
                 {
-                    this._chronicle.Critical(e);
+                    Log.Error(e.Message, e);
                 }
                 await Task.Delay(TimeSpan.FromSeconds(10));
             }
@@ -64,7 +62,7 @@ namespace FFXIVVenues.Veni.Api
 
         private async Task ListenToEndpoint()
         {
-            this._chronicle.Debug("Listening for observations from observe endpoint.");
+            Log.Debug("Listening for observations from observe endpoint.");
             var buffer = new byte[256];
             while (this._wsClient.State == WebSocketState.Open)
             {
@@ -75,12 +73,12 @@ namespace FFXIVVenues.Veni.Api
                 }
                 catch (WebSocketException)
                 {
-                    this._chronicle.Warning("Lost connection to observe endpoint.");
+                    Log.Warning("Lost connection to observe endpoint.");
                     return;
                 }
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    this._chronicle.Debug("Connection to observe endpoint closed by remote.");
+                    Log.Debug("Connection to observe endpoint closed by remote.");
                     await this._wsClient.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
                     continue;
                 }
@@ -90,7 +88,7 @@ namespace FFXIVVenues.Veni.Api
                 if (observation == null)
                     continue;
 
-                this._chronicle.Debug($"Received observation from observe endpoint; {observation}.");
+                Log.Debug("Received observation from observe endpoint; {Observation}.", observation);
                 _ = HandleObservation(observation);
             }
         }
@@ -99,14 +97,14 @@ namespace FFXIVVenues.Veni.Api
         {
             try
             {
-                this._chronicle.Debug("Connecting to API observe ws endpoint.");
+                Log.Debug("Connecting to API observe ws endpoint.");
                 this._wsClient = new();
                 await this._wsClient.ConnectAsync(this._wsUri, CancellationToken.None);
-                this._chronicle.Info("Connected to API observe ws endpoint.");
+                Log.Information("Connected to API observe ws endpoint.");
             }
             catch
             {
-                this._chronicle.Warning("Failed to connect to API observe ws endpoint.");
+                Log.Warning("Failed to connect to API observe ws endpoint.");
                 throw;
             }
         }
@@ -115,7 +113,7 @@ namespace FFXIVVenues.Veni.Api
         {
             if (this._wsClient?.State != WebSocketState.Open)
                 return Task.CompletedTask;
-            this._chronicle.Debug("Sending observation request to observe endpoint.");
+            Log.Debug("Sending observation request to observe endpoint.");
             var requestMessage = JsonSerializer.Serialize(this._observeRequest);
             return this._wsClient.SendAsync(Encoding.ASCII.GetBytes(requestMessage),
                 WebSocketMessageType.Text, true, CancellationToken.None);
@@ -128,7 +126,7 @@ namespace FFXIVVenues.Veni.Api
                 if (!observer.Request.OperationCriteria.Contains(observation.Operation)) continue;
                 var observerInstance = ActivatorUtilities.CreateInstance(this._serviceProvider, observer.ObserverType) as IApiObserver;
                 if (observerInstance == null) continue;
-                this._chronicle.Debug($"Observer {observer.ObserverType.Name} handling observation.");
+                Log.Debug("Observer {Observer} handling observation.", observer.ObserverType.Name);
                 await observerInstance.Handle(observation);
             }
         }

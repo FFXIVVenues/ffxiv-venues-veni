@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FFXIVVenues.VenueModels.Observability;
 using Microsoft.Extensions.DependencyInjection;
-using NChronicle.Core.Interfaces;
+
 
 namespace FFXIVVenues.Veni.Api
 {

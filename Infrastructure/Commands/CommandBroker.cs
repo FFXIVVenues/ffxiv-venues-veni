@@ -7,7 +7,8 @@ using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Utils;
 using Microsoft.Extensions.DependencyInjection;
-using NChronicle.Core.Interfaces;
+using Serilog;
+
 
 namespace FFXIVVenues.Veni.Infrastructure.Commands
 {
@@ -19,7 +20,6 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands
         private readonly TypeMap<ICommandHandler> _handlers;
         private readonly ICommandCartographer _cartographer;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IChronicle _chronicle;
 
         public CommandBroker(IServiceProvider serviceProvider)
         {
@@ -28,12 +28,11 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands
             this._handlers = new(serviceProvider);
             this._cartographer = serviceProvider.GetService<ICommandCartographer>();;
             this._discordClient = serviceProvider.GetService<DiscordSocketClient>();
-            this._chronicle = serviceProvider.GetService<IChronicle>();
         }
 
         public void AddFromAssembly()
         {
-            this._chronicle.Debug($"Adding slash command from Assembly.");
+            Log.Debug($"Adding slash command from Assembly.");
             var (commands, handlers) = this._cartographer.Discover();
             foreach (var handler in handlers)
                 this._handlers.Add(handler.Key, handler.Value);
@@ -44,7 +43,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands
             where TFactory : ICommandFactory
             where THandler : ICommandHandler
         {
-            this._chronicle.Debug($"Adding slash command {key}");
+            Log.Debug("Adding slash command {Command}", key);
             var factory = ActivatorUtilities.CreateInstance<TFactory>(_serviceProvider);
             this._commands.Add(factory.GetSlashCommand());
             this._handlers.Add<THandler>(key);
