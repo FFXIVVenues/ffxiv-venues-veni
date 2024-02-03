@@ -60,7 +60,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to We have a set biweekly+ schedule.
+        ///   Looks up a localized string similar to We have a set biweekly/monthly schedule.
         /// </summary>
         internal static string AnswerHasBiweeklySchedule {
             get {

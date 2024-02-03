@@ -94,7 +94,7 @@
         <value>Yes, we have a set weekly schedule</value>
     </data>
     <data name="AnswerHasBiweeklySchedule" xml:space="preserve">
-        <value>We have a set biweekly+ schedule</value>
+        <value>We have a set biweekly/monthly schedule</value>
     </data>
     <data name="AnswerHasNoSchedule" xml:space="preserve">
         <value>No, we don't have a set schedule</value>
