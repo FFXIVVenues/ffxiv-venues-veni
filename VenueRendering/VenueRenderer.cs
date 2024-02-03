@@ -108,19 +108,29 @@ public class VenueRenderer : IVenueRenderer
         {
             foreach (var schedule in venue.Schedule)
             {
-                if (schedule.Interval is { IntervalArgument: > 1 })
+
+                if (schedule.Interval is { IntervalType: IntervalType.EveryXWeeks })
                 {
-                    stringBuilder.Append("Every ");
+                    if (schedule.Interval.IntervalArgument == 1)
+                        stringBuilder.Append("Weekly on ");
+                    else if (schedule.Interval.IntervalArgument == 2)
+                        stringBuilder.Append("Biweekly on ");
+                    else
+                    {
+                        stringBuilder.Append(schedule.Interval.IntervalArgument);
+                        stringBuilder.Append(" weekly on ");
+                    }
+                    stringBuilder.Append(schedule.Day.ToString());
+                    stringBuilder.Append('s');
+                }
+                else if (schedule.Interval is { IntervalType: IntervalType.XDayOfEveryMonth })
+                {
                     stringBuilder.Append(schedule.Interval.IntervalArgument);
                     stringBuilder.Append(Nth(schedule.Interval.IntervalArgument));
                     stringBuilder.Append(' ');
+                    stringBuilder.Append(schedule.Day.ToString());
+                    stringBuilder.Append(" of the month");
                 }
-
-                stringBuilder
-                    .Append(schedule.Day.ToString());
-
-                if (schedule.Interval is not { IntervalArgument: > 1 })
-                    stringBuilder.Append("s");
                         
                 stringBuilder
                     .Append(", ")
