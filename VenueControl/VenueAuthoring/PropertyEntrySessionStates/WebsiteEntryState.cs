@@ -16,7 +16,15 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             return c.Interaction.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom(),
                 new ComponentBuilder()
                     .WithBackButton(c)
-                    .WithSkipButton<DiscordEntrySessionState, ConfirmVenueSessionState>(c)
+                    .WithButton("No website", c.Session.RegisterComponentHandler(cm =>
+                        {
+                            var venue = c.Session.GetVenue();
+                            venue.Website = null;
+                                                             
+                            if (cm.Session.GetItem<bool>("modifying"))
+                                return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
+                            return cm.Session.MoveStateAsync<DiscordEntrySessionState>(cm);
+                        }, ComponentPersistence.ClearRow))
                     .Build());
         }
 
