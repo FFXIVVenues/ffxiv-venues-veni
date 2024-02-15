@@ -5,6 +5,7 @@ using FFXIVVenues.Veni.Authorisation.Configuration;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Intent;
 using FFXIVVenues.Veni.Utils.Broadcasting;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring;
 
 namespace FFXIVVenues.Veni.UserSupport
 {
