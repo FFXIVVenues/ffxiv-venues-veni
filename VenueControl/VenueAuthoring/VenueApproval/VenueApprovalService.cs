@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
-using FFXIVVenues.Veni.Authorisation.Configuration;
 using FFXIVVenues.Veni.GuildEngagement;
+using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Utils.Broadcasting;
-using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;
 
-namespace FFXIVVenues.Veni.People
+namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval
 {
     public class VenueApprovalService : IVenueApprovalService
     {
@@ -47,6 +45,8 @@ namespace FFXIVVenues.Veni.People
 
         public async Task<BroadcastReceipt> SendForApproval(Venue venue, string bannerUrl, VenueRenderFlags renderFlags)
         {
+            var dc = FfxivWorlds.GetRegionForDataCenter(venue.Location?.DataCenter);
+            var recipients = this._config.Approvals.ResolveFor(dc);
             var broadcast = new Broadcast(Guid.NewGuid().ToString(), _client);
             _broadcasts[broadcast.Id] = broadcast;
             return await broadcast
@@ -61,17 +61,17 @@ namespace FFXIVVenues.Veni.People
                         .WithButton("Approve", approveHandler, ButtonStyle.Success)
                         .WithButton("Reject", rejectHandler, ButtonStyle.Secondary);
                 })
-                .SendToAsync(this._config.Approvals);
+                .SendToAsync(recipients);
         }
         
         private async Task ApproveVenueHandler(Venue venue, Broadcast.BroadcastInteractionContext approveBic)
         {
-            var isApprover = this._authorizer
+            var canApprove = this._authorizer
                 .Authorize(approveBic.CurrentUser.Id, Permission.ApproveVenue, venue)
                 .Authorized;
-            if (!isApprover)
+            if (!canApprove)
             {
-                await approveBic.Component.RespondAsync("Sorry, only indexers can do this! :sad:");
+                await approveBic.Component.RespondAsync("Sorry, you do not have permission to approve this venue! 🥲");
                 return;
             }
 

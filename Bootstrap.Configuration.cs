@@ -3,6 +3,7 @@ using FFXIVVenues.Veni.AI.Luis;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation.Configuration;
 using FFXIVVenues.Veni.Infrastructure.Persistence;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring;
 using FFXIVVenues.Veni.VenueRendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

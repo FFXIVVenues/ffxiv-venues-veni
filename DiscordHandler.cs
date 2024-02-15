@@ -7,11 +7,11 @@ using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Infrastructure.Middleware;
-using FFXIVVenues.Veni.People;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Authorisation.Blacklist;
 using FFXIVVenues.Veni.GuildEngagement;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval;
 using Serilog;
 
 namespace FFXIVVenues.Veni

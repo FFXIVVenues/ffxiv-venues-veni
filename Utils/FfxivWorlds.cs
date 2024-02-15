@@ -7,42 +7,47 @@ namespace FFXIVVenues.Veni.Utils;
 public static class FfxivWorlds
 {
 
+    public const string REGION_NA = "North America"; 
+    public const string REGION_OCE = "Oceania"; 
+    public const string REGION_EU = "Europe"; 
+    public const string REGION_JPN = "Japan"; 
+
     private static readonly Dictionary<string, bool> Regions = new()
     {
-        { "North America", true },
-        { "Oceania", true },
-        { "Europe", true },
-        { "Japan", false },
+        { REGION_NA, true },
+        { REGION_OCE, true },
+        { REGION_EU, true },
+        { REGION_JPN, false },
     };
 
     private static readonly Dictionary<string, string[]> DataCenterMap = new()
     {
-        { "North America", new[] { "Aether", "Primal", "Crystal", "Dynamis" } },
-        { "Oceania", new[] { "Materia" }},
-        { "Europe", new[] { "Chaos", "Light" }},
-        { "Japan", new[] { "Elemental", "Gaia", "Mana", "Meteor" }},
+        { REGION_NA, ["Aether", "Primal", "Crystal", "Dynamis"] },
+        { REGION_OCE, ["Materia"] },
+        { REGION_EU, ["Chaos", "Light"] },
+        { REGION_JPN, ["Elemental", "Gaia", "Mana", "Meteor"] },
     };
 
     private static readonly Dictionary<string, string[]> WorldMap = new()
     {
         // North America            
-        { "Aether", new [] { "Adamantoise", "Cactuar", "Faerie", "Gilgamesh", "Jenova", "Midgardsormr", "Sargatanas", "Siren" }},
-        { "Primal", new [] { "Behemoth", "Excalibur", "Exodus", "Famfrit", "Hyperion", "Lamia", "Leviathan", "Ultros" }},
-        { "Crystal", new [] { "Balmung", "Brynhildr", "Coeurl", "Diabolos", "Goblin", "Malboro", "Mateus", "Zalera" }},
-        { "Dynamis", new[] { "Halicarnassus", "Maduin", "Marilith", "Seraph" }},
+        { "Aether", ["Adamantoise", "Cactuar", "Faerie", "Gilgamesh", "Jenova", "Midgardsormr", "Sargatanas", "Siren"] },
+        { "Primal", ["Behemoth", "Excalibur", "Exodus", "Famfrit", "Hyperion", "Lamia", "Leviathan", "Ultros"] },
+        { "Crystal", ["Balmung", "Brynhildr", "Coeurl", "Diabolos", "Goblin", "Malboro", "Mateus", "Zalera"] },
+        { "Dynamis", ["Halicarnassus", "Maduin", "Marilith", "Seraph"] },
 
         // Europe
-        { "Chaos", new [] { "Cerberus", "Louisoix", "Moogle", "Omega", "Phantom", "Ragnarok", "Sagittarius", "Spriggan" }},
-        { "Light", new [] { "Alpha", "Lich", "Odin", "Phoenix", "Raiden", "Shiva", "Twintania", "Zodiark" }},
+        { "Chaos", ["Cerberus", "Louisoix", "Moogle", "Omega", "Phantom", "Ragnarok", "Sagittarius", "Spriggan"] },
+        { "Light", ["Alpha", "Lich", "Odin", "Phoenix", "Raiden", "Shiva", "Twintania", "Zodiark"] },
             
         // Oceanian
-        { "Materia", new[] { "Bismark", "Ravana", "Sephirot", "Sophia", "Zurvan" }},
+        { "Materia", ["Bismark", "Ravana", "Sephirot", "Sophia", "Zurvan"] },
         
         // Asia
-        { "Elemental", new [] { "Aegis", "Atamos", "Carbuncle", "Garuda", "Gungnir", "Kujata",  "Tonberry" }},
-        { "Gaia", new [] { "Alexander", "Bahamut", "Durandal", "Fenrir", "Ifrit", "Ridill", "Tiamat", "Ultima",  }},
-        { "Mana", new [] {"Anima", "Asura", "Chocobo", "Hades", "Ixion",  "Masamune", "Pandaemonium",  "Titan" }},
-        { "Meteor", new [] {"Belias","Mandragora", "Ramuh", "Shinryu" , "Unicorn", "Valefor", "Yojimbo", "Zeromus" }}
+        { "Elemental", [ "Aegis", "Atamos", "Carbuncle", "Garuda", "Gungnir", "Kujata",  "Tonberry" ]},
+        { "Gaia", ["Alexander", "Bahamut", "Durandal", "Fenrir", "Ifrit", "Ridill", "Tiamat", "Ultima"] },
+        { "Mana", ["Anima", "Asura", "Chocobo", "Hades", "Ixion",  "Masamune", "Pandaemonium",  "Titan"] },
+        { "Meteor", ["Belias","Mandragora", "Ramuh", "Shinryu" , "Unicorn", "Valefor", "Yojimbo", "Zeromus"] }
     };
 
     public static string[] GetWorldsFor(params string[] dataCenters) =>
@@ -53,5 +58,8 @@ public static class FfxivWorlds
 
     public static string[] GetSupportedRegions() =>
         Regions.Where(kv => kv.Value).Select(kv => kv.Key).ToArray();
+    
+    public static string GetRegionForDataCenter(string dataCenter) =>
+        dataCenter == null ? null : DataCenterMap.FirstOrDefault(kv => kv.Value.Contains(dataCenter, StringComparer.InvariantCultureIgnoreCase)).Key;
     
 }

@@ -2,20 +2,18 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
-using FFXIVVenues.Veni.People;
-using FFXIVVenues.Veni.VenueControl;
+using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates;
 using FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates;
 using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;
 
-namespace FFXIVVenues.Veni.VenueApproval
+namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval
 {
     internal class GetUnapprovedCommand
     {
@@ -54,14 +52,34 @@ namespace FFXIVVenues.Veni.VenueApproval
             public async Task HandleAsync(SlashCommandVeniInteractionContext c) 
             {
                 var asker = c.Interaction.User.Id;
-                var auth = this._authorizer.Authorize(asker, Permission.ApproveVenue);
-                if (!auth.Authorized)
+                var dataCenters = new List<string>();
+                if (this._authorizer.Authorize(asker, Permission.ApproveVenue).Authorized)
+                {
+                    dataCenters.AddRange(FfxivWorlds.GetDataCentersFor(FfxivWorlds.REGION_NA));
+                    dataCenters.AddRange(FfxivWorlds.GetDataCentersFor(FfxivWorlds.REGION_EU));
+                    dataCenters.AddRange(FfxivWorlds.GetDataCentersFor(FfxivWorlds.REGION_OCE));
+                    dataCenters.AddRange(FfxivWorlds.GetDataCentersFor(FfxivWorlds.REGION_JPN));
+                }
+                else 
+                {
+                    if (this._authorizer.Authorize(asker, Permission.ApproveNaVenue).Authorized)
+                        dataCenters.AddRange(FfxivWorlds.GetDataCentersFor(FfxivWorlds.REGION_NA));
+                    if (this._authorizer.Authorize(asker, Permission.ApproveEuVenue).Authorized)
+                        dataCenters.AddRange(FfxivWorlds.GetDataCentersFor(FfxivWorlds.REGION_EU));
+                    if (this._authorizer.Authorize(asker, Permission.ApproveOceVenue).Authorized)
+                        dataCenters.AddRange(FfxivWorlds.GetDataCentersFor(FfxivWorlds.REGION_OCE));
+                    if (this._authorizer.Authorize(asker, Permission.ApproveJpnVenue).Authorized)
+                        dataCenters.AddRange(FfxivWorlds.GetDataCentersFor(FfxivWorlds.REGION_JPN));
+                }
+                if (!dataCenters.Any())
                 {
                     await c.Interaction.FollowupAsync("Sorry, you're not authorized to see unapproved venues. 😢");
                     return;
                 }
                 
                 this._venues = await this._apiService.GetUnapprovedVenuesAsync();
+                this._venues =
+                    this._venues.Where(v => v.Location == null || dataCenters.Contains(v.Location.DataCenter));
                 if (this._venues.Count() > 25)
                     this._venues = this._venues.Take(25);
 
@@ -96,7 +114,7 @@ namespace FFXIVVenues.Veni.VenueApproval
                 var asker = c.Interaction.User.Id;
                 var venue = this._venues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-                var auth = this._authorizer.Authorize(asker, Permission.ApproveVenue);
+                var auth = this._authorizer.Authorize(asker, Permission.ApproveVenue, venue);
                 if (!auth.Authorized)
                     return c.Interaction.FollowupAsync("Sorry, you're not authorized to see unapproved venues. 😢");
 
