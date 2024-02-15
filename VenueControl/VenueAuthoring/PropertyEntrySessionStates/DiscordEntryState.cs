@@ -11,36 +11,20 @@ using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.Sc
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates
 {
-    class DiscordEntrySessionState : ISessionState
+    class DiscordEntrySessionState(IRepository db, IDiscordValidator discordValidator) : ISessionState
     {
-        private readonly IRepository db;
-        private readonly IDiscordValidator _discordValidator;
-
-        public DiscordEntrySessionState(IRepository db, IDiscordValidator discordValidator)
-        {
-            this.db = db;
-            this._discordValidator = discordValidator;
-        }
-
         public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
+
             return c.Interaction.RespondAsync(MessageRepository.AskForDiscordMessage.PickRandom(),
                 new ComponentBuilder()
                     .WithBackButton(c)
-                    .WithButton("No dsicord", c.Session.RegisterComponentHandler(cm =>
-                    {
-                        var venue = c.Session.GetVenue();
-                        venue.Discord = null;
-                                                             
-                        if (cm.Session.GetItem<bool>("modifying"))
-                            return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
-                        return cm.Session.MoveStateAsync<HaveScheduleEntrySessionState>(cm);
-                    }, ComponentPersistence.ClearRow))
+                    .WithButton("No discord", c.Session.RegisterComponentHandler(OnNoDiscord, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
 
-        public async Task OnMessageReceived(MessageVeniInteractionContext c)
+        private async Task OnMessageReceived(MessageVeniInteractionContext c)
         {
             var venue = c.Session.GetVenue();
             var rawDiscordString = c.Interaction.Content.StripMentions();
@@ -48,7 +32,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             if (!new Regex("^https?://").IsMatch(rawDiscordString))
                 rawDiscordString = "https://" + rawDiscordString;
 
-            var (discordValidity, invite) = await this._discordValidator.CheckInviteAsync(rawDiscordString);
+            var (discordValidity, invite) = await discordValidator.CheckInviteAsync(rawDiscordString);
             switch (discordValidity)
             {
                 case DiscordCheckResult.BadFormat:
@@ -79,8 +63,15 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             }
             await c.Session.MoveStateAsync<HaveScheduleEntrySessionState>(c);
         }
-
         
+        private Task OnNoDiscord(MessageComponentVeniInteractionContext context)
+        {
+            var venue = context.Session.GetVenue();
+            venue.Discord = null;
+
+            if (context.Session.GetItem<bool>("modifying")) return context.Session.MoveStateAsync<ConfirmVenueSessionState>(context);
+            return context.Session.MoveStateAsync<HaveScheduleEntrySessionState>(context);
+        }
     }
 
 }

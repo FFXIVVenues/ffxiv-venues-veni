@@ -5,8 +5,8 @@ using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
-using FFXIVVenues.Veni.People;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval;
 using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;
 

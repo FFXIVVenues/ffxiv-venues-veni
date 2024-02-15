@@ -13,22 +13,15 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
+
             return c.Interaction.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom(),
                 new ComponentBuilder()
                     .WithBackButton(c)
-                    .WithButton("No website", c.Session.RegisterComponentHandler(cm =>
-                        {
-                            var venue = c.Session.GetVenue();
-                            venue.Website = null;
-                                                             
-                            if (cm.Session.GetItem<bool>("modifying"))
-                                return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
-                            return cm.Session.MoveStateAsync<DiscordEntrySessionState>(cm);
-                        }, ComponentPersistence.ClearRow))
+                    .WithButton("No website", c.Session.RegisterComponentHandler(OnNoWebsite, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .Build());
         }
 
-        public Task OnMessageReceived(MessageVeniInteractionContext c)
+        private Task OnMessageReceived(MessageVeniInteractionContext c)
         {
             var venue = c.Session.GetVenue();
             if (new Regex("\\bskip\\b").IsMatch(c.Interaction.Content.ToLower()))
@@ -54,6 +47,15 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
 
             return c.Session.MoveStateAsync<DiscordEntrySessionState>(c);
+        }
+        
+        private Task OnNoWebsite(MessageComponentVeniInteractionContext context)
+        {
+            var venue = context.Session.GetVenue();
+            venue.Website = null;
+
+            if (context.Session.GetItem<bool>("modifying")) return context.Session.MoveStateAsync<ConfirmVenueSessionState>(context);
+            return context.Session.MoveStateAsync<DiscordEntrySessionState>(context);
         }
     }
 }
