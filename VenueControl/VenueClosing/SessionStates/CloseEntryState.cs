@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
@@ -12,18 +13,14 @@ using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
 {
-    internal class CloseEntrySessionState : ISessionState
+    internal class CloseEntrySessionState(
+        IApiService apiService,
+        IVenueAuditService auditService,
+        IAuthorizer authorizer)
+        : ISessionState
     {
-        private IApiService _apiService;
-        private readonly IVenueAuditService _auditService;
         private Venue _venue;
 
-        public CloseEntrySessionState(IApiService _apiService, IVenueAuditService auditService)
-        {
-            this._apiService = _apiService;
-            this._auditService = auditService;
-        }
-        
         public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetVenue();
@@ -62,22 +59,30 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
                 await c.Session.MoveStateAsync<DeleteVenueSessionState>(c);
                 return;
             }
+            
+            var authorize = authorizer.Authorize(c.Interaction.User.Id, Permission.CloseVenue, _venue);
+            if (!authorize.Authorized)
+            {
+                await c.Interaction.Channel.SendMessageAsync(
+                    "Sorry, you do not have permission to close this venue. 😢");
+                return;
+            }
                 
             var until = int.Parse(value);
             if (until == 0)
             {
                 if (this._venue.Resolution == null)
                     return;
-                await _apiService.CloseVenueAsync(this._venue.Id, this._venue.Resolution.End);
+                await apiService.CloseVenueAsync(this._venue.Id, this._venue.Resolution.End);
             }
             else
-                await _apiService.CloseVenueAsync(this._venue.Id, DateTime.UtcNow.AddHours(until));
+                await apiService.CloseVenueAsync(this._venue.Id, DateTime.UtcNow.AddHours(until));
             
             await c.Interaction.Channel.SendMessageAsync(MessageRepository.VenueClosedMessage.PickRandom());
             
-            var latestAudit = await this._auditService.GetLatestRecordFor(this._venue);
+            var latestAudit = await auditService.GetLatestRecordFor(this._venue);
             if (latestAudit?.Status is VenueAuditStatus.Failed or VenueAuditStatus.Pending or VenueAuditStatus.AwaitingResponse)
-                await this._auditService.UpdateAuditStatus(latestAudit, this._venue, c.Interaction.User.Id, VenueAuditStatus.ClosedLater);
+                await auditService.UpdateAuditStatus(latestAudit, this._venue, c.Interaction.User.Id, VenueAuditStatus.ClosedLater);
             
             _ = c.Session.ClearState(c);
         }

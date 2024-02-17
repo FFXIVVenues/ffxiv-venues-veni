@@ -4,7 +4,9 @@ using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.VenueAuditing.ComponentHandlers.AuditResponse;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.ComponentHandlers;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates;
 using FFXIVVenues.Veni.VenueRendering;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.Commands
@@ -27,16 +29,10 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.Commands
 
         }
 
-        internal class Handler : ICommandHandler
+        internal class Handler(IApiService apiService, IVenueRenderer venueRenderer) : ICommandHandler
         {
-            private readonly IApiService _apiService;
-            private readonly IVenueRenderer _venueRenderer;
-
-            public Handler(IApiService apiService, IVenueRenderer venueRenderer)
-            {
-                this._apiService = apiService;
-                this._venueRenderer = venueRenderer;
-            }
+            private readonly IApiService _apiService = apiService;
+            private readonly IVenueRenderer _venueRenderer = venueRenderer;
 
             public async Task HandleAsync(SlashCommandVeniInteractionContext context)
             {
@@ -55,8 +51,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.Commands
                 if (venues.Count() == 1)
                 {
                     var venue = venues.Single();
-                    await context.Interaction.RespondAsync(embed: this._venueRenderer.RenderEmbed(venue).Build(),
-                        components: this._venueRenderer.RenderEditComponents(venue, user).Build());
+                    context.Session.SetVenue(venue);
+                    await context.Session.MoveStateAsync<EditVenueSessionState>(context);
                     return;
                 }
                 

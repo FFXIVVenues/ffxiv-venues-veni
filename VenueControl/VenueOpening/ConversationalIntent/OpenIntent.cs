@@ -7,21 +7,13 @@ using FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueOpening.ConversationalIntent
 {
-    internal class OpenIntent : IntentHandler
+    internal class OpenIntent(IApiService apiService) : IntentHandler
     {
-
-        private readonly IApiService _apiService;
-
-        public OpenIntent(IApiService apiService)
-        {
-            this._apiService = apiService;
-        }
-
         // todo: change to stateless handlers (like edit)
         public override async Task Handle(VeniInteractionContext context)
         {
             var user = context.Interaction.User.Id;
-            var venues = await this._apiService.GetAllVenuesAsync(user);
+            var venues = await apiService.GetAllVenuesAsync(user);
 
             if (venues == null || !venues.Any())
                 await context.Interaction.RespondAsync("You don't seem to be an assigned manager for any venues. 🤔");
@@ -35,7 +27,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueOpening.ConversationalIntent
             else
             {
                 context.Session.SetVenue(venues.First());
-                await context.Session.MoveStateAsync<OpenEntrySessionState>(context);
+                await context.Session.MoveStateAsync<OpenEntryState>(context);
             }
         }
 

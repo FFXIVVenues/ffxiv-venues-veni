@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
@@ -10,16 +11,10 @@ using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates
 {
-    internal class OpenEntrySessionState : ISessionState
+    internal class OpenEntryState(IApiService apiService, IAuthorizer authorizer) : ISessionState
     {
-        private IApiService _apiService;
         private Venue _venue;
 
-        public OpenEntrySessionState(IApiService _apiService)
-        {
-            this._apiService = _apiService;
-        }
-        
         public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetVenue();
@@ -30,7 +25,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates
         private ComponentBuilder BuildOpenComponent(VeniInteractionContext c)
         {
             var selectComponent = new SelectMenuBuilder()
-                .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow));
+                .WithCustomId(c.Session.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
 
             selectComponent.AddOption("The next hour", "1")
                 .AddOption("The next 2 hours", "2")
@@ -41,10 +36,18 @@ namespace FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates
             return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
-        private async Task OnComplete(MessageComponentVeniInteractionContext c)
+        private async Task OnSelect(MessageComponentVeniInteractionContext c)
         {
+            var authorize = authorizer.Authorize(c.Interaction.User.Id, Permission.OpenVenue, _venue);
+            if (!authorize.Authorized)
+            {
+                await c.Interaction.Channel.SendMessageAsync(
+                    "Sorry, you do not have permission to open this venue. 😢");
+                return;
+            }
+            
             var until = int.Parse(c.Interaction.Data.Values.Single()); 
-            await _apiService.OpenVenueAsync(this._venue.Id, DateTime.UtcNow.AddHours(until));
+            await apiService.OpenVenueAsync(this._venue.Id, DateTime.UtcNow.AddHours(until));
             
             await c.Interaction.Channel.SendMessageAsync(MessageRepository.VenueOpenMessage.PickRandom());
             _ = c.Session.ClearState(c);

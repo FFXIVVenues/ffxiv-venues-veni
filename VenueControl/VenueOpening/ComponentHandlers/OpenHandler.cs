@@ -35,7 +35,7 @@ public class OpenHandler : IComponentHandler
             props.Components = new ComponentBuilder().Build());
         
         context.Session.SetVenue(venue);
-        await context.Session.MoveStateAsync<OpenEntrySessionState>(context);
+        await context.Session.MoveStateAsync<OpenEntryState>(context);
     }
     
 }
