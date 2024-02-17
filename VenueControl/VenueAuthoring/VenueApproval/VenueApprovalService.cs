@@ -71,7 +71,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval
                 .Authorized;
             if (!canApprove)
             {
-                await approveBic.Component.RespondAsync("Sorry, you do not have permission to approve this venue! 🥲");
+                await approveBic.Component.Channel.SendMessageAsync("Sorry, you do not have permission to approve this venue! 🥲");
                 return;
             }
 

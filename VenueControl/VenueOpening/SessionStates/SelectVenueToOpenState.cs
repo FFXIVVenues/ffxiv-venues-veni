@@ -57,7 +57,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates
             _ = c.Session.ClearState(c);
 
             c.Session.SetItem<Venue>("venue", venue);
-            await c.Session.MoveStateAsync<OpenEntrySessionState>(c);
+            await c.Session.MoveStateAsync<OpenEntryState>(c);
 
         }
     }

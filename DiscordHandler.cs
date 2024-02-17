@@ -100,7 +100,11 @@ namespace FFXIVVenues.Veni
             try
             {
                 await _messagePipeline.RunAsync(context);
-            } 
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "An unexception was thrown in handling received message");
+            }
             finally
             {
                 context.TypingHandle?.Dispose();
@@ -109,17 +113,24 @@ namespace FFXIVVenues.Veni
 
         private async Task SlashCommandExecutedAsync(SocketSlashCommand message)
         {
-            if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
+            try
             {
-                await message.RespondAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
-                                           $" If you think this was a mistake please let my family know.",
-                    ephemeral: true);
-                return;
-            }
+                if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
+                {
+                    await message.RespondAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
+                                               $" If you think this was a mistake please let my family know.",
+                        ephemeral: true);
+                    return;
+                }
 
-            var context = this._contextFactory.Create(message);
-            LogSlashCommandExecuted(message, context);
-            await this._commandBroker.HandleAsync(context);
+                var context = this._contextFactory.Create(message);
+                LogSlashCommandExecuted(message, context);
+                await this._commandBroker.HandleAsync(context);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "An unexception was thrown in handling {Command} command", message.CommandName);
+            }
         }
 
         private async Task ComponentExecutedAsync(SocketMessageComponent message)
@@ -150,18 +161,23 @@ namespace FFXIVVenues.Veni
                 await context.Session.HandleComponentInteraction(context);
                 await this._componentBroker.HandleAsync(context);
             }
+            catch (Exception e)
+            {
+                Log.Error(e, "An unexception was thrown in handling {ComponentId} component", message.Data.CustomId);
+            }
             finally
             {
                 typingHandle?.Dispose();
             }
+            
         }
 
         private void LogSlashCommandExecuted(SocketSlashCommand slashCommand, SlashCommandVeniInteractionContext context)
         {
             ISessionState currentSessionState = null;
             context.Session.StateStack?.TryPeek(out currentSessionState);
-            if (currentSessionState is not null) Log.Information("[{State}] {Username} used command /{Command}.", currentSessionState.GetType().Name, slashCommand.User.Username, slashCommand.CommandName);
-            else Log.Information("{Username} used command /{Command}.", slashCommand.User.Username, slashCommand.CommandName);
+            if (currentSessionState is not null) Log.Information("[{State}] {Username} used command /{Command}", currentSessionState.GetType().Name, slashCommand.User.Username, slashCommand.CommandName);
+            else Log.Information("{Username} used command /{Command}", slashCommand.User.Username, slashCommand.CommandName);
         }
 
         private void LogComponentExecuted(SocketMessageComponent message, MessageComponentVeniInteractionContext context)
@@ -169,7 +185,7 @@ namespace FFXIVVenues.Veni
             ISessionState currentSessionState = null;
             context.Session.StateStack?.TryPeek(out currentSessionState);
             if (currentSessionState is not null) Log.Information("[{State}] {Username} interacted with a component.", currentSessionState.GetType().Name, message.User.Username);
-            else Log.Information("{Username} interacted with a component.", message.User.Username);
+            else Log.Information("{Username} interacted with a component", message.User.Username);
         }
 
         private Task UserJoinedAsync(SocketGuildUser user)
