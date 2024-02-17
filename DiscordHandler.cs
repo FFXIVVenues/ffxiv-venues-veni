@@ -103,7 +103,7 @@ namespace FFXIVVenues.Veni
             }
             catch (Exception e)
             {
-                Log.Error(e, "An unexception was thrown in handling received message");
+                Log.Error(e, "An unhandled exception was thrown in handling a received message");
             }
             finally
             {
@@ -129,7 +129,7 @@ namespace FFXIVVenues.Veni
             }
             catch (Exception e)
             {
-                Log.Error(e, "An unexception was thrown in handling {Command} command", message.CommandName);
+                Log.Error(e, "An unhandled exception was thrown in handling a /{Command} command", message.CommandName);
             }
         }
 
@@ -163,7 +163,7 @@ namespace FFXIVVenues.Veni
             }
             catch (Exception e)
             {
-                Log.Error(e, "An unexception was thrown in handling {ComponentId} component", message.Data.CustomId);
+                Log.Error(e, "An unhadnled exception was thrown in handling a execution of component {ComponentId}", message.Data.CustomId);
             }
             finally
             {
