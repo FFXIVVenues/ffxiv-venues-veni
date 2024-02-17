@@ -39,6 +39,7 @@ internal class ModifyIntentHandler : IntentHandler
             var venue = venues.Single();
             await context.Interaction.RespondAsync(embed: this._venueRenderer.RenderEmbed(venue).Build(),
                 component: this._venueRenderer.RenderEditComponents(venue, user).Build());
+            return;
         }
                 
         if (venues.Count() > 25)

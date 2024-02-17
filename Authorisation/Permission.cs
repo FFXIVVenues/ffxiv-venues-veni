@@ -11,7 +11,7 @@ public enum Permission
     ApproveOceVenue,
     ApproveJpnVenue,
     ViewAuditHistory,
-    AuditVenue,
+    AuditVenue, //todo: Should be localised too?
     EditVenue,
     EditNaVenue,
     EditEuVenue,

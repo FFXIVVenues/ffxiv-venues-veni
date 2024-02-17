@@ -31,7 +31,7 @@ namespace FFXIVVenues.Veni.Utils
                 if (@override != null) result = await @override();
                 else result = await c.Session.TryBackStateAsync(c);
                 if (result) _ = c.Interaction.ModifyOriginalResponseAsync(props => props.Components = new ComponentBuilder().Build());
-                else _ = c.Interaction.RespondAsync(embed: new EmbedBuilder().WithDescription("Cannot not go back any more!").Build());
+                else await c.Interaction.Channel.SendMessageAsync(embed: new EmbedBuilder().WithDescription("Cannot not go back any more!").Build());
             }, ComponentPersistence.ClearRow), ButtonStyle.Secondary);
         }
 

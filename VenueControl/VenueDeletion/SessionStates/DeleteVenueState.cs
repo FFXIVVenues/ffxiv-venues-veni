@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
@@ -27,12 +28,14 @@ namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates
 
         private readonly IApiService _apiService;
         private readonly IVenueAuditService _auditService;
+        private readonly IAuthorizer _authorizer;
         private Venue _venue;
 
-        public DeleteVenueSessionState(IApiService apiService, IVenueAuditService auditService)
+        public DeleteVenueSessionState(IApiService apiService, IVenueAuditService auditService, IAuthorizer authorizer)
         {
             this._apiService = apiService;
             this._auditService = auditService;
+            this._authorizer = authorizer;
         }
 
         public Task Enter(VeniInteractionContext c)
@@ -42,6 +45,14 @@ namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates
                 .WithButton("Yes, delete it 😢", c.Session.RegisterComponentHandler(
                     async cm =>
                     {
+                        var authorize = this._authorizer.Authorize(cm.Interaction.User.Id, Permission.DeleteVenue, _venue);
+                        if (!authorize.Authorized)
+                        {
+                            await cm.Interaction.Channel.SendMessageAsync(
+                                "Sorry, you do not have permission to delete this venue. 😢");
+                            return;
+                        }
+                        
                         _ = cm.Interaction.Channel.SendMessageAsync(_deleteMessages.PickRandom());
                         await _apiService.DeleteVenueAsync(_venue.Id);
                         var latestAudit = await this._auditService.GetLatestRecordFor(this._venue);

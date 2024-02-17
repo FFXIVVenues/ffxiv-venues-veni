@@ -268,21 +268,6 @@ public class VenueRenderer : IVenueRenderer
             .WithValueHandlers()
             .WithPlaceholder("What would you like to do?");
 
-        if (this._authorizer.Authorize(user, Permission.AuditVenue, venue).Authorized)
-            dropDown.AddOption(new SelectMenuOptionBuilder()
-                .WithLabel("Audit")
-                .WithEmote(new Emoji("🔍"))
-                .WithDescription("Message managers to confirm this venue's detail.")
-                .WithStaticHandler(AuditHandler.Key, venue.Id, "false", string.Empty));
-            
-        if (this._authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
-            dropDown.AddOption(new SelectMenuOptionBuilder()
-                .WithLabel("View audits")
-                .WithEmote(new Emoji("🔍"))
-                .WithDescription("Get previous audits for this venue.")
-                .WithStaticHandler(GetAuditsHandler.Key, venue.Id));
-            
-
         if (this._authorizer.Authorize(user, Permission.OpenVenue, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("Open")
@@ -325,6 +310,21 @@ public class VenueRenderer : IVenueRenderer
                 .WithEmote(new Emoji("❌"))
                 .WithDescription("Delete this venue completely.")
                 .WithStaticHandler(DeleteHandler.Key, venue.Id));
+        
+        
+        if (this._authorizer.Authorize(user, Permission.AuditVenue, venue).Authorized)
+            dropDown.AddOption(new SelectMenuOptionBuilder()
+                .WithLabel("Audit")
+                .WithEmote(new Emoji("🔍"))
+                .WithDescription("Message managers to confirm this venue's detail.")
+                .WithStaticHandler(AuditHandler.Key, venue.Id, "false", string.Empty));
+            
+        if (this._authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
+            dropDown.AddOption(new SelectMenuOptionBuilder()
+                .WithLabel("View audits")
+                .WithEmote(new Emoji("🔍"))
+                .WithDescription("Get previous audits for this venue.")
+                .WithStaticHandler(GetAuditsHandler.Key, venue.Id));
             
         dropDown.AddOption(new SelectMenuOptionBuilder()
             .WithLabel("Do nothing")
