@@ -100,7 +100,7 @@ public class VenueRenderer : IVenueRenderer
         {
             stringBuilder.AppendLine("No set schedule");
             if (renderFlags.HasFlag(VenueRenderFlags.AddBiweeklyScheduleUserMessage))
-                stringBuilder.AppendLine("\n⚠️ You will need contact staff in the FFXIV Venues discord to add a biweekly+ schedule.");
+                stringBuilder.AppendLine("\n⚠️ You will need make a ticket in the FFXIV Venues discord to add a biweekly+ or monthly schedule.");
             if (renderFlags.HasFlag(VenueRenderFlags.AddBiweeklyScheduleStaffMessage))
                 stringBuilder.AppendLine("\n⚠️ Engineering required; manager has indicated they wish to add a biweekly+ schedule.");
         }
