@@ -49,7 +49,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
             if (await db.ExistsAsync<BlacklistEntry>(invite.guild.id))
             {
-                await c.Interaction.Channel.SendMessageAsync("This Discord server was blacklisted, please contact staff for further information. 😢" +
+                await c.Interaction.Channel.SendMessageAsync("This Discord server was blacklisted, please make a ticket in the FFXIV Venues discord for further information. 😢" +
                     " Please use a different server or skip this step.");
                 return;
             }
