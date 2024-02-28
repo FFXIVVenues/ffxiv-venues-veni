@@ -29,7 +29,7 @@ public class VolunteerComponentHandler(
         var venueId = args[1];
         var venue = await apiService.GetVenueAsync(venueId);
         
-        var canPhotograph = authorizer.Authorize(context.Interaction.Id, Permission.EditPhotography, venue)
+        var canPhotograph = authorizer.Authorize(context.Interaction.User.Id, Permission.EditPhotography, venue)
             .Authorized;
         if (!canPhotograph)
         {
