@@ -10,8 +10,8 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction
         Task UpsertAsync<T>(T entity) where T : class, IEntity;
         Task DeleteAsync<T>(T entity) where T : class, IEntity;
         Task DeleteAsync<T>(string id) where T : class, IEntity;
-        Task<IQueryable<T>> GetWhere<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity;
-        Task<IQueryable<T>> GetAll<T>() where T : class, IEntity;
+        Task<IQueryable<T>> GetWhereAsync<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity;
+        Task<IQueryable<T>> GetAllAsync<T>() where T : class, IEntity;
         Task<T> GetByIdAsync<T>(string id) where T : class, IEntity;
         Task<bool> ExistsAsync<T>(string id) where T : class, IEntity;
     }

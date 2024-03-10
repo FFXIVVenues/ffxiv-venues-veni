@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using System;
+using System.Threading.Tasks;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Commands.Attributes;
@@ -6,13 +7,13 @@ using FFXIVVenues.Veni.Infrastructure.Context;
 
 namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
 {
-    [DiscordCommand("massaudit pause", "Pause a currently executing audit round, it may be resumed after.")] 
-    public class MassAuditPauseCommand : ICommandHandler
+    [DiscordCommand("massaudit close", "Closes the last mass audit, disabling all but reporting commands from thereon.")]
+    public class MassAuditCloseCommand : ICommandHandler
     {
         private readonly IAuthorizer _authorizer;
         private readonly IMassAuditService _massAuditService;
 
-        public MassAuditPauseCommand(IAuthorizer authorizer, IMassAuditService massAuditService)
+        public MassAuditCloseCommand(IAuthorizer authorizer, IMassAuditService massAuditService)
         {
             _authorizer = authorizer;
             _massAuditService = massAuditService;
@@ -28,22 +29,23 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
             }
 
             await context.Interaction.DeferAsync();
-            var result = await this._massAuditService.PauseAsync();
+            var result = await this._massAuditService.CloseMassAudit();
             switch (result)
             {
-                case PauseResult.NothingToPause:
-                    await context.Interaction.FollowupAsync("There's no current mass audit to pause. 🤔");
+                case CloseResult.AlreadyClosed:
+                    await context.Interaction.FollowupAsync("The last mass audit is already closed. 🤔");
                     break;
-                case PauseResult.Closed:
-                    await context.Interaction.FollowupAsync("Last mass audit is closed. 🤔");
+                case CloseResult.StillRunning:
+                    await context.Interaction.FollowupAsync("The current mass audit is still running. 🤔");
                     break;
-                case PauseResult.AlreadyPaused:
-                    await context.Interaction.FollowupAsync("Current mass audit is already paused. 🤔");
+                case CloseResult.Closed:
+                    await context.Interaction.FollowupAsync("The mass audit has been closed! 🥳");
                     break;
-                case PauseResult.Paused:
-                    await context.Interaction.FollowupAsync("Paused! 👀");
+                default:
+                    await context.Interaction.FollowupAsync("Something wicked this way comes! 🫣");
                     break;
             }
+
         }
     }
 }
