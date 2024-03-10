@@ -49,7 +49,7 @@ public class VenueAudit
         {
             this._record.Log($"Venue audit requested by {MentionUtils.MentionUser(this._record.RequestedBy)}.");
             if (this._record.MassAuditId != null)
-                this._record.Log($"Venue audit requested as part of audit round {this._record.MassAuditId}.");
+                this._record.Log($"Venue audit requested as part of mass audit {this._record.MassAuditId}.");
 
             if (!doNotSkip && !await this.IsAuditRequired())
             {
@@ -119,7 +119,7 @@ public class VenueAudit
     public async Task<bool> IsAuditRequired()
     {
         var boundaryDate = DateTime.UtcNow.AddDays(-MIN_DAYS_SINCE_LAST_UPDATE);
-        var previousAudits = await this._repository.GetWhere<VenueAuditRecord>(a => 
+        var previousAudits = await this._repository.GetWhereAsync<VenueAuditRecord>(a => 
             a.VenueId == this._venue.Id && a.CompletedAt != null);
         var mostRecentCompletedAudit = previousAudits.ToList().MaxBy(a => a.CompletedAt);
         

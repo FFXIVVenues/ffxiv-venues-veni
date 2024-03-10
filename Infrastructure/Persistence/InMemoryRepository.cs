@@ -38,7 +38,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
             return Task.CompletedTask;
         }
 
-        public Task<IQueryable<T>> GetWhere<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity
+        public Task<IQueryable<T>> GetWhereAsync<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity
         {
             var type = typeof(T);
             if (!_memoryStore.ContainsKey(type))
@@ -54,7 +54,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
         }
 
 
-        public Task<IQueryable<T>> GetAll<T>() where T : class, IEntity
+        public Task<IQueryable<T>> GetAllAsync<T>() where T : class, IEntity
         {
             var type = typeof(T);
             if (!_memoryStore.ContainsKey(type))

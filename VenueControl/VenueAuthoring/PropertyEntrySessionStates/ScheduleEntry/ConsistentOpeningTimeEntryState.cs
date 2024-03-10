@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
@@ -58,7 +59,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
             if (!this._nowSettingClosing!.Value)
             {
-                // setting opening times
+                // Setting opening times
                 foreach (var opening in _venue.Schedule)
                 {
                     opening.Start = new Time { Hour = hour, Minute = minute, NextDay = false, TimeZone = _timeZoneId };
@@ -68,9 +69,18 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 return c.Session.MoveStateAsync<ConsistentOpeningTimeEntrySessionState>(c);
             }
 
-            // setting closing times
+            var start = new TimeOnly(_venue.Schedule[0].Start.Hour, _venue.Schedule[0].Start.Minute);
+            var end = new TimeOnly(hour, minute);
+            var diff = start - end;
+
+            if (diff > TimeSpan.FromHours(7) || diff < TimeSpan.FromHours(7)) 
+                return c.Interaction.Channel.SendMessageAsync($"Sorry, I can't add schedules longer than 7 hours. 😢");
+            
+            // Setting closing times
             foreach (var opening in _venue.Schedule)
                 opening.End = new Time { Hour = hour, Minute = minute, NextDay = hour < opening.Start.Hour, TimeZone = _timeZoneId };
+            
+            
 
             c.Session.ClearItem("nowSettingClosing");
 

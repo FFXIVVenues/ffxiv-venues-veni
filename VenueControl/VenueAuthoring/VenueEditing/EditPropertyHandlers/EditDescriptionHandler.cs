@@ -34,8 +34,7 @@ public class EditDescriptionHandler : IComponentHandler
         
         if (!this._authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
         {
-            await context.Interaction.FollowupAsync(
-                "Aaaah. You'll need to speak to my owners at FFXIV Venues to change the description for your venue. 🥲");
+            await context.Interaction.FollowupAsync(VenueControlStrings.NoPermission);
             return;
         }
 
