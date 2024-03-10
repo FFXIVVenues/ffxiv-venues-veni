@@ -31,8 +31,7 @@ public class EditManagersHandler : IComponentHandler
         
         if (! this._authorizer.Authorize(user, Permission.EditManagers, venue).Authorized)
         {
-            await context.Interaction.FollowupAsync(
-                "Sowwy. You'll need to speak to my owners at FFXIV Venues to change managers on your venue. 🥲");
+            await context.Interaction.FollowupAsync(VenueControlStrings.NoPermission);
             return;
         }
         

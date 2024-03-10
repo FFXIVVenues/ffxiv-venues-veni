@@ -41,7 +41,7 @@ namespace FFXIVVenues.Veni.GuildEngagement
         {
             var guilds = this.GetVenisGuilds();
             var guildIds = guilds.Select(guild => guild.Id.ToString());
-            var guildSettings = await this._repository.GetWhere<GuildSettings>(c => guildIds.Contains(c.id));
+            var guildSettings = await this._repository.GetWhereAsync<GuildSettings>(c => guildIds.Contains(c.id));
             var rolesAdded = false;
             foreach (var guildSetting in guildSettings)
             {
@@ -83,7 +83,7 @@ namespace FFXIVVenues.Veni.GuildEngagement
         {
             var guilds = this.GetVenisGuilds();
             var guildIds = guilds.Select(guild => guild.Id.ToString());
-            var guildSettings = await this._repository.GetWhere<GuildSettings>(c => guildIds.Contains(c.id));
+            var guildSettings = await this._repository.GetWhereAsync<GuildSettings>(c => guildIds.Contains(c.id));
             var namesFormatted = false;
             foreach (var guildSetting in guildSettings)
             {
@@ -170,7 +170,7 @@ namespace FFXIVVenues.Veni.GuildEngagement
         {
             var guilds = this.GetVenisGuilds();
             var guildIds = guilds.Select(guild => guild.Id.ToString());
-            var guildSettings = await this._repository.GetWhere<GuildSettings>(c => guildIds.Contains(c.id));
+            var guildSettings = await this._repository.GetWhereAsync<GuildSettings>(c => guildIds.Contains(c.id));
             var namesFormatted = false;
             foreach (var guildSetting in guildSettings)
             {

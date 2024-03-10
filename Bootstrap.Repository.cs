@@ -16,6 +16,7 @@ internal static partial class Bootstrap
         {
             PersistanceProvider.LiteDb => new LiteDbRepository(config.PersistenceConfig.ConnectionString),
             PersistanceProvider.Cosmos => new CosmosDbRepository(config.PersistenceConfig.ConnectionString),
+            PersistanceProvider.MongoDb => new MongoDbRepository(config.PersistenceConfig.ConnectionString),
             _ => new InMemoryRepository()
         };
         serviceCollection.AddSingleton(repository);

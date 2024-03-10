@@ -11,4 +11,6 @@ public interface IMassAuditService
     Task<CancelResult> CancelAsync();
     Task<MassAuditStatusSummary> GetStatusSummaryAsync();
     Task<MassAuditStatusReport> GetStatusReportAsync();
+    Task<CloseResult> CloseMassAudit();
+    Task<NoticeResult> SendNoticeAsync(string message);
 }

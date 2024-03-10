@@ -42,7 +42,7 @@ public class VenueAuditService : IVenueAuditService
 
     public async Task<VenueAuditRecord> GetLatestRecordFor(string venueId)
     {
-        var query = await this._repository.GetWhere<VenueAuditRecord>(a => a.VenueId == venueId);
+        var query = await this._repository.GetWhereAsync<VenueAuditRecord>(a => a.VenueId == venueId);
         return query.OrderByDescending(a => a.SentTime).Take(1).ToList().FirstOrDefault();
     }
 

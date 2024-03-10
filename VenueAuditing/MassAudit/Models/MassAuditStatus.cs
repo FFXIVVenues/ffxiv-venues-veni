@@ -5,5 +5,6 @@ public enum MassAuditStatus
     Inactive,
     Active,
     Complete,
-    Cancelled
+    Cancelled,
+    Closed
 }

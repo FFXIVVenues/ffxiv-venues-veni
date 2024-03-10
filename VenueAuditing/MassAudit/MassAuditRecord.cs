@@ -46,6 +46,11 @@ public class MassAuditRecord : IEntity
         this.Status = MassAuditStatus.Cancelled;
     }
     
+    public void SetClosed()
+    {
+        this.Status = MassAuditStatus.Closed;
+    }
+    
     public void Log(string message) =>
         this.Logs.Add(new (DateTime.UtcNow, message));
 
