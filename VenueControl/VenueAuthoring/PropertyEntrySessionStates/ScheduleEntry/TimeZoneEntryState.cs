@@ -25,10 +25,11 @@ class TimeZoneEntrySessionState : ISessionState
         { "America/Denver", "Mountain Standard Time (MST)" },
         { "America/Los_Angeles", "Pacific Standard Time (PST)" },
         { "America/Halifax", "Atlantic Standard Time (AST)" },
+        { "UTC", "Server Time (UTC)" },
+        { "Europe/London", "GMT Time (GMT)" },
         { "Europe/Budapest", "Central European Time (CEST)" },
         { "Europe/Chisinau", "Eastern European Time (EEST)" },
-        { "Europe/London", "GMT Time (GMT)" },
-        { "UTC", "Server Time (UTC)" },
+        { "Asia/Hong_Kong", "Hong Kong Time (HKT)" },
         { "Australia/Perth", "Australian Western Time (AWST)" },
         { "Australia/Adelaide", "Australian Central Time (ACST)" },
         { "Australia/Sydney", "Australian Eastern Time (AEST)" }
