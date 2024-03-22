@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
@@ -434,8 +432,8 @@ internal class MassAuditService(
         } 
         catch (Exception e)
         {
-            Log.Error("Exception occured in mass audit execution", e);
-        } 
+            Log.Error(e, "Exception occured in mass audit execution");
+        }
     }
 
 }

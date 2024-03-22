@@ -40,6 +40,11 @@ public class VenueRenderer : IVenueRenderer
         var stringBuilder = new StringBuilder();
         stringBuilder.Append("**Created**: ");
         stringBuilder.AppendLine(venue.Added.DateTime.FromNow()[0].ToString().ToUpper() + venue.Added.DateTime.FromNow()[1..]);
+        if (venue.LastModified.HasValue)
+        {
+            stringBuilder.Append("**Last Modified**: ");
+            stringBuilder.AppendLine(venue.LastModified.Value.DateTime.FromNow()[0].ToString().ToUpper() + venue.LastModified.Value.DateTime.FromNow()[1..]);
+        }
         stringBuilder.Append("**Location**: ");
         stringBuilder.AppendLine(venue.Location.ToString());
         stringBuilder.Append("**SyncShell ID**: ");
