@@ -30,7 +30,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
             Log.Debug("Upserting {EntityType} {EntityId}", typeName, entity.id);
             this._cache.For<T>().Remove(entity.id);
             var collection = this._database.GetCollection<T>(typeName);
-            var filter = Builders<T>.Filter.Eq("id", new ObjectId(entity.id));
+            var filter = Builders<T>.Filter.Eq("id", entity.id);
             await collection.ReplaceOneAsync(filter, entity, new ReplaceOptions { IsUpsert = true });
         }
 
@@ -43,7 +43,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
             Log.Debug("Deleting {EntityType} {EntityId}", typeName, id);
             this._cache.For<T>().Remove(id);
             var collection = this._database.GetCollection<T>(typeName);
-            var filter = Builders<T>.Filter.Eq("id", new ObjectId(id));
+            var filter = Builders<T>.Filter.Eq("id", id);
             await collection.DeleteOneAsync(filter);
         }
 
@@ -72,7 +72,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
                 return cacheResult.Value;
 
             var collection = this._database.GetCollection<T>(typeName);
-            var filter = Builders<T>.Filter.Eq("id", new ObjectId(id));
+            var filter = Builders<T>.Filter.Eq("id", id);
             var results = await collection.FindAsync(filter);
             var result = results.FirstOrDefault();
             this._cache.For<T>().Set(id, result);
