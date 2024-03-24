@@ -250,36 +250,7 @@ internal class MassAuditService(
         if (massAudit.Status is not MassAuditStatus.Complete)
             return NoticeResult.MassAuditNotComplete;
         
-        massAudit.Log($"Starting broadcast of notice \"{notice}\"");
-        Log.Debug("Mass audit: starting broadcast of notice");
         
-        var allVenues = await apiService.GetAllVenuesAsync();
-        var auditRecords = await repository.GetWhereAsync<VenueAuditRecord>(r => r.MassAuditId == massAudit.id && r.Status == VenueAuditStatus.AwaitingResponse);
-        foreach (var auditRecord in auditRecords)
-        {
-            var venue = allVenues.FirstOrDefault(v => v.Id == auditRecord.VenueId);
-            if (venue is null)
-                continue;
-            
-            massAudit.Log($"Sending notice to {auditRecord.VenueId}");
-            Log.Debug("Mass audit: sending notice to {Venue}", venue.Name);
-
-            auditRecord.Log($"Sending notice to {venue.Managers.Count} managers.");
-            
-            var broadcastReceipt = await new Broadcast(IdHelper.GenerateId(8), client)
-                .WithEmbed(new EmbedBuilder().WithDescription(notice))
-                .SendToAsync(venue.Managers.Select(ulong.Parse).ToArray());
-            
-            foreach (var message in broadcastReceipt.BroadcastMessages)
-                auditRecord.Log($"Notice to {message.UserId}: {message.Log}");
-            auditRecord.Log($"Sent notice to {broadcastReceipt.BroadcastMessages.Count(r => r.Status is MessageStatus.Sent)} of {venue.Managers.Count} managers.");
-            
-            await repository.UpsertAsync(auditRecord);
-        }
-
-        Log.Debug("Mass audit: notice broadcast");
-
-        await repository.UpsertAsync(massAudit);
 
         return NoticeResult.Sent;
     }
