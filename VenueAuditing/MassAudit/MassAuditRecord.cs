@@ -5,6 +5,7 @@ using FFXIVVenues.Veni.VenueAuditing.MassAudit.Models;
 
 namespace FFXIVVenues.Veni.VenueAuditing.MassAudit;
 
+// todo: rename to MassAuditTask and inherit from BaseTask
 [Serializable]
 public class MassAuditRecord : IEntity
 {
@@ -18,7 +19,7 @@ public class MassAuditRecord : IEntity
     public ulong RequestedIn { get; set; }
     public ulong RequestedBy { get; set; }
 
-    public List<VenueAuditLog> Logs { get; private set; } = new();
+    public List<SimpleLogRecord> Logs { get; private set; } = new();
 
     public void SetStarted()
     {
@@ -30,6 +31,7 @@ public class MassAuditRecord : IEntity
 
     public void SetPaused()
     {
+        //this.Log("Mass audit paused");
         this.Status = MassAuditStatus.Inactive;
         this.PausedAt = DateTime.UtcNow;
     }
@@ -42,6 +44,7 @@ public class MassAuditRecord : IEntity
 
     public void SetCancelled()
     {
+        //this.Log("Mass audit cancelled");
         this.CompletedAt = DateTime.UtcNow;
         this.Status = MassAuditStatus.Cancelled;
     }

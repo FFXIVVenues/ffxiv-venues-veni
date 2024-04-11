@@ -206,7 +206,7 @@ public class MassAuditExporter : IMassAuditExporter
         return worksheet;
     }
     
-    private static ExcelWorksheet AddLogsWorksheet(List<VenueAuditLog> roundLogs, IList<VenueAuditRecord> audits, ExcelPackage package)
+    private static ExcelWorksheet AddLogsWorksheet(List<SimpleLogRecord> roundLogs, IList<VenueAuditRecord> audits, ExcelPackage package)
     {
         List<(DateTime Date, string VenueId, string Message)> logs =
             roundLogs.Select(l => (l.Date, (string)null, l.Message)).ToList();

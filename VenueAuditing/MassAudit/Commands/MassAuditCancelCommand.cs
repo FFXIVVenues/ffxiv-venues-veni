@@ -32,7 +32,7 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
             switch (result)
             {
                 case CancelResult.NothingToCancel:
-                    await context.Interaction.FollowupAsync("There's no current mass audit to cancel. 🤔");
+                    await context.Interaction.FollowupAsync("There's no active mass audit to cancel. 🤔");
                     break;
                 case CancelResult.Cancelled:
                     await context.Interaction.FollowupAsync("Cancelled! 👀");

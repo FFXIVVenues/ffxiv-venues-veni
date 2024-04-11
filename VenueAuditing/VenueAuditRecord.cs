@@ -18,10 +18,10 @@ public class VenueAuditRecord : IEntity
     public ulong CompletedBy { get; set; }
     public DateTime? CompletedAt { get; set; }
     public List<BroadcastMessageReceipt> Messages { get; set; } = new();
-    public List<VenueAuditLog> Logs { get; set; } = new();
+    public List<SimpleLogRecord> Logs { get; set; } = new();
 
     public void Log(string message) =>
-        this.Logs.Add(new VenueAuditLog(DateTime.UtcNow, message));
+        this.Logs.Add(new SimpleLogRecord(DateTime.UtcNow, message));
 
     public VenueAuditRecord() =>
         this.id = Guid.NewGuid().ToString().Replace("-", "").Substring(8, 8);

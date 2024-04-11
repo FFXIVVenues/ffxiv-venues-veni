@@ -15,9 +15,11 @@ using FFXIVVenues.Veni.AI.Luis;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.GuildEngagement;
+using FFXIVVenues.Veni.Infrastructure.Tasks;
 using FFXIVVenues.Veni.UserSupport;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Exporting;
+using FFXIVVenues.Veni.VenueAuditing.MassAuditNotice;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval;
 using FFXIVVenues.Veni.VenueDiscovery.Commands;
@@ -54,6 +56,8 @@ serviceCollection.AddSingleton<IInteractionContextFactory, InteractionContextFac
 serviceCollection.AddSingleton<ICommandCartographer, CommandCartographer>();
 serviceCollection.AddSingleton<IMassAuditService, MassAuditService>();
 serviceCollection.AddSingleton<IMassAuditExporter, MassAuditExporter>();
+serviceCollection.AddSingleton<ITaskService<MassNoticeTask>, MassNoticeService>();
+serviceCollection.AddSingleton<MassNoticeService>();
 serviceCollection.AddSingleton<IDiscordValidator, DiscordValidator>();
 
 var serviceProvider = serviceCollection.BuildServiceProvider();

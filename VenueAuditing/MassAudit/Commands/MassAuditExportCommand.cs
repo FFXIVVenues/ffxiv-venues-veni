@@ -29,7 +29,7 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
 
             await context.Interaction.DeferAsync();
             
-            var report = await this._massAuditService.GetStatusReportAsync();
+            var report = await this._massAuditService.GetReportAsync();
             if (report == null)
             {
                 await context.Interaction.FollowupAsync("There has never been a mass audit to report on.");

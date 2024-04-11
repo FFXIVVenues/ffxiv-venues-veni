@@ -22,19 +22,12 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Commands
             }
         }
 
-        internal class CommandHandler : ICommandHandler
+        internal class CommandHandler(IApiService apiService) : ICommandHandler
         {
-            private readonly IApiService _apiService;
-
-            public CommandHandler(IApiService _apiService)
-            {
-                this._apiService = _apiService;
-            } 
-
             public async Task HandleAsync(SlashCommandVeniInteractionContext c)
             {
                 await c.Interaction.DeferAsync();
-                var venues = await this._apiService.GetAllVenuesAsync();
+                var venues = await apiService.GetAllVenuesAsync();
 
                 var total = 0;
                 //NA
@@ -45,6 +38,8 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Commands
                 //EU
                 var chaosSum = 0;
                 var lightSum = 0;
+                // OCE
+                var materiaSum = 0;
 
                 foreach (var venue in venues)
                 {
@@ -56,18 +51,14 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Commands
                     else if (venue.Location.DataCenter.Equals("Dynamis")) dynamisSum++;
                     else if (venue.Location.DataCenter.Equals("Chaos")) chaosSum++;
                     else if (venue.Location.DataCenter.Equals("Light")) lightSum++;
+                    else if (venue.Location.DataCenter.Equals("Materia")) materiaSum++;
                 }
 
-                await c.Interaction.FollowupAsync(" We have **" + total +
-                        "** total venues! 🤗.\n" +
-                        "In **NA**: **" +
-                        aetherSum + "** from Aether, **" +
-                        dynamisSum + "** from Dynamis, **" +
-                        crystalSum + "** from Crystal, and **" +
-                        primalSum + "** in Primal. \n" +
-                        "In **EU**: **" +
-                        chaosSum + "** from Chaos, and **" +
-                        lightSum + "** in Light.");
+                await c.Interaction.FollowupAsync(
+                    $@" We have **{total}** total venues! 🤗.
+In **NA**: **{aetherSum}** from Aether, **{dynamisSum}** from Dynamis, **{crystalSum}** from Crystal, and **{primalSum}** in Primal. 
+In **EU**: **{chaosSum}** from Chaos, and **{lightSum}** in Light.
+In *OCE**: **{materiaSum} from Materia.");
             }
             
         }
