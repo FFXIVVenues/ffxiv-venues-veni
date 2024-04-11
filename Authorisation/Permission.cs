@@ -6,52 +6,59 @@ namespace FFXIVVenues.Veni.Authorisation;
 public enum Permission
 {
     ApproveVenue,
-    ApproveNaVenue,
-    ApproveEuVenue,
-    ApproveOceVenue,
-    ApproveJpnVenue,
+        ApproveNaVenue,
+        ApproveEuVenue,
+        ApproveOceVenue,
+        ApproveJpnVenue,
+    AuditVenue,
+        AuditNaVenue,
+        AuditEuVenue,
+        AuditOceVenue,
+        AuditJpnVenue,
     ViewAuditHistory,
-    AuditVenue, //todo: Should be localised too?
+        ViewNaAuditHistory,
+        ViewEuAuditHistory,
+        ViewOceAuditHistory,
+        ViewJpnAuditHistory,
     EditVenue,
-    EditNaVenue,
-    EditEuVenue,
-    EditOceVenue,
-    EditJpnVenue,
+        EditNaVenue,
+        EditEuVenue,
+        EditOceVenue,
+        EditJpnVenue,
     EditPhotography,
-    EditNaPhotography,
-    EditEuPhotography,
-    EditOcePhotography,
-    EditJpnPhotography,
+        EditNaPhotography,
+        EditEuPhotography,
+        EditOcePhotography,
+        EditJpnPhotography,
     EditManagers,
-    EditNaManagers,
-    EditEuManagers,
-    EditOceManagers,
-    EditJpnManagers,
+        EditNaManagers,
+        EditEuManagers,
+        EditOceManagers,
+        EditJpnManagers,
     OpenVenue,
-    OpenNaVenue,
-    OpenEuVenue,
-    OpenOceVenue,
-    OpenJpnVenue,
+        OpenNaVenue,
+        OpenEuVenue,
+        OpenOceVenue,
+        OpenJpnVenue,
     CloseVenue,
-    CloseNaVenue,
-    CloseEuVenue,
-    CloseOceVenue,
-    CloseJpnVenue,
+        CloseNaVenue,
+        CloseEuVenue,
+        CloseOceVenue,
+        CloseJpnVenue,
     HiatusVenue,
-    HiatusNaVenue,
-    HiatusEuVenue,
-    HiatusOceVenue,
-    HiatusJpnVenue,
+        HiatusNaVenue,
+        HiatusEuVenue,
+        HiatusOceVenue,
+        HiatusJpnVenue,
     DeleteVenue,
-    DeleteNaVenue,
-    DeleteEuVenue,
-    DeleteOceVenue,
-    DeleteJpnVenue,
-    Inspect,
+        DeleteNaVenue,
+        DeleteEuVenue,
+        DeleteOceVenue,
+        DeleteJpnVenue,
     Blacklist,
-    DownloadOfflineJson,
     ControlMassAudit,
-    ReportMassAudit
+    ReportMassAudit,
+    SetLongSchedule
 }
 
 public static class PermissionExtensions
@@ -59,6 +66,24 @@ public static class PermissionExtensions
     public static Permission? ToLocalPermission(this Permission permission, Venue venue) =>
         permission switch
         {
+            Permission.AuditVenue => 
+                FfxivWorlds.GetRegionForDataCenter(venue.Location?.DataCenter) switch
+                {
+                    FfxivWorlds.REGION_NA => Permission.AuditNaVenue,  
+                    FfxivWorlds.REGION_EU => Permission.AuditEuVenue,  
+                    FfxivWorlds.REGION_OCE => Permission.AuditOceVenue,
+                    FfxivWorlds.REGION_JPN => Permission.AuditJpnVenue,
+                    _ => null
+                },
+            Permission.ViewAuditHistory => 
+                FfxivWorlds.GetRegionForDataCenter(venue.Location?.DataCenter) switch
+                {
+                    FfxivWorlds.REGION_NA => Permission.ViewNaAuditHistory,  
+                    FfxivWorlds.REGION_EU => Permission.ViewEuAuditHistory,  
+                    FfxivWorlds.REGION_OCE => Permission.ViewOceAuditHistory,
+                    FfxivWorlds.REGION_JPN => Permission.ViewJpnAuditHistory,
+                    _ => null
+                },
             Permission.ApproveVenue => 
                 FfxivWorlds.GetRegionForDataCenter(venue.Location?.DataCenter) switch
                 {

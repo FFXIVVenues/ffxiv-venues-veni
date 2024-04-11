@@ -38,6 +38,7 @@ public class EditMareHandler : IComponentHandler
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
                     props.Components = new ComponentBuilder().Build());
         
+        await context.Session.ClearState(context);
         context.Session.SetVenue(venue);
         context.Session.SetItem("modifying", true);
         await context.Session.MoveStateAsync<HasMareEntrySessionState>(context);

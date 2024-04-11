@@ -53,7 +53,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
         public Task<IQueryable<T>> GetWhereAsync<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity =>
             Task.FromResult(_repository.GetCollection<T>().Find(predicate).AsQueryable());
 
-        public Task<IQueryable<T>> GetAllAsync<T>() where T : class, IEntity =>
+        public Task<IQueryable<T>> Query<T>() where T : class, IEntity =>
             Task.FromResult(_repository.GetCollection<T>().FindAll().AsQueryable());
 
         public Task<T> GetByIdAsync<T>(string id) where T : class, IEntity =>

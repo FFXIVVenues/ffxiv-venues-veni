@@ -72,24 +72,26 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands
             var commandPath = context.Interaction.CommandName;
             var command = this._commands.FirstOrDefault(c => c.Name.Value == commandPath);
             if (command == null) return commandPath;
-            for (var i = 0; true; i++)
+
+            var subCommandInteraction = context.Interaction.Data.Options.FirstOrDefault();
+            if (subCommandInteraction is null) return commandPath;
+            var subCommand = command.Options.Value?.FirstOrDefault(o => o.Name == subCommandInteraction.Name);
+            if (subCommand is null) return commandPath;
+
+            do
             {
-                var subCommandName = context.Interaction.Data.Options.Skip(i).FirstOrDefault()?.Name;
-                if (subCommandName == null) break;
-                var subCommand = command.Options.Value?.FirstOrDefault(o => o.Name == subCommandName);
-                if (subCommand == null) break;
-                if (subCommand.Type == ApplicationCommandOptionType.SubCommandGroup)
-                {
-                    commandPath += " " + subCommandName;
-                    continue;
-                }
+                if (subCommand.Type is ApplicationCommandOptionType.SubCommand 
+                                    or ApplicationCommandOptionType.SubCommandGroup)
+                    commandPath += " " + subCommandInteraction.Name;
 
-                if (subCommand.Type == ApplicationCommandOptionType.SubCommand)
-                    commandPath += " " + subCommandName;
-                break;
-            }
-
-            return commandPath;
+                if (subCommand.Type is not ApplicationCommandOptionType.SubCommandGroup)
+                    return commandPath;
+                
+                subCommandInteraction = subCommandInteraction.Options.FirstOrDefault();
+                if (subCommandInteraction is null) return commandPath;
+                subCommand = command.Options.Value?.FirstOrDefault(o => o.Name == subCommandInteraction.Name);
+                if (subCommand is null) return commandPath;
+            } while (true);
         }
     }
 
