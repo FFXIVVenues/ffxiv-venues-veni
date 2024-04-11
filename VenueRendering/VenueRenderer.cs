@@ -95,7 +95,7 @@ public class VenueRenderer : IVenueRenderer
         if (resolution != null && resolution.IsAt(DateTimeOffset.Now))
             stringBuilder.AppendLine(":green_circle: **Open right now**");
         else if (resolution != null)
-            stringBuilder.Append(":black_circle: **Open ").Append(resolution.Start.DateTime.ToNow()).AppendLine("**");
+            stringBuilder.Append(":black_circle: **Open ").Append(resolution.Start.UtcDateTime.ToNow()).AppendLine("**");
         else
             stringBuilder.AppendLine(":black_circle: **Not open right now**");
 

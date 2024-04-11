@@ -149,5 +149,3 @@ public class VenueAudit
     }
 
 }
-
-public record VenueAuditLog(DateTime Date, string Message);

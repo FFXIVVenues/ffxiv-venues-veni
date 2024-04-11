@@ -1,18 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
-using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Utils.Broadcasting;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Exporting;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Models;
-using FFXIVVenues.Veni.VenueControl.VenueAuthoring;
+using FFXIVVenues.Veni.VenueAuditing.MassAuditNotice;
 using Serilog;
-
 
 namespace FFXIVVenues.Veni.VenueAuditing.MassAudit;
 
@@ -22,16 +20,15 @@ internal class MassAuditService(
     IVenueAuditService venueAuditService,
     IDiscordClient client,
     IMassAuditExporter massAuditExporter,
-    IDiscordValidator discordValidator)
+    MassNoticeService massNoticeService)
     : IMassAuditService
 {
     private bool _pause = false;
     private bool _cancel = false;
     private Task _activeAuditTask;
     private CancellationTokenSource _cancellationTokenSource;
-    private readonly HttpClient _http = new();
 
-    public async Task<ResumeResult> ResumeMassAuditAsync(bool activeOnly)
+    public async Task<ResumeResult> ResumeAsync(bool activeOnly)
     {
         Log.Debug("Resume requested for mass audit");
         if (this._activeAuditTask is not null && !this._activeAuditTask.IsCompleted)
@@ -71,16 +68,16 @@ internal class MassAuditService(
         }
         
         Log.Information("Inactive mass audit {AuditId} resumed", audit.id);
-        return ResumeResult.ResumedInactive;
+        return ResumeResult.ResumedPaused;
     }
 
-    public async Task<StartResult> StartMassAuditAsync(ulong requestedIn, ulong requestedBy)
+    public async Task<StartResult> StartAsync(ulong requestedIn, ulong requestedBy)
     {
         Log.Debug("Start request for mass audit");
         if (this._activeAuditTask is not null && !this._activeAuditTask.IsCompleted)
         {
             Log.Debug("Active mass audit already exists");
-            return StartResult.ActiveExists;
+            return StartResult.AlreadyRunning;
         }
 
         Log.Debug("Fetching active and inactive mass audits");
@@ -93,15 +90,17 @@ internal class MassAuditService(
             if (audit.Status == MassAuditStatus.Active)
             {
                 Log.Debug("Active mass audit already exists (but is not running)");
-                return StartResult.ActiveExists;
+                return StartResult.HaultedExists;
             }
             else
             {
                 Log.Debug("Inactive mass audit already exists");
-                return StartResult.InactiveExists;
+                return StartResult.PausedExists;
             }
-                
-        audit = new MassAuditRecord()
+
+        _ = massNoticeService.CloseAsync();
+        
+        audit = new MassAuditRecord
         {
             RequestedIn = requestedIn,
             RequestedBy = requestedBy
@@ -202,10 +201,10 @@ internal class MassAuditService(
         return CancelResult.Cancelled;
     }
 
-    public async Task<MassAuditStatusSummary> GetStatusSummaryAsync()
+    public async Task<MassAuditStatusSummary> GetSummaryAsync()
     {
         Log.Debug("Mass audit summary requested");
-        var activeAuditRounds = await repository.GetAllAsync<MassAuditRecord>();
+        var activeAuditRounds = await repository.Query<MassAuditRecord>();
         var auditRound = activeAuditRounds.OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
         if (auditRound == null)
             return null;
@@ -216,10 +215,10 @@ internal class MassAuditService(
         return massAuditExporter.GetSummaryForMassAudit(auditRound, allVenues, audits.ToList());
     }
 
-    public async Task<MassAuditStatusReport> GetStatusReportAsync()
+    public async Task<MassAuditStatusReport> GetReportAsync()
     {
         Log.Debug("Mass audit report requested");
-        var activeAuditRounds = await repository.GetAllAsync<MassAuditRecord>();
+        var activeAuditRounds = await repository.Query<MassAuditRecord>();
         var auditRound = activeAuditRounds.OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
         if (auditRound == null)
             return null;
@@ -230,31 +229,6 @@ internal class MassAuditService(
         return await massAuditExporter.GetExportForMassAuditAsync(auditRound, allVenues, audits.ToList());
     }
     
-    public async Task<NoticeResult> SendNoticeAsync(string notice)
-    {
-        Log.Debug("Notice requested for mass audit");
-        if (this._activeAuditTask is not null && !this._activeAuditTask.IsCompleted)
-        {
-            Log.Debug("Mass audit is active");
-            return NoticeResult.MassAuditRunning;
-        }
-        
-        var activeAuditRounds = await repository.GetAllAsync<MassAuditRecord>();
-        var massAudit = activeAuditRounds.OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
-        if (massAudit == null)
-            return NoticeResult.NoMassAudits;
-
-        if (massAudit.Status is MassAuditStatus.Closed)
-            return NoticeResult.MassAuditClosed;
-
-        if (massAudit.Status is not MassAuditStatus.Complete)
-            return NoticeResult.MassAuditNotComplete;
-        
-        
-
-        return NoticeResult.Sent;
-    }
-
     public async Task<CloseResult> CloseMassAudit()
     {
         Log.Debug("Close request for mass audit");
@@ -265,29 +239,148 @@ internal class MassAuditService(
         }
         
         Log.Debug("Fetching most recent mass audits");
-        var audit = (await repository.GetAllAsync<MassAuditRecord>())
-            .OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
+        var latestMassAudit = await this.GetTaskAsync();
 
-        if (audit.Status == MassAuditStatus.Active)
+        if (latestMassAudit is null)
+        {
+            Log.Debug("No mass audits to close");
+            return CloseResult.NothingToClose;
+        }
+        
+        if (latestMassAudit.Status == MassAuditStatus.Active)
         {
             Log.Debug("Mass audit is active");
             return CloseResult.StillRunning;
         }
 
-        if (audit.Status == MassAuditStatus.Closed)
+        if (latestMassAudit.Status == MassAuditStatus.Closed)
         {
             Log.Debug("Mass audit is already closed");
             return CloseResult.AlreadyClosed;
         }
 
-        audit.SetClosed();
-        audit.Log("Mass audit closed");
-        await repository.UpsertAsync(audit);
-        Log.Debug("Mass audit {AuditId} closed", audit.id);
+        latestMassAudit.SetClosed();
+        latestMassAudit.Log("Mass audit closed");
+        await repository.UpsertAsync(latestMassAudit);
+        Log.Debug("Mass audit {AuditId} closed", latestMassAudit.id);
         
         return CloseResult.Closed;
     }
 
+    public async Task<NoticeResult> StartNoticeAsync(ulong requestedIn, ulong requestedBy, string notice)
+    {
+        Log.Debug("Notice requested for mass audit");
+        if (this._activeAuditTask is not null && !this._activeAuditTask.IsCompleted)
+        {
+            Log.Debug("Mass audit is active");
+            return NoticeResult.MassAuditRunning;
+        }
+        
+        var latestMassAudit = await this.GetTaskAsync();
+        if (latestMassAudit == null)
+            return NoticeResult.NoMassAudits;
+
+        if (latestMassAudit.Status is MassAuditStatus.Closed)
+            return NoticeResult.MassAuditClosed;
+
+        if (latestMassAudit.Status is not MassAuditStatus.Complete)
+            return NoticeResult.MassAuditNotComplete;
+
+
+        var targetUsers = new List<NoticeTarget>();
+        var allVenues = await apiService.GetAllVenuesAsync();
+        var awaitingAudits = await repository.GetWhereAsync<VenueAuditRecord>(r =>
+            r.MassAuditId == latestMassAudit.id && r.Status == VenueAuditStatus.AwaitingResponse);
+        var managers = awaitingAudits
+            .SelectMany(a => a.Messages.Where(m => m.Status == MessageStatus.Sent).Select(m => m.UserId))
+            .Distinct();
+
+        foreach (var manager in managers)
+        {
+            var venueNamesForUser = awaitingAudits
+                .Where(a => a.Messages.Any(m => m.UserId == manager))
+                .Select(a => allVenues.FirstOrDefault(v => a.VenueId == v.Id))
+                .Where(v => v != null)
+                .Select(v => v.Name);
+
+            if (!venueNamesForUser.Any())
+                continue;
+            
+            var messageForManager = string.Format(notice, ToReadableList(venueNamesForUser));
+            targetUsers.Add(new NoticeTarget(manager,messageForManager));
+        }
+        
+        var startResult = await massNoticeService.StartAsync(new ()
+        {
+            MassAuditId = latestMassAudit.id,
+            RequestedBy = requestedBy,
+            RequestedIn = requestedIn,
+            Message = notice,
+            TargetUsers = targetUsers
+        });
+
+        return startResult switch
+        {
+            StartResult.Started => NoticeResult.Started,
+            StartResult.HaultedExists => NoticeResult.NoticeHaulted,
+            StartResult.AlreadyRunning => NoticeResult.NoticeAlreadyRunning,
+            StartResult.PausedExists => NoticeResult.NoticePausedExists,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    public Task<PauseResult> PauseNoticeAsync() =>
+        massNoticeService.PauseAsync();
+
+    public async Task<ResumeResult> ResumeNoticeAsync()
+    {
+        var latestMassAudit = await this.GetTaskAsync();
+        if (latestMassAudit is null)
+            return ResumeResult.NothingToResume;
+        
+        var task = await massNoticeService.GetTaskAsync();
+        if (latestMassAudit.id == task.MassAuditId)
+            return await massNoticeService.ResumeAsync(false);
+
+        return ResumeResult.NothingToResume;
+    }
+
+    public Task<CancelResult> CancelNoticeAsync() =>
+        massNoticeService.CancelAsync();
+
+    public async Task<MassNoticeTask> GetNoticeTaskAsync()
+    {
+        var latestMassAudit = await this.GetTaskAsync();
+        if (latestMassAudit is null)
+            return null;
+        
+        var task = await massNoticeService.GetTaskAsync();
+        if (task.MassAuditId == latestMassAudit.id)
+            return task;
+
+        return null;
+    }
+
+    public async Task<MassNoticeSummary?> GetNoticeSummaryAsync()
+    {
+        var latestMassAudit = await this.GetTaskAsync();
+        if (latestMassAudit is null)
+            return null;
+        
+        var summary = await massNoticeService.GetSummary();
+        if (summary.MassAuditId == latestMassAudit.id)
+            return summary;
+
+        return null;
+    }
+    
+    public async Task<MassAuditRecord> GetTaskAsync() => 
+        (await repository.Query<MassAuditRecord>())
+            .OrderByDescending(a => a.StartedAt)
+            .Take(1)
+            .ToList()
+            .FirstOrDefault();
+    
     private void StartThread(MassAuditRecord massAudit)
     {
         Log.Debug("Start mass audit thread");
@@ -360,7 +453,7 @@ internal class MassAuditService(
                 }
                 catch (Exception e)
                 {
-                    Log.Warning("Mass audit: exception occured while auditing {Venue}", venue, e);
+                    Log.Warning(e, "Mass audit: exception occured while auditing {Venue}", venue);
                     massAudit.Log($"Exception while sending audit for {venue.Name}. {e.Message}");
                     await repository.UpsertAsync(massAudit);
                     await Task.Delay(3000, cancellationToken);
@@ -407,6 +500,23 @@ internal class MassAuditService(
         }
     }
 
+    private static string ToReadableList(IEnumerable<string> strings)
+    {
+        var list = strings.ToList();
+        if (list.Count > 5)
+        {
+            var remainingCount = list.Count - 5;
+            var firstFiveItems = list.Take(5).ToList();
+            firstFiveItems.Add($"{remainingCount} others");
+            list = firstFiveItems;
+        }
+        var result = string.Join(", ", list);
+        var lastComma = result.LastIndexOf(',');
+        if (lastComma != -1)
+            result = result.Remove(lastComma, 1).Insert(lastComma, " and");
+        return result;
+    }
+
 }
 
 public enum NoticeResult
@@ -415,7 +525,10 @@ public enum NoticeResult
     MassAuditRunning,
     MassAuditClosed,
     MassAuditNotComplete,
-    Sent
+    NoticeAlreadyRunning,
+    NoticePausedExists,
+    NoticeHaulted,
+    Started
 }
 
 public enum PauseResult
@@ -435,8 +548,8 @@ public enum CancelResult
 public enum StartResult
 {
     AlreadyRunning,
-    ActiveExists,
-    InactiveExists,
+    HaultedExists,
+    PausedExists,
     Started
 }
 
@@ -445,12 +558,13 @@ public enum ResumeResult
     AlreadyRunning,
     NothingToResume,
     ResumedActive,
-    ResumedInactive
+    ResumedPaused
 }
 
 public enum CloseResult
 {
     AlreadyClosed,
     StillRunning,
+    NothingToClose,
     Closed
 }
