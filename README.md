@@ -166,17 +166,17 @@ This section configures you will receive notifications for certain events in Ven
 
 | Setting Name | Description | Value Type |
 |--------------|-------------|------------|
-| Notifications.Approvals.Global | The list of discord user ids to receive notifications for any venue that requires approval before publishing. | Array<ulong> |
-| Notifications.Approvals.NorthAmerica | The list of discord user ids to receive notifications for any venue created in North American data centers that requires approval before publishing. | Array<ulong> |
-| Notifications.Approvals.Oceania | The list of discord user ids to receive notifications for any venue created in Oceania data centers that requires approval before publishing. | Array<ulong> |
-| Notifications.Approvals.Europe | The list of discord user ids to receive notifications for any venue created in European data centers that requires approval before publishing. | Array<ulong> |
-| Notifications.Approvals.Japan | The list of discord user ids to receive notifications for any venue created in Japanese data centers that requires approval before publishing. | Array<ulong> |
-| Notifications.MissingSplash.Global | The list of discord user ids to receive notifications for any venue that is created without a banner image. | Array<ulong> |
-| Notifications.MissingSplash.NorthAmerica | The list of discord user ids to receive notifications for any venue created in North American data centers without a banner image. | Array<ulong> |
-| Notifications.MissingSplash.Oceania | The list of discord user ids to receive notifications for any venue created in Oceania data centers without a banner image. | Array<ulong> |
-| Notifications.MissingSplash.Europe | The list of discord user ids to receive notifications for any venue created in Europe data centers without a banner image. | Array<ulong> |
-| Notifications.MissingSplash.Japan | The list of discord user ids to receive notifications for any venue created in Japan data centers without a banner image. | Array<ulong> |
-| Notifications.Help | The discord user id to notify when a user asks for help. | Array<ulong> |
+| Notifications.Approvals.Global | The list of discord user ids to receive notifications for any venue that requires approval before publishing. | Array\<ulong> |
+| Notifications.Approvals.NorthAmerica | The list of discord user ids to receive notifications for any venue created in North American data centers that requires approval before publishing. | Array\<ulong> |
+| Notifications.Approvals.Oceania | The list of discord user ids to receive notifications for any venue created in Oceania data centers that requires approval before publishing. | Array\<ulong> |
+| Notifications.Approvals.Europe | The list of discord user ids to receive notifications for any venue created in European data centers that requires approval before publishing. | Array\<ulong> |
+| Notifications.Approvals.Japan | The list of discord user ids to receive notifications for any venue created in Japanese data centers that requires approval before publishing. | Array\<ulong> |
+| Notifications.MissingSplash.Global | The list of discord user ids to receive notifications for any venue that is created without a banner image. | Array\<ulong> |
+| Notifications.MissingSplash.NorthAmerica | The list of discord user ids to receive notifications for any venue created in North American data centers without a banner image. | Array\<ulong> |
+| Notifications.MissingSplash.Oceania | The list of discord user ids to receive notifications for any venue created in Oceania data centers without a banner image. | Array\<ulong> |
+| Notifications.MissingSplash.Europe | The list of discord user ids to receive notifications for any venue created in Europe data centers without a banner image. | Array\<ulong> |
+| Notifications.MissingSplash.Japan | The list of discord user ids to receive notifications for any venue created in Japan data centers without a banner image. | Array\<ulong> |
+| Notifications.Help | The discord user id to notify when a user asks for help. | Array\<ulong> |
 
 ## Authorization
 
@@ -191,13 +191,15 @@ This section configures the authorization of discord users.
 
 Permissions Sets is an object array, wherein each object specifies a set of permissions and a set of discord user ids to which to grant those permissions.
 
+| Setting Name | Description | Value Type |
+|--------------|-------------|------------|
 | Authorization.PermissionSets[0].Name | The name of the permission set, this field is for your anotation only and is not used by Veni. | String |
-| Authorization.PermissionSets[0].Permissions | The array of permission to grant to the discord users in the Members array of this permission set. |  Array<[Permission](#Permissions)> |
-| Authorization.PermissionSets[0].Members | The discord user id's to which to grant the permissions in the Permissions array of this permission set. |  Array<ulong> |
+| Authorization.PermissionSets[0].Permissions | The array of permission to grant to the discord users in the Members array of this permission set. |  Array\<[Permission](#Permissions)> |
+| Authorization.PermissionSets[0].Members | The discord user id's to which to grant the permissions in the Permissions array of this permission set. |  Array\<ulong> |
 
 ## Permissions
 
-| PermissionName | Description |
+| Permission Name | Description |
 | -------------- | ----------- |
 | ApproveVenue | Allows the user to approve any venue and publish it. |
 | ApproveNaVenue | Allows the user to approve venues located in North American data centers and publish them. |
