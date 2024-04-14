@@ -114,7 +114,7 @@ public abstract class BaseTaskService<T>(IRepository repository) : ITaskService<
         }
         
         Log.Debug("Fetching most recent {Task}", this._taskType);
-        var task = (await repository.Query<T>())
+        var task = (await repository.QueryAsync<T>())
             .OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
 
         if (task is null)
@@ -143,7 +143,7 @@ public abstract class BaseTaskService<T>(IRepository repository) : ITaskService<
     }
 
     public async Task<T> GetTaskAsync() => 
-        (await repository.Query<T>())
+        (await repository.QueryAsync<T>())
             .OrderByDescending(a => a.StartedAt)
             .Take(1)
             .ToList()
