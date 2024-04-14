@@ -6,6 +6,5 @@ namespace FFXIVVenues.Veni.Authorisation.Blacklist
     {
         public string id { get; set; }
         public string Reason  { get; set; }
-
     }
 }

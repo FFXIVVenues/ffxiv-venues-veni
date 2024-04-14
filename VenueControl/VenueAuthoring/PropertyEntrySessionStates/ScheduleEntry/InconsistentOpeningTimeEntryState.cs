@@ -1,6 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
@@ -8,7 +10,7 @@ using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.ScheduleEntry
 {
-    class InconsistentOpeningTimeEntrySessionState : ISessionState
+    class InconsistentOpeningTimeEntrySessionState(IAuthorizer authorizer) : ISessionState
     {
 
         private static Regex _regex = new Regex("(?<hour>[0-9]|(1[0-2]))(:?(?<minute>[0-5][0-9]))? ?(?<meridiem>am|pm)");
@@ -76,6 +78,15 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 c.Session.SetItem("nowSettingDay", this._nowSettingDay);
                 c.Session.SetItem("nowSettingClosing", true);
                 return c.Session.MoveStateAsync<InconsistentOpeningTimeEntrySessionState>(c);
+            }
+
+            if ( ! authorizer.Authorize(c.Interaction.Author.Id, Permission.SetLongSchedule, this._venue).Authorized)
+            {
+                var start = new TimeOnly(_venue.Schedule[0].Start.Hour, _venue.Schedule[0].Start.Minute);
+                var end = new TimeOnly(hour, minute);
+                var diff = end - start;
+                if (diff > TimeSpan.FromHours(7)) 
+                    return c.Interaction.Channel.SendMessageAsync(VenueControlStrings.OpeningTooLong);
             }
 
             // setting closing time per day

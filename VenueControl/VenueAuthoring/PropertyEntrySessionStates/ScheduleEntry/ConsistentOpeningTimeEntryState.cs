@@ -1,6 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
@@ -8,7 +10,7 @@ using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.ScheduleEntry
 {
-    class ConsistentOpeningTimeEntrySessionState : ISessionState
+    class ConsistentOpeningTimeEntrySessionState(IAuthorizer authorizer) : ISessionState
     {
         private static Regex _regex = new Regex("(?<hour>[0-9]|(1[0-2]))(:?(?<minute>[0-5][0-9]))? ?(?<meridiem>am|pm)");
 
@@ -58,7 +60,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
             if (!this._nowSettingClosing!.Value)
             {
-                // setting opening times
+                // Setting opening times
                 foreach (var opening in _venue.Schedule)
                 {
                     opening.Start = new Time { Hour = hour, Minute = minute, NextDay = false, TimeZone = _timeZoneId };
@@ -68,9 +70,20 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 return c.Session.MoveStateAsync<ConsistentOpeningTimeEntrySessionState>(c);
             }
 
-            // setting closing times
+            if ( ! authorizer.Authorize(c.Interaction.Author.Id, Permission.SetLongSchedule, this._venue).Authorized)
+            {
+                var start = new TimeOnly(_venue.Schedule[0].Start.Hour, _venue.Schedule[0].Start.Minute);
+                var end = new TimeOnly(hour, minute);
+                var diff = end - start;
+                if (diff > TimeSpan.FromHours(7)) 
+                    return c.Interaction.Channel.SendMessageAsync(VenueControlStrings.OpeningTooLong);
+            }
+            
+            // Setting closing times
             foreach (var opening in _venue.Schedule)
                 opening.End = new Time { Hour = hour, Minute = minute, NextDay = hour < opening.Start.Hour, TimeZone = _timeZoneId };
+            
+            
 
             c.Session.ClearItem("nowSettingClosing");
 

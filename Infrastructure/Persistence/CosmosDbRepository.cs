@@ -47,7 +47,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
             await container.DeleteItemAsync<T>(id, PartitionKey.None);
         }
 
-        public async Task<IQueryable<T>> GetWhere<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity
+        public async Task<IQueryable<T>> GetWhereAsync<T>(Expression<Func<T, bool>> predicate) where T : class, IEntity
         {
             var typeName = typeof(T).Name;
             Log.Debug("Getting {EntityType} where {EntityQuery}", typeName, predicate);
@@ -55,7 +55,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
             return container.GetItemLinqQueryable<T>(true).Where(predicate);
         }
 
-        public async Task<IQueryable<T>> GetAll<T>() where T : class, IEntity
+        public async Task<IQueryable<T>> QueryAsync<T>() where T : class, IEntity
         {
             var typeName = typeof(T).Name;
             Log.Debug("Getting all {EntityType}", typeName);

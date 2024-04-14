@@ -13,6 +13,7 @@
     {
         InMemory,
         LiteDb,
-        Cosmos
+        Cosmos,
+        MongoDb
     }
 }
