@@ -9,7 +9,7 @@ public class DiscordCommandOptionAttribute : Attribute
     public string Name { get; }
     public string Description { get; }
     public ApplicationCommandOptionType Type { get; }
-    public bool Required { get; }
+    public bool Required { get; set; }
 
     public DiscordCommandOptionAttribute(string name, string description, ApplicationCommandOptionType type)
     {

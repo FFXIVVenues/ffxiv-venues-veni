@@ -40,6 +40,11 @@ public class VenueRenderer : IVenueRenderer
         var stringBuilder = new StringBuilder();
         stringBuilder.Append("**Created**: ");
         stringBuilder.AppendLine(venue.Added.DateTime.FromNow()[0].ToString().ToUpper() + venue.Added.DateTime.FromNow()[1..]);
+        if (venue.LastModified.HasValue)
+        {
+            stringBuilder.Append("**Last Modified**: ");
+            stringBuilder.AppendLine(venue.LastModified.Value.DateTime.FromNow()[0].ToString().ToUpper() + venue.LastModified.Value.DateTime.FromNow()[1..]);
+        }
         stringBuilder.Append("**Location**: ");
         stringBuilder.AppendLine(venue.Location.ToString());
         stringBuilder.Append("**SyncShell ID**: ");
@@ -90,7 +95,7 @@ public class VenueRenderer : IVenueRenderer
         if (resolution != null && resolution.IsAt(DateTimeOffset.Now))
             stringBuilder.AppendLine(":green_circle: **Open right now**");
         else if (resolution != null)
-            stringBuilder.Append(":black_circle: **Open ").Append(resolution.Start.DateTime.ToNow()).AppendLine("**");
+            stringBuilder.Append(":black_circle: **Open ").Append(resolution.Start.UtcDateTime.ToNow()).AppendLine("**");
         else
             stringBuilder.AppendLine(":black_circle: **Not open right now**");
 

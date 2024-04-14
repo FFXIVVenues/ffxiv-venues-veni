@@ -270,6 +270,24 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Aaaah. You&apos;ll need to [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) in the FFXIV Venues discord to change this part of your venue information. 😊.
+        /// </summary>
+        internal static string NoPermission {
+            get {
+                return ResourceManager.GetString("NoPermission", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aaaah, that&apos;s a long opening. 😢 Please only gives hours your are **actively present or staffed**. If you are indeed open and staffed longer than 7 hours please [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) in the FFXIV Venues discord to extend for longer hours..
+        /// </summary>
+        internal static string OpeningTooLong {
+            get {
+                return ResourceManager.GetString("OpeningTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Okay! ⚠️ After you&apos;ve saved your venue you&apos;ll need to create a ticket in our discord server and speak to our staff to set that up for you..
         /// </summary>
         internal static string RespondContactStaffForBiweekly {

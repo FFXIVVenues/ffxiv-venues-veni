@@ -37,7 +37,7 @@ public class GetAuditsHandler : IComponentHandler
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
             props.Components = new ComponentBuilder().Build());
         
-        var auditsQuery = await this._repository.GetWhere<VenueAuditRecord>(r => r.VenueId == venueId);
+        var auditsQuery = await this._repository.GetWhereAsync<VenueAuditRecord>(r => r.VenueId == venueId);
         var audits = auditsQuery.ToList();
         
         if (!audits.Any())

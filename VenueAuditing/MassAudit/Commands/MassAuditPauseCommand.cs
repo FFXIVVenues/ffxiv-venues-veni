@@ -34,11 +34,14 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
                 case PauseResult.NothingToPause:
                     await context.Interaction.FollowupAsync("There's no current mass audit to pause. 🤔");
                     break;
+                case PauseResult.Closed:
+                    await context.Interaction.FollowupAsync("Last mass audit is closed. 🤔");
+                    break;
                 case PauseResult.AlreadyPaused:
                     await context.Interaction.FollowupAsync("Current mass audit is already paused. 🤔");
                     break;
                 case PauseResult.Paused:
-                    await context.Interaction.FollowupAsync("Paused! 👀");
+                    await context.Interaction.FollowupAsync("I've paused the mass audit! 👀");
                     break;
             }
         }
