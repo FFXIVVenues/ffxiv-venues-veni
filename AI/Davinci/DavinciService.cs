@@ -23,15 +23,18 @@ namespace FFXIVVenues.Veni.AI.Davinci
         public async Task<String> AskTheAI(string prompt)
         {
            
-            var requestPayload = new 
-            {
-                prompt = prompt,
-                temperature = temperature,
-                max_tokens = maxTokens
-            };
+            var requestPayload = new
+                {
+                    model = "gpt-4-turbo",
+                    messages = new[]
+                    {
+                    new { role = "system", content = "You are a helpful assistant." },
+                    new { role = "user", content = prompt }
+                }
+                };
 
             var content = new StringContent(JsonSerializer.Serialize(requestPayload), Encoding.UTF8, "application/json");
-            var response = await httpClient.PostAsync("https://api.openai.com/v1/engines/text-davinci-003/completions", content);
+            var response = client.PostAsync("https://api.openai.com/v1/chat/completions", content).Result;
 
             if (response.IsSuccessStatusCode)
             {
