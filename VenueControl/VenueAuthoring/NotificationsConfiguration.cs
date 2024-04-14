@@ -1,4 +1,5 @@
 using System.Linq;
+using Discord;
 using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring;

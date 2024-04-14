@@ -53,7 +53,7 @@ public class InMemoryRepository : IRepository
     }
 
 
-    public Task<IQueryable<T>> Query<T>() where T : class, IEntity
+    public Task<IQueryable<T>> QueryAsync<T>() where T : class, IEntity
     {
         var type = typeof(T);
         if (!_memoryStore.ContainsKey(type))

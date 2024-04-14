@@ -55,7 +55,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
             return container.GetItemLinqQueryable<T>(true).Where(predicate);
         }
 
-        public async Task<IQueryable<T>> Query<T>() where T : class, IEntity
+        public async Task<IQueryable<T>> QueryAsync<T>() where T : class, IEntity
         {
             var typeName = typeof(T).Name;
             Log.Debug("Getting all {EntityType}", typeName);

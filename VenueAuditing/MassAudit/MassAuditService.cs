@@ -204,7 +204,7 @@ internal class MassAuditService(
     public async Task<MassAuditStatusSummary> GetSummaryAsync()
     {
         Log.Debug("Mass audit summary requested");
-        var activeAuditRounds = await repository.Query<MassAuditRecord>();
+        var activeAuditRounds = await repository.QueryAsync<MassAuditRecord>();
         var auditRound = activeAuditRounds.OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
         if (auditRound == null)
             return null;
@@ -218,7 +218,7 @@ internal class MassAuditService(
     public async Task<MassAuditStatusReport> GetReportAsync()
     {
         Log.Debug("Mass audit report requested");
-        var activeAuditRounds = await repository.Query<MassAuditRecord>();
+        var activeAuditRounds = await repository.QueryAsync<MassAuditRecord>();
         var auditRound = activeAuditRounds.OrderByDescending(a => a.StartedAt).Take(1).ToList().FirstOrDefault();
         if (auditRound == null)
             return null;
@@ -375,7 +375,7 @@ internal class MassAuditService(
     }
     
     public async Task<MassAuditRecord> GetTaskAsync() => 
-        (await repository.Query<MassAuditRecord>())
+        (await repository.QueryAsync<MassAuditRecord>())
             .OrderByDescending(a => a.StartedAt)
             .Take(1)
             .ToList()
