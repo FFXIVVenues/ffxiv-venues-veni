@@ -19,7 +19,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
 
         public MongoDbRepository(string strConnectionString)
         {
-            var client = new MongoClient("mongodb://localhost:27017");
+            var client = new MongoClient(strConnectionString);
             this._database = client.GetDatabase("veni");
             this._cache.For<BlacklistEntry>(3*60*60*1000, 3*60*60*1000);
         }
@@ -55,7 +55,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Persistence
             return Task.FromResult(collection.AsQueryable().Where(predicate));
         }
 
-        public Task<IQueryable<T>> Query<T>() where T : class, IEntity
+        public Task<IQueryable<T>> QueryAsync<T>() where T : class, IEntity
         {
             var typeName = typeof(T).Name;
             Log.Debug("Getting all {EntityType}", typeName);

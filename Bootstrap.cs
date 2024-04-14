@@ -56,7 +56,6 @@ serviceCollection.AddSingleton<IInteractionContextFactory, InteractionContextFac
 serviceCollection.AddSingleton<ICommandCartographer, CommandCartographer>();
 serviceCollection.AddSingleton<IMassAuditService, MassAuditService>();
 serviceCollection.AddSingleton<IMassAuditExporter, MassAuditExporter>();
-serviceCollection.AddSingleton<ITaskService<MassNoticeTask>, MassNoticeService>();
 serviceCollection.AddSingleton<MassNoticeService>();
 serviceCollection.AddSingleton<IDiscordValidator, DiscordValidator>();
 

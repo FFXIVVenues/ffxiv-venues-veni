@@ -29,7 +29,7 @@ public class BlacklistListCommand : ICommandHandler
             return;
 
         await slashCommand.Interaction.DeferAsync();
-        var bannedIdList = await _db.Query<BlacklistEntry>().ContinueWith(t => t.Result.ToList());
+        var bannedIdList = await _db.QueryAsync<BlacklistEntry>().ContinueWith(t => t.Result.ToList());
         var description = new StringBuilder();
 
         if (bannedIdList.Any() == false)
