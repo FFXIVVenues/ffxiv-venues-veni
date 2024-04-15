@@ -7,13 +7,13 @@ namespace FFXIVVenues.Veni.Infrastructure.Intent
     {
         Task HandleIteruptIntent(string interupt, MessageVeniInteractionContext context);
 
-        Task HandleIteruptIntent(string interupt, MessageComponentVeniInteractionContext context);
+        Task HandleIteruptIntent(string interupt, ComponentVeniInteractionContext context);
 
         Task HandleIteruptIntent(string interupt, SlashCommandVeniInteractionContext context);
 
         Task HandleIntent(string interupt, MessageVeniInteractionContext context);
 
-        Task HandleIntent(string interupt, MessageComponentVeniInteractionContext context);
+        Task HandleIntent(string interupt, ComponentVeniInteractionContext context);
 
         Task HandleIntent(string interupt, SlashCommandVeniInteractionContext context);
     }

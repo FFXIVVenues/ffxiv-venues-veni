@@ -22,7 +22,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                                   new ComponentBuilder().WithSelectMenu(selectMenu).WithBackButton(c).Build());
         }
 
-        public Task Handle(MessageComponentVeniInteractionContext c)
+        public Task Handle(ComponentVeniInteractionContext c)
         {
             var district = c.Interaction.Data.Values.Single();
             var venue = c.Session.GetVenue();

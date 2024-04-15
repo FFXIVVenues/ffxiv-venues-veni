@@ -5,107 +5,74 @@ using FFXIVVenues.Veni.AI.Clu.CluModels;
 using FFXIVVenues.Veni.Infrastructure.Context.InteractionWrappers;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 
+
 namespace FFXIVVenues.Veni.Infrastructure.Context
 {
 
-    public abstract class VeniInteractionContext<T>: IVeniInteractionContext where T : class
+    public abstract class VeniInteractionContext<T>(T message, DiscordSocketClient client, Session conversation)
+        : IVeniInteractionContext
+        where T : class
     {
 
-        public T Interaction { get; }
-        public DiscordSocketClient Client { get; }
-        public Session Session { get; }
+        public T Interaction { get; } = message;
+        public DiscordSocketClient Client { get; } = client;
+        public Session Session { get; } = conversation;
         public IDisposable TypingHandle { get; set; }
-
-        public VeniInteractionContext(T message, DiscordSocketClient client, Session conversation)
-        {
-            Interaction = message;
-            Client = client;
-            Session = conversation;
-        }
-
-        public abstract string GetArgument(string name);
-
     }
 
-    public class VeniInteractionContext : VeniInteractionContext<IInteractionWrapper>
+    public class VeniInteractionContext(IInteractionWrapper m,
+        DiscordSocketClient dsc,
+        Session sc,
+        CluPrediction prediction = null) : VeniInteractionContext<IInteractionWrapper>(m, dsc, sc)
     {
-
-        private CluPrediction _prediction;
-
-        public VeniInteractionContext(IInteractionWrapper m,
-                                  DiscordSocketClient dsc,
-                                  Session sc)
-            : base(m, dsc, sc) { }
-
-        public VeniInteractionContext(IInteractionWrapper m,
-                                  DiscordSocketClient dsc,
-                                  Session sc,
-                                  CluPrediction prediction)
-            : base(m, dsc, sc)
+        public CluPrediction Prediction { get; set; } = prediction;
+        
+        public void Meow ()
         {
-            this._prediction = prediction;
+            var meow = new MessageVeniInteractionContext(null, null, null);
         }
-
-        public override string GetArgument(string name) =>
-            this.Interaction.GetArgument(name) ?? this._prediction?.Entities.FirstOrDefault(e => e.Category == name)?.Text;
-
     }
 
-    public class MessageVeniInteractionContext : VeniInteractionContext<SocketMessage>, IWrappableInteraction
+    public class MessageVeniInteractionContext(
+        SocketMessage m,
+        DiscordSocketClient dsc,
+        Session sc)
+        : VeniInteractionContext<SocketMessage>(m, dsc, sc), IWrappableInteraction
     {
-
+    
         public CluPrediction Prediction { get; set; }
-
-        public MessageVeniInteractionContext(SocketMessage m,
-                                         DiscordSocketClient dsc,
-                                         Session sc) 
-            : base(m, dsc, sc)
-        { }
-
+    
         public VeniInteractionContext ToWrappedInteraction() =>
             new (new MessageWrapper(this.Interaction),
                                    this.Client,
                                    this.Session,
                                    this.Prediction);
-
-        public override string GetArgument(string name) =>
-            this.Prediction?.Entities.FirstOrDefault(e => e.Category == name)?.Text;
-
+    
     }
 
-    public class MessageComponentVeniInteractionContext : VeniInteractionContext<SocketMessageComponent>, IWrappableInteraction
+    public class ComponentVeniInteractionContext(
+        SocketMessageComponent m,
+        DiscordSocketClient dsc,
+        Session sc)
+        : VeniInteractionContext<SocketMessageComponent>(m, dsc, sc), IWrappableInteraction
     {
-
-        public MessageComponentVeniInteractionContext(SocketMessageComponent m,
-                                                  DiscordSocketClient dsc,
-                                                  Session sc)
-            : base(m, dsc, sc) { }
-
         public VeniInteractionContext ToWrappedInteraction() =>
             new (new MessageComponentWrapper(this.Interaction),
                                    this.Client,
                                    this.Session);
 
-        public override string GetArgument(string name) =>
-            this.Interaction.Data?.Value;
-
     }
 
-    public class SlashCommandVeniInteractionContext : VeniInteractionContext<SocketSlashCommand>, IWrappableInteraction
+    public class SlashCommandVeniInteractionContext(
+        SocketSlashCommand m,
+        DiscordSocketClient dsc,
+        Session sc)
+        : VeniInteractionContext<SocketSlashCommand>(m, dsc, sc), IWrappableInteraction
     {
-
-        public SlashCommandVeniInteractionContext(SocketSlashCommand m,
-                                              DiscordSocketClient dsc,
-                                              Session sc)
-            : base(m, dsc, sc) { }
-
         public VeniInteractionContext ToWrappedInteraction() =>
             new (new SlashCommandWrapper(this.Interaction),
                                    this.Client,
                                    this.Session);
-
-        public override string GetArgument(string name) =>
-            this.Interaction.Data.Options.FirstOrDefault(c => c.Name == name)?.Value as string;
 
     }
 

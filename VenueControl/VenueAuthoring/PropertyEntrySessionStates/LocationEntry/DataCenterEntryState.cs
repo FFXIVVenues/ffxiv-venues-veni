@@ -22,7 +22,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                                   new ComponentBuilder().WithSelectMenu(selectMenu).WithBackButton(c).Build());
         }
 
-        private Task Handle(MessageComponentVeniInteractionContext c)
+        private Task Handle(ComponentVeniInteractionContext c)
         {
             var venue = c.Session.GetVenue();
             venue.Location.Override = null;

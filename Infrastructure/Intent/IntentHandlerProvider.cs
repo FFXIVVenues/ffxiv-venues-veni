@@ -40,7 +40,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Intent
         public Task HandleIteruptIntent(string interupt, MessageVeniInteractionContext context) =>
             _interuptMap.Activate(interupt)?.Handle(context);
 
-        public Task HandleIteruptIntent(string interupt, MessageComponentVeniInteractionContext context) =>
+        public Task HandleIteruptIntent(string interupt, ComponentVeniInteractionContext context) =>
             _interuptMap.Activate(interupt)?.Handle(context);
 
         public Task HandleIteruptIntent(string interupt, SlashCommandVeniInteractionContext context) =>
@@ -49,7 +49,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Intent
         public Task HandleIntent(string interupt, MessageVeniInteractionContext context) =>
            _intentMap.Activate(interupt)?.Handle(context) ?? new NoneIntent().Handle(context);
 
-        public Task HandleIntent(string interupt, MessageComponentVeniInteractionContext context) =>
+        public Task HandleIntent(string interupt, ComponentVeniInteractionContext context) =>
            _intentMap.Activate(interupt)?.Handle(context) ?? new NoneIntent().Handle(context);
 
         public Task HandleIntent(string interupt, SlashCommandVeniInteractionContext context) =>

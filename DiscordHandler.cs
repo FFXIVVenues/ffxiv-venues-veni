@@ -180,7 +180,7 @@ namespace FFXIVVenues.Veni
             else Log.Information("{Username} used command /{Command}", slashCommand.User.Username, slashCommand.CommandName);
         }
 
-        private void LogComponentExecuted(SocketMessageComponent message, MessageComponentVeniInteractionContext context)
+        private void LogComponentExecuted(SocketMessageComponent message, ComponentVeniInteractionContext context)
         {
             ISessionState currentSessionState = null;
             context.Session.StateStack?.TryPeek(out currentSessionState);

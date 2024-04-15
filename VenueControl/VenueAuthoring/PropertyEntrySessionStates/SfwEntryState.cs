@@ -17,7 +17,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 {
                     var venue = cm.Session.GetVenue();
                     venue.Sfw = true;
-                    if (cm.Session.GetItem<bool>("modifying"))
+                    if (cm.Session.InEditing())
                         return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
                     return cm.Session.MoveStateAsync<CategoryEntrySessionState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
@@ -25,7 +25,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 {
                     var venue = cm.Session.GetVenue();
                     venue.Sfw = false;
-                    if (cm.Session.GetItem<bool>("modifying"))
+                    if (cm.Session.InEditing())
                         return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
                     return cm.Session.MoveStateAsync<CategoryEntrySessionState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)

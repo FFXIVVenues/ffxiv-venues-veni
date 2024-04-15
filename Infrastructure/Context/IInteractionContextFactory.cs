@@ -6,7 +6,7 @@ public interface IInteractionContextFactory
 {
 
     MessageVeniInteractionContext Create(SocketMessage message);
-    MessageComponentVeniInteractionContext Create(SocketMessageComponent message);
+    ComponentVeniInteractionContext Create(SocketMessageComponent message);
     SlashCommandVeniInteractionContext Create(SocketSlashCommand message);
 
 }

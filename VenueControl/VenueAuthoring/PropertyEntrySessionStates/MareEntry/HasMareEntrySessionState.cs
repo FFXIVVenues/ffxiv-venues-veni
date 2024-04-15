@@ -23,7 +23,7 @@ class HasMareEntrySessionState : ISessionState
                             var venue = c.Session.GetVenue();
                             venue.MareCode = venue.MarePassword = null;
 
-                            if (cm.Session.GetItem<bool>("modifying"))
+                            if (cm.Session.InEditing())
                                 return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
                             return cm.Session.MoveStateAsync<SfwEntrySessionState>(cm);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)

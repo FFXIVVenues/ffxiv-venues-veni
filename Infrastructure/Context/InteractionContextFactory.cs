@@ -21,10 +21,10 @@ public class InteractionContextFactory : IInteractionContextFactory
         return new MessageVeniInteractionContext(message, this._client, conversationContext);
     }
 
-    public MessageComponentVeniInteractionContext Create(SocketMessageComponent message)
+    public ComponentVeniInteractionContext Create(SocketMessageComponent message)
     {
         var session = _sessionProvider.GetSession(message);
-        return new MessageComponentVeniInteractionContext(message, _client, session);
+        return new ComponentVeniInteractionContext(message, _client, session);
     }
 
     public SlashCommandVeniInteractionContext Create(SocketSlashCommand message)

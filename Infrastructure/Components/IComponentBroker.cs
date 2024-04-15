@@ -7,5 +7,5 @@ namespace FFXIVVenues.Veni.Infrastructure.Components;
 public interface IComponentBroker
 {
     void Add<THandler>(string key) where THandler : IComponentHandler;
-    Task HandleAsync(MessageComponentVeniInteractionContext component);
+    Task HandleAsync(ComponentVeniInteractionContext component);
 }

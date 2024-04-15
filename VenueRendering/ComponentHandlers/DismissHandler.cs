@@ -13,7 +13,7 @@ public class DismissHandler : IComponentHandler
     // Change this key and any existing buttons linked to this will die
     public static string Key => "CONTROL_DISMISS";
 
-    public async Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args)
+    public async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         await context.Interaction.ModifyOriginalResponseAsync(props =>
             props.Components = new ComponentBuilder().Build());

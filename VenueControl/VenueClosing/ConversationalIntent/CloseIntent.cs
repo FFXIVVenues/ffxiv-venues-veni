@@ -29,7 +29,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.ConversationalIntent
             {
                 if (venues.Count() > 25)
                     venues = venues.Take(25);
-                context.Session.SetItem("venues", venues);
+                context.Session.SetItem(SessionKeys.VENUES, venues);
                 await context.Session.MoveStateAsync<SelectVenueToCloseSessionState>(context);
             }
             else

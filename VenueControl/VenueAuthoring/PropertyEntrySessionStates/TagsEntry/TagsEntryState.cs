@@ -60,14 +60,14 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 .WithSkipButton<WebsiteEntrySessionState, ConfirmVenueSessionState>(c);
         }
 
-        private Task OnComplete(MessageComponentVeniInteractionContext c)
+        private Task OnComplete(ComponentVeniInteractionContext c)
         {
             var venue = c.Session.GetVenue();
             venue.Tags = venue.Tags ?? new();
             venue.Tags.RemoveAll(existingTag => _availableTags.Any(availableTag => existingTag == availableTag.Value));
             venue.Tags.AddRange(c.Interaction.Data.Values);
 
-            if (c.Session.GetItem<bool>("modifying"))
+            if (c.Session.InEditing())
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
 
             return c.Session.MoveStateAsync<WebsiteEntrySessionState>(c);

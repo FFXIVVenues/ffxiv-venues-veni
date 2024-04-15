@@ -25,7 +25,7 @@ public class SelectVenueToEditHandler : IComponentHandler
         this._venueRenderer = venueRenderer;
     }
     
-    public async Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args)
+    public async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var user = context.Interaction.User.Id;
         var venueId = context.Interaction.Data.Values.First();
