@@ -21,7 +21,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetVenue();
-            this._timeZoneId = c.Session.GetItem<string>("timeZoneId");
+            this._timeZoneId = c.Session.GetItem<string>(SessionKeys.TIMEZONE_ID);
 
             if (this._nowSettingClosing == null)
             {

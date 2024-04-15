@@ -1,43 +1,49 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
+using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Commands;
+using FFXIVVenues.Veni.Infrastructure.Commands.Attributes;
 using FFXIVVenues.Veni.Infrastructure.Context;
-using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.VenueControl;
+using FFXIVVenues.Veni.VenueDiscovery.SessionStates;
+using FFXIVVenues.Veni.VenueRendering;
 
 namespace FFXIVVenues.Veni.VenueDiscovery.Commands
 {
-    public static class FindCommand
+    [DiscordCommand("find", "Find a venue by it's name.")]
+    [DiscordCommandOption("query", "Part or all of the name of the venues you want to find", ApplicationCommandOptionType.String, Required = true)]
+    public class FindCommand(IApiService apiService, IVenueRenderer venueRenderer) : ICommandHandler
     {
-
-        public const string COMMAND_NAME = "find";
-
-        internal class CommandFactory : ICommandFactory
+        public async Task HandleAsync(SlashCommandVeniInteractionContext context)
         {
+            var asker = context.Interaction.User.Id;
+            var query = context.GetStringArg("query");
 
-            public SlashCommandProperties GetSlashCommand()
+            if (string.IsNullOrWhiteSpace(query))
             {
-                return new SlashCommandBuilder()
-                    .WithName(COMMAND_NAME)
-                    .WithDescription("Find a venue by it's name!")
-                    .AddOption("search-query", ApplicationCommandOptionType.String, "Part or all of the name of the venues you want to find.")
-                    .Build();
+                await context.Interaction.RespondAsync("What am I looking for? 🤔");
+                return;
             }
 
-        }
+            var venues = await apiService.GetAllVenuesAsync(query);
 
-        internal class CommandHandler : ICommandHandler
-        {
-            private readonly IIntentHandlerProvider _intentProvider;
-
-            public CommandHandler(IIntentHandlerProvider intentProvider)
+            if (venues == null || !venues.Any())
+                await context.Interaction.RespondAsync("Could find any venues with that name. 😔");
+            else if (venues.Count() > 1)
             {
-                this._intentProvider = intentProvider;
+                if (venues.Count() > 25)
+                    venues = venues.Take(25);
+                context.Session.SetItem(SessionKeys.VENUES, venues);
+                await context.Session.MoveStateAsync<SelectVenueToShowSessionState>(context);
             }
-
-            public Task HandleAsync(SlashCommandVeniInteractionContext slashCommand) =>
-                this._intentProvider.HandleIntent(IntentNames.Operation.Search, slashCommand);
-
+            else
+            {
+                var venue = venues.Single();
+                await context.Interaction.RespondAsync(embed: venueRenderer.RenderEmbed(venue).Build(),
+                    components: venueRenderer.RenderActionComponents(context, venue, asker).Build());
+            }
         }
 
     }

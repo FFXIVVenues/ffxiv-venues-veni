@@ -26,11 +26,6 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
         CluPrediction prediction = null) : VeniInteractionContext<IInteractionWrapper>(m, dsc, sc)
     {
         public CluPrediction Prediction { get; set; } = prediction;
-        
-        public void Meow ()
-        {
-            var meow = new MessageVeniInteractionContext(null, null, null);
-        }
     }
 
     public class MessageVeniInteractionContext(
