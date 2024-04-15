@@ -91,10 +91,10 @@
         <value>Oki! Do you have a weekly opening schedule?</value>
     </data>
     <data name="DescriptionHasWeeklySchedule" xml:space="preserve">
-        <value>Yes, we have a set weekly schedule</value>
+        <value>Yes, our openings are every week.</value>
     </data>
     <data name="DescriptionHasBiweeklySchedule" xml:space="preserve">
-        <value>We have a set biweekly schedule</value>
+        <value>Yes, our openings are every 2 weeks</value>
     </data>
     <data name="DescriptionHasNoSchedule" xml:space="preserve">
         <value>No, we don't have a set schedule</value>
@@ -109,7 +109,7 @@
         <value>Aaaah, that's a long opening. 😢 Please only gives hours your are **actively present or staffed**. If you are indeed open and staffed longer than 7 hours please [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) in the FFXIV Venues discord to extend for longer hours.</value>
     </data>
     <data name="DescriptionHasMonthlySchedule" xml:space="preserve">
-        <value>We have a set monthly schedule</value>
+        <value>Yes, our openings are on a particular day of every month.</value>
     </data>
     <data name="OptionWeekly" xml:space="preserve">
         <value>Weekly</value>

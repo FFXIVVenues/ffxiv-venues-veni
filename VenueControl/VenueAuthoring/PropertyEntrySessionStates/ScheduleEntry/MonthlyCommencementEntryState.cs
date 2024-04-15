@@ -83,7 +83,6 @@ class MonthlyCommencementEntryState : ISessionState
 
         this._venue.Schedule = this._schedules.SelectMany(s => s.Value).ToList();
         c.Session.ClearItem(SessionKeys.NOW_SETTING_DAY);
-        c.Session.ClearItem(SessionKeys.MONTHLY_SCHEDULE_BY_DAY);
         if (c.Session.InEditing())
             return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
         return c.Session.MoveStateAsync<BannerEntrySessionState>(c);

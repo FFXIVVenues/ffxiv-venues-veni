@@ -252,7 +252,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to We have a set biweekly schedule.
+        ///   Looks up a localized string similar to Yes, our openings are every 2 weeks.
         /// </summary>
         internal static string DescriptionHasBiweeklySchedule {
             get {
@@ -261,7 +261,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to We have a set monthly schedule.
+        ///   Looks up a localized string similar to Yes, our openings are on a particular day of every month..
         /// </summary>
         internal static string DescriptionHasMonthlySchedule {
             get {
@@ -279,7 +279,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Yes, we have a set weekly schedule.
+        ///   Looks up a localized string similar to Yes, our openings are every week..
         /// </summary>
         internal static string DescriptionHasWeeklySchedule {
             get {

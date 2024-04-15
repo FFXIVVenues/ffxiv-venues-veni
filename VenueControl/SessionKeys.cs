@@ -14,4 +14,5 @@ public class SessionKeys
     public const string NOW_SETTING_CLOSING = "nowSettingClosing";
     public const string IS_NEW_VENUE = "isNewVenue";
     public const string TIMEZONE_ID = "timeZoneId";
+    public const string LOCATION_TYPE = "locationType";
 }

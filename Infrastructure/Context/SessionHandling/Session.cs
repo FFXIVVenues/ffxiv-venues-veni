@@ -33,6 +33,9 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
             _serviceProvider = serviceProvider;
         }
 
+        // todo: Add ability to provide constructor parameters so arguments can be passed and localised to the next state
+        // This would drastically reduce the mental complexity and handling session items to communicate between states in
+        // the time entry, biweekly, and monthly entry states, i.e. passing day forward.
         public async Task MoveStateAsync<T>(VeniInteractionContext context) where T : ISessionState
         {
             if (StateStack.TryPeek(out var currentState))
@@ -77,6 +80,9 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
         public Task ClearState(IWrappableInteraction context) =>
             this.ClearState(context.ToWrappedInteraction());
 
+        // todo: Replace the session dictionary with ISession<T> where T is a type context object
+        // this will allow long term storage through the session
+        
         public T GetItem<T>(string name)
         {
             var itemFound = Data.TryGetValue(name, out var item);
