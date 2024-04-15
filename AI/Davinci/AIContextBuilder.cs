@@ -1,31 +1,28 @@
-﻿namespace FFXIVVenues.Veni.AI.Davinci
+﻿namespace FFXIVVenues.Veni.AI.Davinci;
+
+internal class AiContextBuilder : IAIContextBuilder
 {
-    internal class AIContextBuilder : IAIContextBuilder
+    public string GetContext(string id, string chat) 
     {
-        public string GetContext(string id, string chat) 
-        {
-            string contextPrompt = ContextStrings.Lore;
+        var contextPrompt = ContextStrings.PersonalityContext;
+        contextPrompt += ContextStrings.FFXIVVenues;
+        contextPrompt += CheckFriendshipStatus(ulong.Parse(id));
 
-            contextPrompt += CheckFriendshipStatus(ulong.Parse(id));
+        contextPrompt += "\nMe: " + chat; 
 
-            if (chat.Contains("FFXIVenues")) contextPrompt += ContextStrings.MentionsFFXIVVenues;
+        return "Me: " + contextPrompt + ". You: ";
+    }
 
-            contextPrompt += ".Me: " + chat; 
+    private string CheckFriendshipStatus(ulong id)
+    {
+        string whoIs = "";
 
-            return "Me: " + contextPrompt + ". You: ";
-        }
+        if (id == 236852510688542720)
+            whoIs = "Context: The user name is Kana, and she's your Mom. ";
+        else if (id == 252142384303833088)
+            whoIs = "Context: The user name is Sumi, and she's your aunt. ";
 
-        private string CheckFriendshipStatus(ulong id)
-        {
-            string whoIs = "";
+        return whoIs;
 
-            if (id == 236852510688542720)
-                whoIs = "Context: The user name is Kana, and she's your Mom. ";
-            else if (id == 252142384303833088)
-                whoIs = "Context: The user name is Sumi, and she's your aunt. ";
-
-            return whoIs;
-
-        }
     }
 }
