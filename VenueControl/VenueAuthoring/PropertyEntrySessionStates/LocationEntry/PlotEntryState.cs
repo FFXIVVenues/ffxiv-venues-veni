@@ -34,7 +34,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             if (locationType == "room")
                 return c.Session.MoveStateAsync<RoomEntrySessionState>(c);
 
-            if (c.Session.GetItem<bool>("modifying"))
+            if (c.Session.InEditing())
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
 
             return c.Session.MoveStateAsync<HasMareEntrySessionState>(c);

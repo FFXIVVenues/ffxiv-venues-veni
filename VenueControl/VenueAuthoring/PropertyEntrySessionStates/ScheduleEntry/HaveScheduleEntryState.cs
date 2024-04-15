@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
@@ -12,36 +12,56 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
         public Task Enter(VeniInteractionContext c)
         {
+            c.Session.ClearItem(SessionKeys.IS_BIWEEKLY_SCHEDULE);
+            c.Session.ClearItem(SessionKeys.IS_MONTHLY_SCHEDULE);
+            
+            var selectMenu = new SelectMenuBuilder();
+            selectMenu.AddOption(VenueControlStrings.OptionWeekly, "weekly", VenueControlStrings.DescriptionHasWeeklySchedule);
+            selectMenu.AddOption(VenueControlStrings.OptionBiweekly, "biweekly", VenueControlStrings.DescriptionHasBiweeklySchedule);
+            selectMenu.AddOption(VenueControlStrings.OptionMonthly, "monthly", VenueControlStrings.DescriptionHasMonthlySchedule);
+            selectMenu.AddOption(VenueControlStrings.OptionNoSchedule, "none", VenueControlStrings.DescriptionHasNoSchedule);
+            selectMenu.WithCustomId(c.Session.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow));
+            
             return c.Interaction.RespondAsync(VenueControlStrings.AskIfHasSchedule,
                 new ComponentBuilder()
+                    .WithSelectMenu(selectMenu)
                     .WithBackButton(c)
-                    .WithButton(VenueControlStrings.AnswerHasWeeklySchedule,
-                        c.Session.RegisterComponentHandler(cm => 
-                            cm.Session.MoveStateAsync<TimeZoneEntrySessionState>(cm), 
-                        ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton(VenueControlStrings.AnswerHasBiweeklySchedule,
-                        c.Session.RegisterComponentHandler(async cm =>
-                            {
-                                cm.Session.SetItem("hasBiweeklySchedule", true);
-                                await cm.Interaction.Channel.SendMessageAsync(VenueControlStrings.RespondContactStaffForBiweekly);
-                                await NoWeeklySchedule(c, cm);
-                            }, 
-                            ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton(VenueControlStrings.AnswerHasNoSchedule,
-                        c.Session.RegisterComponentHandler(cm => NoWeeklySchedule(c, cm), 
-                            ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }
+        
+        private Task Handle(ComponentVeniInteractionContext c) =>
+            c.Interaction.Data.Values.Single() switch
+            {
+                "weekly" => WeeklySchedule(c),
+                "biweekly" => BiweeklySchedule(c),
+                "monthly" => MonthlySchedule(c),
+                _ => NoWeeklySchedule(c)
+            };
 
-        private static async Task NoWeeklySchedule(VeniInteractionContext c, MessageComponentVeniInteractionContext cm)
+        private static Task WeeklySchedule(ComponentVeniInteractionContext c) =>
+            c.Session.MoveStateAsync<TimeZoneEntrySessionState>(c);
+        
+        private static async Task BiweeklySchedule(ComponentVeniInteractionContext c)
+        {
+            c.Session.SetScheduleAsBiweekly();
+            await c.Session.MoveStateAsync<TimeZoneEntrySessionState>(c);
+        }
+
+        private static async Task MonthlySchedule(ComponentVeniInteractionContext c)
+        {
+            c.Session.SetScheduleAsMonthly();
+            await c.Session.MoveStateAsync<TimeZoneEntrySessionState>(c);
+        }
+
+        private static Task NoWeeklySchedule(ComponentVeniInteractionContext c)
         {
             var venue = c.Session.GetVenue();
             venue.Schedule = new();
 
-            if (cm.Session.GetItem<bool>("modifying"))
-                await cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
-            else
-                await cm.Session.MoveStateAsync<BannerEntrySessionState>(cm);
+            return c.Session.InEditing() 
+                ? c.Session.MoveStateAsync<ConfirmVenueSessionState>(c) 
+                : c.Session.MoveStateAsync<BannerEntrySessionState>(c);
         }
+        
     }
 }

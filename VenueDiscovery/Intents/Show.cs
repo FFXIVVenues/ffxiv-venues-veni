@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueDiscovery.SessionStates;
 using FFXIVVenues.Veni.VenueRendering;
 
@@ -32,7 +33,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Intents
             {
                 if (venues.Count() > 25)
                     venues = venues.Take(25);
-                context.Session.SetItem("venues", venues);
+                context.Session.SetItem(SessionKeys.VENUES, venues);
                 await context.Session.MoveStateAsync<SelectVenueToShowSessionState>(context);
             }
             else

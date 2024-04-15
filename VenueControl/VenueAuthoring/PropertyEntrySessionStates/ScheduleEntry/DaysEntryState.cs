@@ -51,7 +51,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
-        private Task OnComplete(MessageComponentVeniInteractionContext c)
+        private Task OnComplete(ComponentVeniInteractionContext c)
         {
             this._venue.Schedule = c.Interaction.Data.Values
                                     .Select(d => new Schedule { Day = Enum.Parse<Day>(d) })

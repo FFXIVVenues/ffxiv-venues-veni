@@ -4,8 +4,8 @@ using Discord.WebSocket;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Intent;
+using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueDiscovery.SessionStates;
-using Newtonsoft.Json.Linq;
 
 namespace FFXIVVenues.Veni.VenueDiscovery.Intents
 {
@@ -32,7 +32,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Intents
             return this.Handle(context.ToWrappedInteraction(), discordId);
         }
 
-        public Task Handle(MessageComponentVeniInteractionContext context) =>
+        public Task Handle(ComponentVeniInteractionContext context) =>
             Task.CompletedTask;
 
         public Task Handle(SlashCommandVeniInteractionContext context)
@@ -53,7 +53,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Intents
 
             if (venues.Count() > 25)
                 venues = venues.Take(25);
-            c.Session.SetItem("venues", venues);
+            c.Session.SetItem(SessionKeys.VENUES, venues);
             await c.Session.MoveStateAsync<SelectVenueToShowSessionState>(c);
         }
 

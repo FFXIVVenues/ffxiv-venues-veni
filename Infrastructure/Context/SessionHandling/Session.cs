@@ -94,7 +94,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
             Data.AddOrUpdate(name, item, (s, o) => item);
         }
 
-        public string RegisterComponentHandler(Func<MessageComponentVeniInteractionContext, Task> @delegate, ComponentPersistence persistence)
+        public string RegisterComponentHandler(Func<ComponentVeniInteractionContext, Task> @delegate, ComponentPersistence persistence)
         {
             var key = Guid.NewGuid().ToString();
             var registration = new ComponentSessionHandlerRegistration(@delegate, persistence);
@@ -113,7 +113,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
             this._componentHandlers.Clear();
         }
 
-        public Task HandleComponentInteraction(MessageComponentVeniInteractionContext context)
+        public Task HandleComponentInteraction(ComponentVeniInteractionContext context)
         {
             var key = context.Interaction.Data.CustomId.Split(":");
             if (key[0] == ComponentBroker.ValuesToHandlersKey)

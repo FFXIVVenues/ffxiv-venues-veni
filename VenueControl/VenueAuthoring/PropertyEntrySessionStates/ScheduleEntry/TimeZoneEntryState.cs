@@ -47,10 +47,10 @@ class TimeZoneEntrySessionState : ISessionState
             component.WithSelectMenu(selectMenu).WithBackButton(c).Build());
     }
 
-    private Task Handle(MessageComponentVeniInteractionContext c)
+    private Task Handle(ComponentVeniInteractionContext c)
     {
         var selectedTimezone = c.Interaction.Data.Values.Single();
-        c.Session.SetItem("timeZoneId", selectedTimezone);
+        c.Session.SetItem(SessionKeys.TIMEZONE_ID, selectedTimezone);
         return c.Session.MoveStateAsync<DaysEntrySessionState>(c);
     }
 }

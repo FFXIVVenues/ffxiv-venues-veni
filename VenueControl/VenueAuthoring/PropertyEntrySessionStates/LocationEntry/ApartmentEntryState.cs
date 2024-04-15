@@ -28,7 +28,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             venue.Location.Room = 0;
             venue.Location.Apartment = apartment;
 
-            if (c.Session.GetItem<bool>("modifying"))
+            if (c.Session.InEditing())
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
 
             return c.Session.MoveStateAsync<HasMareEntrySessionState>(c);

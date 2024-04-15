@@ -23,7 +23,7 @@ public class VolunteerComponentHandler(
 {
     public static string Key => "VENUE-OBS__WITHOUT-SPLASH__CLAIM";
 
-    public async Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args)
+    public async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var broadcastId = args[0];
         var venueId = args[1];

@@ -27,7 +27,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.Commands
             {
                if (venues.Count() > 25)
                    venues = venues.Take(25);
-               context.Session.SetItem("venues", venues);
+               context.Session.SetItem(SessionKeys.VENUES, venues);
                await context.Session.MoveStateAsync<SelectVenueToDeleteSessionState>(context);
             }
             else

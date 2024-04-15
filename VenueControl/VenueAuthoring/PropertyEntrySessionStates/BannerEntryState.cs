@@ -96,8 +96,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             var component = new ComponentBuilder();
             component.WithButton("Looks good!", c.Session.RegisterComponentHandler(async cm =>
             {
-                cm.Session.SetItem("bannerUrl", cm.Interaction.Message.Attachments.First().ProxyUrl);
-                if (cm.Session.GetItem<bool>("modifying"))
+                cm.Session.SetItem(SessionKeys.BANNER_URL, cm.Interaction.Message.Attachments.First().ProxyUrl);
+                if (cm.Session.InEditing())
                     await cm.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
                 else
                     await cm.Session.MoveStateAsync<ManagerEntrySessionState>(c);

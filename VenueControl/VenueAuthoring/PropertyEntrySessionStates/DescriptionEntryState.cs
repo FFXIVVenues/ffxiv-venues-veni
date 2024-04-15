@@ -26,7 +26,7 @@ class DescriptionEntrySessionState : ISessionState
     {
         var venue = c.Session.GetVenue();
         venue.Description = c.Interaction.Content.StripMentions().AsListOfParagraphs();
-        if (c.Session.GetItem<bool>("modifying"))
+        if (c.Session.InEditing())
             return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
         return c.Session.MoveStateAsync<LocationTypeEntrySessionState>(c);
     }

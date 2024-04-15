@@ -56,7 +56,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
             venue.Discord = new Uri(rawDiscordString);
 
-            if (c.Session.GetItem<bool>("modifying"))
+            if (c.Session.InEditing())
             {
                 await c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
                 return;
@@ -64,12 +64,12 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             await c.Session.MoveStateAsync<HaveScheduleEntrySessionState>(c);
         }
         
-        private Task OnNoDiscord(MessageComponentVeniInteractionContext context)
+        private Task OnNoDiscord(ComponentVeniInteractionContext context)
         {
             var venue = context.Session.GetVenue();
             venue.Discord = null;
 
-            if (context.Session.GetItem<bool>("modifying")) return context.Session.MoveStateAsync<ConfirmVenueSessionState>(context);
+            if (context.Session.InEditing()) return context.Session.MoveStateAsync<ConfirmVenueSessionState>(context);
             return context.Session.MoveStateAsync<HaveScheduleEntrySessionState>(context);
         }
     }

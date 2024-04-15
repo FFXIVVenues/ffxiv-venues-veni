@@ -73,8 +73,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
         public async Task Enter(VeniInteractionContext c)
         {
             var bannerUrl = c.Session.GetItem<string>("bannerUrl");
-            var modifying = c.Session.GetItem<bool>("modifying");
-            var isBiweeklySchedule = c.Session.GetItem<bool>("hasBiweeklySchedule");
+            var modifying = c.Session.InEditing();
+            var isBiweeklySchedule = c.Session.GetItem<bool>("hasMonthlySchedule");
             var venue = c.Session.GetVenue();
             
             await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
@@ -86,11 +86,11 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
                     .Build());
         }
 
-        private async Task LooksPerfect(MessageComponentVeniInteractionContext c)
+        private async Task LooksPerfect(ComponentVeniInteractionContext c)
         {
-            var isNewVenue = c.Session.GetItem<bool>("isNewVenue");
-            var modifying = c.Session.GetItem<bool>("modifying");
-            var isBiweeklySchedule = c.Session.GetItem<bool>("hasBiweeklySchedule");
+            var isNewVenue = c.Session.GetItem<bool>(SessionKeys.IS_NEW_VENUE);
+            var modifying = c.Session.InEditing();
+            var isBiweeklySchedule = c.Session.GetItem<bool>("hasMonthlySchedule");
 
 
             _ = c.Interaction.Channel.SendMessageAsync(_workingOnItResponse.PickRandom());
@@ -145,10 +145,10 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring
             _ = c.Session.ClearState(c);
         }
 
-        private Task Edit(MessageComponentVeniInteractionContext c) =>
+        private Task Edit(ComponentVeniInteractionContext c) =>
             c.Session.MoveStateAsync<EditVenueSessionState>(c);
 
-        private Task Cancel(MessageComponentVeniInteractionContext c)
+        private Task Cancel(ComponentVeniInteractionContext c)
         {
             _ = c.Session.ClearState(c);
             return c.Interaction.Channel.SendMessageAsync("It's as if it never happened! 😅");
