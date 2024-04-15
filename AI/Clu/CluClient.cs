@@ -5,10 +5,11 @@ using Azure;
 using Azure.AI.Language.Conversations;
 using Azure.Core;
 using FFXIVVenues.Veni.AI.Clu.CluModels;
+using FFXIVVenues.Veni.AI.Luis;
 using FFXIVVenues.Veni.Infrastructure.Intent;
 using FFXIVVenues.Veni.Utils;
 
-namespace FFXIVVenues.Veni.AI.Luis
+namespace FFXIVVenues.Veni.AI.Clu
 {
     internal class CluClient: ICluClient
     {
