@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni;
+using FFXIVVenues.Veni.AI.Clu;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
@@ -44,7 +45,7 @@ serviceCollection.AddSingleton<IGuildManager, GuildManager>();
 serviceCollection.AddSingleton<IVenueApprovalService, VenueApprovalService>();
 serviceCollection.AddSingleton<IAIHandler, AIHandler>();
 serviceCollection.AddSingleton<IDavinciService, DavinciService>();
-serviceCollection.AddSingleton<IAIContextBuilder, AIContextBuilder>();
+serviceCollection.AddSingleton<IAIContextBuilder, AiContextBuilder>();
 serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
 serviceCollection.AddSingleton<ISessionProvider, SessionProvider>();
 serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();

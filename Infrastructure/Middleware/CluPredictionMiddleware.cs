@@ -7,29 +7,21 @@ using FFXIVVenues.Veni.Infrastructure.Intent;
 using FFXIVVenues.Veni.Utils;
 using Kana.Pipelines;
 
-namespace FFXIVVenues.Veni.Infrastructure.Middleware
+namespace FFXIVVenues.Veni.Infrastructure.Middleware;
+
+internal class CluPredictionMiddleware(ICluClient cluClient) : IMiddleware<MessageVeniInteractionContext>
 {
-    internal class CluPredictionMiddleware : IMiddleware<MessageVeniInteractionContext>
+    public async Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
     {
-        private readonly ICluClient _cluClient;
-
-        public CluPredictionMiddleware(ICluClient cluClient)
+        var query = context.Interaction.Content.StripMentions(context.Client.CurrentUser.Id);
+        if (string.IsNullOrWhiteSpace(query))
         {
-            _cluClient = cluClient;
-        }
-
-        public async Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
-        {
-            var query = context.Interaction.Content.StripMentions(context.Client.CurrentUser.Id);
-            if (string.IsNullOrWhiteSpace(query))
-            {
-                context.Prediction = new CluPrediction { TopIntent = IntentNames.None };
-                await next();
-                return;
-            }
-
-            context.Prediction = await _cluClient.AnalyzeAsync(query, context.Interaction.Author.Id);
+            context.Prediction = new CluPrediction { TopIntent = IntentNames.None };
             await next();
+            return;
         }
+
+        context.Prediction = await cluClient.AnalyzeAsync(query, context.Interaction.Author.Id);
+        await next();
     }
 }
