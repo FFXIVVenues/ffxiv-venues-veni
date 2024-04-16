@@ -12,12 +12,12 @@ public class EditNameHandler(IAuthorizer authorizer, IApiService apiService) : I
 {
     public static string Key => "CONTROL_EDIT_NAME";
 
-    public async Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args)
+    public async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var user = context.Interaction.User.Id;
         var venueId = args[0];
         
-        var alreadyModifying = context.Session.GetItem<bool>("modifying");
+        var alreadyModifying = context.Session.InEditing();
         var venue = alreadyModifying ? context.Session.GetVenue() : await apiService.GetVenueAsync(venueId);
         
         if (!authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
@@ -31,7 +31,7 @@ public class EditNameHandler(IAuthorizer authorizer, IApiService apiService) : I
         
         await context.Session.ClearState(context);
         context.Session.SetVenue(venue);
-        context.Session.SetItem("modifying", true);
+        context.Session.SetEditing(true);
         await context.Session.MoveStateAsync<NameEntrySessionState>(context);
     }
     

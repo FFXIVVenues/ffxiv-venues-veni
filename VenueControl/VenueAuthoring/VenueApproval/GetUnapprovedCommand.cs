@@ -108,7 +108,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval
                 await c.Interaction.RespondAsync("Here you go! 🥰", components: componentBuilder.Build());
             }
 
-            private Task HandleVenueSelection(MessageComponentVeniInteractionContext c)
+            private Task HandleVenueSelection(ComponentVeniInteractionContext c)
             {
                 var selectedVenueId = c.Interaction.Data.Values.Single();
                 var asker = c.Interaction.User.Id;

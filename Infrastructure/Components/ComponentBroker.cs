@@ -20,7 +20,7 @@ public class ComponentBroker : IComponentBroker
     public void Add<THandler>(string key) where THandler : IComponentHandler =>
         this._handlers.Add<THandler>(key);
 
-    public Task HandleAsync(MessageComponentVeniInteractionContext context)
+    public Task HandleAsync(ComponentVeniInteractionContext context)
     {
         var key = context.Interaction.Data.CustomId.Split(":");
         if (key[0] == ValuesToHandlersKey)

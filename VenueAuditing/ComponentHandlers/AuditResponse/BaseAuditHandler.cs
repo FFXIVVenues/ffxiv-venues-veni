@@ -15,7 +15,7 @@ namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers.AuditResponse;
 public abstract class BaseAuditHandler : IComponentHandler
 {
 
-    public abstract Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args);
+    public abstract Task HandleAsync(ComponentVeniInteractionContext context, string[] args);
 
     protected async Task UpdateSentMessages(DiscordSocketClient client, IVenueRenderer render, Venue venue,
         IUser responder, IEnumerable<BroadcastMessageReceipt> sentMessages,
@@ -41,7 +41,7 @@ public abstract class BaseAuditHandler : IComponentHandler
         }
     }
 
-    protected async Task NotifyRequesterAsync(MessageComponentVeniInteractionContext context, VenueAuditRecord audit,
+    protected async Task NotifyRequesterAsync(ComponentVeniInteractionContext context, VenueAuditRecord audit,
         Venue venue, string message) 
     {
         var channel = await context.Client.GetChannelAsync(audit.RequestedIn);
@@ -60,7 +60,7 @@ public abstract class BaseAuditHandler : IComponentHandler
             await sdmChannel.SendMessageAsync($"Heyo! The audit of **{venue.Name}** you requested has been completed. \n{message}");
     }
 
-    protected void UpdateAudit(MessageComponentVeniInteractionContext context, in VenueAuditRecord audit, VenueAuditStatus status, string message)
+    protected void UpdateAudit(ComponentVeniInteractionContext context, in VenueAuditRecord audit, VenueAuditStatus status, string message)
     {   
         audit.Log(message);
         audit.Status = status;

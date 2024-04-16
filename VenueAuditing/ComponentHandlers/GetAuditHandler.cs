@@ -29,7 +29,7 @@ public class GetAuditHandler : IComponentHandler
         this._repository = repository;
     }
     
-    public async Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args)
+    public async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var user = context.Interaction.User.Id;
         var auditId = context.Interaction.Data.Values.First();

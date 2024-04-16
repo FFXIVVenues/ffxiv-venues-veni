@@ -52,7 +52,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 .WithSelectMenu(selectComponent);
         }
 
-        private Task OnComplete(MessageComponentVeniInteractionContext c)
+        private Task OnComplete(ComponentVeniInteractionContext c)
         {
             var venue = c.Session.GetVenue();
             venue.Tags = venue.Tags ?? new();

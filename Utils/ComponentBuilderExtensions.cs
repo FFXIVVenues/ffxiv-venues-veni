@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
-using FFXIVVenues.VenueModels;
+using FFXIVVenues.Veni.VenueControl;
 
 namespace FFXIVVenues.Veni.Utils
 {
@@ -17,7 +17,7 @@ namespace FFXIVVenues.Veni.Utils
         {
             return builder.WithButton("►  Next/Skip", context.Session.RegisterComponentHandler(c =>
             {
-                if (c.Session.GetItem<bool>("modifying"))
+                if (c.Session.InEditing())
                     return c.Session.MoveStateAsync<ModifyTarget>(c);
                 return c.Session.MoveStateAsync<SkipTarget>(c);
             }, ComponentPersistence.ClearRow), ButtonStyle.Secondary);

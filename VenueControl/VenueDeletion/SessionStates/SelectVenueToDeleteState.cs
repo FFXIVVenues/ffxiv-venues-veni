@@ -23,7 +23,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates
 
         public Task Enter(VeniInteractionContext c)
         {
-            _managersVenues = c.Session.GetItem<IEnumerable<Venue>>("venues");
+            _managersVenues = c.Session.GetItem<IEnumerable<Venue>>(SessionKeys.VENUES);
 
             var selectMenuKey = c.Session.RegisterComponentHandler(this.Handle, ComponentPersistence.DeleteMessage);
             var componentBuilder = new ComponentBuilder();
@@ -42,12 +42,12 @@ namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates
             return c.Interaction.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
         }
 
-        public Task Handle(MessageComponentVeniInteractionContext c)
+        public Task Handle(ComponentVeniInteractionContext c)
         {
             var selectedVenueId = c.Interaction.Data.Values.Single();
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            c.Session.ClearItem("venues");
+            c.Session.ClearItem(SessionKeys.VENUES);
             c.Session.SetVenue(venue);
 
             return c.Session.MoveStateAsync<DeleteVenueSessionState>(c);

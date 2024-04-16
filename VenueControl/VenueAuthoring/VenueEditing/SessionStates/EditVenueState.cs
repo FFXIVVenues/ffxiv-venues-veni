@@ -22,7 +22,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionState
 
         public Task Enter(VeniInteractionContext c)
         {
-            c.Session.SetItem("modifying", true);
+            c.Session.SetEditing(true);
             var venue = c.Session.GetVenue();
 
             if (c.Interaction.IsDM)

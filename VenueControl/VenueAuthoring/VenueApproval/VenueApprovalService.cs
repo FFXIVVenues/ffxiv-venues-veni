@@ -43,7 +43,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval
             this._guildManager = guildManager;
         }
 
-        public async Task<BroadcastReceipt> SendForApproval(Venue venue, string bannerUrl, VenueRenderFlags renderFlags)
+        public async Task<BroadcastReceipt> SendForApproval(Venue venue, string bannerUrl)
         {
             var dc = FfxivWorlds.GetRegionForDataCenter(venue.Location?.DataCenter);
             var recipients = this._config.Approvals.ResolveFor(dc);
@@ -51,7 +51,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval
             _broadcasts[broadcast.Id] = broadcast;
             return await broadcast
                 .WithMessage($"Heyo indexers!\nVenue '**{venue.Name}**' ({venue.Id}) needs approving! :heart:")
-                .WithEmbed(this._venueRenderer.RenderEmbed(venue, bannerUrl, renderFlags))
+                .WithEmbed(this._venueRenderer.RenderEmbed(venue, bannerUrl))
                 .WithComponent(bcc =>
                 {
                     ComponentBuilder approveRejectComponent = null;

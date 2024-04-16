@@ -30,11 +30,11 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             venue.Location.Plot = plot;
             venue.Location.Subdivision = plot > 30;
 
-            var locationType = c.Session.GetItem<string>("locationType");
+            var locationType = c.Session.GetItem<string>(SessionKeys.LOCATION_TYPE);
             if (locationType == "room")
                 return c.Session.MoveStateAsync<RoomEntrySessionState>(c);
 
-            if (c.Session.GetItem<bool>("modifying"))
+            if (c.Session.InEditing())
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
 
             return c.Session.MoveStateAsync<HasMareEntrySessionState>(c);

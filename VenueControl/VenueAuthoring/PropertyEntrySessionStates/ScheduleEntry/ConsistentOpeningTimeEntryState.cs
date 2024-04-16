@@ -21,12 +21,12 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetVenue();
-            this._timeZoneId = c.Session.GetItem<string>("timeZoneId");
+            this._timeZoneId = c.Session.GetItem<string>(SessionKeys.TIMEZONE_ID);
 
             if (this._nowSettingClosing == null)
             {
-                this._nowSettingClosing = c.Session.GetItem<bool?>("nowSettingClosing");
-                c.Session.ClearItem("nowSettingClosing");
+                this._nowSettingClosing = c.Session.GetItem<bool?>(SessionKeys.NOW_SETTING_CLOSING);
+                c.Session.ClearItem(SessionKeys.NOW_SETTING_CLOSING);
             }
 
             if (this._nowSettingClosing == null)
@@ -66,7 +66,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                     opening.Start = new Time { Hour = hour, Minute = minute, NextDay = false, TimeZone = _timeZoneId };
                 }
 
-                c.Session.SetItem("nowSettingClosing", true);
+                c.Session.SetItem(SessionKeys.NOW_SETTING_CLOSING, true);
                 return c.Session.MoveStateAsync<ConsistentOpeningTimeEntrySessionState>(c);
             }
 
@@ -83,11 +83,15 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             foreach (var opening in _venue.Schedule)
                 opening.End = new Time { Hour = hour, Minute = minute, NextDay = hour < opening.Start.Hour, TimeZone = _timeZoneId };
             
+            c.Session.ClearItem(SessionKeys.NOW_SETTING_CLOSING);
+
+            if (c.Session.IsScheduleBiweekly())
+                return c.Session.MoveStateAsync<BiweeklyCommencementEntryState>(c);
             
-
-            c.Session.ClearItem("nowSettingClosing");
-
-            if (c.Session.GetItem<bool>("modifying"))
+            if (c.Session.IsScheduleMonthly())
+                return c.Session.MoveStateAsync<MonthlyCommencementEntryState>(c);
+            
+            if (c.Session.InEditing())
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
             return c.Session.MoveStateAsync<BannerEntrySessionState>(c);
         }

@@ -12,15 +12,12 @@ public class EditDescriptionHandler(IAuthorizer authorizer, IApiService apiServi
 {
     public static string Key => "CONTROL_EDIT_DESCRIPTION";
 
-    public async Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args)
+    public async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var user = context.Interaction.User.Id;
-        var venueId = args[0];   
+        var venueId = args[0];
         
-        // todo: update this to take venue source from arguments or just check Session.CurrentVenue instead of GetItem
-        // this will then allow zero conflict betweeen answering another's venue 
-        // edit control while in modification and decouple these handlers from session
-        var alreadyModifying = context.Session.GetItem<bool>("modifying");
+        var alreadyModifying = context.Session.InEditing();
         var venue = alreadyModifying ? context.Session.GetVenue() : await apiService.GetVenueAsync(venueId);
         
         if (!authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
@@ -34,7 +31,7 @@ public class EditDescriptionHandler(IAuthorizer authorizer, IApiService apiServi
         
         await context.Session.ClearState(context);
         context.Session.SetVenue(venue);
-        context.Session.SetItem("modifying", true);
+        context.Session.SetEditing(true);
         await context.Session.MoveStateAsync<DescriptionEntrySessionState>(context);
     }
     
