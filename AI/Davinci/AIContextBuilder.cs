@@ -1,18 +1,43 @@
-﻿namespace FFXIVVenues.Veni.AI.Davinci;
+﻿using System;
+using System.Collections.Generic;
+using FFXIVVenues.Veni.Utils;
+
+namespace FFXIVVenues.Veni.AI.Davinci;
 
 internal class AiContextBuilder : IAIContextBuilder
 {
-    public string GetContext(string id, string chat) 
+    // One sided conversation memory
+    private RollingCache<List<string>> _cache = new(TimeSpan.FromHours(2), TimeSpan.FromHours(24));
+
+    public string GetContext(string id, string chat)
     {
         var contextPrompt = ContextStrings.PersonalityContext;
         contextPrompt += ContextStrings.FFXIVVenues;
         contextPrompt += CheckFriendshipStatus(ulong.Parse(id));
-
-        contextPrompt += "\nMe: " + chat; 
+        
+        var previousChats = GetOrAddChats(id, chat);
+        foreach (var prevChat in previousChats)
+            contextPrompt += "\nMe: " + prevChat + "\nYou: <no memory>";
+        contextPrompt += "\nMe: " + chat;
 
         return "Me: " + contextPrompt + ". You: ";
     }
 
+    private List<string> GetOrAddChats(string id, string chat)
+    {
+        List<string> previousChats;
+        var cache = _cache.Get(id);
+        if (cache.Result == CacheResult.CacheHit)
+            previousChats = cache.Value;
+        else
+        {
+            previousChats = [chat];
+            _cache.Set(id, previousChats);
+        }
+        previousChats.Add(chat);
+        return previousChats;
+    }
+    
     private string CheckFriendshipStatus(ulong id)
     {
         string whoIs = "";

@@ -6,8 +6,8 @@ namespace FFXIVVenues.Veni.Utils
 {
     public class RollingCache<T> : IDisposable
     {
-        public long TimeoutInMs { get; }
-        public long MaxAgeInMs { get; }
+        public double TimeoutInMs { get; }
+        public double MaxAgeInMs { get; }
 
         private readonly ConcurrentDictionary<string, DateTime> _set = new();
         private readonly ConcurrentDictionary<string, DateTime> _lastAccess = new();
@@ -19,6 +19,13 @@ namespace FFXIVVenues.Veni.Utils
         {
             this.TimeoutInMs = timeoutInMs;
             this.MaxAgeInMs = maxAgeInMs;
+            this._timer = new Timer(_ => ExpireItems(), null, 60_000, 60_000);
+        }
+        
+        public RollingCache(TimeSpan timeoutInMs, TimeSpan maxAgeInMs)
+        {
+            this.TimeoutInMs = timeoutInMs.TotalMilliseconds;
+            this.MaxAgeInMs = maxAgeInMs.TotalMilliseconds;
             this._timer = new Timer(_ => ExpireItems(), null, 60_000, 60_000);
         }
 
