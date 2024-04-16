@@ -22,7 +22,7 @@ class NameEntrySessionState : ISessionState
     {
         var venue = c.Session.GetVenue();
         venue.Name = c.Interaction.Content.StripMentions();
-        if (c.Session.GetItem<bool>("modifying"))
+        if (c.Session.InEditing())
             return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
         return c.Session.MoveStateAsync<DescriptionEntrySessionState>(c);
     }

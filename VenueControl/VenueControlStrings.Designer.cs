@@ -60,33 +60,6 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to We have a set biweekly/monthly schedule.
-        /// </summary>
-        internal static string AnswerHasBiweeklySchedule {
-            get {
-                return ResourceManager.GetString("AnswerHasBiweeklySchedule", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No, we don&apos;t have a set schedule.
-        /// </summary>
-        internal static string AnswerHasNoSchedule {
-            get {
-                return ResourceManager.GetString("AnswerHasNoSchedule", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Yes, we have a set weekly schedule.
-        /// </summary>
-        internal static string AnswerHasWeeklySchedule {
-            get {
-                return ResourceManager.GetString("AnswerHasWeeklySchedule", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to What time do you **close**?
         ///`(example: 6:30pm, 9pm or 1:30am)`.
         /// </summary>
@@ -123,6 +96,15 @@ namespace FFXIVVenues.Veni.VenueControl {
         internal static string AskForCloseTimeOnDayMessage {
             get {
                 return ResourceManager.GetString("AskForCloseTimeOnDayMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When is your next **{0}** opening?.
+        /// </summary>
+        internal static string AskForCommencementMessage {
+            get {
+                return ResourceManager.GetString("AskForCommencementMessage", resourceCulture);
             }
         }
         
@@ -261,6 +243,51 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Which **{0}**s of the month are you open?.
+        /// </summary>
+        internal static string AskWhenInMonthMessage {
+            get {
+                return ResourceManager.GetString("AskWhenInMonthMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes, our openings are every 2 weeks.
+        /// </summary>
+        internal static string DescriptionHasBiweeklySchedule {
+            get {
+                return ResourceManager.GetString("DescriptionHasBiweeklySchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes, our openings are on a particular day of every month..
+        /// </summary>
+        internal static string DescriptionHasMonthlySchedule {
+            get {
+                return ResourceManager.GetString("DescriptionHasMonthlySchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No, we don&apos;t have a set schedule.
+        /// </summary>
+        internal static string DescriptionHasNoSchedule {
+            get {
+                return ResourceManager.GetString("DescriptionHasNoSchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes, our openings are every week..
+        /// </summary>
+        internal static string DescriptionHasWeeklySchedule {
+            get {
+                return ResourceManager.GetString("DescriptionHasWeeklySchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Okay! Let me know if you need anything. 💕 .
         /// </summary>
         internal static string Dismissed {
@@ -284,6 +311,42 @@ namespace FFXIVVenues.Veni.VenueControl {
         internal static string OpeningTooLong {
             get {
                 return ResourceManager.GetString("OpeningTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Biweekly.
+        /// </summary>
+        internal static string OptionBiweekly {
+            get {
+                return ResourceManager.GetString("OptionBiweekly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monthly.
+        /// </summary>
+        internal static string OptionMonthly {
+            get {
+                return ResourceManager.GetString("OptionMonthly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No schedule.
+        /// </summary>
+        internal static string OptionNoSchedule {
+            get {
+                return ResourceManager.GetString("OptionNoSchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Weekly.
+        /// </summary>
+        internal static string OptionWeekly {
+            get {
+                return ResourceManager.GetString("OptionWeekly", resourceCulture);
             }
         }
         

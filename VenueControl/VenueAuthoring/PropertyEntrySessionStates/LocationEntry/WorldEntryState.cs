@@ -24,7 +24,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                                   new ComponentBuilder().WithSelectMenu(selectMenu).WithBackButton(c).Build());
         }
 
-        public Task Handle(MessageComponentVeniInteractionContext c)
+        public Task Handle(ComponentVeniInteractionContext c)
         {
             var venue = c.Session.GetVenue();
             var world = c.Interaction.Data.Values.Single();

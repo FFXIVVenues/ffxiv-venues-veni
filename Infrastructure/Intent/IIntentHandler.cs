@@ -8,7 +8,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Intent
 
         Task Handle(MessageVeniInteractionContext context);
 
-        Task Handle(MessageComponentVeniInteractionContext context);
+        Task Handle(ComponentVeniInteractionContext context);
 
         Task Handle(SlashCommandVeniInteractionContext context);
         
@@ -19,7 +19,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Intent
         public Task Handle(MessageVeniInteractionContext context) =>
             this.Handle(context.ToWrappedInteraction());
 
-        public Task Handle(MessageComponentVeniInteractionContext context) =>
+        public Task Handle(ComponentVeniInteractionContext context) =>
             this.Handle(context.ToWrappedInteraction());
 
         public Task Handle(SlashCommandVeniInteractionContext context) => 

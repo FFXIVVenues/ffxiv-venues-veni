@@ -23,12 +23,12 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         public Task Enter(VeniInteractionContext c)
         {
             this._venue = c.Session.GetVenue();
-            this._timeZoneId = c.Session.GetItem<string>("timeZoneId");
+            this._timeZoneId = c.Session.GetItem<string>(SessionKeys.TIMEZONE_ID);
 
             if (this._nowSettingClosing == null)
             {
-                this._nowSettingClosing = c.Session.GetItem<bool?>("nowSettingClosing");
-                c.Session.ClearItem("nowSettingClosing");
+                this._nowSettingClosing = c.Session.GetItem<bool?>(SessionKeys.NOW_SETTING_CLOSING);
+                c.Session.ClearItem(SessionKeys.NOW_SETTING_CLOSING);
             }
 
             if (this._nowSettingClosing == null)
@@ -36,8 +36,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
             if (this._nowSettingDay == null)
             {
-                this._nowSettingDay = c.Session.GetItem<int?>("nowSettingDay");
-                c.Session.ClearItem("nowSettingDay");
+                this._nowSettingDay = c.Session.GetItem<int?>(SessionKeys.NOW_SETTING_SLOT);
+                c.Session.ClearItem(SessionKeys.NOW_SETTING_SLOT);
             }
 
             if (this._nowSettingDay == null)
@@ -75,8 +75,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             if (!this._nowSettingClosing.Value)
             {
                 opening.Start = new Time { Hour = hour, Minute = minute, NextDay = false, TimeZone = _timeZoneId };
-                c.Session.SetItem("nowSettingDay", this._nowSettingDay);
-                c.Session.SetItem("nowSettingClosing", true);
+                c.Session.SetItem(SessionKeys.NOW_SETTING_SLOT, this._nowSettingDay);
+                c.Session.SetItem(SessionKeys.NOW_SETTING_CLOSING, true);
                 return c.Session.MoveStateAsync<InconsistentOpeningTimeEntrySessionState>(c);
             }
 
@@ -95,15 +95,21 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             var thisWasLastDay = this._nowSettingDay + 1 == _venue.Schedule.Count;
             if (!thisWasLastDay)
             {
-                c.Session.SetItem("nowSettingDay", this._nowSettingDay + 1);
-                c.Session.SetItem("nowSettingClosing", false);
+                c.Session.SetItem(SessionKeys.NOW_SETTING_SLOT, this._nowSettingDay + 1);
+                c.Session.SetItem(SessionKeys.NOW_SETTING_CLOSING, false);
                 return c.Session.MoveStateAsync<InconsistentOpeningTimeEntrySessionState>(c);
             }
 
-            c.Session.ClearItem("nowSettingDay");
-            c.Session.ClearItem("nowSettingClosing");
+            c.Session.ClearItem(SessionKeys.NOW_SETTING_SLOT);
+            c.Session.ClearItem(SessionKeys.NOW_SETTING_CLOSING);
 
-            if (c.Session.GetItem<bool>("modifying"))
+            if (c.Session.IsScheduleBiweekly())
+                return c.Session.MoveStateAsync<BiweeklyCommencementEntryState>(c);
+            
+            if (c.Session.IsScheduleMonthly())
+                return c.Session.MoveStateAsync<MonthlyCommencementEntryState>(c);
+                
+            if (c.Session.InEditing())
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
             return c.Session.MoveStateAsync<BannerEntrySessionState>(c);
         }

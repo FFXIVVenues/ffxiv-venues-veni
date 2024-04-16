@@ -26,7 +26,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             var venue = c.Session.GetVenue();
             if (new Regex("\\bskip\\b").IsMatch(c.Interaction.Content.ToLower()))
             {
-                if (c.Session.GetItem<bool>("modifying"))
+                if (c.Session.InEditing())
                     return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
                 return c.Session.MoveStateAsync<DiscordEntrySessionState>(c);
             }
@@ -43,18 +43,18 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
             venue.Website = website;
 
-            if (c.Session.GetItem<bool>("modifying"))
+            if (c.Session.InEditing())
                 return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
 
             return c.Session.MoveStateAsync<DiscordEntrySessionState>(c);
         }
         
-        private Task OnNoWebsite(MessageComponentVeniInteractionContext context)
+        private Task OnNoWebsite(ComponentVeniInteractionContext context)
         {
             var venue = context.Session.GetVenue();
             venue.Website = null;
 
-            if (context.Session.GetItem<bool>("modifying")) return context.Session.MoveStateAsync<ConfirmVenueSessionState>(context);
+            if (context.Session.InEditing()) return context.Session.MoveStateAsync<ConfirmVenueSessionState>(context);
             return context.Session.MoveStateAsync<DiscordEntrySessionState>(context);
         }
     }

@@ -13,7 +13,7 @@ public static class ButtonBuilderExtensions
     public static ButtonBuilder WithSessionHandler(
         this ButtonBuilder builder,
         Session session,
-        Func<MessageComponentVeniInteractionContext, Task> @delegate,
+        Func<ComponentVeniInteractionContext, Task> @delegate,
         ComponentPersistence persistence) =>
         builder.WithCustomId(session.RegisterComponentHandler(@delegate, persistence));
 

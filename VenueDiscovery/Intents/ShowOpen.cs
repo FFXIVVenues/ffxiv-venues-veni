@@ -61,7 +61,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Intents
             await c.Interaction.RespondAsync(MessageRepository.WhatsOpenMessage.PickRandom(), componentBuilder.Build());
         }
 
-        private Task HandleVenueSelection(MessageComponentVeniInteractionContext context)
+        private Task HandleVenueSelection(ComponentVeniInteractionContext context)
         {
             var selectedVenueId = context.Interaction.Data.Values.Single();
             var asker = context.Interaction.User.Id;

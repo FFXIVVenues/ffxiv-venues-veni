@@ -28,7 +28,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
             venue.Location.Ward = ward;
 
-            var locationType = c.Session.GetItem<string>("locationType");
+            var locationType = c.Session.GetItem<string>(SessionKeys.LOCATION_TYPE);
             if (locationType == "house" || locationType == "room")
                 return c.Session.MoveStateAsync<PlotEntrySessionState>(c);
             else

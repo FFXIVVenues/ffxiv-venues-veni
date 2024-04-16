@@ -23,7 +23,7 @@ internal class OtherLocationEntrySessionState : ISessionState
         var venue = c.Session.GetVenue();
         venue.Location = new Location { Override = c.Interaction.Content.StripMentions() };
             
-        if (c.Session.GetItem<bool>("modifying"))
+        if (c.Session.InEditing())
             return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
 
         return c.Session.MoveStateAsync<HasMareEntrySessionState>(c);

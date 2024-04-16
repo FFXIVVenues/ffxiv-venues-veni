@@ -30,7 +30,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates
 
         public Task Enter(VeniInteractionContext c)
         {
-            this._managersVenues = c.Session.GetItem<IEnumerable<Venue>>("venues");
+            this._managersVenues = c.Session.GetItem<IEnumerable<Venue>>(SessionKeys.VENUES);
 
             var selectMenuKey = c.Session.RegisterComponentHandler(this.Handle, ComponentPersistence.DeleteMessage);
             var componentBuilder = new ComponentBuilder();
@@ -49,7 +49,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates
             return c.Interaction.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
         }
 
-        public async Task Handle(MessageComponentVeniInteractionContext c)
+        public async Task Handle(ComponentVeniInteractionContext c)
         {
             var selectedVenueId = c.Interaction.Data.Values.Single();
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);

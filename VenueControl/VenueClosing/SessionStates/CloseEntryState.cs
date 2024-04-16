@@ -51,7 +51,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
             return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
-        private async Task OnComplete(MessageComponentVeniInteractionContext c)
+        private async Task OnComplete(ComponentVeniInteractionContext c)
         {
             var value = c.Interaction.Data.Values.Single();
             if (value == "perm")

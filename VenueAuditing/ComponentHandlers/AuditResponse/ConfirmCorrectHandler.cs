@@ -39,7 +39,7 @@ public class ConfirmCorrectHandler : BaseAuditHandler
         this._auditService = auditService;
     }
     
-    public override async Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args)
+    public override async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var auditId = args[0];
         var audit = await this._repository.GetByIdAsync<VenueAuditRecord>(auditId);

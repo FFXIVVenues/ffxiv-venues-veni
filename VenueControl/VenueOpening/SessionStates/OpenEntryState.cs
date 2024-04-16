@@ -36,7 +36,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates
             return new ComponentBuilder().WithSelectMenu(selectComponent);
         }
 
-        private async Task OnSelect(MessageComponentVeniInteractionContext c)
+        private async Task OnSelect(ComponentVeniInteractionContext c)
         {
             var authorize = authorizer.Authorize(c.Interaction.User.Id, Permission.OpenVenue, _venue);
             if (!authorize.Authorized)

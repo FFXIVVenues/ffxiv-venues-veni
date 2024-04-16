@@ -25,7 +25,7 @@ public class AuditHandler : IComponentHandler
         this._auditService = auditService;
     }
     
-    public async Task HandleAsync(MessageComponentVeniInteractionContext context, string[] args)
+    public async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var user = context.Interaction.User.Id;
         var venueId = args[0];
