@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
@@ -32,7 +30,7 @@ class MonthlyCommencementEntryState : ISessionState
         // Assumes that there is not multiple schedules for the same day with differing times/location
         if (this._currentDay == null)
         {
-            this._currentDay = c.Session.GetItem<Day>(SessionKeys.NOW_SETTING_DAY);
+            this._currentDay = c.Session.GetItem<Day?>(SessionKeys.NOW_SETTING_DAY);
             c.Session.ClearItem(SessionKeys.NOW_SETTING_DAY);
         }
         this._currentDay ??= this._schedules.First()!.Key;
