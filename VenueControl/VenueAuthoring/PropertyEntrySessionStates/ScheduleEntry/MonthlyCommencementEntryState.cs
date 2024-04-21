@@ -32,18 +32,22 @@ class MonthlyCommencementEntryState : ISessionState
         // Assumes that there is not multiple schedules for the same day with differing times/location
         if (this._currentDay == null)
         {
-            this._currentDay = c.Session.GetItem<Day>(SessionKeys.NOW_SETTING_DAY);
+            this._currentDay = c.Session.GetItem<Day?>(SessionKeys.NOW_SETTING_DAY);
             c.Session.ClearItem(SessionKeys.NOW_SETTING_DAY);
         }
         this._currentDay ??= this._schedules.First()!.Key;
         
         var select = new SelectMenuBuilder()
             .WithCustomId(c.Session.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow))
-            .WithMinValues(1).WithMaxValues(4)
+            .WithMinValues(1).WithMaxValues(8)
             .AddOption($"1st {this._currentDay} of the month", "1")
             .AddOption($"2nd {this._currentDay} of the month", "2")
             .AddOption($"3rd {this._currentDay} of the month", "3")
-            .AddOption($"4th {this._currentDay} of the month", "4");
+            .AddOption($"4th {this._currentDay} of the month", "4")
+            .AddOption($"Last {this._currentDay} of the month", "-1")
+            .AddOption($"2nd last {this._currentDay} of the month", "-2")
+            .AddOption($"3rd last {this._currentDay} of the month", "-3")
+            .AddOption($"4th last {this._currentDay} of the month", "-4");
             
         var message = string.Format(VenueControlStrings.AskWhenInMonthMessage, this._currentDay);
         return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {message}",
@@ -63,7 +67,7 @@ class MonthlyCommencementEntryState : ISessionState
                 Start = originalForDay.Start,
                 End = originalForDay.End,
                 Location = originalForDay.Location,
-                Interval = new() { IntervalType = IntervalType.XDayOfEveryMonth, IntervalArgument = selection }
+                Interval = new() { IntervalType = IntervalType.EveryXthDayOfTheMonth, IntervalArgument = selection }
             })
             .ToList();
         _schedules[this._currentDay!.Value] = scheduleListForDay;

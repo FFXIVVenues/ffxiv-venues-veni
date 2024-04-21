@@ -124,11 +124,25 @@ public class VenueRenderer : IVenueRenderer
                     stringBuilder.Append(schedule.Day.ToString());
                     stringBuilder.Append('s');
                 }
-                else if (schedule.Interval is { IntervalType: IntervalType.XDayOfEveryMonth })
+                else if (schedule.Interval is { IntervalType: IntervalType.EveryXthDayOfTheMonth, IntervalArgument: > 0 })
                 {
                     stringBuilder.Append(schedule.Interval.IntervalArgument);
                     stringBuilder.Append(Nth(schedule.Interval.IntervalArgument));
                     stringBuilder.Append(' ');
+                    stringBuilder.Append(schedule.Day.ToString());
+                    stringBuilder.Append(" of the month");
+                }
+                else if (schedule.Interval is { IntervalType: IntervalType.EveryXthDayOfTheMonth, IntervalArgument: -1 })
+                {
+                    stringBuilder.Append("Last ");
+                    stringBuilder.Append(schedule.Day.ToString());
+                    stringBuilder.Append(" of the month");
+                }
+                else if (schedule.Interval is { IntervalType: IntervalType.EveryXthDayOfTheMonth, IntervalArgument: < -1 })
+                {
+                    stringBuilder.Append(Math.Abs(schedule.Interval.IntervalArgument));
+                    stringBuilder.Append(Nth(Math.Abs(schedule.Interval.IntervalArgument)));
+                    stringBuilder.Append(" last ");
                     stringBuilder.Append(schedule.Day.ToString());
                     stringBuilder.Append(" of the month");
                 }
