@@ -156,7 +156,7 @@ namespace FFXIVVenues.Veni.Utils
         public static string[] VenueOpenMessage = new[]
         {
             "Woo! The doors are open. You're glowing pink and announcements have been sent! Let's have fun today! ♥️",
-            "Yay! It's that time again. 🙂 You're glowing pink on the index, and everyone's been notified. ♥️",
+            "Yay! You're glowing pink on the index. Let's have fun today! ♥️",
             "Let's do it! We... are... live!!! We're glowing pink on the index and the pings are flying! So excited. 🙂"
         };
 

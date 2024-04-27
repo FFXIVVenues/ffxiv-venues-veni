@@ -27,7 +27,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueOpening.ConversationalIntent
             else
             {
                 context.Session.SetVenue(venues.First());
-                await context.Session.MoveStateAsync<OpenEntryState>(context);
+                await context.Session.MoveStateAsync<OpenNowOrLaterEntryState>(context);
             }
         }
 

@@ -20,21 +20,11 @@ using PrettyPrintNet;
 
 namespace FFXIVVenues.Veni.VenueRendering;
 
-public class VenueRenderer : IVenueRenderer
+public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig) : IVenueRenderer
 {
-        
-    private readonly IAuthorizer _authorizer;
-    private readonly UiConfiguration _uiConfig;
-        
-    public VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig)
-    {
-        this._authorizer = authorizer;
-        this._uiConfig = uiConfig;
-    }
-
     public EmbedBuilder RenderEmbed(Venue venue, string bannerUrl = null, VenueRenderFlags renderFlags = VenueRenderFlags.None)
     {
-        var uiUrl = $"{this._uiConfig.BaseUrl}/#{venue.Id}"; 
+        var uiUrl = $"{uiConfig.BaseUrl}/#{venue.Id}"; 
         bannerUrl ??= venue.BannerUri?.ToString();
 
         var stringBuilder = new StringBuilder();
@@ -45,6 +35,8 @@ public class VenueRenderer : IVenueRenderer
             stringBuilder.Append("**Last Modified**: ");
             stringBuilder.AppendLine(venue.LastModified.Value.DateTime.FromNow()[0].ToString().ToUpper() + venue.LastModified.Value.DateTime.FromNow()[1..]);
         }
+        stringBuilder.Append("**Venue name**: ");
+        stringBuilder.AppendLine(venue.Name);
         stringBuilder.Append("**Location**: ");
         stringBuilder.AppendLine(venue.Location.ToString());
         stringBuilder.Append("**SyncShell ID**: ");
@@ -248,12 +240,12 @@ public class VenueRenderer : IVenueRenderer
                 if (@override.Start < DateTime.Now)
                 {
                     stringBuilder.Append(" for ");
-                    stringBuilder.AppendLine(@override.End.DateTime.ToNow()[3..]);
+                    stringBuilder.AppendLine(@override.End.UtcDateTime.ToNow()[3..]);
                 }
                 else
                 {
                     stringBuilder.Append(" from ");
-                    stringBuilder.Append(@override.Start.DateTime.ToNow()[3..]);
+                    stringBuilder.Append(@override.Start.UtcDateTime.ToNow()[3..]);
                     stringBuilder.Append(" from now for ");
                     stringBuilder.AppendLine((@override.End - @override.Start).ToPrettyString());
                 }
@@ -285,35 +277,35 @@ public class VenueRenderer : IVenueRenderer
             .WithValueHandlers()
             .WithPlaceholder("What would you like to do?");
 
-        if (this._authorizer.Authorize(user, Permission.OpenVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.OpenVenue, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("Open")
                 .WithEmote(new Emoji("📢"))
                 .WithDescription("Open this venue for a given amount of hours.")
                 .WithStaticHandler(OpenHandler.Key, venue.Id));
                 
-        if (this._authorizer.Authorize(user, Permission.CloseVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.CloseVenue, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("Close")
                 .WithEmote(new Emoji("🔒"))
                 .WithDescription("Close current opening or go on hiatus.")
                 .WithStaticHandler(CloseHandler.Key, venue.Id));
                 
-        if (this._authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("Edit")
                 .WithEmote(new Emoji("✏️"))
                 .WithDescription("Update the details on this venue.")
                 .WithStaticHandler(EditHandler.Key, venue.Id));
         else {
-            if (this._authorizer.Authorize(user, Permission.EditManagers, venue).Authorized)
+            if (authorizer.Authorize(user, Permission.EditManagers, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Edit Managers")
                     .WithEmote(new Emoji("📸"))
                     .WithDescription("Update the controlling managers on this venue.")
                     .WithStaticHandler(EditManagersHandler.Key, venue.Id));
                 
-            if (this._authorizer.Authorize(user, Permission.EditPhotography, venue).Authorized)
+            if (authorizer.Authorize(user, Permission.EditPhotography, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Edit Photo")
                     .WithEmote(new Emoji("📸"))
@@ -321,7 +313,7 @@ public class VenueRenderer : IVenueRenderer
                     .WithStaticHandler(EditPhotoHandler.Key, venue.Id));
         }
 
-        if (this._authorizer.Authorize(user, Permission.DeleteVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.DeleteVenue, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("Delete")
                 .WithEmote(new Emoji("❌"))
@@ -329,14 +321,14 @@ public class VenueRenderer : IVenueRenderer
                 .WithStaticHandler(DeleteHandler.Key, venue.Id));
         
         
-        if (this._authorizer.Authorize(user, Permission.AuditVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.AuditVenue, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("Audit")
                 .WithEmote(new Emoji("🔍"))
                 .WithDescription("Message managers to confirm this venue's detail.")
                 .WithStaticHandler(AuditHandler.Key, venue.Id, "false", string.Empty));
             
-        if (this._authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("View audits")
                 .WithEmote(new Emoji("🔍"))
@@ -358,7 +350,7 @@ public class VenueRenderer : IVenueRenderer
             .WithValueHandlers()
             .WithPlaceholder("What would you like to edit?");
 
-        if (this._authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
             selectMenu
                 .AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Edit Name")

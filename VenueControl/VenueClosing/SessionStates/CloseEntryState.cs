@@ -73,10 +73,10 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
             {
                 if (this._venue.Resolution == null)
                     return;
-                await apiService.CloseVenueAsync(this._venue.Id, this._venue.Resolution.End);
+                await apiService.CloseVenueAsync(this._venue.Id, DateTimeOffset.UtcNow, this._venue.Resolution.End);
             }
             else
-                await apiService.CloseVenueAsync(this._venue.Id, DateTime.UtcNow.AddHours(until));
+                await apiService.CloseVenueAsync(this._venue.Id, DateTimeOffset.UtcNow, DateTime.UtcNow.AddHours(until));
             
             await c.Interaction.Channel.SendMessageAsync(MessageRepository.VenueClosedMessage.PickRandom());
             
