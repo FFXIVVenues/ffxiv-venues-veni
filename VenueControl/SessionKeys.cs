@@ -13,8 +13,10 @@ public class SessionKeys
     public const string NOW_SETTING_DAY = "nowSettingDay";
     public const string NOW_SETTING_CLOSING = "nowSettingClosing";
     public const string IS_NEW_VENUE = "isNewVenue";
-    public const string OPENING_DATE = "openDate";
     public const string TIMEZONE_ID = "timeZoneId";
     public const string LOCATION_TYPE = "locationType";
+    public const string OPENING_DATE = "openDate";
     public const string OPENING_HOUR = "openHour";
+    public const string CLOSING_DATE = "closingDate";
+    public const string CLOSING_HOUR = "closingHour";
 }

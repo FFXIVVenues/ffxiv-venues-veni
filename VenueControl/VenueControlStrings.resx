@@ -132,21 +132,35 @@
     <data name="AskForOpeningTimeZone" xml:space="preserve">
         <value>What **timezone** is the opening in?</value>
     </data>
+    <data name="AskForClosingTimeZone" xml:space="preserve">
+        <value>What **timezone** is the closing in?</value>
+    </data>
     <data name="AskForTimeOfOpening" xml:space="preserve">
-        <value>What **time** is the opening in?</value>
+        <value>What **time** is the opening from?</value>
+    </data>
+    <data name="AskForTimeOfClosing" xml:space="preserve">
+        <value>What **time** is the closing from?</value>
+    </data>
+    <data name="AskIfClosingIsNowOrLater" xml:space="preserve">
+        <value>When is your closing?</value>
     </data>
     <data name="AskIfOpeningIsNowOrLater" xml:space="preserve">
         <value>When is your opening?</value>
     </data>
+    <data name="AskForHowLongClosingFor" xml:space="preserve">
+        <value>And how long are we closing for? 🥹</value>
+    </data>
     <data name="AskForHowLongOpeningFor" xml:space="preserve">
         <value>Yay, how long are we opening for? 🥰</value>
     </data>
-
-    <data name="AskForDayOfOpening" xml:space="preserve">
-        <value>What **day** is this opening? 🥰</value>
+    <data name="AskForDayOfClosing" xml:space="preserve">
+        <value>Oki, what **day** is this closing from?</value>
     </data>
-    <data name="AskForLengthOfOpening" xml:space="preserve">
-        <value>Yay, how long are we opening for? 🥰</value>
+    <data name="AskForDayOfOpening" xml:space="preserve">
+        <value>What **day** is this opening from? 🥰</value>
+    </data>
+    <data name="VenueNowClosed" xml:space="preserve">
+        <value>Okay! I'll lock up! I can't wait til we reopen. 🥰</value>
     </data>
     <data name="VenueNowOpen" xml:space="preserve">
         <value>Yay! You're glowing pink on the index. Let's have fun today! ♥️</value>

@@ -100,6 +100,15 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to What **timezone** is the closing in?.
+        /// </summary>
+        internal static string AskForClosingTimeZone {
+            get {
+                return ResourceManager.GetString("AskForClosingTimeZone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to When is your next **{0}** opening?.
         /// </summary>
         internal static string AskForCommencementMessage {
@@ -109,7 +118,16 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to What **day** is this opening? 🥰.
+        ///   Looks up a localized string similar to Oki, what **day** is this closing from?.
+        /// </summary>
+        internal static string AskForDayOfClosing {
+            get {
+                return ResourceManager.GetString("AskForDayOfClosing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What **day** is this opening from? 🥰.
         /// </summary>
         internal static string AskForDayOfOpening {
             get {
@@ -137,20 +155,20 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Yay, how long are we opening for? 🥰.
+        ///   Looks up a localized string similar to And how long are we closing for? 🥹.
         /// </summary>
-        internal static string AskForHowLongOpeningFor {
+        internal static string AskForHowLongClosingFor {
             get {
-                return ResourceManager.GetString("AskForHowLongOpeningFor", resourceCulture);
+                return ResourceManager.GetString("AskForHowLongClosingFor", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Yay, how long are we opening for? 🥰.
         /// </summary>
-        internal static string AskForLengthOfOpening {
+        internal static string AskForHowLongOpeningFor {
             get {
-                return ResourceManager.GetString("AskForLengthOfOpening", resourceCulture);
+                return ResourceManager.GetString("AskForHowLongOpeningFor", resourceCulture);
             }
         }
         
@@ -261,11 +279,29 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to What **time** is the opening in?.
+        ///   Looks up a localized string similar to What **time** is the closing from?.
+        /// </summary>
+        internal static string AskForTimeOfClosing {
+            get {
+                return ResourceManager.GetString("AskForTimeOfClosing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What **time** is the opening from?.
         /// </summary>
         internal static string AskForTimeOfOpening {
             get {
                 return ResourceManager.GetString("AskForTimeOfOpening", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When is your closing?.
+        /// </summary>
+        internal static string AskIfClosingIsNowOrLater {
+            get {
+                return ResourceManager.GetString("AskIfClosingIsNowOrLater", resourceCulture);
             }
         }
         
@@ -428,6 +464,15 @@ namespace FFXIVVenues.Veni.VenueControl {
         internal static string VenueClosureEnded {
             get {
                 return ResourceManager.GetString("VenueClosureEnded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Okay! I&apos;ll lock up! I can&apos;t wait til we reopen. 🥰.
+        /// </summary>
+        internal static string VenueNowClosed {
+            get {
+                return ResourceManager.GetString("VenueNowClosed", resourceCulture);
             }
         }
         

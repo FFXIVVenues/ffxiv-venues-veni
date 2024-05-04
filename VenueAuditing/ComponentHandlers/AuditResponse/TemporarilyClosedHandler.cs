@@ -34,7 +34,7 @@ public class TemporarilyClosedHandler(
         }
         
         context.Session.SetVenue(venue);
-        await context.Session.MoveStateAsync<CloseEntrySessionState>(context);
+        await context.Session.MoveStateAsync<CloseNowOrLaterEntryState>(context);
         
         await auditService.UpdateAuditStatus(audit, venue, context.Interaction.User.Id,
             VenueAuditStatus.RespondedClose);
