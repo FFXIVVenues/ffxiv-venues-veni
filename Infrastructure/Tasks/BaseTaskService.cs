@@ -78,9 +78,10 @@ public abstract class BaseTaskService<T>(IRepository repository) : ITaskService<
         }
         
         Log.Debug("Fetching active, pending and paused {Task} tasks", this._taskType);
-        var activeTasks = (await repository.GetWhereAsync<T>(a => 
+        var activeTasks = (await repository.GetWhereAsync<T>(a =>
                 a.Status == TaskStatus.Active || a.Status == TaskStatus.Pending || a.Status == TaskStatus.Paused))
-            .OrderByDescending(a => a.StartedAt);
+            .OrderByDescending(a => a.StartedAt)
+            .ToList();
 
         if (!activeTasks.Any())
         {
