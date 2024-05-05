@@ -531,7 +531,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Okay! You&apos;re all setup. I can&apos;t wait! ♥️.
+        ///   Looks up a localized string similar to Wooo! We&apos;re all set. I can&apos;t wait! ♥️.
         /// </summary>
         internal static string VenueOpenLater {
             get {

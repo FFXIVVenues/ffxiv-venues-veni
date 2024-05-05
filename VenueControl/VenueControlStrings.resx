@@ -169,9 +169,6 @@
     <data name="VenueNowOpen" xml:space="preserve">
         <value>Yay! You're glowing pink on the index. Let's have fun today! ♥️</value>
     </data>
-    <data name="VenueOpenLater" xml:space="preserve">
-        <value>Okay! You're all setup. I can't wait! ♥️</value>
-    </data>
     <data name="VenueOpeningEnded" xml:space="preserve">
         <value>Okay! All closed up, I hope you had fun! ♥️</value>
     </data>

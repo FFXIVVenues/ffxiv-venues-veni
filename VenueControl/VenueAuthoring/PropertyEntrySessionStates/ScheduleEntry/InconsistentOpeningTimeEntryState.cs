@@ -82,7 +82,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
             if ( ! authorizer.Authorize(c.Interaction.Author.Id, Permission.SetLongSchedule, this._venue).Authorized)
             {
-                var start = new TimeOnly(_venue.Schedule[0].Start.Hour, _venue.Schedule[0].Start.Minute);
+                var start = new TimeOnly(opening.Start.Hour, opening.Start.Minute);
                 var end = new TimeOnly(hour, minute);
                 var diff = end - start;
                 if (diff > TimeSpan.FromHours(7)) 
