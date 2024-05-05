@@ -29,7 +29,7 @@ public class EditNsfwHandler(IAuthorizer authorizer, IApiService apiService) : I
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
                     props.Components = new ComponentBuilder().Build());
         
-        await context.Session.ClearState(context);
+        await context.Session.ClearStateAsync(context);
         context.Session.SetVenue(venue);
         context.Session.SetEditing(true);
         await context.Session.MoveStateAsync<SfwEntrySessionState>(context);

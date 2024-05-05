@@ -28,19 +28,22 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                     .WithBackButton(c)
                 .Build());
         }
-        
-        private Task Handle(ComponentVeniInteractionContext c) =>
-            c.Interaction.Data.Values.Single() switch
+
+        private Task Handle(ComponentVeniInteractionContext c)
+        {
+            var venue = c.Session.GetVenue();
+            venue.Schedule = new();
+            return c.Interaction.Data.Values.Single() switch
             {
-                "weekly" => WeeklySchedule(c),
+                "weekly" => c.Session.MoveStateAsync<TimeZoneEntrySessionState>(c),
                 "biweekly" => BiweeklySchedule(c),
                 "monthly" => MonthlySchedule(c),
-                _ => NoWeeklySchedule(c)
+                "none" or _ => c.Session.InEditing() 
+                    ? c.Session.MoveStateAsync<ConfirmVenueSessionState>(c) 
+                    : c.Session.MoveStateAsync<BannerEntrySessionState>(c)
             };
+        }
 
-        private static Task WeeklySchedule(ComponentVeniInteractionContext c) =>
-            c.Session.MoveStateAsync<TimeZoneEntrySessionState>(c);
-        
         private static async Task BiweeklySchedule(ComponentVeniInteractionContext c)
         {
             c.Session.SetScheduleAsBiweekly();
@@ -51,16 +54,6 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         {
             c.Session.SetScheduleAsMonthly();
             await c.Session.MoveStateAsync<TimeZoneEntrySessionState>(c);
-        }
-
-        private static Task NoWeeklySchedule(ComponentVeniInteractionContext c)
-        {
-            var venue = c.Session.GetVenue();
-            venue.Schedule = new();
-
-            return c.Session.InEditing() 
-                ? c.Session.MoveStateAsync<ConfirmVenueSessionState>(c) 
-                : c.Session.MoveStateAsync<BannerEntrySessionState>(c);
         }
         
     }

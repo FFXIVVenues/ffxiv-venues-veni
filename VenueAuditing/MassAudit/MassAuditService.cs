@@ -176,7 +176,7 @@ internal class MassAuditService(
         Log.Debug("Fetching active and inactive mass audits");
         var activeAudits = (await repository.GetWhereAsync<MassAuditRecord>(a => 
                     a.Status == MassAuditStatus.Active || a.Status == MassAuditStatus.Inactive))
-            .OrderByDescending(a => a.StartedAt);
+            .OrderByDescending(a => a.StartedAt).ToList();
 
         if (!activeAudits.Any())
         {
@@ -301,7 +301,8 @@ internal class MassAuditService(
                 .Where(a => a.Messages.Any(m => m.UserId == manager))
                 .Select(a => allVenues.FirstOrDefault(v => a.VenueId == v.Id))
                 .Where(v => v != null)
-                .Select(v => v.Name);
+                .Select(v => v.Name)
+                .ToList();
 
             if (!venueNamesForUser.Any())
                 continue;

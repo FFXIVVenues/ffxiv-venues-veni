@@ -7,21 +7,13 @@ using FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueClosing.ConversationalIntent
 {
-    internal class CloseIntent : IntentHandler
+    internal class CloseIntent(IApiService apiService) : IntentHandler
     {
-
-        private readonly IApiService _apiService;
-
-        public CloseIntent(IApiService apiService)
-        {
-            this._apiService = apiService;
-        }
-
         // todo: change to stateless handlers (like edit)
         public override async Task Handle(VeniInteractionContext context)
         {
             var user = context.Interaction.User.Id;
-            var venues = await this._apiService.GetAllVenuesAsync(user);
+            var venues = await apiService.GetAllVenuesAsync(user);
 
             if (venues == null || !venues.Any())
                 await context.Interaction.RespondAsync("You don't seem to be an assigned manager for any venues. 🤔");
@@ -35,7 +27,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.ConversationalIntent
             else
             {
                 context.Session.SetVenue(venues.First());
-                await context.Session.MoveStateAsync<CloseEntrySessionState>(context);
+                await context.Session.MoveStateAsync<CloseEntryState>(context);
             }
         }
 

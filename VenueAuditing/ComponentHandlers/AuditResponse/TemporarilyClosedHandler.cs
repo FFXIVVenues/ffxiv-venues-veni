@@ -18,7 +18,6 @@ public class TemporarilyClosedHandler(
     : BaseAuditHandler
 {
 
-    // Change this key and any existing buttons linked to this will die
     public static string Key => "AUDIT_TEMP_CLOSED";
 
     public override async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
@@ -34,7 +33,7 @@ public class TemporarilyClosedHandler(
         }
         
         context.Session.SetVenue(venue);
-        await context.Session.MoveStateAsync<CloseEntrySessionState>(context);
+        await context.Session.MoveStateAsync<CloseEntryState>(context);
         
         await auditService.UpdateAuditStatus(audit, venue, context.Interaction.User.Id,
             VenueAuditStatus.RespondedClose);

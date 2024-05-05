@@ -10,7 +10,7 @@ using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
 {
-    class SelectVenueToCloseSessionState : ISessionState
+    class SelectVenueToCloseSessionState(IApiService apiService) : ISessionState
     {
 
         private static string[] _messages = new[]
@@ -21,12 +21,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
         };
 
         private IEnumerable<Venue> _managersVenues;
-        private readonly IApiService _apiService;
-
-        public SelectVenueToCloseSessionState(IApiService apiService)
-        {
-            this._apiService = apiService;
-        }
+        private readonly IApiService _apiService = apiService;
 
         public Task Enter(VeniInteractionContext c)
         {
@@ -54,7 +49,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
             var selectedVenueId = c.Interaction.Data.Values.Single();
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
             c.Session.SetVenue(venue);
-            await c.Session.MoveStateAsync<CloseEntrySessionState>(c);
+            await c.Session.MoveStateAsync<CloseEntryState>(c);
         }
     }
 }

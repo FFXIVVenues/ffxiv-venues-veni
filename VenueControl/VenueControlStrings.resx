@@ -129,4 +129,62 @@
     <data name="AskWhenInMonthMessage" xml:space="preserve">
         <value>Which **{0}**s of the month are you open?</value>
     </data>
+    <data name="AskForOpeningTimeZone" xml:space="preserve">
+        <value>What **timezone** is the opening in?</value>
+    </data>
+    <data name="AskForClosingTimeZone" xml:space="preserve">
+        <value>What **timezone** is the closing in?</value>
+    </data>
+    <data name="AskForTimeOfOpening" xml:space="preserve">
+        <value>What **time** is the opening from?</value>
+    </data>
+    <data name="AskForTimeOfClosing" xml:space="preserve">
+        <value>What **time** is the closing from?</value>
+    </data>
+    <data name="AskIfClosingIsNowOrLater" xml:space="preserve">
+        <value>When is your closing?</value>
+    </data>
+    <data name="AskIfOpeningIsNowOrLater" xml:space="preserve">
+        <value>When is your opening?</value>
+    </data>
+    <data name="AskForHowLongClosingFor" xml:space="preserve">
+        <value>And how long are we closing for? 🥹</value>
+    </data>
+    <data name="AskForHowLongOpeningFor" xml:space="preserve">
+        <value>Yay, how long are we opening for? 🥰</value>
+    </data>
+    <data name="AskForDayOfClosing" xml:space="preserve">
+        <value>Oki, what **day** is this closing from?</value>
+    </data>
+    
+    <data name="AskForDayOfOpening" xml:space="preserve">
+        <value>What **day** is this opening from? 🥰</value>
+    </data>
+    <data name="VenueNowClosed" xml:space="preserve">
+        <value>Okay! I'll lock up! I can't wait til we reopen. 🥰</value>
+    </data>
+    <data name="VenueOpenLater" xml:space="preserve">
+        <value>Wooo! We're all set. I can't wait! ♥️</value>
+    </data>
+    <data name="VenueNowOpen" xml:space="preserve">
+        <value>Yay! You're glowing pink on the index. Let's have fun today! ♥️</value>
+    </data>
+    <data name="VenueOpeningEnded" xml:space="preserve">
+        <value>Okay! All closed up, I hope you had fun! ♥️</value>
+    </data>
+    <data name="AskForOpeningToCancel" xml:space="preserve">
+        <value>Okay! Which opening do you want to cancel? 🥰</value>
+    </data>
+    <data name="VenueClosureEnded" xml:space="preserve">
+        <value>Yay! I've removed your closure status. Welcome back! ♥️</value>
+    </data>
+    <data name="AskForClosureToCancel" xml:space="preserve">
+        <value>Okay! Which closure do you wish to cancel? 🥰</value>
+    </data>
+    <data name="VenueClosureCancelled" xml:space="preserve">
+        <value>Yay! I've cancelled the closure! 🥰</value>
+    </data>
+    <data name="VenueOpeningCancelled" xml:space="preserve">
+        <value>Yay! I've cancelled the opening. 🥲</value>
+    </data>
 </root>

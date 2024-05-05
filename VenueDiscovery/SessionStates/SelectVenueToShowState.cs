@@ -46,7 +46,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.SessionStates
             var asker = context.Interaction.User.Id;
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            await context.Session.ClearState(context);
+            await context.Session.ClearStateAsync(context);
             
             await context.Interaction.FollowupAsync(embed: venueRenderer.RenderEmbed(venue).Build(),
                 components: venueRenderer.RenderActionComponents(context, venue, asker).Build());

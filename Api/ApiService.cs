@@ -152,23 +152,38 @@ internal class ApiService(HttpClient httpClient) : IApiService
         return response;
     }
 
-    public async Task<HttpResponseMessage> OpenVenueAsync(string id, DateTimeOffset until)
+    public async Task<HttpResponseMessage> OpenVenueAsync(string id, DateTimeOffset from, DateTimeOffset to)
     {
         Log.Debug("Opening venue {VenueId}", id);
         this._venueCache.Remove(id);
         this._venuesCache.Clear();
-        var response = await httpClient.PostAsJsonAsync($"/venue/{id}/open", until);
+        var @override = new ScheduleOverride { Open = true, Start = from, End = to };
+        var response = await httpClient.PutAsJsonAsync($"/venue/{id}/scheduleoverride", @override);
         if (!response.IsSuccessStatusCode)
             Log.Warning("Failed to open venue {VenueId}: {ResponseStatusCode}", id, response.StatusCode);
         return response;
     }
 
-    public async Task<HttpResponseMessage> CloseVenueAsync(string id, DateTimeOffset until)
+    public async Task<HttpResponseMessage> CloseVenueAsync(string id, DateTimeOffset from, DateTimeOffset to)
     {
         Log.Debug("Closing venue {VenueId}", id);
         this._venueCache.Remove(id);
         this._venuesCache.Clear();
-        var response = await httpClient.PostAsJsonAsync($"/venue/{id}/close", until);
+        var @override = new ScheduleOverride { Open = false, Start = from, End = to };
+        var response = await httpClient.PutAsJsonAsync($"/venue/{id}/scheduleoverride", @override);
+        if (!response.IsSuccessStatusCode)
+            Log.Warning("Failed to close venue {VenueId}: {ResponseStatusCode}", id, response.StatusCode);
+        return response;
+    }
+    
+    public async Task<HttpResponseMessage> RemoveOverridesAsync(string id, DateTimeOffset from, DateTimeOffset to)
+    {
+        from = from.ToUniversalTime();
+        to = to.ToUniversalTime();
+        Log.Debug("Removing overrides from venue {VenueId}", id);
+        this._venueCache.Remove(id);
+        this._venuesCache.Clear();
+        var response = await httpClient.DeleteAsync($"/venue/{id}/scheduleoverride?from={from:yyyy-MM-ddTHH:mm:ss.fffZ}&to={to:yyyy-MM-ddTHH:mm:ss.fffZ}");
         if (!response.IsSuccessStatusCode)
             Log.Warning("Failed to close venue {VenueId}: {ResponseStatusCode}", id, response.StatusCode);
         return response;

@@ -20,21 +20,11 @@ using PrettyPrintNet;
 
 namespace FFXIVVenues.Veni.VenueRendering;
 
-public class VenueRenderer : IVenueRenderer
+public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig) : IVenueRenderer
 {
-        
-    private readonly IAuthorizer _authorizer;
-    private readonly UiConfiguration _uiConfig;
-        
-    public VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig)
-    {
-        this._authorizer = authorizer;
-        this._uiConfig = uiConfig;
-    }
-
     public EmbedBuilder RenderEmbed(Venue venue, string bannerUrl = null, VenueRenderFlags renderFlags = VenueRenderFlags.None)
     {
-        var uiUrl = $"{this._uiConfig.BaseUrl}/#{venue.Id}"; 
+        var uiUrl = $"{uiConfig.BaseUrl}/#{venue.Id}"; 
         bannerUrl ??= venue.BannerUri?.ToString();
 
         var stringBuilder = new StringBuilder();
@@ -45,6 +35,8 @@ public class VenueRenderer : IVenueRenderer
             stringBuilder.Append("**Last Modified**: ");
             stringBuilder.AppendLine(venue.LastModified.Value.DateTime.FromNow()[0].ToString().ToUpper() + venue.LastModified.Value.DateTime.FromNow()[1..]);
         }
+        stringBuilder.Append("**Venue name**: ");
+        stringBuilder.AppendLine(venue.Name);
         stringBuilder.Append("**Location**: ");
         stringBuilder.AppendLine(venue.Location.ToString());
         stringBuilder.Append("**SyncShell ID**: ");
@@ -153,32 +145,8 @@ public class VenueRenderer : IVenueRenderer
                     .Append(':')
                     .Append(schedule.Start.Minute.ToString("00"))
                     .Append(" (")
-                    .Append(schedule.Start.TimeZone switch
-                    {
-                        "Eastern Standard Time" => "EST",
-                        "America/New_York" => "EST",
-                        "Central Standard Time" => "CST",
-                        "America/Chicago" => "CST",
-                        "Mountain Standard Time" => "MST",
-                        "America/Denver" => "MST",
-                        "Pacific Standard Time" => "PST",
-                        "America/Los_Angeles" => "PST",
-                        "Atlantic Standard Time" => "AST",
-                        "America/Halifax" => "AST",
-                        "Central Europe Standard Time" => "CEST",
-                        "Europe/Budapest" => "CEST",
-                        "E. Europe Standard Time" => "EEST",
-                        "Europe/Chisinau" => "EEST",
-                        "Greenwich Mean Time" => "GMT",
-                        "GMT Standard Time" => "GMT",
-                        "Europe/London" => "GMT",
-                        "UTC" => "Server Time",
-                        "Asia/Hong_Kong" => "HKT",
-                        "Australia/Perth" => "AWT",
-                        "Australia/Adelaide" => "ACT",
-                        "Australia/Sydney" => "AET",
-                        _ => schedule.Start.TimeZone
-                    }).Append(")");
+                    .Append(TimeZone(schedule.Start.TimeZone))
+                    .Append(")");
                 if (schedule.Start.NextDay)
                 {
                     stringBuilder.Append(" (");
@@ -194,32 +162,7 @@ public class VenueRenderer : IVenueRenderer
                         .Append(':')
                         .Append(schedule.End.Minute.ToString("00"))
                         .Append(" (")
-                        .Append(schedule.End.TimeZone switch
-                        {
-                            "Eastern Standard Time" => "EST",
-                            "America/New_York" => "EST",
-                            "Central Standard Time" => "CST",
-                            "America/Chicago" => "CST",
-                            "Mountain Standard Time" => "MST",
-                            "America/Denver" => "MST",
-                            "Pacific Standard Time" => "PST",
-                            "America/Los_Angeles" => "PST",
-                            "Atlantic Standard Time" => "AST",
-                            "America/Halifax" => "AST",
-                            "Central Europe Standard Time" => "CEST",
-                            "Europe/Budapest" => "CEST",
-                            "E. Europe Standard Time" => "EEST",
-                            "Europe/Chisinau" => "EEST",
-                            "Greenwich Mean Time" => "GMT",
-                            "GMT Standard Time" => "GMT",
-                            "Europe/London" => "GMT",
-                            "UTC" => "Server Time",
-                            "Asia/Hong_Kong" => "HKT",
-                            "Australia/Perth" => "AWT",
-                            "Australia/Adelaide" => "ACT",
-                            "Australia/Sydney" => "AET",
-                            _ => schedule.Start.TimeZone
-                        })
+                        .Append(TimeZone(schedule.End.TimeZone))
                         .Append(')');
                     if (schedule.End.NextDay)
                     {
@@ -237,7 +180,7 @@ public class VenueRenderer : IVenueRenderer
         if (venue.ScheduleOverrides != null && venue.ScheduleOverrides.Any(o => o.End > DateTime.Now))
         {
             stringBuilder.AppendLine();
-            stringBuilder.AppendLine("**Schedule Overrides**:");
+            stringBuilder.AppendLine("**Adhoc Openings / Closures**:");
             foreach (var @override in venue.ScheduleOverrides)
             {
                 if (@override.End < DateTime.Now)
@@ -245,19 +188,28 @@ public class VenueRenderer : IVenueRenderer
 
                 stringBuilder.Append(@override.Open ? "Open " : "Closed ");
 
-                if (@override.Start < DateTime.Now)
+                if (@override.Start.UtcDateTime.Date == DateTime.UtcNow.Date)
                 {
-                    stringBuilder.Append(" for ");
-                    stringBuilder.AppendLine(@override.End.DateTime.ToNow()[3..]);
+                    stringBuilder.Append("today for ");
+                    stringBuilder.AppendLine(@override.End.UtcDateTime.ToNow()[3..]);
+                }
+                else if (@override.Start.UtcDateTime.Date == DateTime.UtcNow.AddDays(1).Date)
+                {
+                    stringBuilder.Append("tomorrow for ");
+                    stringBuilder.AppendLine(@override.End.UtcDateTime.ToNow()[3..]);
+                }
+                else if (@override.Start < DateTime.Now)
+                {
+                    stringBuilder.Append("for ");
+                    stringBuilder.AppendLine(@override.End.UtcDateTime.ToNow()[3..]);
                 }
                 else
                 {
-                    stringBuilder.Append(" from ");
-                    stringBuilder.Append(@override.Start.DateTime.ToNow()[3..]);
-                    stringBuilder.Append(" from now for ");
-                    stringBuilder.AppendLine((@override.End - @override.Start).ToPrettyString());
+                    stringBuilder.Append("from ");
+                    stringBuilder.Append(@override.Start.ToString("dddd d MMMM"));
+                    stringBuilder.Append(" for ");
+                    stringBuilder.AppendLine(@override.Start.UtcDateTime.To(@override.End.UtcDateTime)[3..]);
                 }
-
             }
         }
 
@@ -285,35 +237,35 @@ public class VenueRenderer : IVenueRenderer
             .WithValueHandlers()
             .WithPlaceholder("What would you like to do?");
 
-        if (this._authorizer.Authorize(user, Permission.OpenVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.OpenVenue, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("Open")
                 .WithEmote(new Emoji("📢"))
                 .WithDescription("Open this venue for a given amount of hours.")
                 .WithStaticHandler(OpenHandler.Key, venue.Id));
                 
-        if (this._authorizer.Authorize(user, Permission.CloseVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.CloseVenue, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("Close")
                 .WithEmote(new Emoji("🔒"))
                 .WithDescription("Close current opening or go on hiatus.")
                 .WithStaticHandler(CloseHandler.Key, venue.Id));
                 
-        if (this._authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("Edit")
                 .WithEmote(new Emoji("✏️"))
                 .WithDescription("Update the details on this venue.")
                 .WithStaticHandler(EditHandler.Key, venue.Id));
         else {
-            if (this._authorizer.Authorize(user, Permission.EditManagers, venue).Authorized)
+            if (authorizer.Authorize(user, Permission.EditManagers, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Edit Managers")
                     .WithEmote(new Emoji("📸"))
                     .WithDescription("Update the controlling managers on this venue.")
                     .WithStaticHandler(EditManagersHandler.Key, venue.Id));
                 
-            if (this._authorizer.Authorize(user, Permission.EditPhotography, venue).Authorized)
+            if (authorizer.Authorize(user, Permission.EditPhotography, venue).Authorized)
                 dropDown.AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Edit Photo")
                     .WithEmote(new Emoji("📸"))
@@ -321,7 +273,7 @@ public class VenueRenderer : IVenueRenderer
                     .WithStaticHandler(EditPhotoHandler.Key, venue.Id));
         }
 
-        if (this._authorizer.Authorize(user, Permission.DeleteVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.DeleteVenue, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("Delete")
                 .WithEmote(new Emoji("❌"))
@@ -329,14 +281,14 @@ public class VenueRenderer : IVenueRenderer
                 .WithStaticHandler(DeleteHandler.Key, venue.Id));
         
         
-        if (this._authorizer.Authorize(user, Permission.AuditVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.AuditVenue, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("Audit")
                 .WithEmote(new Emoji("🔍"))
                 .WithDescription("Message managers to confirm this venue's detail.")
                 .WithStaticHandler(AuditHandler.Key, venue.Id, "false", string.Empty));
             
-        if (this._authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
             dropDown.AddOption(new SelectMenuOptionBuilder()
                 .WithLabel("View audits")
                 .WithEmote(new Emoji("🔍"))
@@ -358,7 +310,7 @@ public class VenueRenderer : IVenueRenderer
             .WithValueHandlers()
             .WithPlaceholder("What would you like to edit?");
 
-        if (this._authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
+        if (authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
             selectMenu
                 .AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Edit Name")
@@ -454,7 +406,34 @@ public class VenueRenderer : IVenueRenderer
             _ => "th"
         };
     }
-        
+
+    private static string TimeZone(string id) => id switch
+    {
+        "Eastern Standard Time" => "EST",
+        "America/New_York" => "EST",
+        "Central Standard Time" => "CST",
+        "America/Chicago" => "CST",
+        "Mountain Standard Time" => "MST",
+        "America/Denver" => "MST",
+        "Pacific Standard Time" => "PST",
+        "America/Los_Angeles" => "PST",
+        "Atlantic Standard Time" => "AST",
+        "America/Halifax" => "AST",
+        "Central Europe Standard Time" => "CEST",
+        "Europe/Budapest" => "CEST",
+        "E. Europe Standard Time" => "EEST",
+        "Europe/Chisinau" => "EEST",
+        "Greenwich Mean Time" => "GMT",
+        "GMT Standard Time" => "GMT",
+        "Europe/London" => "GMT",
+        "UTC" => "Server Time",
+        "Asia/Hong_Kong" => "HKT",
+        "Australia/Perth" => "AWT",
+        "Australia/Adelaide" => "ACT",
+        "Australia/Sydney" => "AET",
+        _ => id
+    };
+
 }
 
 public interface IVenueRenderer

@@ -69,7 +69,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
         public Task<bool> TryBackStateAsync(IWrappableInteraction context) =>
             this.TryBackStateAsync(context.ToWrappedInteraction());
 
-        public async Task ClearState(VeniInteractionContext context)
+        public async Task ClearStateAsync(VeniInteractionContext context)
         {
             this.Data.Clear();
             await this.ClearComponentHandlers(context);
@@ -77,8 +77,8 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
             StateStack = new();
         }
 
-        public Task ClearState(IWrappableInteraction context) =>
-            this.ClearState(context.ToWrappedInteraction());
+        public Task ClearStateAsync(IWrappableInteraction context) =>
+            this.ClearStateAsync(context.ToWrappedInteraction());
 
         // todo: Replace the session dictionary with ISession<T> where T is a type context object
         // this will allow long term storage through the session

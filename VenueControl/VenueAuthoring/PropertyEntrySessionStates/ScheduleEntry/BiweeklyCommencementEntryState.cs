@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
@@ -37,7 +36,7 @@ class BiweeklyCommencementEntryState : ISessionState
 
         var select = new SelectMenuBuilder()
             .WithCustomId(c.Session.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow));
-        this._nextFourPossibleCommencements = NextNDatesForDay(4, this._day.ToDayOfWeek(), timezone);
+        this._nextFourPossibleCommencements = DateHelper.GetNextNDatesForDay(4, this._day.ToDayOfWeek(), timezone);
         for (int i = 0; i < this._nextFourPossibleCommencements.Length; i++)
         {
             var possibleCommencement = this._nextFourPossibleCommencements[i];
@@ -60,23 +59,6 @@ class BiweeklyCommencementEntryState : ISessionState
             IntervalArgument = 2
         };
         return NextState(c);
-    }
-
-    private DateTimeOffset[] NextNDatesForDay(int n, DayOfWeek day, string timeZoneId)
-    {
-        var timezone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
-        var dates = new DateTimeOffset[n];
-        var now = DateTime.UtcNow;
-        var todayInZone = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, timezone.GetUtcOffset(now));
-
-        for (int i = 0; i < n; i++)
-        {
-            var daysUntilNextDay = ((int)day - (int)todayInZone.DayOfWeek + 7) % 7;
-            dates[i] = todayInZone.AddDays(daysUntilNextDay);
-            todayInZone = dates[i].AddDays(1);
-        }
-
-        return dates;
     }
     
     private Task NextState(ComponentVeniInteractionContext c)

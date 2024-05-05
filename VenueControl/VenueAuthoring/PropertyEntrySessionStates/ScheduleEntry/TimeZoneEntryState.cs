@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
@@ -18,27 +16,10 @@ class TimeZoneEntrySessionState : ISessionState
         "What **time zone** would the venues opening times be in?"
     };
 
-    private static Dictionary<string, string> _timezones = new()
-    {
-        { "America/New_York", "Eastern Standard Time (EST)" },
-        { "America/Chicago", "Central Standard Time (CST)" },
-        { "America/Denver", "Mountain Standard Time (MST)" },
-        { "America/Los_Angeles", "Pacific Standard Time (PST)" },
-        { "America/Halifax", "Atlantic Standard Time (AST)" },
-        { "UTC", "Server Time (UTC)" },
-        { "Europe/London", "GMT Time (GMT)" },
-        { "Europe/Budapest", "Central European Time (CEST)" },
-        { "Europe/Chisinau", "Eastern European Time (EEST)" },
-        { "Asia/Hong_Kong", "Hong Kong Time (HKT)" },
-        { "Australia/Perth", "Australian Western Time (AWST)" },
-        { "Australia/Adelaide", "Australian Central Time (ACST)" },
-        { "Australia/Sydney", "Australian Eastern Time (AEST)" }
-    };
-
     public Task Enter(VeniInteractionContext c)
     {
         var component = new ComponentBuilder();
-        var timezoneOptions = _timezones.Select(dc => new SelectMenuOptionBuilder(dc.Value, dc.Key)).ToList();
+        var timezoneOptions = TimeZones.SupportedTimeZones.Select(dc => new SelectMenuOptionBuilder(dc.TimeZoneLabel, dc.TimeZoneKey)).ToList();
         var selectMenu = new SelectMenuBuilder();
         selectMenu.WithOptions(timezoneOptions);
         selectMenu.WithCustomId(c.Session.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow));
