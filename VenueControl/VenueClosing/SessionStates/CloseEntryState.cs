@@ -2,14 +2,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
+using FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates;
 
-internal class CloseNowOrLaterEntryState(IApiService apiService) : ISessionState
+internal class CloseEntryState : ISessionState
 {
     public Task Enter(VeniInteractionContext c)
     {
@@ -22,23 +22,28 @@ internal class CloseNowOrLaterEntryState(IApiService apiService) : ISessionState
         var venue = c.Session.GetVenue();
         var isOpen = venue.Resolution?.IsNow ?? false;
         var isClosed = venue.ScheduleOverrides.Any(s => s.IsNow && s.Open is false);
+        var hasFutureClosure = venue.ScheduleOverrides.Any(s => !s.Open && s.Start > DateTime.UtcNow);
         var selectComponent = new SelectMenuBuilder()
             .WithCustomId(c.Session.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
             
         if (isOpen)
             selectComponent
                 .AddOption("End current opening", "EndOpening")
-                .AddOption("Close Now", "Now")
-                .AddOption("Close Later", "Later");
+                .AddOption("Close venue now", "Now");
         else if (isClosed)
             selectComponent
                 .AddOption("End current closure", "EndClosure")
-                .AddOption("Extend current closure", "Extend")
-                .AddOption("Close Later", "Later");
+                .AddOption("Extend current closure", "Extend");
         else
             selectComponent
-                .AddOption("Close Now", "Now")
-                .AddOption("Close Later", "Later");
+                .AddOption("Close venue now", "Now");
+        
+        selectComponent
+            .AddOption("Close venue later", "Later")
+            .AddOption("Cancel future opening ", "CancelOpening");
+        
+        if (hasFutureClosure)
+            selectComponent.AddOption("Cancel future closure", "CancelClosure");
         
         return new ComponentBuilder().WithSelectMenu(selectComponent).WithBackButton(c);
     }
@@ -50,8 +55,10 @@ internal class CloseNowOrLaterEntryState(IApiService apiService) : ISessionState
         var selection = c.Interaction.Data.Values.Single();
         return selection switch
         {
-            "EndOpening" => this.EndCurrentOpening(c),
-            "EndClosure" => this.EndCurrentClosure(c),
+            "EndOpening" => c.Session.MoveStateAsync<EndCurrentOpeningState>(c),
+            "EndClosure" => c.Session.MoveStateAsync<EndCurrentClosureState>(c),
+            "CancelOpening" => c.Session.MoveStateAsync<CancelOpeningState>(c),
+            "CancelClosure" => c.Session.MoveStateAsync<CancelClosureState>(c),
             "Extend" => c.Session.MoveStateAsync<CloseHowLongWhenEntryState>(c),
             "Now" => c.Session.MoveStateAsync<CloseHowLongWhenEntryState>(c),
             "Later" => c.Session.MoveStateAsync<CloseTimeZoneEntryState>(c),
@@ -59,25 +66,5 @@ internal class CloseNowOrLaterEntryState(IApiService apiService) : ISessionState
         };
     }
 
-    private async Task EndCurrentOpening(ComponentVeniInteractionContext c)
-    {
-        var venue = c.Session.GetVenue();
-        var activeSchedule = venue.Schedule.FirstOrDefault(s => s.Resolution.IsNow);
-        var scheduleOverrides = venue.ScheduleOverrides.FirstOrDefault(s => s.Open && s.IsNow);
-        if (activeSchedule is not null)
-            await apiService.CloseVenueAsync(venue.Id, DateTimeOffset.UtcNow, venue.Resolution.End);
-        else if (scheduleOverrides is not null)
-            await apiService.RemoveOverridesAsync(venue.Id, DateTimeOffset.UtcNow, scheduleOverrides.End);
-        await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueOpeningEnded);
-    }
-    
-    private async Task EndCurrentClosure(ComponentVeniInteractionContext c)
-    {
-        var venue = c.Session.GetVenue();
-        var closure = venue.ScheduleOverrides.FirstOrDefault(s => s.IsNow && s.Open is false);
-        if (closure is not null)
-            await apiService.RemoveOverridesAsync(venue.Id, closure.Start, closure.End);
-        await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueClosureEnded);
-    }
 }
 

@@ -48,10 +48,10 @@ class SelectVenueToOpenSessionState : ISessionState
         var selectedVenueId = c.Interaction.Data.Values.Single();
         var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-        _ = c.Session.ClearState(c);
+        _ = c.Session.ClearStateAsync(c);
 
         c.Session.SetVenue(venue);
-        await c.Session.MoveStateAsync<OpenNowOrLaterEntryState>(c);
+        await c.Session.MoveStateAsync<OpenEntryState>(c);
 
     }
 }

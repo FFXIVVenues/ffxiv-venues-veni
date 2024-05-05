@@ -29,7 +29,7 @@ public class EditDiscordHandler(IAuthorizer authorizer, IApiService apiService) 
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
                     props.Components = new ComponentBuilder().Build());
         
-        await context.Session.ClearState(context);
+        await context.Session.ClearStateAsync(context);
         context.Session.SetVenue(venue);
         context.Session.SetEditing(true);
         await context.Session.MoveStateAsync<DiscordEntrySessionState>(context);

@@ -79,6 +79,6 @@ internal class CloseHowLongWhenEntryState(IApiService apiService, IAuthorizer au
             await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueNowClosed);
         }
             
-        _ = c.Session.ClearState(c);
+        _ = c.Session.ClearStateAsync(c);
     }
 }

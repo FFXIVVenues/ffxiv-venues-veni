@@ -13,7 +13,7 @@ namespace FFXIVVenues.Veni.UserSupport
             if (context.Session.StateStack == null)
                 return context.Interaction.RespondAsync(UserSupportStrings.NothingToCancel);
 
-            _ = context.Session.ClearState(context);
+            _ = context.Session.ClearStateAsync(context);
             return context.Interaction.RespondAsync(UserSupportStrings.Cancelled);
         }
 

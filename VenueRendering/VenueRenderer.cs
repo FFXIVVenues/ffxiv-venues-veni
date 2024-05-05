@@ -145,32 +145,8 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig) : I
                     .Append(':')
                     .Append(schedule.Start.Minute.ToString("00"))
                     .Append(" (")
-                    .Append(schedule.Start.TimeZone switch
-                    {
-                        "Eastern Standard Time" => "EST",
-                        "America/New_York" => "EST",
-                        "Central Standard Time" => "CST",
-                        "America/Chicago" => "CST",
-                        "Mountain Standard Time" => "MST",
-                        "America/Denver" => "MST",
-                        "Pacific Standard Time" => "PST",
-                        "America/Los_Angeles" => "PST",
-                        "Atlantic Standard Time" => "AST",
-                        "America/Halifax" => "AST",
-                        "Central Europe Standard Time" => "CEST",
-                        "Europe/Budapest" => "CEST",
-                        "E. Europe Standard Time" => "EEST",
-                        "Europe/Chisinau" => "EEST",
-                        "Greenwich Mean Time" => "GMT",
-                        "GMT Standard Time" => "GMT",
-                        "Europe/London" => "GMT",
-                        "UTC" => "Server Time",
-                        "Asia/Hong_Kong" => "HKT",
-                        "Australia/Perth" => "AWT",
-                        "Australia/Adelaide" => "ACT",
-                        "Australia/Sydney" => "AET",
-                        _ => schedule.Start.TimeZone
-                    }).Append(")");
+                    .Append(TimeZone(schedule.Start.TimeZone))
+                    .Append(")");
                 if (schedule.Start.NextDay)
                 {
                     stringBuilder.Append(" (");
@@ -186,32 +162,7 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig) : I
                         .Append(':')
                         .Append(schedule.End.Minute.ToString("00"))
                         .Append(" (")
-                        .Append(schedule.End.TimeZone switch
-                        {
-                            "Eastern Standard Time" => "EST",
-                            "America/New_York" => "EST",
-                            "Central Standard Time" => "CST",
-                            "America/Chicago" => "CST",
-                            "Mountain Standard Time" => "MST",
-                            "America/Denver" => "MST",
-                            "Pacific Standard Time" => "PST",
-                            "America/Los_Angeles" => "PST",
-                            "Atlantic Standard Time" => "AST",
-                            "America/Halifax" => "AST",
-                            "Central Europe Standard Time" => "CEST",
-                            "Europe/Budapest" => "CEST",
-                            "E. Europe Standard Time" => "EEST",
-                            "Europe/Chisinau" => "EEST",
-                            "Greenwich Mean Time" => "GMT",
-                            "GMT Standard Time" => "GMT",
-                            "Europe/London" => "GMT",
-                            "UTC" => "Server Time",
-                            "Asia/Hong_Kong" => "HKT",
-                            "Australia/Perth" => "AWT",
-                            "Australia/Adelaide" => "ACT",
-                            "Australia/Sydney" => "AET",
-                            _ => schedule.Start.TimeZone
-                        })
+                        .Append(TimeZone(schedule.End.TimeZone))
                         .Append(')');
                     if (schedule.End.NextDay)
                     {
@@ -229,7 +180,7 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig) : I
         if (venue.ScheduleOverrides != null && venue.ScheduleOverrides.Any(o => o.End > DateTime.Now))
         {
             stringBuilder.AppendLine();
-            stringBuilder.AppendLine("**Schedule Overrides**:");
+            stringBuilder.AppendLine("**Adhoc Openings / Closures**:");
             foreach (var @override in venue.ScheduleOverrides)
             {
                 if (@override.End < DateTime.Now)
@@ -237,19 +188,28 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig) : I
 
                 stringBuilder.Append(@override.Open ? "Open " : "Closed ");
 
-                if (@override.Start < DateTime.Now)
+                if (@override.Start.UtcDateTime.Date == DateTime.UtcNow.Date)
                 {
-                    stringBuilder.Append(" for ");
+                    stringBuilder.Append("today for ");
+                    stringBuilder.AppendLine(@override.End.UtcDateTime.ToNow()[3..]);
+                }
+                else if (@override.Start.UtcDateTime.Date == DateTime.UtcNow.AddDays(1).Date)
+                {
+                    stringBuilder.Append("tomorrow for ");
+                    stringBuilder.AppendLine(@override.End.UtcDateTime.ToNow()[3..]);
+                }
+                else if (@override.Start < DateTime.Now)
+                {
+                    stringBuilder.Append("for ");
                     stringBuilder.AppendLine(@override.End.UtcDateTime.ToNow()[3..]);
                 }
                 else
                 {
-                    stringBuilder.Append(" from ");
-                    stringBuilder.Append(@override.Start.UtcDateTime.ToNow()[3..]);
-                    stringBuilder.Append(" from now for ");
-                    stringBuilder.AppendLine((@override.End - @override.Start).ToPrettyString());
+                    stringBuilder.Append("from ");
+                    stringBuilder.Append(@override.Start.ToString("dddd d MMMM"));
+                    stringBuilder.Append(" for ");
+                    stringBuilder.AppendLine(@override.Start.UtcDateTime.To(@override.End.UtcDateTime)[3..]);
                 }
-
             }
         }
 
@@ -446,7 +406,34 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig) : I
             _ => "th"
         };
     }
-        
+
+    private static string TimeZone(string id) => id switch
+    {
+        "Eastern Standard Time" => "EST",
+        "America/New_York" => "EST",
+        "Central Standard Time" => "CST",
+        "America/Chicago" => "CST",
+        "Mountain Standard Time" => "MST",
+        "America/Denver" => "MST",
+        "Pacific Standard Time" => "PST",
+        "America/Los_Angeles" => "PST",
+        "Atlantic Standard Time" => "AST",
+        "America/Halifax" => "AST",
+        "Central Europe Standard Time" => "CEST",
+        "Europe/Budapest" => "CEST",
+        "E. Europe Standard Time" => "EEST",
+        "Europe/Chisinau" => "EEST",
+        "Greenwich Mean Time" => "GMT",
+        "GMT Standard Time" => "GMT",
+        "Europe/London" => "GMT",
+        "UTC" => "Server Time",
+        "Asia/Hong_Kong" => "HKT",
+        "Australia/Perth" => "AWT",
+        "Australia/Adelaide" => "ACT",
+        "Australia/Sydney" => "AET",
+        _ => id
+    };
+
 }
 
 public interface IVenueRenderer

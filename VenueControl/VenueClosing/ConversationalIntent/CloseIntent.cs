@@ -27,7 +27,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.ConversationalIntent
             else
             {
                 context.Session.SetVenue(venues.First());
-                await context.Session.MoveStateAsync<CloseNowOrLaterEntryState>(context);
+                await context.Session.MoveStateAsync<CloseEntryState>(context);
             }
         }
 

@@ -124,7 +124,7 @@ class ConfirmVenueSessionState(
             await SendToApprovers(venue, bannerUrl);
         }
 
-        _ = c.Session.ClearState(c);
+        _ = c.Session.ClearStateAsync(c);
     }
 
     private Task Edit(ComponentVeniInteractionContext c) =>
@@ -132,7 +132,7 @@ class ConfirmVenueSessionState(
 
     private Task Cancel(ComponentVeniInteractionContext c)
     {
-        _ = c.Session.ClearState(c);
+        _ = c.Session.ClearStateAsync(c);
         return c.Interaction.Channel.SendMessageAsync("It's as if it never happened! 😅");
     }
 

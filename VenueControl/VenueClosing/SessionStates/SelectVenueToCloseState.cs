@@ -49,7 +49,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates
             var selectedVenueId = c.Interaction.Data.Values.Single();
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
             c.Session.SetVenue(venue);
-            await c.Session.MoveStateAsync<CloseNowOrLaterEntryState>(c);
+            await c.Session.MoveStateAsync<CloseEntryState>(c);
         }
     }
 }

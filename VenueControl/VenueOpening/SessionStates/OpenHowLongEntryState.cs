@@ -56,7 +56,7 @@ internal class OpenHowLongWhenEntryState(IApiService apiService, IAuthorizer aut
             var openingTime = c.Session.GetItem<int>(SessionKeys.OPENING_HOUR);
             var from = openingDate.AddHours(openingTime);
             await apiService.OpenVenueAsync(this._venue.Id, from, from.AddHours(until));
-            await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueNowOpen);
+            await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueOpenLater);
         }
         else
         {
@@ -64,6 +64,6 @@ internal class OpenHowLongWhenEntryState(IApiService apiService, IAuthorizer aut
             await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueNowOpen);
         }
             
-        _ = c.Session.ClearState(c);
+        _ = c.Session.ClearStateAsync(c);
     }
 }

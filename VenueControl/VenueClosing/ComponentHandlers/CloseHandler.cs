@@ -27,7 +27,7 @@ public class CloseHandler(IAuthorizer authorizer, IApiService apiService) : ICom
             props.Components = new ComponentBuilder().Build());
         
         context.Session.SetVenue(venue);
-        await context.Session.MoveStateAsync<CloseNowOrLaterEntryState>(context);
+        await context.Session.MoveStateAsync<CloseEntryState>(context);
     }
     
 }

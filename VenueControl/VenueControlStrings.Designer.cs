@@ -109,6 +109,15 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Okay! Which closure do you wish to cancel? 🥰.
+        /// </summary>
+        internal static string AskForClosureToCancel {
+            get {
+                return ResourceManager.GetString("AskForClosureToCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to When is your next **{0}** opening?.
         /// </summary>
         internal static string AskForCommencementMessage {
@@ -235,6 +244,15 @@ namespace FFXIVVenues.Veni.VenueControl {
         internal static string AskForOpeningTimeZone {
             get {
                 return ResourceManager.GetString("AskForOpeningTimeZone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Okay! Which opening do you want to cancel? 🥰.
+        /// </summary>
+        internal static string AskForOpeningToCancel {
+            get {
+                return ResourceManager.GetString("AskForOpeningToCancel", resourceCulture);
             }
         }
         
@@ -459,6 +477,15 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Yay! I&apos;ve cancelled the closure! 🥰.
+        /// </summary>
+        internal static string VenueClosureCancelled {
+            get {
+                return ResourceManager.GetString("VenueClosureCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Yay! I&apos;ve removed your closure status. Welcome back! ♥️.
         /// </summary>
         internal static string VenueClosureEnded {
@@ -482,6 +509,15 @@ namespace FFXIVVenues.Veni.VenueControl {
         internal static string VenueNowOpen {
             get {
                 return ResourceManager.GetString("VenueNowOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yay! I&apos;ve cancelled the opening. 🥲.
+        /// </summary>
+        internal static string VenueOpeningCancelled {
+            get {
+                return ResourceManager.GetString("VenueOpeningCancelled", resourceCulture);
             }
         }
         
