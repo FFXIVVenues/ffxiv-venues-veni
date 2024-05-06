@@ -67,7 +67,7 @@ class BiweeklyCommencementEntryState : ISessionState
         if (!thisWasLastDay)
         {
             c.Session.SetItem(SessionKeys.NOW_SETTING_SLOT, this._nowSettingDay + 1);
-            return c.Session.MoveStateAsync<InconsistentOpeningTimeEntrySessionState>(c);
+            return c.Session.MoveStateAsync<BiweeklyCommencementEntryState>(c);
         }
 
         c.Session.ClearItem(SessionKeys.NOW_SETTING_SLOT);
