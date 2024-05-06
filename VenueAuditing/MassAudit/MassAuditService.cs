@@ -297,8 +297,9 @@ internal class MassAuditService(
 
         foreach (var manager in managers)
         {
-            var venueNamesForUser = awaitingAudits
-                .Where(a => a.Messages.Any(m => m.UserId == manager))
+            var auditsForUser = awaitingAudits.Where(a => a.Messages.Any(m => m.UserId == manager)).ToList();
+            
+            var venueNamesForUser = auditsForUser
                 .Select(a => allVenues.FirstOrDefault(v => a.VenueId == v.Id))
                 .Where(v => v != null)
                 .Select(v => v.Name)

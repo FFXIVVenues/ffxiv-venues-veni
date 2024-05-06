@@ -71,8 +71,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             else if (meridiem == "pm" && hour != 12)
                 hour += 12;
 
-            var opening = _venue.Schedule[this._nowSettingDay.Value];
-            if (!this._nowSettingClosing.Value)
+            var opening = _venue.Schedule[this._nowSettingDay!.Value];
+            if (!this._nowSettingClosing!.Value)
             {
                 opening.Start = new Time { Hour = hour, Minute = minute, NextDay = false, TimeZone = _timeZoneId };
                 c.Session.SetItem(SessionKeys.NOW_SETTING_SLOT, this._nowSettingDay);
