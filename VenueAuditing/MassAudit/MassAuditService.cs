@@ -363,7 +363,7 @@ internal class MassAuditService(
         return null;
     }
 
-    public async Task<MassNoticeSummary?> GetNoticeSummaryAsync()
+    public async Task<MassNoticeSummary> GetNoticeSummaryAsync()
     {
         var latestMassAudit = await this.GetTaskAsync();
         if (latestMassAudit is null)

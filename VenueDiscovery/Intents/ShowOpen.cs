@@ -10,6 +10,7 @@ using FFXIVVenues.Veni.Infrastructure.Intent;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;
+using moment.net;
 
 namespace FFXIVVenues.Veni.VenueDiscovery.Intents
 {
@@ -51,7 +52,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Intents
                 var selectMenuOption = new SelectMenuOptionBuilder
                 {
                     Label = venue.Name,
-                    Description = $"Open for the next {PrettyPrintNet.TimeSpanExtensions.ToPrettyString(venue.Resolution.End - DateTimeOffset.Now)}",
+                    Description = $"Open for the next {venue.Resolution!.End.UtcDateTime.ToNow()[3..]}",
                     Value = venue.Id
                 };
                 selectMenuBuilder.AddOption(selectMenuOption);

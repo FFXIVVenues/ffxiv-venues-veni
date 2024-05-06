@@ -4,14 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
 
-namespace FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates;
+namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates;
 
-internal class CancelOpeningState(IApiService apiService) : ISessionState
+internal class CancelOpeningState(IApiService apiService, IAuthorizer authorizer) : ISessionState
 {
 
     private List<(Opening Opening, bool IsOverride)> _openings = new();
@@ -57,6 +58,14 @@ internal class CancelOpeningState(IApiService apiService) : ISessionState
             return;
         }
 
+        var authorize = authorizer.Authorize(c.Interaction.User.Id, Permission.CloseVenue, venue);
+        if (!authorize.Authorized)
+        {
+            await c.Interaction.Channel.SendMessageAsync(
+                "Sorry, you do not have permission to close this venue. 😢");
+            return;
+        }
+        
         await this.CancelAsync(venue, 0);
         
         await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueOpeningCancelled);
@@ -65,6 +74,15 @@ internal class CancelOpeningState(IApiService apiService) : ISessionState
 
     private async Task OnSelect(ComponentVeniInteractionContext c)
     {
+        var venue = c.Session.GetVenue();
+        var authorize = authorizer.Authorize(c.Interaction.User.Id, Permission.CloseVenue, venue);
+        if (!authorize.Authorized)
+        {
+            await c.Interaction.Channel.SendMessageAsync(
+                "Sorry, you do not have permission to close this venue. 😢");
+            return;
+        }
+
         var indexSelected = int.Parse(c.Interaction.Data.Values.Single());
         await this.CancelAsync(c.Session.GetVenue(), indexSelected);
         
@@ -74,6 +92,8 @@ internal class CancelOpeningState(IApiService apiService) : ISessionState
 
     private Task CancelAsync(Venue venue, int index)
     {
+        
+        
         var opening = this._openings.Skip(index).FirstOrDefault();
         if (opening.IsOverride)
             return apiService.RemoveOverridesAsync(venue.Id, opening.Opening.Start, opening.Opening.End);

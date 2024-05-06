@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Api;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
@@ -11,7 +12,7 @@ using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates;
 
-internal class CancelClosureState(IApiService apiService) : ISessionState
+internal class CancelClosureState(IApiService apiService, IAuthorizer authorizer) : ISessionState
 {
 
     private List<ScheduleOverride> _overrides;
@@ -36,6 +37,14 @@ internal class CancelClosureState(IApiService apiService) : ISessionState
             return;
         }
 
+        var authorize = authorizer.Authorize(c.Interaction.User.Id, Permission.OpenVenue, venue);
+        if (!authorize.Authorized)
+        {
+            await c.Interaction.Channel.SendMessageAsync(
+                "Sorry, you do not have permission to close this venue. 😢");
+            return;
+        }
+        
         await this.CancelAsync(venue, 0);
         
         await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueClosureCancelled);
@@ -44,6 +53,15 @@ internal class CancelClosureState(IApiService apiService) : ISessionState
 
     private async Task OnSelect(ComponentVeniInteractionContext c)
     {
+        var venue = c.Session.GetVenue();
+        var authorize = authorizer.Authorize(c.Interaction.User.Id, Permission.OpenVenue, venue);
+        if (!authorize.Authorized)
+        {
+            await c.Interaction.Channel.SendMessageAsync(
+                "Sorry, you do not have permission to close this venue. 😢");
+            return;
+        }
+        
         var indexSelected = int.Parse(c.Interaction.Data.Values.Single());
         await this.CancelAsync(c.Session.GetVenue(), indexSelected);
         

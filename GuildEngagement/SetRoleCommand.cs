@@ -9,7 +9,7 @@ using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni.GuildEngagement;
 
-[DiscordCommand("config managerrole", "Set role to assign to venue managers of the specified Data Center.", GuildPermission.ManageRoles, false)]
+[DiscordCommand("config managerrole", "Set role to assign to venue managers of the specified Data Center.", GuildPermission.ManageRoles, InteractionContextType.Guild)]
 [DiscordCommandOption("datacenter", "The data center to assign the given role to.", ApplicationCommandOptionType.String)]
 [DiscordCommandOptionChoice("datacenter", "Crystal", "Crystal")]
 [DiscordCommandOptionChoice("datacenter", "Aether", "Aether")]

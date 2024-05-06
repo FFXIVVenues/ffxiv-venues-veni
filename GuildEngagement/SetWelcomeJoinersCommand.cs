@@ -29,7 +29,7 @@ namespace FFXIVVenues.Veni.GuildEngagement
                     .WithName(COMMAND_NAME)
                     .WithDescription("Tell Veni whether to welcome new joiners to the discord server or not!")
                     .WithDefaultMemberPermissions(GuildPermission.ManageRoles)
-                    .WithDMPermission(false)
+                    .WithContextTypes(InteractionContextType.Guild)
                     .AddOption(allowArugment)
                     .Build();
             }

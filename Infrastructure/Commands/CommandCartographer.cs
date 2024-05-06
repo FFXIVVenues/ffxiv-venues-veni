@@ -35,12 +35,12 @@ public class CommandCartographer : ICommandCartographer
                 var commandPath = commandAttribute.Command.Split(' ');
                 handlers.Add(string.Join(' ', commandPath), @type);
                 var command = GetOrCreateCommand(commands, commandPath[0]);
-                command.WithDMPermission(command.IsDMEnabled && commandAttribute.DmPermission)
+                command.WithContextTypes(command.ContextTypes.Intersect(commandAttribute.ContextTypes).ToArray())
                     .WithDefaultMemberPermissions(command.DefaultMemberPermissions | commandAttribute.MemberPermissions);
                 if (commandPath.Length == 1)
                 {
                     command.WithDescription(commandAttribute.Description)
-                        .WithDMPermission(commandAttribute.DmPermission)
+                        .WithContextTypes(commandAttribute.ContextTypes)
                         .WithDefaultMemberPermissions(commandAttribute.MemberPermissions);
                     command.AddOptions(AddCommandOptions(optionAttributes, optionChoiceAttributes).ToArray());
                 }
@@ -102,7 +102,8 @@ public class CommandCartographer : ICommandCartographer
             c.Name.Equals(commandName, StringComparison.OrdinalIgnoreCase));
         if (command == null)
         {
-            command = new SlashCommandBuilder().WithName(commandName).WithDescription("Meow");
+            command = new SlashCommandBuilder().WithName(commandName).WithDescription("Meow")
+                .WithContextTypes(InteractionContextType.PrivateChannel, InteractionContextType.Guild, InteractionContextType.BotDm);
             commands.Add(command);
         }
 
