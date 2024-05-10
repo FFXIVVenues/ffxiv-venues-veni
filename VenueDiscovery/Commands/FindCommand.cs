@@ -41,7 +41,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Commands
             else
             {
                 var venue = venues.Single();
-                await context.Interaction.RespondAsync(embed: venueRenderer.RenderEmbed(venue).Build(),
+                await context.Interaction.RespondAsync(embed: (await venueRenderer.ValidateAndRenderAsync(venue)).Build(),
                     components: venueRenderer.RenderActionComponents(context, venue, asker).Build());
             }
         }

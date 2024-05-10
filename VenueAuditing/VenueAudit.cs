@@ -15,7 +15,7 @@ namespace FFXIVVenues.Veni.VenueAuditing;
 
 public class VenueAudit
 {
-    private const int MIN_DAYS_SINCE_LAST_UPDATE = 52; // 6 weeks
+    private const int MIN_DAYS_SINCE_LAST_UPDATE = 25; // 3 weeks
     
     private readonly VenueAuditRecord _record;
     private readonly Venue _venue;
@@ -61,9 +61,10 @@ public class VenueAudit
 
             this._record.Log($"Sending venue audit message to {this._venue.Managers.Count} managers.");
 
+            var venueRenderWithCheck = await this._venueRenderer.ValidateAndRenderAsync(this._venue);
             var broadcast = new Broadcast(Guid.NewGuid().ToString(), this._discordClient)
                 .WithMessage(AuditStrings.Prompt)
-                .WithEmbed(this._venueRenderer.RenderEmbed(this._venue))
+                .WithEmbed(venueRenderWithCheck)
                 .WithComponent(ctx => new ComponentBuilder()
                     .WithSelectMenu(new SelectMenuBuilder()
                         .WithValueHandlers()

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
@@ -47,8 +46,9 @@ namespace FFXIVVenues.Veni.VenueDiscovery.SessionStates
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
             await context.Session.ClearStateAsync(context);
-            
-            await context.Interaction.FollowupAsync(embed: venueRenderer.RenderEmbed(venue).Build(),
+
+            var render = await venueRenderer.ValidateAndRenderAsync(venue);
+            await context.Interaction.FollowupAsync(embed: render.Build(),
                 components: venueRenderer.RenderActionComponents(context, venue, asker).Build());
         }
 

@@ -8,22 +8,12 @@ using FFXIVVenues.Veni.VenueRendering;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.ConversationalIntents;
 
-internal class ModifyIntentHandler : IntentHandler
+internal class EditIntentHandler(IApiService apiService, IVenueRenderer venueRenderer) : IntentHandler
 {
-
-    private readonly IApiService _apiService;
-    private readonly IVenueRenderer _venueRenderer;
-
-    public ModifyIntentHandler(IApiService apiService, IVenueRenderer venueRenderer)
-    {
-        this._apiService = apiService;
-        this._venueRenderer = venueRenderer;
-    }
-
     public override async Task Handle(VeniInteractionContext context)
     {
         var user = context.Interaction.User.Id;
-        var venues = await this._apiService.GetAllVenuesAsync(user);
+        var venues = await apiService.GetAllVenuesAsync(user);
 
         if (venues == null || !venues.Any())
         {
@@ -37,8 +27,8 @@ internal class ModifyIntentHandler : IntentHandler
         if (venues.Count() == 1)
         {
             var venue = venues.Single();
-            await context.Interaction.RespondAsync(embed: this._venueRenderer.RenderEmbed(venue).Build(),
-                component: this._venueRenderer.RenderEditComponents(venue, user).Build());
+            await context.Interaction.RespondAsync(embed: (await venueRenderer.ValidateAndRenderAsync(venue)).Build(),
+                component: venueRenderer.RenderEditComponents(venue, user).Build());
             return;
         }
                 
@@ -46,7 +36,7 @@ internal class ModifyIntentHandler : IntentHandler
             venues = venues.Take(25);
                 
         await context.Interaction.RespondAsync(VenueControlStrings.SelectVenueToEdit,
-            component: this._venueRenderer.RenderVenueSelection(venues, SelectVenueToEditHandler.Key).Build());
+            component: venueRenderer.RenderVenueSelection(venues, SelectVenueToEditHandler.Key).Build());
     }
 
 }

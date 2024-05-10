@@ -84,6 +84,7 @@ public class VenueAuditService : IVenueAuditService
     private async Task UpdateMessagesSentToManagers(VenueAuditRecord audit, Venue venue, ulong actingUserId, 
         string responderMessage, string othersMessage)
     {
+        var render = await this._venueRenderer.ValidateAndRenderAsync(venue);
         foreach (var message in audit.Messages)
         {
             if (message.Status != MessageStatus.Sent) continue;
@@ -97,7 +98,7 @@ public class VenueAuditService : IVenueAuditService
                 props.Components = new ComponentBuilder().Build();
                 props.Embeds = new[]
                 {
-                    this._venueRenderer.RenderEmbed(venue).Build(),
+                    render.Build(),
                     new EmbedBuilder().WithDescription(newMessage).Build()
                 };
             });

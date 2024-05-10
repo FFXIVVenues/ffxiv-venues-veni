@@ -31,7 +31,7 @@ public class CreatedWithoutSplashObserver(
         var broadcastId = IdHelper.GenerateId(8);
         var broadcast =  new Broadcast(broadcastId, discordClient);
         broadcast.WithMessage($"Heyo photographers!\nI have a new venue in need of a splash banner! :heart:");
-        broadcast.WithEmbed(venueRenderer.RenderEmbed(venue));
+        broadcast.WithEmbed(venueRenderer.Render(venue));
         broadcast.WithComponent(bcc =>
         {
             var button = new ButtonBuilder();

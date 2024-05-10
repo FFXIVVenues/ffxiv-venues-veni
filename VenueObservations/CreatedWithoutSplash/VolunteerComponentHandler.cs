@@ -53,7 +53,7 @@ public class VolunteerComponentHandler(
                 props.Components = new ComponentBuilder().Build();
                 props.Embeds = new[]
                 {
-                    venueRenderer.RenderEmbed(venue).Build(),
+                    venueRenderer.Render(venue).Build(),
                     new EmbedBuilder().WithDescription(newMessage).Build()
                 };
             });

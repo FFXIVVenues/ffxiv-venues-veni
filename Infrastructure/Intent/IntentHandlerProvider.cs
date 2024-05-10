@@ -22,7 +22,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Intent
             _intentMap = new TypeMap<IIntentHandler>(serviceProvider)
                 .Add<CloseIntent>(IntentNames.Operation.Close)
                 .Add<CreateIntent>(IntentNames.Operation.Create)
-                .Add<ModifyIntentHandler>(IntentNames.Operation.Edit)
+                .Add<EditIntentHandler>(IntentNames.Operation.Edit)
                 .Add<OpenIntent>(IntentNames.Operation.Open)
                 .Add<Show>(IntentNames.Operation.Show)
                 .Add<ShowOpen>(IntentNames.Operation.ShowOpen)

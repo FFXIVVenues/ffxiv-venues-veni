@@ -62,7 +62,7 @@ class ConfirmVenueSessionState(
         var venue = c.Session.GetVenue();
             
         await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
-            embed: venueRenderer.RenderEmbed(venue, bannerUrl).Build(),
+            embed: (await venueRenderer.ValidateAndRenderAsync(venue, bannerUrl)).Build(),
             component: new ComponentBuilder()
                 .WithButton("Looks perfect! Save!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
                 .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
@@ -89,7 +89,7 @@ class ConfirmVenueSessionState(
         {
             _ = c.Interaction.Channel.SendMessageAsync("Ooops! Something went wrong. 😢");
             await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
-                embed: venueRenderer.RenderEmbed(venue, bannerUrl).Build(),
+                embed: (await venueRenderer.ValidateAndRenderAsync(venue, bannerUrl)).Build(),
                 components: new ComponentBuilder()
                     .WithButton("Looks perfect! Save!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
                     .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)

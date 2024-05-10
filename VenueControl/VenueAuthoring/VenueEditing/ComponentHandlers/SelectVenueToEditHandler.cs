@@ -10,27 +10,19 @@ using FFXIVVenues.Veni.VenueRendering;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.ComponentHandlers;
 
-public class SelectVenueToEditHandler : IComponentHandler
+public class SelectVenueToEditHandler(IAuthorizer authorizer, IApiService apiService, IVenueRenderer venueRenderer)
+    : IComponentHandler
 {
     public static string Key => "CONTROL_SELECT_EDIT";
-    
-    private readonly IAuthorizer _authorizer;
-    private readonly IApiService _apiService;
-    private readonly IVenueRenderer _venueRenderer;
 
-    public SelectVenueToEditHandler(IAuthorizer authorizer, IApiService apiService, IVenueRenderer venueRenderer)
-    {
-        this._authorizer = authorizer;
-        this._apiService = apiService;
-        this._venueRenderer = venueRenderer;
-    }
-    
+    private readonly IVenueRenderer _venueRenderer = venueRenderer;
+
     public async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var user = context.Interaction.User.Id;
         var venueId = context.Interaction.Data.Values.First();
-        var venue = await this._apiService.GetVenueAsync(venueId);
-        if (! this._authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
+        var venue = await apiService.GetVenueAsync(venueId);
+        if (! authorizer.Authorize(user, Permission.EditVenue, venue).Authorized)
             return;
         
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>

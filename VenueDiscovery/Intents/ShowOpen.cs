@@ -62,13 +62,13 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Intents
             await c.Interaction.RespondAsync(MessageRepository.WhatsOpenMessage.PickRandom(), componentBuilder.Build());
         }
 
-        private Task HandleVenueSelection(ComponentVeniInteractionContext context)
+        private async Task HandleVenueSelection(ComponentVeniInteractionContext context)
         {
             var selectedVenueId = context.Interaction.Data.Values.Single();
             var asker = context.Interaction.User.Id;
             var venue = this._venues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            return context.Interaction.Channel.SendMessageAsync(embed: this._venueRenderer.RenderEmbed(venue).Build(),
+            await context.Interaction.Channel.SendMessageAsync(embed: this._venueRenderer.Render(venue).Build(),
                 components: this._venueRenderer.RenderActionComponents(context, venue, asker).Build());
         }
     }

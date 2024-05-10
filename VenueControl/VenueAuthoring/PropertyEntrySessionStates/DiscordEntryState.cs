@@ -41,16 +41,15 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 case DiscordCheckResult.InvalidInvite:
                     await c.Interaction.Channel.SendMessageAsync("I tried that invite link but it seems to be invalid. :cry:");
                     return;
-                case DiscordCheckResult.IsTemporaryInvite:
+                case DiscordCheckResult.Expires:
                     await c.Interaction.Channel.SendMessageAsync(
-                        $" I'm sorry, that invite link is not permanent, it'll expire on {invite.expires_at.Value:m}. 🥲");
+                        $"I'm sorry, that invite link is not permanent, it'll expire on {invite.ExpiresAt.Value:m}. 🥲");
                     return;
             }
 
-            if (await db.ExistsAsync<BlacklistEntry>(invite.guild.id))
+            if (await db.ExistsAsync<BlacklistEntry>(invite.GuildId.ToString()))
             {
-                await c.Interaction.Channel.SendMessageAsync("This Discord server was blacklisted, please make a ticket in the FFXIV Venues discord for further information. 😢" +
-                    " Please use a different server or skip this step.");
+                await c.Interaction.Channel.SendMessageAsync("This Discord server was blacklisted, please make a ticket in the FFXIV Venues discord for further information. 😢");
                 return;
             }
 

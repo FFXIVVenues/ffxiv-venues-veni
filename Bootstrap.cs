@@ -59,6 +59,7 @@ serviceCollection.AddSingleton<IMassAuditService, MassAuditService>();
 serviceCollection.AddSingleton<IMassAuditExporter, MassAuditExporter>();
 serviceCollection.AddSingleton<MassNoticeService>();
 serviceCollection.AddSingleton<IDiscordValidator, DiscordValidator>();
+serviceCollection.AddSingleton<ISiteValidator, SiteValidator>();
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 

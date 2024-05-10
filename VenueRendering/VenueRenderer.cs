@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
+using FFXIVVenues.Veni.VenueControl.VenueAuthoring;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.ComponentHandlers;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.EditPropertyHandlers;
 using FFXIVVenues.Veni.VenueControl.VenueClosing.ComponentHandlers;
@@ -19,9 +21,37 @@ using moment.net;
 
 namespace FFXIVVenues.Veni.VenueRendering;
 
-public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig) : IVenueRenderer
+public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig, IDiscordValidator discordValidator, ISiteValidator siteValidator) : IVenueRenderer
 {
-    public EmbedBuilder RenderEmbed(Venue venue, string bannerUrl = null, VenueRenderFlags renderFlags = VenueRenderFlags.None)
+
+    public async Task<EmbedBuilder> ValidateAndRenderAsync(Venue venue, string bannerUrl = null,
+        VenueRenderFlags renderFlags = VenueRenderFlags.None)
+    {
+        var flags = renderFlags;
+        var discordTask = Task.CompletedTask;
+        var siteTask = Task.CompletedTask;
+        
+        if (venue.Discord is not null)
+            discordTask = discordValidator
+                .CheckInviteAsync(venue.Discord.ToString())
+                .ContinueWith(r => {
+                   if (r.Result.Result is not DiscordCheckResult.Valid)
+                       flags |= VenueRenderFlags.FlagInvalidDiscord;
+                });
+
+        if (venue.Website is not null)
+            siteTask = siteValidator
+                .CheckUrlAsync(venue.Website.ToString())
+                .ContinueWith(r => {
+                    if (r.Result is not SiteCheckResult.Valid)
+                        flags |= VenueRenderFlags.FlagInvalidSite;
+                });
+
+        await Task.WhenAll([discordTask, siteTask]);
+        return this.Render(venue, bannerUrl, flags);
+    }
+    
+    public EmbedBuilder Render(Venue venue, string bannerUrl = null, VenueRenderFlags renderFlags = VenueRenderFlags.None)
     {
         var uiUrl = $"{uiConfig.BaseUrl}/#{venue.Id}"; 
         bannerUrl ??= venue.BannerUri?.ToString();
@@ -44,10 +74,19 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig) : I
         stringBuilder.AppendLine(venue.MarePassword ?? "None");
         stringBuilder.Append("**SFW**: ");
         stringBuilder.AppendLine(venue.Sfw ? "Yes" : "No");
+        
         stringBuilder.Append("**Website**: ");
-        stringBuilder.AppendLine(venue.Website?.ToString() ?? "No website");
+        stringBuilder.Append(venue.Website?.ToString() ?? "No website");
+        if (renderFlags.HasFlag(VenueRenderFlags.FlagInvalidSite))
+            stringBuilder.AppendLine(" - **\u26a0\ufe0f Invalid site**");
+        else stringBuilder.AppendLine();
+        
         stringBuilder.Append("**Discord**: ");
-        stringBuilder.AppendLine(venue.Discord?.ToString() ?? "No discord");
+        stringBuilder.Append(venue.Discord?.ToString() ?? "No discord");
+        if (renderFlags.HasFlag(VenueRenderFlags.FlagInvalidDiscord))
+            stringBuilder.AppendLine(" - \u26a0\ufe0f **Invalid invite**");
+        else stringBuilder.AppendLine();
+        
         stringBuilder.Append("**Tags**: ");
         if (venue.Tags == null || venue.Tags.Count == 0)
             stringBuilder.AppendLine(" None");
@@ -437,7 +476,9 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig) : I
 
 public interface IVenueRenderer
 {
-    EmbedBuilder RenderEmbed(Venue venue, string bannerUrl = null, VenueRenderFlags renderFlags = VenueRenderFlags.None);
+    Task<EmbedBuilder> ValidateAndRenderAsync(Venue venue, string bannerUrl = null, VenueRenderFlags renderFlags = VenueRenderFlags.None);
+    
+    EmbedBuilder Render(Venue venue, string bannerUrl = null, VenueRenderFlags renderFlags = VenueRenderFlags.None);
 
     ComponentBuilder RenderActionComponents(IVeniInteractionContext context, Venue venue, ulong user);
 
@@ -449,5 +490,7 @@ public interface IVenueRenderer
 [Flags]
 public enum VenueRenderFlags
 {
-    None = 0
+    None = 0,
+    FlagInvalidDiscord = 1,
+    FlagInvalidSite = 2
 }

@@ -10,35 +10,24 @@ using FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates;
 
 namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers.AuditResponse;
 
-public class PermanentlyClosedHandler : BaseAuditHandler
+public class PermanentlyClosedHandler(
+    IRepository repository,
+    IApiService apiService,
+    IAuthorizer authorizer,
+    IVenueAuditService venueAuditService)
+    : BaseAuditHandler
 {
 
     // Change this key and any existing buttons linked to this will die
     public static string Key => "AUDIT_PERM_CLOSED";
-    
-    private readonly IRepository _repository;
-    private readonly IApiService _apiService;
-    private readonly IAuthorizer _authorizer;
-    private readonly IVenueAuditService _venueAuditService;
 
-    public PermanentlyClosedHandler(IRepository repository,
-        IApiService apiService,
-        IAuthorizer authorizer,
-        IVenueAuditService venueAuditService)
-    {
-        this._repository = repository;
-        this._apiService = apiService;
-        this._authorizer = authorizer;
-        this._venueAuditService = venueAuditService;
-    }
-    
     public override async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var auditId = args[0];
-        var audit = await this._repository.GetByIdAsync<VenueAuditRecord>(auditId);
-        var venue = await this._apiService.GetVenueAsync(audit.VenueId);
+        var audit = await repository.GetByIdAsync<VenueAuditRecord>(auditId);
+        var venue = await apiService.GetVenueAsync(audit.VenueId);
         
-        if (!this._authorizer.Authorize(context.Interaction.User.Id, Permission.EditVenue, venue).Authorized)
+        if (!authorizer.Authorize(context.Interaction.User.Id, Permission.EditVenue, venue).Authorized)
         {
             await context.Interaction.Message.Channel.SendMessageAsync("Sorry, I can't let you do that. 🥲");
             return;
@@ -47,7 +36,7 @@ public class PermanentlyClosedHandler : BaseAuditHandler
         context.Session.SetVenue(venue);
         await context.Session.MoveStateAsync<DeleteVenueSessionState>(context);
 
-        await this._venueAuditService.UpdateAuditStatus(audit, venue, context.Interaction.User.Id,
+        await venueAuditService.UpdateAuditStatus(audit, venue, context.Interaction.User.Id,
             VenueAuditStatus.RespondedDelete);
        
         if (audit.Messages.All(m => m.MessageId != context.Interaction.Message.Id))
