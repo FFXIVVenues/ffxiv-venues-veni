@@ -28,24 +28,18 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig, IDi
         VenueRenderFlags renderFlags = VenueRenderFlags.None)
     {
         var flags = renderFlags;
-        var discordTask = Task.CompletedTask;
-        var siteTask = Task.CompletedTask;
-        
-        if (venue.Discord is not null)
-            discordTask = discordValidator
-                .CheckInviteAsync(venue.Discord.ToString())
-                .ContinueWith(r => {
-                   if (r.Result.Result is not DiscordCheckResult.Valid)
-                       flags |= VenueRenderFlags.FlagInvalidDiscord;
-                });
-
-        if (venue.Website is not null)
-            siteTask = siteValidator
-                .CheckUrlAsync(venue.Website.ToString())
-                .ContinueWith(r => {
-                    if (r.Result is not SiteCheckResult.Valid)
-                        flags |= VenueRenderFlags.FlagInvalidSite;
-                });
+        var discordTask = discordValidator
+            .CheckInviteAsync(venue)
+            .ContinueWith(r => {
+               if (r.Result.Result is not DiscordCheckResult.Valid)
+                   flags |= VenueRenderFlags.FlagInvalidDiscord;
+            });
+        var siteTask = siteValidator
+            .CheckUrlAsync(venue)
+            .ContinueWith(r => {
+                if (r.Result is not SiteCheckResult.Valid)
+                    flags |= VenueRenderFlags.FlagInvalidSite;
+            });
 
         await Task.WhenAll([discordTask, siteTask]);
         return this.Render(venue, bannerUrl, flags);

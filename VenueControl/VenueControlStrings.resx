@@ -99,11 +99,8 @@
     <data name="DescriptionHasNoSchedule" xml:space="preserve">
         <value>No, we don't have a set schedule</value>
     </data>
-    <data name="RespondContactStaffForBiweekly" xml:space="preserve">
-        <value>Okay! ⚠️ After you've saved your venue you'll need to create a ticket in our discord server and speak to our staff to set that up for you.</value>
-    </data>
     <data name="NoPermission" xml:space="preserve">
-        <value>Aaaah. You'll need to [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) in the FFXIV Venues discord to change this part of your venue information. 😊</value>
+        <value>Aaaah. You'll need to [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) and ask staff in the FFXIV Venues discord to change this part of your venue information. 😊</value>
     </data>
     <data name="OpeningTooLong" xml:space="preserve">
         <value>Aaaah, that's a long opening. 😢 Please only gives hours your are **actively present or staffed**. If you are indeed open and staffed longer than 7 hours please [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) in the FFXIV Venues discord to extend for longer hours.</value>

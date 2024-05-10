@@ -32,7 +32,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             if (!new Regex("^https?://").IsMatch(rawDiscordString))
                 rawDiscordString = "https://" + rawDiscordString;
 
-            var (discordValidity, invite) = await discordValidator.CheckInviteAsync(rawDiscordString);
+            var (discordValidity, invite) = await discordValidator.CheckInviteAsync(new Uri(rawDiscordString));
             switch (discordValidity)
             {
                 case DiscordCheckResult.BadFormat:

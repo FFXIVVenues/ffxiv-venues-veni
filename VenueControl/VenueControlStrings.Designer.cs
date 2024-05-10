@@ -405,7 +405,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Aaaah. You&apos;ll need to [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) in the FFXIV Venues discord to change this part of your venue information. 😊.
+        ///   Looks up a localized string similar to Aaaah. You&apos;ll need to [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) and ask staff in the FFXIV Venues discord to change this part of your venue information. 😊.
         /// </summary>
         internal static string NoPermission {
             get {
@@ -455,15 +455,6 @@ namespace FFXIVVenues.Veni.VenueControl {
         internal static string OptionWeekly {
             get {
                 return ResourceManager.GetString("OptionWeekly", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Okay! ⚠️ After you&apos;ve saved your venue you&apos;ll need to create a ticket in our discord server and speak to our staff to set that up for you..
-        /// </summary>
-        internal static string RespondContactStaffForBiweekly {
-            get {
-                return ResourceManager.GetString("RespondContactStaffForBiweekly", resourceCulture);
             }
         }
         
