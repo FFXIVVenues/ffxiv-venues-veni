@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.Utils;
@@ -29,7 +30,7 @@ public class SiteValidator(HttpClient client) : ISiteValidator
         try
         {
             var response = await client.GetAsync(venue.Website, HttpCompletionOption.ResponseHeadersRead);
-            if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode || response.StatusCode is HttpStatusCode.TooManyRequests)
             {
                 _cache.Set(venue.Website.ToString(), SiteCheckResult.Valid);
                 return SiteCheckResult.Valid;
@@ -40,7 +41,7 @@ public class SiteValidator(HttpClient client) : ISiteValidator
         }
         catch (Exception e)
         {
-            Log.Debug(e, "{Venue} has invalid site Url ({Url}).", venue, venue.Website);
+            Log.Debug(e, "{VenueId} has invalid site Url ({Url}).", venue.Id, venue.Website);
         }
         _cache.Set(venue.Website.ToString(), SiteCheckResult.Invalid);
         return SiteCheckResult.Invalid;
