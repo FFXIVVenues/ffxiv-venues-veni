@@ -51,6 +51,8 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig, IDi
         bannerUrl ??= venue.BannerUri?.ToString();
 
         var stringBuilder = new StringBuilder();
+        stringBuilder.Append("**Venue name**: ");
+        stringBuilder.AppendLine(venue.Name);
         stringBuilder.Append("**Created**: ");
         stringBuilder.AppendLine(venue.Added.DateTime.FromNow()[0].ToString().ToUpper() + venue.Added.DateTime.FromNow()[1..]);
         if (venue.LastModified.HasValue)
@@ -58,8 +60,6 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig, IDi
             stringBuilder.Append("**Last Modified**: ");
             stringBuilder.AppendLine(venue.LastModified.Value.DateTime.FromNow()[0].ToString().ToUpper() + venue.LastModified.Value.DateTime.FromNow()[1..]);
         }
-        stringBuilder.Append("**Venue name**: ");
-        stringBuilder.AppendLine(venue.Name);
         stringBuilder.Append("**Location**: ");
         stringBuilder.AppendLine(venue.Location.ToString());
         stringBuilder.Append("**SyncShell ID**: ");
