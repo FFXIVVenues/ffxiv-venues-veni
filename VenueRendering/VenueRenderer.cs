@@ -31,13 +31,13 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig, IDi
         var discordTask = discordValidator
             .CheckInviteAsync(venue)
             .ContinueWith(r => {
-               if (r.Result.Result is not DiscordCheckResult.Valid)
+               if (r.Result.Result is not DiscordCheckResult.Valid and DiscordCheckResult.Unset)
                    flags |= VenueRenderFlags.FlagInvalidDiscord;
             });
         var siteTask = siteValidator
             .CheckUrlAsync(venue)
             .ContinueWith(r => {
-                if (r.Result is not SiteCheckResult.Valid)
+                if (r.Result is not SiteCheckResult.Valid and SiteCheckResult.Unset)
                     flags |= VenueRenderFlags.FlagInvalidSite;
             });
 
