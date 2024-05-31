@@ -24,7 +24,7 @@ public class DiscordValidator(DiscordSocketClient client) : IDiscordValidator
 {
     
     private RollingCache<CheckReturn> _cache = new(TimeSpan.FromMinutes(5), TimeSpan.FromHours(1));
-    private static readonly Regex _discordPattern = new(@"(https?:\/\/)?(www\.)?((discord(app)?(\.com|\.io)(\/invite)?)|(discord\.gg))\/([\w-]+)");
+    private static readonly Regex _discordPattern = new(@"^(https?:\/\/)?(www\.)?((discord(app)?(\.com|\.io)(\/invite)?)|(discord\.gg))\/([\w-]+)$");
     
     public async Task<CheckReturn> CheckInviteAsync(Uri rawDiscordString)
     {

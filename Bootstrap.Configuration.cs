@@ -17,6 +17,7 @@ internal static partial class Bootstrap
         var config = new ConfigurationBuilder()
             .AddJsonFile("config.json", optional: true)
             .AddUserSecrets<DiscordHandler>(optional: true)
+            .AddEnvironmentVariables("FFXIV_VENUES_")
             .AddEnvironmentVariables("FFXIV_VENUES_VENI_")
             .Build();
         
