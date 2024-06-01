@@ -14,7 +14,7 @@ public class DiscordCommandAttribute(
 {
     public string Command { get; } = command;
     public string Description { get; } = description;
-    public GuildPermission MemberPermissions { get; } = memberPermissions;
+    public GuildPermission? MemberPermissions { get; } = memberPermissions == 0 ? null : memberPermissions;
     public InteractionContextType[] ContextTypes { get; } = contextTypes.Any() ? contextTypes : 
         [ InteractionContextType.Guild, InteractionContextType.BotDm, InteractionContextType.PrivateChannel ];
 }
