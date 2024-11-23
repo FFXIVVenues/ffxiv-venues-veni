@@ -1,26 +1,18 @@
 ﻿using System.Threading.Tasks;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 
-namespace FFXIVVenues.Veni.AI.Davinci
+namespace FFXIVVenues.Veni.AI.Davinci;
+
+internal class AiHandler(IDavinciService davinciService, IAiContextBuilder aiPromptBuilder)
+    : IAiHandler
 {
-    internal class AIHandler : IAIHandler
+    public Task<string> ResponseHandler(MessageVeniInteractionContext context)
     {
-        private readonly IDavinciService davinciService;
-        private readonly IAIContextBuilder aIContextBuilder;
+        var messageContent = context.Interaction.Content;
+        var id = context.Interaction.Author.Id.ToString();
 
-        public AIHandler(IDavinciService davinciService, IAIContextBuilder aIContextBuilder)
-        {
-            this.davinciService = davinciService;
-            this.aIContextBuilder = aIContextBuilder;
-        }
-
-        public Task<string> ResponseHandler(MessageVeniInteractionContext context)
-        {
-            var messageContent = context.Interaction.Content;
-            var id = context.Interaction.Author.Id.ToString();
-
-            return this.davinciService.AskTheAI(this.aIContextBuilder.GetContext(id, messageContent));
-        }
-
+        return davinciService.AskTheAi(aiPromptBuilder.GetPrompt(id, messageContent));
     }
+
 }

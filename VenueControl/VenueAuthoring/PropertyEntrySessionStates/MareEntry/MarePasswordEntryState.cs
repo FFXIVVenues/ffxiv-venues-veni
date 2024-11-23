@@ -1,23 +1,24 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.MareEntry;
 
-class MarePasswordEntryState : ISessionState
+class MarePasswordEntryState(VenueAuthoringContext authoringContext) : ISessionState<VenueAuthoringContext>
 {
 
-    public Task Enter(VeniInteractionContext c)
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        c.Session.RegisterMessageHandler(this.OnMessageReceived);
-        var isDm = c.Interaction.Channel is IDMChannel;
-        return c.Interaction.RespondAsync(isDm ? 
+        interactionContext.RegisterMessageHandler(this.OnMessageReceived);
+        var isDm = interactionContext.Interaction.Channel is IDMChannel;
+        return interactionContext.Interaction.RespondAsync(isDm ? 
                 VenueControlStrings.AskForMarePasswordDirectMessage :
                 VenueControlStrings.AskForMarePasswordMessage,
             new ComponentBuilder()
-                .WithBackButton(c)
+                .WithBackButton(interactionContext)
                 .Build());
     }
 
@@ -27,8 +28,8 @@ class MarePasswordEntryState : ISessionState
         
         venue.MarePassword = c.Interaction.Content.StripMentions();
         if (c.Session.InEditing())
-            return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
-        return c.Session.MoveStateAsync<SfwEntrySessionState>(c);
+            return c.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
+        return c.MoveSessionToStateAsync<SfwEntrySessionState, VenueAuthoringContext>(authoringContext);
     }
 
 

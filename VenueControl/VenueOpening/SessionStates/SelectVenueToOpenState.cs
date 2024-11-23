@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
@@ -22,11 +23,11 @@ class SelectVenueToOpenSessionState : ISessionState
 
     private IEnumerable<Venue> _managersVenues;
 
-    public Task Enter(VeniInteractionContext c)
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        this._managersVenues = c.Session.GetItem<IEnumerable<Venue>>(SessionKeys.VENUES);
+        this._managersVenues = interactionContext.Session.GetItem<IEnumerable<Venue>>(SessionKeys.VENUES);
 
-        var selectMenuKey = c.Session.RegisterComponentHandler(this.Handle, ComponentPersistence.ClearRow);
+        var selectMenuKey = interactionContext.RegisterComponentHandler(this.Handle, ComponentPersistence.ClearRow);
         var componentBuilder = new ComponentBuilder();
         var selectMenuBuilder = new SelectMenuBuilder() { CustomId = selectMenuKey };
         foreach (var venue in _managersVenues.OrderBy(v => v.Name))
@@ -40,7 +41,7 @@ class SelectVenueToOpenSessionState : ISessionState
             selectMenuBuilder.AddOption(selectMenuOption);
         }
         componentBuilder.WithSelectMenu(selectMenuBuilder);
-        return c.Interaction.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
+        return interactionContext.Interaction.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
     }
 
     public async Task Handle(ComponentVeniInteractionContext c)
@@ -48,10 +49,10 @@ class SelectVenueToOpenSessionState : ISessionState
         var selectedVenueId = c.Interaction.Data.Values.Single();
         var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-        _ = c.Session.ClearStateAsync(c);
+        _ = c.ClearSessionAsync();
 
         c.Session.SetVenue(venue);
-        await c.Session.MoveStateAsync<OpenEntryState>(c);
+        await c.MoveSessionToStateAsync<OpenEntryState>();
 
     }
 }

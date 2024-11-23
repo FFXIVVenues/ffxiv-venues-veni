@@ -5,39 +5,30 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 
 namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 
-public class GetAuditsHandler : IComponentHandler
+public class GetAuditsHandler(IAuthorizer authorizer, IRepository repository, IApiService apiService)
+    : IComponentHandler
 {
 
     // Change this key and any existing buttons linked to this will die
     public static string Key => "CONTROL_GET_AUDITS";
 
-    private readonly IAuthorizer _authorizer;
-    private readonly IRepository _repository;
-    private readonly IApiService _apiService;
-
-    public GetAuditsHandler(IAuthorizer authorizer, IRepository repository, IApiService apiService)
-    {
-        this._authorizer = authorizer;
-        this._repository = repository;
-        this._apiService = apiService;
-    }
-    
     public async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var user = context.Interaction.User.Id;
         var venueId = args[0];
-        var venue = await this._apiService.GetVenueAsync(venueId);
-        if (!this._authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
+        var venue = await apiService.GetVenueAsync(venueId);
+        if (!authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
             return;
         
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
             props.Components = new ComponentBuilder().Build());
         
-        var auditsQuery = await this._repository.GetWhereAsync<VenueAuditRecord>(r => r.VenueId == venueId);
+        var auditsQuery = await repository.GetWhereAsync<VenueAuditRecord>(r => r.VenueId == venueId);
         var audits = auditsQuery.ToList();
         
         if (!audits.Any())

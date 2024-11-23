@@ -4,6 +4,7 @@ using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates;
@@ -34,7 +35,7 @@ public class PermanentlyClosedHandler(
         }
         
         context.Session.SetVenue(venue);
-        await context.Session.MoveStateAsync<DeleteVenueSessionState>(context);
+        await context.MoveSessionToStateAsync<DeleteVenueSessionState>();
 
         await venueAuditService.UpdateAuditStatus(audit, venue, context.Interaction.User.Id,
             VenueAuditStatus.RespondedDelete);

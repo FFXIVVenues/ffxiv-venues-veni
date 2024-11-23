@@ -1,7 +1,7 @@
 ﻿namespace FFXIVVenues.Veni.AI.Davinci
 {
-    internal interface IAIContextBuilder
+    internal interface IAiContextBuilder
     {
-        string GetContext(string id, string chat);
+        string GetPrompt(string id, string chat);
     }
 }

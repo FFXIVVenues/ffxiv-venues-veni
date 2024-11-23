@@ -5,6 +5,7 @@ using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
@@ -15,17 +16,17 @@ internal class OpenHowLongWhenEntryState(IApiService apiService, IAuthorizer aut
 {
     private Venue _venue;
 
-    public Task Enter(VeniInteractionContext c)
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        this._venue = c.Session.GetVenue();
-        var component = this.BuildOpenComponent(c);
-        return c.Interaction.RespondAsync(VenueControlStrings.AskForHowLongOpeningFor, component.Build()); //change text later
+        this._venue = interactionContext.Session.GetVenue();
+        var component = this.BuildOpenComponent(interactionContext);
+        return interactionContext.Interaction.RespondAsync(VenueControlStrings.AskForHowLongOpeningFor, component.Build()); //change text later
     }
 
     private ComponentBuilder BuildOpenComponent(VeniInteractionContext c)
     {
         var selectComponent = new SelectMenuBuilder()
-            .WithCustomId(c.Session.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
+            .WithCustomId(c.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
 
         selectComponent.AddOption("The next hour", "1")
             .AddOption("The next 2 hours", "2")
@@ -64,6 +65,6 @@ internal class OpenHowLongWhenEntryState(IApiService apiService, IAuthorizer aut
             await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueNowOpen);
         }
             
-        _ = c.Session.ClearStateAsync(c);
+        _ = c.ClearSessionAsync();
     }
 }

@@ -4,45 +4,37 @@ using System;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.AI.Davinci;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using Serilog;
 
-namespace FFXIVVenues.Veni.Infrastructure.Middleware
+namespace FFXIVVenues.Veni.Infrastructure.Middleware;
+
+internal class ChatMiddleware(IAiHandler aIHandler) : IMiddleware<MessageVeniInteractionContext>
 {
-    internal class ChatMiddleware : IMiddleware<MessageVeniInteractionContext>
+    private static string[] _emotes = new[]
     {
-        private readonly IAIHandler aIHandler;
-        
+        " ",
+        " :3",
+        " 💕",
+        " 💖",
+        " ❤️",
+        " 💜",
+        " 💞"
+    };
 
-        private static string[] _emotes = new[]
+    public async Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
+    {
+        try
         {
-            " ",
-            " :3",
-            " 💕",
-            " 💖",
-            " ❤️",
-            " 💜",
-            " 💞"
-        };
-
-        public ChatMiddleware(IAIHandler aIHandler)
-        {
-            this.aIHandler = aIHandler;
+            string response = await aIHandler.ResponseHandler(context);
+            await context.Interaction.Channel.SendMessageAsync(response + _emotes.PickRandom());
         }
-        
-        public async Task ExecuteAsync(MessageVeniInteractionContext context, Func<Task> next)
+        catch (Exception ex)
         {
-            try
-            {
-                string response = await this.aIHandler.ResponseHandler(context);
-                await context.Interaction.Channel.SendMessageAsync(response + _emotes.PickRandom());
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex.Message, ex);
-                await next();
-            }
-
+            Log.Warning(ex.Message, ex);
+            await next();
         }
 
     }
+
 }

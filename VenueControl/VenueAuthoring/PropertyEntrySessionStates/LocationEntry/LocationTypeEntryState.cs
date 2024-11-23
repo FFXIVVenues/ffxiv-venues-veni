@@ -1,38 +1,38 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 
-namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.LocationEntry
+namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.LocationEntry;
+
+class LocationTypeEntrySessionState(VenueAuthoringContext authoringContext) : ISessionState<VenueAuthoringContext>
 {
-    class LocationTypeEntrySessionState : ISessionState
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        public Task Enter(VeniInteractionContext c)
-        {
-            return c.Interaction.RespondAsync(MessageRepository.AskForHouseOrApartmentMessage.PickRandom(), new ComponentBuilder()
-                .WithBackButton(c)
-                .WithButton("A house", c.Session.RegisterComponentHandler(cm =>
-                {
-                    cm.Session.SetItem("locationType", "house");
-                    return cm.Session.MoveStateAsync<DataCenterEntrySessionState>(cm);
-                }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .WithButton("A room in a house", c.Session.RegisterComponentHandler(cm =>
-                {
-                    cm.Session.SetItem("locationType", "room");
-                    return cm.Session.MoveStateAsync<DataCenterEntrySessionState>(cm);
-                }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .WithButton("An apartment", c.Session.RegisterComponentHandler(cm =>
-                {
-                    cm.Session.SetItem("locationType", "apartment");
-                    return cm.Session.MoveStateAsync<DataCenterEntrySessionState>(cm);
-                }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .WithButton("Other", c.Session.RegisterComponentHandler(cm =>
-                {
-                    cm.Session.SetItem("locationType", "other");
-                    return cm.Session.MoveStateAsync<OtherLocationEntrySessionState>(cm);
-                }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .Build());
-        }
+        return interactionContext.Interaction.RespondAsync(MessageRepository.AskForHouseOrApartmentMessage.PickRandom(), new ComponentBuilder()
+            .WithBackButton(interactionContext)
+            .WithButton("A house", interactionContext.RegisterComponentHandler(cm =>
+            {
+                cm.Session.SetItem("locationType", "house");
+                return cm.MoveSessionToStateAsync<DataCenterEntrySessionState, VenueAuthoringContext>(authoringContext);
+            }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+            .WithButton("A room in a house", interactionContext.RegisterComponentHandler(cm =>
+            {
+                cm.Session.SetItem("locationType", "room");
+                return cm.MoveSessionToStateAsync<DataCenterEntrySessionState, VenueAuthoringContext>(authoringContext);
+            }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+            .WithButton("An apartment", interactionContext.RegisterComponentHandler(cm =>
+            {
+                cm.Session.SetItem("locationType", "apartment");
+                return cm.MoveSessionToStateAsync<DataCenterEntrySessionState, VenueAuthoringContext>(authoringContext);
+            }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+            .WithButton("Other", interactionContext.RegisterComponentHandler(cm =>
+            {
+                cm.Session.SetItem("locationType", "other");
+                return cm.MoveSessionToStateAsync<OtherLocationEntrySessionState, VenueAuthoringContext>(authoringContext);
+            }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+            .Build());
     }
 }

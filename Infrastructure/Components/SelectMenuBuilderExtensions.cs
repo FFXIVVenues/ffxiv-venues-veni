@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 
 namespace FFXIVVenues.Veni.Infrastructure.Components;
@@ -35,10 +36,10 @@ public static class SelectMenuBuilderExtensions
     
     public static SelectMenuOptionBuilder WithSessionHandler(
         this SelectMenuOptionBuilder builder,
-        Session session,
+        VeniInteractionContext context,
         Func<ComponentVeniInteractionContext, Task> @delegate, ComponentPersistence persistence)
     {
-        var handler = session.RegisterComponentHandler(@delegate, persistence);
+        var handler = context.RegisterComponentHandler(@delegate, persistence);
         return builder.WithValue($"{handler}");
     }
 

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 
 namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
 {
-    internal class ComponentSessionHandlerRegistration
+    public class ComponentSessionHandlerRegistration
     {
 
         public Func<ComponentVeniInteractionContext, Task> Delegate { get; set; }

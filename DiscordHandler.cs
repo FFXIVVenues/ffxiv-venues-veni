@@ -11,6 +11,7 @@ using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Authorisation.Blacklist;
 using FFXIVVenues.Veni.GuildEngagement;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval;
 using Serilog;
 
@@ -60,13 +61,9 @@ namespace FFXIVVenues.Veni
                 .Add<LogInboundMiddleware>()
                 .Add<BlacklistMiddleware>()
                 .Add<StartTypingMiddleware>()
-                .Add<CluPredictionMiddleware>()
-                .Add<StopCallingMeMommyMiddleware>()
-                .Add<InteruptIntentMiddleware>()
                 .Add<StateMiddleware>()
-                .Add<IntentMiddleware>()
                 .Add<ChatMiddleware>()
-                .Add<DontUnderstandMiddleware>();
+                .Add<DisplayHelp>();
         }
 
         private async Task GuildAvailableAsync(SocketGuild guild)
@@ -158,7 +155,7 @@ namespace FFXIVVenues.Veni
                 var context = this._contextFactory.Create(message);
                 context.TypingHandle = typingHandle;
                 LogComponentExecuted(message, context);
-                await context.Session.HandleComponentInteraction(context);
+                await context.HandleComponentInteraction(context);
                 await this._componentBroker.HandleAsync(context);
             }
             catch (Exception e)
@@ -174,7 +171,7 @@ namespace FFXIVVenues.Veni
 
         private void LogSlashCommandExecuted(SocketSlashCommand slashCommand, SlashCommandVeniInteractionContext context)
         {
-            ISessionState currentSessionState = null;
+            ISessionStateBase currentSessionState = null;
             context.Session.StateStack?.TryPeek(out currentSessionState);
             if (currentSessionState is not null) Log.Information("[{State}] {Username} used command /{Command}", currentSessionState.GetType().Name, slashCommand.User.Username, slashCommand.CommandName);
             else Log.Information("{Username} used command /{Command}", slashCommand.User.Username, slashCommand.CommandName);
@@ -182,7 +179,7 @@ namespace FFXIVVenues.Veni
 
         private void LogComponentExecuted(SocketMessageComponent message, ComponentVeniInteractionContext context)
         {
-            ISessionState currentSessionState = null;
+            ISessionStateBase currentSessionState = null;
             context.Session.StateStack?.TryPeek(out currentSessionState);
             if (currentSessionState is not null) Log.Information("[{State}] {Username} interacted with a component.", currentSessionState.GetType().Name, message.User.Username);
             else Log.Information("{Username} interacted with a component", message.User.Username);

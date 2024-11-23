@@ -19,9 +19,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="HelpResponseMessage" xml:space="preserve">
-        <value>You can use my `/` commands or you can talk me with natural language! 
-Use me to manage your venues on **ffxivvenues.com** or just have a bit of conversation with me. 
-I work hard at being very approachable and easy to work with. ❤️</value>
+        <value>Here are all of my commands. Use me to manage your venues on **ffxivvenues.com** or just have a bit of conversation with me. ❤️</value>
     </data>
     <data name="HelpResponseEmbed" xml:space="preserve">
         <value>If you're in a channel instead of my DMs, you'll need to @ me so I know you're talking to me. 😅

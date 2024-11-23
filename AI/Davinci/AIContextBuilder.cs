@@ -4,15 +4,16 @@ using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni.AI.Davinci;
 
-internal class AiContextBuilder : IAIContextBuilder
+internal class AiContextBuilder : IAiContextBuilder
 {
     // One sided conversation memory
     private RollingCache<List<string>> _cache = new(TimeSpan.FromHours(2), TimeSpan.FromHours(24));
 
-    public string GetContext(string id, string chat)
+    public string GetPrompt(string id, string chat)
     {
         var contextPrompt = ContextStrings.PersonalityContext;
         contextPrompt += ContextStrings.FFXIVVenues;
+        contextPrompt += ContextStrings.Directives;
         contextPrompt += CheckFriendshipStatus(ulong.Parse(id));
         
         var previousChats = GetOrAddChats(id, chat);

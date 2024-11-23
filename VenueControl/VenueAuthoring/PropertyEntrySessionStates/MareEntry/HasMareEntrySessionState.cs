@@ -1,31 +1,32 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.MareEntry;
 
-class HasMareEntrySessionState : ISessionState
+class HasMareEntrySessionState(VenueAuthoringContext authoringContext) : ISessionState<VenueAuthoringContext>
 {
 
-    public Task Enter(VeniInteractionContext c)
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        return c.Interaction.RespondAsync(VenueControlStrings.AskIfHasMareMessage,
+        return interactionContext.Interaction.RespondAsync(VenueControlStrings.AskIfHasMareMessage,
             new ComponentBuilder()
-                .WithBackButton(c)
-                .WithButton("Yes", c.Session.RegisterComponentHandler(cm =>
-                    cm.Session.MoveStateAsync<MareIdEntryState>(cm),
+                .WithBackButton(interactionContext)
+                .WithButton("Yes", interactionContext.RegisterComponentHandler(cm =>
+                    cm.MoveSessionToStateAsync<MareIdEntryState, VenueAuthoringContext>(authoringContext),
                     ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .WithButton("No",
-                     c.Session.RegisterComponentHandler(cm =>
+                     interactionContext.RegisterComponentHandler(cm =>
                         {
-                            var venue = c.Session.GetVenue();
+                            var venue = interactionContext.Session.GetVenue();
                             venue.MareCode = venue.MarePassword = null;
 
                             if (cm.Session.InEditing())
-                                return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
-                            return cm.Session.MoveStateAsync<SfwEntrySessionState>(cm);
+                                return cm.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
+                            return cm.MoveSessionToStateAsync<SfwEntrySessionState, VenueAuthoringContext>(authoringContext);
                         }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
     }

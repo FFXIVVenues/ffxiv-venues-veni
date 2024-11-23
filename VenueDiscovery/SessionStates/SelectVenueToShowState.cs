@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl;
@@ -18,11 +19,11 @@ namespace FFXIVVenues.Veni.VenueDiscovery.SessionStates
         
         private IEnumerable<Venue> _managersVenues;
 
-        public Task Enter(VeniInteractionContext c)
+        public Task EnterState(VeniInteractionContext interactionContext)
         {
-            _managersVenues = c.Session.GetItem<IEnumerable<Venue>>(SessionKeys.VENUES);
+            _managersVenues = interactionContext.Session.GetItem<IEnumerable<Venue>>(SessionKeys.VENUES);
 
-            var selectMenuKey = c.Session.RegisterComponentHandler(this.Handle, ComponentPersistence.DeleteMessage);
+            var selectMenuKey = interactionContext.RegisterComponentHandler(this.Handle, ComponentPersistence.DeleteMessage);
             var componentBuilder = new ComponentBuilder();
             var selectMenuBuilder = new SelectMenuBuilder() { CustomId = selectMenuKey };
             foreach (var venue in _managersVenues.OrderBy(v => v.Name))
@@ -36,16 +37,16 @@ namespace FFXIVVenues.Veni.VenueDiscovery.SessionStates
                 selectMenuBuilder.AddOption(selectMenuOption);
             }
             componentBuilder.WithSelectMenu(selectMenuBuilder);
-            return c.Interaction.RespondAsync(MessageRepository.ShowVenueResponses.PickRandom(), componentBuilder.Build());
+            return interactionContext.Interaction.RespondAsync(MessageRepository.ShowVenueResponses.PickRandom(), componentBuilder.Build());
         }
 
-        public async Task Handle(ComponentVeniInteractionContext context)
+        private async Task Handle(ComponentVeniInteractionContext context)
         {
             var selectedVenueId = context.Interaction.Data.Values.Single();
             var asker = context.Interaction.User.Id;
             var venue = _managersVenues.FirstOrDefault(v => v.Id == selectedVenueId);
 
-            await context.Session.ClearStateAsync(context);
+            await context.ClearSessionAsync();
 
             var render = await venueRenderer.ValidateAndRenderAsync(venue);
             await context.Interaction.FollowupAsync(embed: render.Build(),

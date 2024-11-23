@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates;
@@ -11,10 +12,10 @@ namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates;
 
 internal class CloseEntryState : ISessionState
 {
-    public Task Enter(VeniInteractionContext c)
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        var component = this.BuildCloseComponent(c);
-        return c.Interaction.RespondAsync(VenueControlStrings.AskIfClosingIsNowOrLater, component.Build());
+        var component = this.BuildCloseComponent(interactionContext);
+        return interactionContext.Interaction.RespondAsync(VenueControlStrings.AskIfClosingIsNowOrLater, component.Build());
     }
 
     private ComponentBuilder BuildCloseComponent(VeniInteractionContext c)
@@ -24,7 +25,7 @@ internal class CloseEntryState : ISessionState
         var isClosed = venue.ScheduleOverrides.Any(s => s.IsNow && s.Open is false);
         var hasFutureClosure = venue.ScheduleOverrides.Any(s => !s.Open && s.Start > DateTime.UtcNow);
         var selectComponent = new SelectMenuBuilder()
-            .WithCustomId(c.Session.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
+            .WithCustomId(c.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
             
         if (isOpen)
             selectComponent
@@ -55,13 +56,13 @@ internal class CloseEntryState : ISessionState
         var selection = c.Interaction.Data.Values.Single();
         return selection switch
         {
-            "EndOpening" => c.Session.MoveStateAsync<EndCurrentOpeningState>(c),
-            "EndClosure" => c.Session.MoveStateAsync<EndCurrentClosureState>(c),
-            "CancelOpening" => c.Session.MoveStateAsync<CancelOpeningState>(c),
-            "CancelClosure" => c.Session.MoveStateAsync<CancelClosureState>(c),
-            "Extend" => c.Session.MoveStateAsync<CloseHowLongWhenEntryState>(c),
-            "Now" => c.Session.MoveStateAsync<CloseHowLongWhenEntryState>(c),
-            "Later" => c.Session.MoveStateAsync<CloseTimeZoneEntryState>(c),
+            "EndOpening" => c.MoveSessionToStateAsync<EndCurrentOpeningState>(),
+            "EndClosure" => c.MoveSessionToStateAsync<EndCurrentClosureState>(),
+            "CancelOpening" => c.MoveSessionToStateAsync<CancelOpeningState>(),
+            "CancelClosure" => c.MoveSessionToStateAsync<CancelClosureState>(),
+            "Extend" => c.MoveSessionToStateAsync<CloseHowLongWhenEntryState>(),
+            "Now" => c.MoveSessionToStateAsync<CloseHowLongWhenEntryState>(),
+            "Later" => c.MoveSessionToStateAsync<CloseTimeZoneEntryState>(),
             _ => throw new ArgumentOutOfRangeException()
         };
     }

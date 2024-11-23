@@ -4,6 +4,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.GuildEngagement;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils;
@@ -16,57 +17,28 @@ using FFXIVVenues.VenueModels;
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring;
 
 class ConfirmVenueSessionState(
+    VenueAuthoringContext venueAuthoringContext,
     IVenueRenderer venueRenderer,
     IApiService apiService,
     IVenueApprovalService indexersService,
     IGuildManager guildManager,
     IAuthorizer authorizer,
-    IRepository repository,
     IVenueAuditService auditService)
-    : ISessionState
+    : ISessionState<VenueAuthoringContext>
 {
-    private readonly IRepository _repository = repository;
 
-    private static string[] _preexisingResponse = new[]
+    public async Task EnterState(VeniInteractionContext interactionContext)
     {
-        "Wooo! All updated!",
-        "All done for you! 🥳",
-        "Ok, that's updated for you! 😊"
-    };
-
-    private static string[] _summaryResponse = new[]
-    {
-        "Here's a preview of your venue!",
-        "Okay! 🙌 Here's what your venue will look like!",
-        "Nice! So, how does it look? 😊"
-    };
-
-    private static string[] _workingOnItResponse = new[]
-    {
-        "Yaaay! I'm working on it! So excited. 🥳",
-        "Woo, working on it! This bit is always so exciting. 🎉",
-        "Alright, working on it! 😊"
-    };
-
-    private static string[] _successfulNewResponse = new[]
-    {
-        "Wooo! I've sent it. Once it's approved, it'll show on the index!",
-        "All done! Once Sumi or Kana approves it, it'll be live! 🥳",
-        "Ok! We'll get that approved and get it live soon! 🎉"
-    };
-
-    public async Task Enter(VeniInteractionContext c)
-    {
-        var bannerUrl = c.Session.GetItem<string>(SessionKeys.BANNER_URL);
-        var modifying = c.Session.InEditing();
-        var venue = c.Session.GetVenue();
+        var bannerUrl = interactionContext.Session.GetItem<string>(SessionKeys.BANNER_URL);
+        var modifying = interactionContext.Session.InEditing();
+        var venue = interactionContext.Session.GetVenue();
             
-        await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
+        await interactionContext.Interaction.RespondAsync(VenueControlStrings.VenuePreview,
             embed: (await venueRenderer.ValidateAndRenderAsync(venue, bannerUrl)).Build(),
             component: new ComponentBuilder()
-                .WithButton("Looks perfect! Save!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
-                .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .WithButton("Cancel", c.Session.RegisterComponentHandler(this.Cancel, ComponentPersistence.ClearRow), ButtonStyle.Danger)
+                .WithButton("Looks perfect! Save!", interactionContext.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
+                .WithButton(modifying ? "Edit more" : "Edit", interactionContext.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                .WithButton("Cancel", interactionContext.RegisterComponentHandler(this.Cancel, ComponentPersistence.ClearRow), ButtonStyle.Danger)
                 .Build());
     }
 
@@ -75,7 +47,7 @@ class ConfirmVenueSessionState(
         var isNewVenue = c.Session.GetItem<bool>(SessionKeys.IS_NEW_VENUE);
         var modifying = c.Session.InEditing();
 
-        _ = c.Interaction.Channel.SendMessageAsync(_workingOnItResponse.PickRandom());
+        _ = c.Interaction.Channel.SendMessageAsync(VenueControlStrings.SavingVenue);
         _ = c.Interaction.Channel.TriggerTypingAsync();
             
         var venue = c.Session.GetVenue();
@@ -88,12 +60,12 @@ class ConfirmVenueSessionState(
         if (!uploadVenueResponse.IsSuccessStatusCode)
         {
             _ = c.Interaction.Channel.SendMessageAsync("Ooops! Something went wrong. 😢");
-            await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
+            await c.Interaction.RespondAsync(VenueControlStrings.VenuePreview,
                 embed: (await venueRenderer.ValidateAndRenderAsync(venue, bannerUrl)).Build(),
                 components: new ComponentBuilder()
-                    .WithButton("Looks perfect! Save!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
-                    .WithButton(modifying ? "Edit more" : "Edit", c.Session.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("Cancel", c.Session.RegisterComponentHandler(this.Cancel, ComponentPersistence.ClearRow), ButtonStyle.Danger)
+                    .WithButton("Looks perfect! Save!", c.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)
+                    .WithButton(modifying ? "Edit more" : "Edit", c.RegisterComponentHandler(this.Edit, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithButton("Cancel", c.RegisterComponentHandler(this.Cancel, ComponentPersistence.ClearRow), ButtonStyle.Danger)
                     .Build());
             return;
         }
@@ -105,7 +77,7 @@ class ConfirmVenueSessionState(
         {
             _ = guildManager.SyncRolesForVenueAsync(venue);
             _ = guildManager.FormatDisplayNamesForVenueAsync(venue);
-            await c.Interaction.Channel.SendMessageAsync(_preexisingResponse.PickRandom());
+            await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueUpdatedConfirmation);
             var latestAudit = await auditService.GetLatestRecordFor(venue);
             if (latestAudit?.Status is VenueAuditStatus.Failed or VenueAuditStatus.Pending or VenueAuditStatus.AwaitingResponse)
                 await auditService.UpdateAuditStatus(latestAudit, venue, c.Interaction.User.Id, VenueAuditStatus.EditedLater);
@@ -120,19 +92,19 @@ class ConfirmVenueSessionState(
         }
         else
         {
-            await c.Interaction.Channel.SendMessageAsync(_successfulNewResponse.PickRandom());
+            await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueCreatedPendingApproval);
             await SendToApprovers(venue, bannerUrl);
         }
 
-        _ = c.Session.ClearStateAsync(c);
+        _ = c.ClearSessionAsync();
     }
 
     private Task Edit(ComponentVeniInteractionContext c) =>
-        c.Session.MoveStateAsync<EditVenueSessionState>(c);
+        c.MoveSessionToStateAsync<EditVenueSessionState>();
 
     private Task Cancel(ComponentVeniInteractionContext c)
     {
-        _ = c.Session.ClearStateAsync(c);
+        _ = c.ClearSessionAsync();
         return c.Interaction.Channel.SendMessageAsync("It's as if it never happened! 😅");
     }
 
@@ -140,3 +112,11 @@ class ConfirmVenueSessionState(
         indexersService.SendForApproval(venue, bannerUrl);
 
 }
+
+enum VenueAuthoringType
+{
+    Edit, 
+    Create
+}
+
+record VenueAuthoringContext(Venue Venue, VenueAuthoringType ControlType);

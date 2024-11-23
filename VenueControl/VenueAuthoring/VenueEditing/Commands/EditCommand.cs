@@ -4,6 +4,7 @@ using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.VenueAuditing.ComponentHandlers.AuditResponse;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.ComponentHandlers;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates;
@@ -52,7 +53,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.Commands
                 {
                     var venue = venues.Single();
                     context.Session.SetVenue(venue);
-                    await context.Session.MoveStateAsync<EditVenueSessionState>(context);
+                    await context.MoveSessionToStateAsync<EditVenueSessionState>();
                     return;
                 }
                 

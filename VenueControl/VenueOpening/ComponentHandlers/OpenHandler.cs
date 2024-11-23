@@ -4,6 +4,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueOpening.ComponentHandlers;
@@ -35,7 +36,7 @@ public class OpenHandler : IComponentHandler
             props.Components = new ComponentBuilder().Build());
         
         context.Session.SetVenue(venue);
-        await context.Session.MoveStateAsync<OpenEntryState>(context);
+        await context.MoveSessionToStateAsync<OpenEntryState>();
     }
     
 }

@@ -5,6 +5,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates;
 using FFXIVVenues.Veni.VenueRendering;
 
@@ -29,7 +30,7 @@ public class SelectVenueToEditHandler(IAuthorizer authorizer, IApiService apiSer
                     props.Components = new ComponentBuilder().Build());
         
         context.Session.SetVenue(venue);
-        await context.Session.MoveStateAsync<EditVenueSessionState>(context);
+        await context.MoveSessionToStateAsync<EditVenueSessionState>();
     }
     
 }

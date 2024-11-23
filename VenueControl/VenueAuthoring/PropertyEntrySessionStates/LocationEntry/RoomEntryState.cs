@@ -1,36 +1,35 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.MareEntry;
 
-namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.LocationEntry
+namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.LocationEntry;
+
+class RoomEntrySessionState(VenueAuthoringContext authoringContext) : ISessionState<VenueAuthoringContext>
 {
-    class RoomEntrySessionState : ISessionState
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        public Task Enter(VeniInteractionContext c)
-        {
-            c.Session.RegisterMessageHandler(this.OnMessageReceived);
-            return c.Interaction.RespondAsync(MessageRepository.AskForRoomMessage.PickRandom(),
-                new ComponentBuilder().WithBackButton(c).Build());
-        }
+        interactionContext.RegisterMessageHandler(this.OnMessageReceived);
+        return interactionContext.Interaction.RespondAsync(MessageRepository.AskForRoomMessage.PickRandom(),
+            new ComponentBuilder().WithBackButton(interactionContext).Build());
+    }
 
-        public Task OnMessageReceived(MessageVeniInteractionContext c)
-        {
-            var venue = c.Session.GetVenue();
-            var match = new Regex("\\b\\d+\\b").Match(c.Interaction.Content.StripMentions());
+    private Task OnMessageReceived(MessageVeniInteractionContext c)
+    {
+        var venue = c.Session.GetVenue();
+        var match = new Regex("\\b\\d+\\b").Match(c.Interaction.Content.StripMentions());
 
-            if (!match.Success || !ushort.TryParse(match.Value, out var room) || room < 1)
-                return c.Interaction.Channel.SendMessageAsync("Sorry, I didn't understand that, please enter your room number.");
+        if (!match.Success || !ushort.TryParse(match.Value, out var room) || room < 1)
+            return c.Interaction.Channel.SendMessageAsync("Sorry, I didn't understand that, please enter your room number.");
 
-            venue.Location.Room = room;
+        venue.Location.Room = room;
 
-            if (c.Session.InEditing())
-                return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
+        if (c.Session.InEditing())
+            return c.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
 
-            return c.Session.MoveStateAsync<HasMareEntrySessionState>(c);
-        }
+        return c.MoveSessionToStateAsync<HasMareEntrySessionState, VenueAuthoringContext>(authoringContext);
     }
 }

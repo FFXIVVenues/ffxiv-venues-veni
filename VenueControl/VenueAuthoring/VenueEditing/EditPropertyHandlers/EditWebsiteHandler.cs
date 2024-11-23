@@ -4,6 +4,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.EditPropertyHandlers;
@@ -29,10 +30,10 @@ public class EditWebsiteHandler(IAuthorizer authorizer, IApiService apiService) 
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
                     props.Components = new ComponentBuilder().Build());
         
-        await context.Session.ClearStateAsync(context);
+        await context.ClearSessionAsync();
         context.Session.SetVenue(venue);
         context.Session.SetEditing(true);
-        await context.Session.MoveStateAsync<WebsiteEntrySessionState>(context);
+        await context.NewSessionAsync<WebsiteEntrySessionState, VenueAuthoringContext>(new (venue, VenueAuthoringType.Edit));
     }
     
 }

@@ -4,6 +4,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.EditPropertyHandlers;
@@ -29,10 +30,13 @@ public class EditNsfwHandler(IAuthorizer authorizer, IApiService apiService) : I
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
                     props.Components = new ComponentBuilder().Build());
         
-        await context.Session.ClearStateAsync(context);
+        await context.ClearSessionAsync();
         context.Session.SetVenue(venue);
         context.Session.SetEditing(true);
-        await context.Session.MoveStateAsync<SfwEntrySessionState>(context);
+        
+        // This is not indicating that this is a new venue in edit...
+        // How do I pull the venue through without using session...
+        await context.NewSessionAsync<SfwEntrySessionState, VenueAuthoringContext>(new (venue, VenueAuthoringType.Edit));
     }
     
 }

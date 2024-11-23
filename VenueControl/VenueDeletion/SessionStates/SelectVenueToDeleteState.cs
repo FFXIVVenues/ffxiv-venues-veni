@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
@@ -21,11 +22,11 @@ namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates
 
         private IEnumerable<Venue> _managersVenues;
 
-        public Task Enter(VeniInteractionContext c)
+        public Task EnterState(VeniInteractionContext interactionContext)
         {
-            _managersVenues = c.Session.GetItem<IEnumerable<Venue>>(SessionKeys.VENUES);
+            _managersVenues = interactionContext.Session.GetItem<IEnumerable<Venue>>(SessionKeys.VENUES);
 
-            var selectMenuKey = c.Session.RegisterComponentHandler(this.Handle, ComponentPersistence.DeleteMessage);
+            var selectMenuKey = interactionContext.RegisterComponentHandler(this.Handle, ComponentPersistence.DeleteMessage);
             var componentBuilder = new ComponentBuilder();
             var selectMenuBuilder = new SelectMenuBuilder() { CustomId = selectMenuKey };
             foreach (var venue in _managersVenues.OrderBy(v => v.Name))
@@ -39,7 +40,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates
                 selectMenuBuilder.AddOption(selectMenuOption);
             }
             componentBuilder.WithSelectMenu(selectMenuBuilder);
-            return c.Interaction.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
+            return interactionContext.Interaction.RespondAsync(_messages.PickRandom(), componentBuilder.Build());
         }
 
         public Task Handle(ComponentVeniInteractionContext c)
@@ -50,7 +51,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates
             c.Session.ClearItem(SessionKeys.VENUES);
             c.Session.SetVenue(venue);
 
-            return c.Session.MoveStateAsync<DeleteVenueSessionState>(c);
+            return c.MoveSessionToStateAsync<DeleteVenueSessionState>();
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Commands;
-using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Intent;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueCreation.Command
@@ -25,17 +24,10 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueCreation.Command
 
         }
 
-        internal class Handler : ICommandHandler
+        internal class Handler(IIntentHandlerProvider intentProvider) : ICommandHandler
         {
-            private readonly IIntentHandlerProvider _intentProvider;
-
-            public Handler(IIntentHandlerProvider intentProvider)
-            {
-                this._intentProvider = intentProvider;
-            }
-
             public Task HandleAsync(SlashCommandVeniInteractionContext slashCommand) =>
-                this._intentProvider.HandleIntent(IntentNames.Operation.Create, slashCommand);
+                intentProvider.HandleIntent(IntentNames.Operation.Create, slashCommand);
 
         }
 

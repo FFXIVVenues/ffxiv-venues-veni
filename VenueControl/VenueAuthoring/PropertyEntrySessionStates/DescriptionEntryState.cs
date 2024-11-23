@@ -1,34 +1,34 @@
 ﻿using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.LocationEntry;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates;
 
-class DescriptionEntrySessionState : ISessionState
+class DescriptionEntrySessionState(VenueAuthoringContext authoringContext) : ISessionState<VenueAuthoringContext>
 {
-    public Task Enter(VeniInteractionContext c)
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        c.Session.RegisterMessageHandler(this.OnMessageReceived);
-        var isDm = c.Interaction.Channel is IDMChannel;
-        return c.Interaction.RespondAsync(isDm ? 
+        interactionContext.RegisterMessageHandler(this.OnMessageReceived);
+        var isDm = interactionContext.Interaction.Channel is IDMChannel;
+        return interactionContext.Interaction.RespondAsync(isDm ? 
                 VenueControlStrings.AskForDescriptionDirectMessage :
                 VenueControlStrings.AskForDescriptionMessage,
             new ComponentBuilder()
-                .WithBackButton(c)
-                .WithSkipButton<LocationTypeEntrySessionState, ConfirmVenueSessionState>(c)
+                .WithBackButton(interactionContext)
+                .WithSkipButton<LocationTypeEntrySessionState, ConfirmVenueSessionState>(interactionContext, authoringContext)
                 .Build());
     }
 
-    public Task OnMessageReceived(MessageVeniInteractionContext c)
+    private Task OnMessageReceived(MessageVeniInteractionContext c)
     {
         var venue = c.Session.GetVenue();
         venue.Description = c.Interaction.Content.StripMentions().AsListOfParagraphs();
         if (c.Session.InEditing())
-            return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
-        return c.Session.MoveStateAsync<LocationTypeEntrySessionState>(c);
+            return c.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
+        return c.MoveSessionToStateAsync<LocationTypeEntrySessionState, VenueAuthoringContext>(authoringContext);
     }
-
 }
+

@@ -5,6 +5,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Commands.Attributes;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueDiscovery.SessionStates;
@@ -36,7 +37,7 @@ namespace FFXIVVenues.Veni.VenueDiscovery.Commands
                 if (venues.Count() > 25)
                     venues = venues.Take(25);
                 context.Session.SetItem(SessionKeys.VENUES, venues);
-                await context.Session.MoveStateAsync<SelectVenueToShowSessionState>(context);
+                await context.MoveSessionToStateAsync<SelectVenueToShowSessionState>();
             }
             else
             {

@@ -1,4 +1,5 @@
 using Discord.WebSocket;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 
 namespace FFXIVVenues.Veni.Infrastructure.Context;
 

@@ -4,6 +4,7 @@ using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Commands.Attributes;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 
 namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Commands
 {

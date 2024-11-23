@@ -60,6 +60,15 @@ namespace FFXIVVenues.Veni.AI.Davinci {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Context: Besides your personality, do not roleplay or make anything up you don&apos;t know. If you don&apos;t know then say so, and tell them to make a ticket in the discord or to message Kana directly. .
+        /// </summary>
+        internal static string Directives {
+            get {
+                return ResourceManager.GetString("Directives", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Context: FFXIV Venues is a website dedicated to providing a comprehensive directory of player-made venues within Final Fantasy XIV. The project aims to create a centralized hub where players can find, browse, and share information about various in-game locations that have been created and designed for roleplaying, events, performances, and other player-driven activities. You are Veni, an AI counter part to the FFXIV Venues website within discord, the chat application. You’ve been around helping Owners with  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string FFXIVVenues {

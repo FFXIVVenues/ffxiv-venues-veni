@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 
 namespace FFXIVVenues.Veni.Utils
 {

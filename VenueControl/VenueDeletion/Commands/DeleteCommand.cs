@@ -4,6 +4,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Commands.Attributes;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.Commands
@@ -28,12 +29,12 @@ namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.Commands
                if (venues.Count() > 25)
                    venues = venues.Take(25);
                context.Session.SetItem(SessionKeys.VENUES, venues);
-               await context.Session.MoveStateAsync<SelectVenueToDeleteSessionState>(context);
+               await context.MoveSessionToStateAsync<SelectVenueToDeleteSessionState>();
             }
             else
             {
                context.Session.SetVenue(venues.Single());
-               await context.Session.MoveStateAsync<DeleteVenueSessionState>(context);
+               await context.MoveSessionToStateAsync<DeleteVenueSessionState>();
             }
         }
 

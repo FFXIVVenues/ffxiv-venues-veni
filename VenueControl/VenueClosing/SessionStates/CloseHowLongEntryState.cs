@@ -5,6 +5,7 @@ using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates;
@@ -16,17 +17,17 @@ internal class CloseHowLongWhenEntryState(IApiService apiService, IAuthorizer au
 {
     private Venue _venue;
 
-    public Task Enter(VeniInteractionContext c)
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        this._venue = c.Session.GetVenue();
-        var component = this.BuildOpenComponent(c);
-        return c.Interaction.RespondAsync(VenueControlStrings.AskForHowLongClosingFor, component.Build()); //change text later
+        this._venue = interactionContext.Session.GetVenue();
+        var component = this.BuildOpenComponent(interactionContext);
+        return interactionContext.Interaction.RespondAsync(VenueControlStrings.AskForHowLongClosingFor, component.Build()); //change text later
     }
 
     private ComponentBuilder BuildOpenComponent(VeniInteractionContext c)
     {
         var selectComponent = new SelectMenuBuilder()
-            .WithCustomId(c.Session.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
+            .WithCustomId(c.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
 
         selectComponent.AddOption("The next 18 hours", "18")
             .AddOption("The next 2 days", "48")
@@ -50,7 +51,7 @@ internal class CloseHowLongWhenEntryState(IApiService apiService, IAuthorizer au
         var value = c.Interaction.Data.Values.Single();
         if (value == "perm")
         {
-            await c.Session.MoveStateAsync<DeleteVenueSessionState>(c);
+            await c.MoveSessionToStateAsync<DeleteVenueSessionState>();
             return;
         }
         
@@ -79,6 +80,6 @@ internal class CloseHowLongWhenEntryState(IApiService apiService, IAuthorizer au
             await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueNowClosed);
         }
             
-        _ = c.Session.ClearStateAsync(c);
+        _ = c.ClearSessionAsync();
     }
 }

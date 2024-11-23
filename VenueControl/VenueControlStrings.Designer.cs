@@ -459,6 +459,15 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Alright! I&apos;m working on it....
+        /// </summary>
+        internal static string SavingVenue {
+            get {
+                return ResourceManager.GetString("SavingVenue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Which venue would you like to edit? 🤔.
         /// </summary>
         internal static string SelectVenueToEdit {
@@ -482,6 +491,15 @@ namespace FFXIVVenues.Veni.VenueControl {
         internal static string VenueClosureEnded {
             get {
                 return ResourceManager.GetString("VenueClosureEnded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ok! We&apos;ll get that approved and get it live soon! 🎉.
+        /// </summary>
+        internal static string VenueCreatedPendingApproval {
+            get {
+                return ResourceManager.GetString("VenueCreatedPendingApproval", resourceCulture);
             }
         }
         
@@ -527,6 +545,24 @@ namespace FFXIVVenues.Veni.VenueControl {
         internal static string VenueOpenLater {
             get {
                 return ResourceManager.GetString("VenueOpenLater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Okay, here&apos;s a preview of your venue!  😊.
+        /// </summary>
+        internal static string VenuePreview {
+            get {
+                return ResourceManager.GetString("VenuePreview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yay! All updated for you! 🥳.
+        /// </summary>
+        internal static string VenueUpdatedConfirmation {
+            get {
+                return ResourceManager.GetString("VenueUpdatedConfirmation", resourceCulture);
             }
         }
     }

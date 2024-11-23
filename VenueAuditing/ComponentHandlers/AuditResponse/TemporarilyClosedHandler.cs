@@ -4,6 +4,7 @@ using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates;
@@ -33,7 +34,7 @@ public class TemporarilyClosedHandler(
         }
         
         context.Session.SetVenue(venue);
-        await context.Session.MoveStateAsync<CloseEntryState>(context);
+        await context.MoveSessionToStateAsync<CloseEntryState>();
         
         await auditService.UpdateAuditStatus(audit, venue, context.Interaction.User.Id,
             VenueAuditStatus.RespondedClose);

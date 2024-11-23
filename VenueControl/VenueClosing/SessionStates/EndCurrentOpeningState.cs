@@ -4,19 +4,20 @@ using System.Threading.Tasks;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates;
 
 internal class EndCurrentOpeningState(IApiService apiService, IAuthorizer authorizer) : ISessionState
 {
-    public async Task Enter(VeniInteractionContext c)
+    public async Task EnterState(VeniInteractionContext interactionContext)
     {
-        var venue = c.Session.GetVenue();
-        var authorize = authorizer.Authorize(c.Interaction.User.Id, Permission.CloseVenue, venue);
+        var venue = interactionContext.Session.GetVenue();
+        var authorize = authorizer.Authorize(interactionContext.Interaction.User.Id, Permission.CloseVenue, venue);
         if (!authorize.Authorized)
         {
-            await c.Interaction.Channel.SendMessageAsync(
+            await interactionContext.Interaction.Channel.SendMessageAsync(
                 "Sorry, you do not have permission to close this venue. 😢");
             return;
         }
@@ -27,8 +28,8 @@ internal class EndCurrentOpeningState(IApiService apiService, IAuthorizer author
             await apiService.CloseVenueAsync(venue.Id, DateTimeOffset.UtcNow, activeSchedule.Resolution.End);
         if (scheduleOverrides is not null)
             await apiService.RemoveOverridesAsync(venue.Id, DateTimeOffset.UtcNow, scheduleOverrides.End);
-        await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueOpeningEnded);
-        await c.Session.ClearStateAsync(c);
+        await interactionContext.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueOpeningEnded);
+        await interactionContext.ClearSessionAsync();
     }
 }
 

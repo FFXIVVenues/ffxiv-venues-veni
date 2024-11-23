@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Discord;
+using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.MareEntry;
@@ -8,14 +10,14 @@ using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.LocationEntry;
 
-internal class OtherLocationEntrySessionState : ISessionState
+internal class OtherLocationEntrySessionState(VenueAuthoringContext authoringContext) : ISessionState<VenueAuthoringContext>
 {
     
-    public Task Enter(VeniInteractionContext c)
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        c.Session.RegisterMessageHandler(this.MessageHandler);
-        return c.Interaction.RespondAsync("Ooo, interesting! In as few characters as possible, where is your venue **located**? 🥰", new ComponentBuilder()
-            .WithBackButton(c).Build());
+        interactionContext.RegisterMessageHandler(this.MessageHandler);
+        return interactionContext.Interaction.RespondAsync("Ooo, interesting! In as few characters as possible, where is your venue **located**? 🥰", new ComponentBuilder()
+            .WithBackButton(interactionContext).Build());
     }
 
     private Task MessageHandler(MessageVeniInteractionContext c)
@@ -24,9 +26,9 @@ internal class OtherLocationEntrySessionState : ISessionState
         venue.Location = new Location { Override = c.Interaction.Content.StripMentions() };
             
         if (c.Session.InEditing())
-            return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
+            return c.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
 
-        return c.Session.MoveStateAsync<HasMareEntrySessionState>(c);
+        return c.MoveSessionToStateAsync<HasMareEntrySessionState, VenueAuthoringContext>(authoringContext);
     }
     
 }

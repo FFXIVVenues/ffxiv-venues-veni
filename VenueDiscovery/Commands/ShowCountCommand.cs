@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 
 namespace FFXIVVenues.Veni.VenueDiscovery.Commands
 {

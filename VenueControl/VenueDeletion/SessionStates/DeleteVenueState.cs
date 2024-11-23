@@ -3,6 +3,7 @@ using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueAuditing;
@@ -29,11 +30,11 @@ namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates
 
         private Venue _venue;
 
-        public Task Enter(VeniInteractionContext c)
+        public Task EnterState(VeniInteractionContext interactionContext)
         {
-            this._venue = c.Session.GetVenue();
-            return c.Interaction.RespondAsync(string.Format(_messages.PickRandom(), _venue.Name), new ComponentBuilder()
-                .WithButton("Yes, delete it 😢", c.Session.RegisterComponentHandler(
+            this._venue = interactionContext.Session.GetVenue();
+            return interactionContext.Interaction.RespondAsync(string.Format(_messages.PickRandom(), _venue.Name), new ComponentBuilder()
+                .WithButton("Yes, delete it 😢", interactionContext.RegisterComponentHandler(
                     async cm =>
                     {
                         var authorize = authorizer.Authorize(cm.Interaction.User.Id, Permission.DeleteVenue, _venue);
@@ -48,10 +49,10 @@ namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates
                         await apiService.DeleteVenueAsync(_venue.Id);
                         var latestAudit = await auditService.GetLatestRecordFor(this._venue);
                         if (latestAudit?.Status is VenueAuditStatus.Failed or VenueAuditStatus.Pending or VenueAuditStatus.AwaitingResponse)
-                            await auditService.UpdateAuditStatus(latestAudit, this._venue, c.Interaction.User.Id, VenueAuditStatus.DeletedLater);
+                            await auditService.UpdateAuditStatus(latestAudit, this._venue, interactionContext.Interaction.User.Id, VenueAuditStatus.DeletedLater);
                     }, 
                     ComponentPersistence.ClearRow), ButtonStyle.Danger)
-                .WithButton("No, don't! I've changed my mind. 🙂", c.Session.RegisterComponentHandler(cm => cm.Interaction.Channel.SendMessageAsync("Phew 😅"), ComponentPersistence.ClearRow))
+                .WithButton("No, don't! I've changed my mind. 🙂", interactionContext.RegisterComponentHandler(cm => cm.Interaction.Channel.SendMessageAsync("Phew 😅"), ComponentPersistence.ClearRow))
                 .Build());
         }
     }

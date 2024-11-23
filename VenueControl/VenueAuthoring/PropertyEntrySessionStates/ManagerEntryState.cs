@@ -4,26 +4,27 @@ using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using Newtonsoft.Json.Linq;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates;
 
-class ManagerEntrySessionState(IAuthorizer authorizer) : ISessionState
+class ManagerEntrySessionState(IAuthorizer authorizer, VenueAuthoringContext authoringContext) : ISessionState<VenueAuthoringContext>
 {
-    public Task Enter(VeniInteractionContext c)
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        var venue = c.Session.GetVenue();
+        var venue = interactionContext.Session.GetVenue();
 
-        if (!authorizer.Authorize(c.Interaction.User.Id, Permission.EditManagers, venue).Authorized)
-            return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
+        if (!authorizer.Authorize(interactionContext.Interaction.User.Id, Permission.EditManagers, venue).Authorized)
+            return interactionContext.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
 
-        c.Session.RegisterMessageHandler(this.OnMessageReceived);
-        return c.Interaction.RespondAsync("Who is/are the manager(s)? :heart:",
+        interactionContext.RegisterMessageHandler(this.OnMessageReceived);
+        return interactionContext.Interaction.RespondAsync("Who is/are the manager(s)? :heart:",
             new ComponentBuilder()
-                .WithBackButton(c)
-                .WithSkipButton<ConfirmVenueSessionState, ConfirmVenueSessionState>(c)
+                .WithBackButton(interactionContext)
+                .WithSkipButton<ConfirmVenueSessionState, ConfirmVenueSessionState>(interactionContext, authoringContext)
                 .Build());
     }
 
@@ -39,7 +40,7 @@ class ManagerEntrySessionState(IAuthorizer authorizer) : ISessionState
             return c.Interaction.Channel.SendMessageAsync(MessageRepository.DontUnderstandResponses.PickRandom());
 
         venue.Managers = discordIds;
-        return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
+        return c.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
     }
 
 }

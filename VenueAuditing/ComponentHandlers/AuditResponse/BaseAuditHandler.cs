@@ -6,6 +6,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Utils.Broadcasting;
 using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;

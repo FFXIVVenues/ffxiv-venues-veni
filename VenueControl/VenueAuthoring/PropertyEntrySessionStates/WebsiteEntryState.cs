@@ -2,22 +2,22 @@ using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates
 {
-    class WebsiteEntrySessionState : ISessionState
+    class WebsiteEntrySessionState(VenueAuthoringContext authoringContext) : ISessionState<VenueAuthoringContext>
     {
-        public Task Enter(VeniInteractionContext c)
+        public Task EnterState(VeniInteractionContext interactionContext)
         {
-            c.Session.RegisterMessageHandler(this.OnMessageReceived);
+            interactionContext.RegisterMessageHandler(this.OnMessageReceived);
 
-            return c.Interaction.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom(),
+            return interactionContext.Interaction.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom(),
                 new ComponentBuilder()
-                    .WithBackButton(c)
-                    .WithButton("No website", c.Session.RegisterComponentHandler(OnNoWebsite, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .WithBackButton(interactionContext)
+                    .WithButton("No website", interactionContext.RegisterComponentHandler(OnNoWebsite, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .Build());
         }
 
@@ -27,8 +27,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             if (new Regex("\\bskip\\b").IsMatch(c.Interaction.Content.ToLower()))
             {
                 if (c.Session.InEditing())
-                    return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
-                return c.Session.MoveStateAsync<DiscordEntrySessionState>(c);
+                    return c.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
+                return c.MoveSessionToStateAsync<DiscordEntrySessionState, VenueAuthoringContext>(authoringContext);
             }
 
             var rawWebsiteString = c.Interaction.Content.StripMentions();
@@ -44,9 +44,9 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             venue.Website = website;
 
             if (c.Session.InEditing())
-                return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
+                return c.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
 
-            return c.Session.MoveStateAsync<DiscordEntrySessionState>(c);
+            return c.MoveSessionToStateAsync<DiscordEntrySessionState, VenueAuthoringContext>(authoringContext);
         }
         
         private Task OnNoWebsite(ComponentVeniInteractionContext context)
@@ -54,8 +54,10 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             var venue = context.Session.GetVenue();
             venue.Website = null;
 
-            if (context.Session.InEditing()) return context.Session.MoveStateAsync<ConfirmVenueSessionState>(context);
-            return context.Session.MoveStateAsync<DiscordEntrySessionState>(context);
+            if (context.Session.InEditing()) 
+                return context.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
+            
+            return context.MoveSessionToStateAsync<DiscordEntrySessionState, VenueAuthoringContext>(authoringContext);
         }
     }
 }

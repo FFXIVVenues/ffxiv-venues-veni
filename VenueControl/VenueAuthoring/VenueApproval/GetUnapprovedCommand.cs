@@ -6,6 +6,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates;
@@ -78,7 +79,7 @@ internal class GetUnapprovedCommand
                 return;
             }
 
-            var selectMenuKey = c.Session.RegisterComponentHandler(this.HandleVenueSelection, ComponentPersistence.ClearRow);
+            var selectMenuKey = c.RegisterComponentHandler(this.HandleVenueSelection, ComponentPersistence.ClearRow);
             var componentBuilder = new ComponentBuilder();
             var selectMenuBuilder = new SelectMenuBuilder() { CustomId = selectMenuKey };
 
@@ -112,22 +113,22 @@ internal class GetUnapprovedCommand
 
             await c.Interaction.FollowupAsync(embed: (await venueRenderer.ValidateAndRenderAsync(venue)).Build(),
                 components: new ComponentBuilder()
-                    .WithButton("Approve", c.Session.RegisterComponentHandler(async cm =>
+                    .WithButton("Approve", c.RegisterComponentHandler(async cm =>
                     {
                         await venueApprovalService.ApproveVenueAsync(venue);
                         await cm.Interaction.Channel.SendMessageAsync("Nyya! I've approved the venue! 💝");
                     }, ComponentPersistence.ClearRow), ButtonStyle.Success)
-                    .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>
+                    .WithButton("Edit", c.RegisterComponentHandler(cm =>
                     {
                         c.Session.SetVenue(venue);
-                        return cm.Session.MoveStateAsync<EditVenueSessionState>(cm);
+                        return cm.MoveSessionToStateAsync<EditVenueSessionState>();
                     }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                    .WithButton("Delete", c.Session.RegisterComponentHandler(cm =>
+                    .WithButton("Delete", c.RegisterComponentHandler(cm =>
                     {
                         c.Session.SetVenue(venue);
-                        return cm.Session.MoveStateAsync<DeleteVenueSessionState>(cm);
+                        return cm.MoveSessionToStateAsync<DeleteVenueSessionState>();
                     }, ComponentPersistence.ClearRow), ButtonStyle.Danger)
-                    .WithButton("Do nothing", c.Session.RegisterComponentHandler(cm => Task.CompletedTask,
+                    .WithButton("Do nothing", c.RegisterComponentHandler(cm => Task.CompletedTask,
                         ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                     .Build());
         }

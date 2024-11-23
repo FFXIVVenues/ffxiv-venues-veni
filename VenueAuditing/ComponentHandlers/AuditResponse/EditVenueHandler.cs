@@ -4,6 +4,7 @@ using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.VenueControl;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates;
@@ -36,8 +37,9 @@ public class EditVenueHandler(
         await auditService.UpdateAuditStatus(audit, venue, context.Interaction.User.Id,
             VenueAuditStatus.RespondedEdit);
         
+        
         context.Session.SetVenue(venue);
-        await context.Session.MoveStateAsync<EditVenueSessionState>(context);
+        await context.MoveSessionToStateAsync<EditVenueSessionState>();
         
         if (audit.Messages.All(m => m.MessageId != context.Interaction.Message.Id))
             await context.Interaction.ModifyOriginalResponseAsync(m => m.Components = new ComponentBuilder().Build());

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.TagsEntry
 {
-    class CategoryEntrySessionState : ISessionState
+    class CategoryEntrySessionState(VenueAuthoringContext authoringContext) : ISessionState<VenueAuthoringContext>
     {
 
         private Venue _venue;
@@ -32,18 +32,20 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             ("Other", "Other")
         };
 
-        public Task Enter(VeniInteractionContext c)
+        public Task EnterState(VeniInteractionContext interactionContext)
         {
-            this._venue = c.Session.GetVenue(); 
+            this._venue = interactionContext.Session.GetVenue(); 
 
-            var component = this.BuildTagsComponent(c).WithBackButton(c).WithSkipButton<TagsEntrySessionState, TagsEntrySessionState>(c);
-            return c.Interaction.RespondAsync(MessageRepository.AskForCategories.PickRandom(), component.Build());
+            var component = this.BuildTagsComponent(interactionContext)
+                .WithBackButton(interactionContext)
+                .WithSkipButton<TagsEntrySessionState, TagsEntrySessionState>(interactionContext, authoringContext);
+            return interactionContext.Interaction.RespondAsync(MessageRepository.AskForCategories.PickRandom(), component.Build());
         }
 
         private ComponentBuilder BuildTagsComponent(VeniInteractionContext c)
         {
             var selectComponent = new SelectMenuBuilder()
-                .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
+                .WithCustomId(c.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
                 .WithMaxValues(Math.Max(2, _availableCategories.Count(t => this._venue.Tags?.Contains(t.Value) ?? false)));
             foreach (var (label, value) in _availableCategories)
                 selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value));
@@ -59,7 +61,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             venue.Tags.RemoveAll(existingTag => _availableCategories.Any(availableTag => existingTag == availableTag.Value));
             venue.Tags.AddRange(c.Interaction.Data.Values);
 
-            return c.Session.MoveStateAsync<TagsEntrySessionState>(c);
+            return c.MoveSessionToStateAsync<TagsEntrySessionState, VenueAuthoringContext>(authoringContext);
         }
 
     }

@@ -4,6 +4,8 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
+using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.EditPropertyHandlers;
@@ -29,10 +31,10 @@ public class EditNameHandler(IAuthorizer authorizer, IApiService apiService) : I
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
                     props.Components = new ComponentBuilder().Build());
         
-        await context.Session.ClearStateAsync(context);
+        await context.ClearSessionAsync();
         context.Session.SetVenue(venue);
         context.Session.SetEditing(true);
-        await context.Session.MoveStateAsync<NameEntrySessionState>(context);
+        await context.NewSessionAsync<NameEntrySessionState, VenueAuthoringContext>(new (venue, VenueAuthoringType.Edit));
     }
     
 }

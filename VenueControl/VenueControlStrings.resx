@@ -184,4 +184,16 @@
     <data name="VenueOpeningCancelled" xml:space="preserve">
         <value>Yay! I've cancelled the opening. 🥲</value>
     </data>
+    <data name="VenueUpdatedConfirmation" xml:space="preserve">
+        <value>Yay! All updated for you! 🥳</value>
+    </data>
+    <data name="VenuePreview" xml:space="preserve">
+        <value>Okay, here's a preview of your venue!  😊</value>
+    </data>
+    <data name="SavingVenue" xml:space="preserve">
+        <value>Alright! I'm working on it...</value>
+    </data>
+    <data name="VenueCreatedPendingApproval" xml:space="preserve">
+        <value>Ok! We'll get that approved and get it live soon! 🎉</value>
+    </data>
 </root>

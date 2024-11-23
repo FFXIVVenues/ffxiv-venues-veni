@@ -4,6 +4,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.VenueControl.VenueClosing.SessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueClosing.ComponentHandlers;
@@ -27,7 +28,7 @@ public class CloseHandler(IAuthorizer authorizer, IApiService apiService) : ICom
             props.Components = new ComponentBuilder().Build());
         
         context.Session.SetVenue(venue);
-        await context.Session.MoveStateAsync<CloseEntryState>(context);
+        await context.MoveSessionToStateAsync<CloseEntryState>();
     }
     
 }

@@ -78,7 +78,7 @@ public class VenueApprovalService(
         await ApproveVenueAsync(venue);
     }
 
-    public async Task<bool> ApproveVenueAsync(Venue venue)
+    public async Task<bool> ApproveVenueAsync(Venue venue, ApprovedNotificationMethod approvedNotificationMethod = ApprovedNotificationMethod.NotifyAllManagers)
     {
         // It may have been edited by indexers, so get the latest.
         venue = await apiService.GetVenueAsync(venue.Id);
@@ -89,6 +89,9 @@ public class VenueApprovalService(
         _ = guildManager.AssignRolesForVenueAsync(venue);
         _ = guildManager.FormatDisplayNamesForVenueAsync(venue);
 
+        if (approvedNotificationMethod == ApprovedNotificationMethod.NoNotification)
+            return true;
+        
         foreach (var managerId in venue.Managers)
         {
             var manager = await client.GetUserAsync(ulong.Parse(managerId));
@@ -160,4 +163,10 @@ public class VenueApprovalService(
         return false;
     }
 
+}
+
+public enum ApprovedNotificationMethod
+{
+    NoNotification,
+    NotifyAllManagers
 }

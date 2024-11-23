@@ -11,7 +11,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval
 
         Task<BroadcastReceipt> SendForApproval(Venue venue, string bannerUrl);
 
-        Task<bool> ApproveVenueAsync(Venue venue);
+        Task<bool> ApproveVenueAsync(Venue venue, ApprovedNotificationMethod approvedNotificationMethod = ApprovedNotificationMethod.NotifyAllManagers);
 
         Task<bool> HandleComponentInteractionAsync(SocketMessageComponent context);
 

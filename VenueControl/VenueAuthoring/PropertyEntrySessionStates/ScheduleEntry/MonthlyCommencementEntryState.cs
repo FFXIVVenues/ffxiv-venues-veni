@@ -5,40 +5,41 @@ using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.ScheduleEntry;
 
-class MonthlyCommencementEntryState : ISessionState
+class MonthlyCommencementEntryState(VenueAuthoringContext authoringContext) : ISessionState<VenueAuthoringContext>
 {
 
     private Venue _venue;
     private Day? _currentDay;
     private Dictionary<Day, List<Schedule>> _schedules = new ();
 
-    public Task Enter(VeniInteractionContext c)
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        this._venue = c.Session.GetVenue();
-        var timezone = c.Session.GetItem<string>(SessionKeys.TIMEZONE_ID);
-        this._schedules = c.Session.GetItem<Dictionary<Day, List<Schedule>>>(SessionKeys.MONTHLY_SCHEDULE_BY_DAY);
+        this._venue = interactionContext.Session.GetVenue();
+        var timezone = interactionContext.Session.GetItem<string>(SessionKeys.TIMEZONE_ID);
+        this._schedules = interactionContext.Session.GetItem<Dictionary<Day, List<Schedule>>>(SessionKeys.MONTHLY_SCHEDULE_BY_DAY);
         if (this._schedules is null)
         {
             this._schedules = _venue.Schedule.DistinctBy(s => s.Day).OrderBy(s => s.Day).ToDictionary(s => s.Day, _ => new List<Schedule>());
-            c.Session.SetItem(SessionKeys.MONTHLY_SCHEDULE_BY_DAY, this._schedules);
+            interactionContext.Session.SetItem(SessionKeys.MONTHLY_SCHEDULE_BY_DAY, this._schedules);
         }
         
         // Assumes that there is not multiple schedules for the same day with differing times/location
         if (this._currentDay == null)
         {
-            this._currentDay = c.Session.GetItem<Day?>(SessionKeys.NOW_SETTING_DAY);
-            c.Session.ClearItem(SessionKeys.NOW_SETTING_DAY);
+            this._currentDay = interactionContext.Session.GetItem<Day?>(SessionKeys.NOW_SETTING_DAY);
+            interactionContext.Session.ClearItem(SessionKeys.NOW_SETTING_DAY);
         }
         this._currentDay ??= this._schedules.First()!.Key;
         
         var select = new SelectMenuBuilder()
-            .WithCustomId(c.Session.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow))
+            .WithCustomId(interactionContext.RegisterComponentHandler(Handle, ComponentPersistence.ClearRow))
             .WithMinValues(1).WithMaxValues(8)
             .AddOption($"1st {this._currentDay} of the month", "1")
             .AddOption($"2nd {this._currentDay} of the month", "2")
@@ -50,8 +51,8 @@ class MonthlyCommencementEntryState : ISessionState
             .AddOption($"4th last {this._currentDay} of the month", "-4");
             
         var message = string.Format(VenueControlStrings.AskWhenInMonthMessage, this._currentDay);
-        return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {message}",
-            new ComponentBuilder().WithSelectMenu(select).WithBackButton(c).Build());
+        return interactionContext.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {message}",
+            new ComponentBuilder().WithSelectMenu(select).WithBackButton(interactionContext).Build());
     }
 
     private Task Handle(ComponentVeniInteractionContext c)
@@ -82,13 +83,13 @@ class MonthlyCommencementEntryState : ISessionState
         {
             var nextDay = this._schedules.Keys.SkipWhile(k => k != this._currentDay).Skip(1).Take(1).Single();
             c.Session.SetItem(SessionKeys.NOW_SETTING_DAY, nextDay);
-            return c.Session.MoveStateAsync<MonthlyCommencementEntryState>(c);
+            return c.MoveSessionToStateAsync<MonthlyCommencementEntryState, VenueAuthoringContext>(authoringContext);
         }
 
         this._venue.Schedule = this._schedules.SelectMany(s => s.Value).ToList();
         c.Session.ClearItem(SessionKeys.NOW_SETTING_DAY);
         if (c.Session.InEditing())
-            return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
-        return c.Session.MoveStateAsync<BannerEntrySessionState>(c);
+            return c.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
+        return c.MoveSessionToStateAsync<BannerEntrySessionState, VenueAuthoringContext>(authoringContext);
     }
 }

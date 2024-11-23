@@ -6,6 +6,7 @@ using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
@@ -17,15 +18,15 @@ internal class CancelClosureState(IApiService apiService, IAuthorizer authorizer
 
     private List<ScheduleOverride> _overrides;
     
-    public async Task Enter(VeniInteractionContext c)
+    public async Task EnterState(VeniInteractionContext interactionContext)
     {
-        var venue = c.Session.GetVenue();
+        var venue = interactionContext.Session.GetVenue();
 
         this._overrides = venue.ScheduleOverrides.Where(o => !o.Open && o.Start > DateTime.UtcNow).ToList();
         if (this._overrides.Count > 1)
         {
             var selectComponent = new SelectMenuBuilder()
-                .WithCustomId(c.Session.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
+                .WithCustomId(interactionContext.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
             var i = 0;
             foreach (var @override in this._overrides)
             {
@@ -33,22 +34,22 @@ internal class CancelClosureState(IApiService apiService, IAuthorizer authorizer
                 i++;
             }
             var componentBuilder = new ComponentBuilder().WithSelectMenu(selectComponent);
-            await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.AskForClosureToCancel, components: componentBuilder.WithBackButton(c).Build());
+            await interactionContext.Interaction.Channel.SendMessageAsync(VenueControlStrings.AskForClosureToCancel, components: componentBuilder.WithBackButton(interactionContext).Build());
             return;
         }
 
-        var authorize = authorizer.Authorize(c.Interaction.User.Id, Permission.OpenVenue, venue);
+        var authorize = authorizer.Authorize(interactionContext.Interaction.User.Id, Permission.OpenVenue, venue);
         if (!authorize.Authorized)
         {
-            await c.Interaction.Channel.SendMessageAsync(
+            await interactionContext.Interaction.Channel.SendMessageAsync(
                 "Sorry, you do not have permission to close this venue. 😢");
             return;
         }
         
         await this.CancelAsync(venue, 0);
         
-        await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueClosureCancelled);
-        await c.Session.ClearStateAsync(c);
+        await interactionContext.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueClosureCancelled);
+        await interactionContext.ClearSessionAsync();
     }
 
     private async Task OnSelect(ComponentVeniInteractionContext c)
@@ -66,7 +67,7 @@ internal class CancelClosureState(IApiService apiService, IAuthorizer authorizer
         await this.CancelAsync(c.Session.GetVenue(), indexSelected);
         
         await c.Interaction.Channel.SendMessageAsync(VenueControlStrings.VenueClosureCancelled);
-        await c.Session.ClearStateAsync(c);
+        await c.ClearSessionAsync();
     }
 
     private Task CancelAsync(Venue venue, int index)

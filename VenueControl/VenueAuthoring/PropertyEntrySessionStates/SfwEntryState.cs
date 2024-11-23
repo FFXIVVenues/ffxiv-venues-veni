@@ -1,33 +1,33 @@
 ﻿using System.Threading.Tasks;
 using Discord;
-using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.TagsEntry;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates
 {
-    class SfwEntrySessionState : ISessionState
+    class SfwEntrySessionState(VenueAuthoringContext authoringContext) : ISessionState<VenueAuthoringContext>
     {
-        public Task Enter(VeniInteractionContext c)
+        public Task EnterState(VeniInteractionContext interactionContext)
         {
-            return c.Interaction.RespondAsync(MessageRepository.AskForSfwMessage.PickRandom(), new ComponentBuilder()
-                .WithBackButton(c)
-                .WithButton("Yes, it's safe on entry", c.Session.RegisterComponentHandler(cm =>
+            return interactionContext.Interaction.RespondAsync(MessageRepository.AskForSfwMessage.PickRandom(), new ComponentBuilder()
+                .WithBackButton(interactionContext)
+                .WithButton("Yes, it's safe on entry", interactionContext.RegisterComponentHandler(cm =>
                 {
                     var venue = cm.Session.GetVenue();
                     venue.Sfw = true;
                     if (cm.Session.InEditing())
-                        return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
-                    return cm.Session.MoveStateAsync<CategoryEntrySessionState>(cm);
+                        return cm.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
+                    return cm.MoveSessionToStateAsync<CategoryEntrySessionState, VenueAuthoringContext>(authoringContext);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .WithButton("No, we're openly NSFW", c.Session.RegisterComponentHandler(cm =>
+                .WithButton("No, we're openly NSFW", interactionContext.RegisterComponentHandler(cm =>
                 {
                     var venue = cm.Session.GetVenue();
                     venue.Sfw = false;
                     if (cm.Session.InEditing())
-                        return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
-                    return cm.Session.MoveStateAsync<CategoryEntrySessionState>(cm);
+                        return cm.MoveSessionToStateAsync<ConfirmVenueSessionState, VenueAuthoringContext>(authoringContext);
+                    return cm.MoveSessionToStateAsync<CategoryEntrySessionState, VenueAuthoringContext>(authoringContext);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }

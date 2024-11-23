@@ -6,6 +6,7 @@ using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
@@ -15,16 +16,16 @@ namespace FFXIVVenues.Veni.VenueControl.VenueOpening.SessionStates;
 
 internal class OpenTimeEntryState : ISessionState
 {
-    public Task Enter(VeniInteractionContext c)
+    public Task EnterState(VeniInteractionContext interactionContext)
     {
-        var component = this.BuildOpenComponent(c).WithBackButton(c);
-        return c.Interaction.RespondAsync(VenueControlStrings.AskForTimeOfOpening, component.Build()); //change text later
+        var component = this.BuildOpenComponent(interactionContext).WithBackButton(interactionContext);
+        return interactionContext.Interaction.RespondAsync(VenueControlStrings.AskForTimeOfOpening, component.Build()); //change text later
     }
 
     private ComponentBuilder BuildOpenComponent(VeniInteractionContext c)
     {
         var selectComponent = new SelectMenuBuilder()
-            .WithCustomId(c.Session.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
+            .WithCustomId(c.RegisterComponentHandler(OnSelect, ComponentPersistence.ClearRow));
         for (var i = 0; i < 24; i++)
             selectComponent.AddOption($"{i % 12}:00{(i > 12 ? "pm" : "am")}", i.ToString());
         return new ComponentBuilder().WithSelectMenu(selectComponent);
@@ -34,6 +35,6 @@ internal class OpenTimeEntryState : ISessionState
     {
         var hourSelection = int.Parse(c.Interaction.Data.Values.Single()); 
         c.Session.SetItem(SessionKeys.OPENING_HOUR, hourSelection);
-        return c.Session.MoveStateAsync<OpenHowLongWhenEntryState>(c);
+        return c.MoveSessionToStateAsync<OpenHowLongWhenEntryState>();
     }
 }

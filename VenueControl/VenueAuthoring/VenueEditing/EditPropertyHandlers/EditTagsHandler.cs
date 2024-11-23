@@ -4,7 +4,9 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.TagsEntry;
+using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.EditPropertyHandlers;
 
@@ -29,10 +31,10 @@ public class EditTagsHandler(IAuthorizer authorizer, IApiService apiService) : I
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
                     props.Components = new ComponentBuilder().Build());
         
-        await context.Session.ClearStateAsync(context);
+        await context.ClearSessionAsync();
         context.Session.SetVenue(venue);
         context.Session.SetEditing(true);
-        await context.Session.MoveStateAsync<CategoryEntrySessionState>(context);
+        await context.NewSessionAsync<CategoryEntrySessionState, VenueAuthoringContext>(new (venue, VenueAuthoringType.Edit));
     }
     
 }

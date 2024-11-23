@@ -4,6 +4,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.Infrastructure.Components;
 using FFXIVVenues.Veni.Infrastructure.Context;
+using FFXIVVenues.Veni.Infrastructure.Context.InteractionContext;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.EditPropertyHandlers;
@@ -29,10 +30,16 @@ public class EditDescriptionHandler(IAuthorizer authorizer, IApiService apiServi
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
                     props.Components = new ComponentBuilder().Build());
         
-        await context.Session.ClearStateAsync(context);
+        
+        // Comes from ConfirmState : venue = object, editing = true
+        // Comes from /edit after /create : venue = object, editing = true
+        
+        
+        // Comes from /edit : venue = null, editing = false
+        // await context.ClearSessionAsync();
         context.Session.SetVenue(venue);
         context.Session.SetEditing(true);
-        await context.Session.MoveStateAsync<DescriptionEntrySessionState>(context);
+        await context.NewSessionAsync<DescriptionEntrySessionState, VenueAuthoringContext>(new (venue, VenueAuthoringType.Edit));
     }
     
 }
