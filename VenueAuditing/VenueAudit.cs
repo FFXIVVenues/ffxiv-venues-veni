@@ -96,13 +96,8 @@ public class VenueAudit
             foreach (var message in broadcastReceipt.BroadcastMessages)
                 this._record.Log($"Message to {message.UserId}: {message.Log}");
             this._record.Log($"Sent venue audit message to {successful} of {totalManagers} managers.");
-            if (successful > 0)
-            {
-                this._record.Status = VenueAuditStatus.AwaitingResponse;
-                this._record.SentTime = DateTime.UtcNow;
-            }
-            else
-                this._record.Status = VenueAuditStatus.Failed;
+            this._record.Status = successful > 0 ? VenueAuditStatus.AwaitingResponse : VenueAuditStatus.Failed;
+            this._record.SentTime = DateTime.UtcNow;
             this._record.Messages = broadcastReceipt.BroadcastMessages;
             await this._repository.UpsertAsync(this._record);
             return this._record.Status;

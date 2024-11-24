@@ -9,35 +9,25 @@ using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 
 namespace FFXIVVenues.Veni.VenueAuditing.ComponentHandlers;
 
-public class GetAuditsHandler : IComponentHandler
+public class GetAuditsHandler(IAuthorizer authorizer, IRepository repository, IApiService apiService)
+    : IComponentHandler
 {
 
     // Change this key and any existing buttons linked to this will die
     public static string Key => "CONTROL_GET_AUDITS";
 
-    private readonly IAuthorizer _authorizer;
-    private readonly IRepository _repository;
-    private readonly IApiService _apiService;
-
-    public GetAuditsHandler(IAuthorizer authorizer, IRepository repository, IApiService apiService)
-    {
-        this._authorizer = authorizer;
-        this._repository = repository;
-        this._apiService = apiService;
-    }
-    
     public async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var user = context.Interaction.User.Id;
         var venueId = args[0];
-        var venue = await this._apiService.GetVenueAsync(venueId);
-        if (!this._authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
+        var venue = await apiService.GetVenueAsync(venueId);
+        if (!authorizer.Authorize(user, Permission.ViewAuditHistory, venue).Authorized)
             return;
         
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
             props.Components = new ComponentBuilder().Build());
         
-        var auditsQuery = await this._repository.GetWhereAsync<VenueAuditRecord>(r => r.VenueId == venueId);
+        var auditsQuery = await repository.GetWhereAsync<VenueAuditRecord>(r => r.VenueId == venueId);
         var audits = auditsQuery.ToList();
         
         if (!audits.Any())
@@ -52,9 +42,11 @@ public class GetAuditsHandler : IComponentHandler
             .WithPlaceholder("What would you like to do?");
 
         foreach (var audit in audits.OrderByDescending(a => a.SentTime))
-            dropDown.AddOption($"Audit sent at {audit.SentTime.ToString("G")}", 
-                audit.id, $"Status: {audit.Status}");
-        
+            dropDown.AddOption(
+                audit.MassAuditId is not null
+                    ? $"Mass audit sent at {audit.SentTime:G}"
+                    : $"Audit sent at {audit.SentTime:G}", audit.id, $"Status: {audit.Status}");
+
         builder.WithSelectMenu(dropDown);
         await context.Interaction.Channel.SendMessageAsync("Okay, here they are! 🥰", components: builder.Build());
     }
