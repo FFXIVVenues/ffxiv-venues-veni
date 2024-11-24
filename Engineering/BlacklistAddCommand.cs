@@ -13,20 +13,11 @@ namespace FFXIVVenues.Veni.Engineering;
 [DiscordCommand("root blacklist add", "Add a discord guild or user to the blacklist.")]
 [DiscordCommandOption("discordid", "Discord ID of guild/user", ApplicationCommandOptionType.String)]
 [DiscordCommandOption("reason", "Reason for blacklisting", ApplicationCommandOptionType.String)]
-public class BlacklistAddCommand : ICommandHandler
+public class BlacklistAddCommand(IRepository db, IAuthorizer authorizer) : ICommandHandler
 {
-    private readonly IRepository _db;
-    private readonly IAuthorizer _authorizer;
-
-    public BlacklistAddCommand(IRepository db, IAuthorizer authorizer)
-    {
-        this._db = db;
-        this._authorizer = authorizer;
-    }
-
     public async Task HandleAsync(SlashCommandVeniInteractionContext slashCommand)
     {
-        if (!_authorizer.Authorize(slashCommand.Interaction.User.Id, Permission.Blacklist).Authorized)
+        if (!authorizer.Authorize(slashCommand.Interaction.User.Id, Permission.Blacklist).Authorized)
             return;
 
         await slashCommand.Interaction.DeferAsync();
@@ -40,7 +31,7 @@ public class BlacklistAddCommand : ICommandHandler
         };
 
         await slashCommand.Interaction.FollowupAsync("Discord ID added to the blacklist 😢");
-        await _db.UpsertAsync(blackListedId);
+        await db.UpsertAsync(blackListedId);
     }
 
 }
