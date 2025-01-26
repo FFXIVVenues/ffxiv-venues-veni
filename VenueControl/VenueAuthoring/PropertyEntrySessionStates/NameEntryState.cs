@@ -11,11 +11,13 @@ class NameEntrySessionState : ISessionState
     public Task Enter(VeniInteractionContext c)
     {
         c.Session.RegisterMessageHandler(this.OnMessageReceived);
-            
         var isDm = c.Interaction.Channel is IDMChannel;
-        return c.Interaction.RespondAsync(isDm
-            ? VenueControlStrings.AskForNameDirectMessage
-            : VenueControlStrings.AskForNameMessage);
+
+        return c.Interaction.RespondAsync(VenueControlStrings.AskForNameMessage,
+            embed: isDm ? null: new EmbedBuilder()
+                .WithDescription("**@ Veni Ki** with your venue name")
+                .WithColor(Color.Blue)
+                .Build());
     }
 
     public Task OnMessageReceived(MessageVeniInteractionContext c)

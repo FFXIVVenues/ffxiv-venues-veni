@@ -12,10 +12,16 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
-            return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWardMessage.PickRandom()}",
-                                                new ComponentBuilder()
-                                                .WithBackButton(c)
-                                                .Build());
+            var isDm = c.Interaction.Channel is IDMChannel;
+            return c.Interaction.RespondAsync(
+                $"{MessageRepository.ConfirmMessage.PickRandom()} {MessageRepository.AskForWardMessage.PickRandom()}",
+                new ComponentBuilder()
+                    .WithBackButton(c)
+                    .Build(),
+                isDm ? null : new EmbedBuilder()
+                    .WithDescription("**@ Veni Ki** with your ward number")
+                    .WithColor(Color.Blue)
+                    .Build());
         }
 
         public Task OnMessageReceived(MessageVeniInteractionContext c)

@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Intent;

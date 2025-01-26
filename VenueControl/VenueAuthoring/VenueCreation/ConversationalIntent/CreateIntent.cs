@@ -15,7 +15,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueCreation.Conversatio
 
         public override async Task Handle(VeniInteractionContext context)
         {
-            context.Session.SetItem(SessionKeys.IS_NEW_VENUE, true);
+            context.Session.SetIsNewVenue();
 
             var venue = new Venue();
             venue.Managers.Add(context.Interaction.User.Id.ToString());

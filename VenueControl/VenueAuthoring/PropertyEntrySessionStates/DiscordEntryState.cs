@@ -16,12 +16,16 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
-
+            var isDm = c.Interaction.Channel is IDMChannel;
             return c.Interaction.RespondAsync(MessageRepository.AskForDiscordMessage.PickRandom(),
                 new ComponentBuilder()
                     .WithBackButton(c)
                     .WithButton("No discord", c.Session.RegisterComponentHandler(OnNoDiscord, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
-                .Build());
+                    .Build(),
+                isDm ? null : new EmbedBuilder()
+                    .WithDescription("**@ Veni Ki** with your discord link")
+                    .WithColor(Color.Blue)
+                    .Build());
         }
 
         private async Task OnMessageReceived(MessageVeniInteractionContext c)

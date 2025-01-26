@@ -13,8 +13,13 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
+            var isDm = c.Interaction.Channel is IDMChannel;
             return c.Interaction.RespondAsync(MessageRepository.AskForPlotMessage.PickRandom(),
-                new ComponentBuilder().WithBackButton(c).Build());
+                new ComponentBuilder().WithBackButton(c).Build(),
+                isDm ? null : new EmbedBuilder()
+                    .WithDescription("**@ Veni Ki** with your plot number")
+                    .WithColor(Color.Blue)
+                    .Build());
         }
 
         public Task OnMessageReceived(MessageVeniInteractionContext c)

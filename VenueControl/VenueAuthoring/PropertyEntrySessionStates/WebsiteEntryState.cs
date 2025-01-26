@@ -13,11 +13,16 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
         public Task Enter(VeniInteractionContext c)
         {
             c.Session.RegisterMessageHandler(this.OnMessageReceived);
+            var isDm = c.Interaction.Channel is IDMChannel;
 
             return c.Interaction.RespondAsync(MessageRepository.AskForWebsiteMessage.PickRandom(),
                 new ComponentBuilder()
                     .WithBackButton(c)
                     .WithButton("No website", c.Session.RegisterComponentHandler(OnNoWebsite, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
+                    .Build(),
+                isDm ? null : new EmbedBuilder()
+                    .WithDescription("**@ Veni Ki** with your web link")
+                    .WithColor(Color.Blue)
                     .Build());
         }
 

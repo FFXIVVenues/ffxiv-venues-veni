@@ -13,12 +13,14 @@ class DescriptionEntrySessionState : ISessionState
     {
         c.Session.RegisterMessageHandler(this.OnMessageReceived);
         var isDm = c.Interaction.Channel is IDMChannel;
-        return c.Interaction.RespondAsync(isDm ? 
-                VenueControlStrings.AskForDescriptionDirectMessage :
-                VenueControlStrings.AskForDescriptionMessage,
+        return c.Interaction.RespondAsync(VenueControlStrings.AskForDescriptionMessage,
             new ComponentBuilder()
                 .WithBackButton(c)
                 .WithSkipButton<LocationTypeEntrySessionState, ConfirmVenueSessionState>(c)
+                .Build(),
+            isDm ? null : new EmbedBuilder()
+                .WithDescription("**@ Veni Ki** with your description")
+                .WithColor(Color.Blue)
                 .Build());
     }
 

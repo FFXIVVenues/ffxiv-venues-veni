@@ -11,6 +11,12 @@ public static class SessionExtensions
 
     public static void SetVenue(this Session session, Venue venue) =>
         session.SetItem(SessionKeys.VENUE, venue);
+
+    public static bool IsNewVenue(this Session session) =>
+        session.GetItem<bool>(SessionKeys.IS_NEW_VENUE);
+
+    public static void SetIsNewVenue(this Session session, bool isNew = true) =>
+        session.SetItem(SessionKeys.IS_NEW_VENUE, isNew);
     
     public static bool InEditing(this Session session) =>
         session.GetItem<bool>(SessionKeys.MODIFYING);

@@ -60,18 +60,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to What time do you **close**?
-        ///`(example: 6:30pm, 9pm or 1:30am)`.
-        /// </summary>
-        internal static string AskForCloseTimeDirectMessage {
-            get {
-                return ResourceManager.GetString("AskForCloseTimeDirectMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to What time do you **close**?
-        ///`(examples: @Veni Ki 6:30pm or @Veni Ki 9pm)`.
+        ///   Looks up a localized string similar to What time do you **close**?.
         /// </summary>
         internal static string AskForCloseTimeMessage {
             get {
@@ -80,18 +69,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to What time do you **close** on **{0}**?
-        ///`(example: 6:30pm, 9pm or 1:30am)`.
-        /// </summary>
-        internal static string AskForCloseTimeOnDayDirectMessage {
-            get {
-                return ResourceManager.GetString("AskForCloseTimeOnDayDirectMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to What time do you **close** on **{0}**?
-        ///`(examples: @Veni Ki 6:30pm or @Veni Ki 9pm)`.
+        ///   Looks up a localized string similar to What time do you **close** on **{0}**?.
         /// </summary>
         internal static string AskForCloseTimeOnDayMessage {
             get {
@@ -147,16 +125,6 @@ namespace FFXIVVenues.Veni.VenueControl {
         /// <summary>
         ///   Looks up a localized string similar to Could you give me an ad or **description** of the venue? Something for players to read when they click on your venue..
         /// </summary>
-        internal static string AskForDescriptionDirectMessage {
-            get {
-                return ResourceManager.GetString("AskForDescriptionDirectMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Could you give me an ad or **description** of the venue? Something for players to read when they click on your venue.
-        ///`(example: @Veni Ki Veni&apos;s Mainframe is the premiere party location...)`.
-        /// </summary>
         internal static string AskForDescriptionMessage {
             get {
                 return ResourceManager.GetString("AskForDescriptionMessage", resourceCulture);
@@ -184,16 +152,6 @@ namespace FFXIVVenues.Veni.VenueControl {
         /// <summary>
         ///   Looks up a localized string similar to Nicuu! 💕 What&apos;s the **SyncShell ID/Alias**?.
         /// </summary>
-        internal static string AskForMareIdDirectMessage {
-            get {
-                return ResourceManager.GetString("AskForMareIdDirectMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Nicuu! 💕 What&apos;s the **SyncShell ID/Alias**?
-        ///`(example: @Veni Ki MSS-123456789ABC)`.
-        /// </summary>
         internal static string AskForMareIdMessage {
             get {
                 return ResourceManager.GetString("AskForMareIdMessage", resourceCulture);
@@ -201,17 +159,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to and the **SyncShell password**? .
-        /// </summary>
-        internal static string AskForMarePasswordDirectMessage {
-            get {
-                return ResourceManager.GetString("AskForMarePasswordDirectMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to and the **SyncShell password**? 
-        ///`(example: @Veni Ki MyV3nu3SyncShell)`.
+        ///   Looks up a localized string similar to and the **SyncShell password**?.
         /// </summary>
         internal static string AskForMarePasswordMessage {
             get {
@@ -221,16 +169,6 @@ namespace FFXIVVenues.Veni.VenueControl {
         
         /// <summary>
         ///   Looks up a localized string similar to Great, what is the **name**? 🙂.
-        /// </summary>
-        internal static string AskForNameDirectMessage {
-            get {
-                return ResourceManager.GetString("AskForNameDirectMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Great, what is the **name**? 🙂
-        ///`(example: @Veni Ki Veni&apos;s Mainframe)`.
         /// </summary>
         internal static string AskForNameMessage {
             get {
@@ -257,18 +195,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to What time do you **open**?
-        ///`(example: 6:30pm, 9pm or 1:30am)`.
-        /// </summary>
-        internal static string AskForOpenTimeDirectMessage {
-            get {
-                return ResourceManager.GetString("AskForOpenTimeDirectMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to What time do you **open**?
-        ///`(examples: @Veni Ki 6:30pm or @Veni Ki 9pm)`.
+        ///   Looks up a localized string similar to What time do you **open**?.
         /// </summary>
         internal static string AskForOpenTimeMessage {
             get {
@@ -277,18 +204,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to What time do you **open** on **{0}**?
-        ///`(example: 6:30pm, 9pm or 1:30am)`.
-        /// </summary>
-        internal static string AskForOpenTimeOnDayDirectMessage {
-            get {
-                return ResourceManager.GetString("AskForOpenTimeOnDayDirectMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to What time do you **open** on **{0}**?
-        ///`(examples: @Veni Ki 6:30pm or @Veni Ki 9pm)`.
+        ///   Looks up a localized string similar to What time do you **open** on **{0}**?.
         /// </summary>
         internal static string AskForOpenTimeOnDayMessage {
             get {

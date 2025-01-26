@@ -72,7 +72,7 @@ class ConfirmVenueSessionState(
 
     private async Task LooksPerfect(ComponentVeniInteractionContext c)
     {
-        var isNewVenue = c.Session.GetItem<bool>(SessionKeys.IS_NEW_VENUE);
+        var isNewVenue = c.Session.IsNewVenue();
         var modifying = c.Session.InEditing();
 
         _ = c.Interaction.Channel.SendMessageAsync(_workingOnItResponse.PickRandom());

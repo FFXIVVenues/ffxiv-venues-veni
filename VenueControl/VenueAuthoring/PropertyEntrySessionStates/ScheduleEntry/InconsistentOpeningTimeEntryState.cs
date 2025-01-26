@@ -22,6 +22,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
         public Task Enter(VeniInteractionContext c)
         {
+            c.Session.RegisterMessageHandler(this.OnMessageReceived);
+
             this._venue = c.Session.GetVenue();
             this._timeZoneId = c.Session.GetItem<string>(SessionKeys.TIMEZONE_ID);
 
@@ -31,28 +33,24 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 c.Session.ClearItem(SessionKeys.NOW_SETTING_CLOSING);
             }
 
-            if (this._nowSettingClosing == null)
-                this._nowSettingClosing = false;
-
+            this._nowSettingClosing ??= false;
             if (this._nowSettingDay == null)
             {
                 this._nowSettingDay = c.Session.GetItem<int?>(SessionKeys.NOW_SETTING_SLOT);
                 c.Session.ClearItem(SessionKeys.NOW_SETTING_SLOT);
             }
 
-            if (this._nowSettingDay == null)
-                this._nowSettingDay = 0;
-
-            c.Session.RegisterMessageHandler(this.OnMessageReceived);
-
+            this._nowSettingDay ??= 0;
             var message = !this._nowSettingClosing.Value ? VenueControlStrings.AskForOpenTimeOnDayMessage : VenueControlStrings.AskForCloseTimeOnDayMessage;
-            if (c.Interaction.Channel is IDMChannel)
-                message = !this._nowSettingClosing.Value ? VenueControlStrings.AskForOpenTimeOnDayDirectMessage : VenueControlStrings.AskForCloseTimeOnDayDirectMessage;
-
+            var isDm = c.Interaction.Channel is IDMChannel;
             var openingForDayMessage = string.Format(message, _venue.Schedule[this._nowSettingDay.Value].Day);
             
             return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {openingForDayMessage}",
-                                               new ComponentBuilder().WithBackButton(c).Build());
+                                               new ComponentBuilder().WithBackButton(c).Build(),
+                                               isDm ? null : new EmbedBuilder()
+                                                   .WithDescription("**@ Veni Ki** with your time")
+                                                   .WithColor(Color.Blue)
+                                                   .Build());
         }
 
         public Task OnMessageReceived(MessageVeniInteractionContext c)

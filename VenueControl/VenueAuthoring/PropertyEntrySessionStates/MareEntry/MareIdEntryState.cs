@@ -13,11 +13,14 @@ class MareIdEntryState : ISessionState
     {
         c.Session.RegisterMessageHandler(this.OnMessageReceived);
         var isDm = c.Interaction.Channel is IDMChannel;
-        return c.Interaction.RespondAsync(isDm ? 
-                VenueControlStrings.AskForMareIdDirectMessage :
-                VenueControlStrings.AskForMareIdMessage,
+        return c.Interaction.RespondAsync(
+            VenueControlStrings.AskForMareIdMessage,
             new ComponentBuilder()
                 .WithBackButton(c)
+                .Build(),
+            isDm ? null : new EmbedBuilder()
+                .WithDescription("**@ Veni Ki** with your Mare Id")
+                .WithColor(Color.Blue)
                 .Build());
     }
 

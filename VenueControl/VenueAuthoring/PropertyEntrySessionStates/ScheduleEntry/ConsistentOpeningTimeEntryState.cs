@@ -20,6 +20,8 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
 
         public Task Enter(VeniInteractionContext c)
         {
+            c.Session.RegisterMessageHandler(this.OnMessageReceived);
+
             this._venue = c.Session.GetVenue();
             this._timeZoneId = c.Session.GetItem<string>(SessionKeys.TIMEZONE_ID);
 
@@ -29,17 +31,16 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                 c.Session.ClearItem(SessionKeys.NOW_SETTING_CLOSING);
             }
 
-            if (this._nowSettingClosing == null)
-                this._nowSettingClosing = false;
-
-            c.Session.RegisterMessageHandler(this.OnMessageReceived);
-
+            this._nowSettingClosing ??= false;
             var message = !this._nowSettingClosing.Value ? VenueControlStrings.AskForOpenTimeMessage : VenueControlStrings.AskForCloseTimeMessage;
-            if (c.Interaction.Channel is IDMChannel)
-                message = !this._nowSettingClosing.Value ? VenueControlStrings.AskForOpenTimeDirectMessage : VenueControlStrings.AskForCloseTimeDirectMessage;
+            var isDm = c.Interaction.Channel is IDMChannel;
 
             return c.Interaction.RespondAsync($"{MessageRepository.ConfirmMessage.PickRandom()} {message}",
-                                                new ComponentBuilder().WithBackButton(c).Build());
+                                                new ComponentBuilder().WithBackButton(c).Build(),
+                                                isDm ? null : new EmbedBuilder()
+                                                    .WithDescription("**@ Veni Ki** with your time")
+                                                    .WithColor(Color.Blue)
+                                                    .Build());
         }
 
         public Task OnMessageReceived(MessageVeniInteractionContext c)
@@ -47,7 +48,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             var message = c.Interaction.Content.StripMentions().ToLower();
             var match = _regex.Match(message);
             if (!match.Success)
-                return c.Interaction.Channel.SendMessageAsync($"I don't get it 😓 Could you write in 12-hour format? Like 12am, or 7:30pm?");
+                return c.Interaction.Channel.SendMessageAsync($"I don't understand. 😅 Could you write in 12-hour format? Like 12am, or 7:30pm?");
 
             var hour = ushort.Parse(match.Groups["hour"].Value);
             var minute = match.Groups["minute"].Success ? ushort.Parse(match.Groups["minute"].Value) : (ushort)0;

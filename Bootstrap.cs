@@ -74,7 +74,6 @@ commandBroker.Add<ShowMineCommand.CommandFactory, ShowMineCommand.CommandHandler
 commandBroker.Add<SetWelcomeJoinersCommand.CommandFactory, SetWelcomeJoinersCommand.CommandHandler>(SetWelcomeJoinersCommand.COMMAND_NAME);
 commandBroker.Add<SetFormatNamesCommand.CommandFactory, SetFormatNamesCommand.CommandHandler>(SetFormatNamesCommand.COMMAND_NAME);
 commandBroker.Add<ShowCountCommand.CommandFactory, ShowCountCommand.CommandHandler>(ShowCountCommand.COMMAND_NAME);
-commandBroker.Add<GraphCommand.CommandFactory, GraphCommand.CommandHandler>(GraphCommand.COMMAND_NAME);
 commandBroker.Add<GetUnapprovedCommand.CommandFactory, GetUnapprovedCommand.CommandHandler>(GetUnapprovedCommand.COMMAND_NAME);
 
 serviceProvider.GetService<IComponentBroker>()

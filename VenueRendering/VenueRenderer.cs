@@ -51,6 +51,8 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig, IDi
         bannerUrl ??= venue.BannerUri?.ToString();
 
         var stringBuilder = new StringBuilder();
+        stringBuilder.Append("**Venue Id**: ");
+        stringBuilder.AppendLine(venue.Id);
         stringBuilder.Append("**Venue name**: ");
         stringBuilder.AppendLine(venue.Name);
         stringBuilder.Append("**Created**: ");
