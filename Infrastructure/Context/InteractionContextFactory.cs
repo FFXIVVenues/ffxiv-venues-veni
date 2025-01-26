@@ -4,33 +4,25 @@ using FFXIVVenues.Veni.Infrastructure.Context.Abstractions;
 
 namespace FFXIVVenues.Veni.Infrastructure.Context;
 
-public class InteractionContextFactory : IInteractionContextFactory
+public class InteractionContextFactory(ISessionProvider sessionProvider, DiscordSocketClient client)
+    : IInteractionContextFactory
 {
-    private readonly ISessionProvider _sessionProvider;
-    private readonly DiscordSocketClient _client;
-
-    public InteractionContextFactory(ISessionProvider sessionProvider, DiscordSocketClient client)
-    {
-        this._sessionProvider = sessionProvider;
-        this._client = client;
-    }
-
     public MessageVeniInteractionContext Create(SocketMessage message)
     {
-        var conversationContext = _sessionProvider.GetSession(message);
-        return new MessageVeniInteractionContext(message, this._client, conversationContext);
+        var conversationContext = sessionProvider.GetSession(message);
+        return new MessageVeniInteractionContext(message, client, conversationContext);
     }
 
     public ComponentVeniInteractionContext Create(SocketMessageComponent message)
     {
-        var session = _sessionProvider.GetSession(message);
-        return new ComponentVeniInteractionContext(message, _client, session);
+        var session = sessionProvider.GetSession(message);
+        return new ComponentVeniInteractionContext(message, client, session);
     }
 
     public SlashCommandVeniInteractionContext Create(SocketSlashCommand message)
     {
-        var sessionContext = _sessionProvider.GetSession(message);
-        return new SlashCommandVeniInteractionContext(message, _client, sessionContext);
+        var sessionContext = sessionProvider.GetSession(message);
+        return new SlashCommandVeniInteractionContext(message, client, sessionContext);
     }
     
 }

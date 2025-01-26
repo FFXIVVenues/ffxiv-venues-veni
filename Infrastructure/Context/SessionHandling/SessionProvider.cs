@@ -10,8 +10,12 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
         private readonly RollingCache<Session> _sessions = new(86400000 /* 18 hours */, 172800000 /* 48 hours */);
         private bool _disposed;
 
+
         public Session GetSession(SocketMessage message) =>
             _sessions.GetOrSet($"{message.Channel.Id}_{message.Author.Id}", new Session(serviceProvider)).Value;
+
+        public Session GetSession(SocketModal message) =>
+            _sessions.GetOrSet($"{message.Channel.Id}_{message.User.Id}", new Session(serviceProvider)).Value;
 
         public Session GetSession(SocketMessageComponent message) =>
             _sessions.GetOrSet($"{message.Channel.Id}_{message.User.Id}", new Session(serviceProvider)).Value;

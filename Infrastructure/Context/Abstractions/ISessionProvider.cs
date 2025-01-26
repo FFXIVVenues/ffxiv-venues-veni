@@ -7,6 +7,8 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.Abstractions
     {
         Session GetSession(SocketMessage message);
 
+        Session GetSession(SocketModal message);
+
         Session GetSession(SocketMessageComponent message);
 
         Session GetSession(SocketSlashCommand message);

@@ -11,7 +11,9 @@ using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Authorisation.Blacklist;
 using FFXIVVenues.Veni.GuildEngagement;
+using FFXIVVenues.Veni.Infrastructure.Context.Abstractions;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace FFXIVVenues.Veni
@@ -50,6 +52,14 @@ namespace FFXIVVenues.Veni
             this._client.ButtonExecuted += ComponentExecutedAsync;
             this._client.UserJoined += UserJoinedAsync;
             this._client.GuildAvailable += GuildAvailableAsync;
+
+            this._client.ButtonExecuted += (m) =>
+                serviceProvider.GetService<ISessionProvider>().GetSession(m)?.HandleComponentResponseAsync(m);
+            this._client.SelectMenuExecuted += (m) =>
+                serviceProvider.GetService<ISessionProvider>().GetSession(m)?.HandleComponentResponseAsync(m);
+            this._client.ModalSubmitted += (m) =>
+                serviceProvider.GetService<ISessionProvider>().GetSession(m)?.HandleModalResponseAsync(m);
+
             this._db = db;
 
             this._messagePipeline = new Pipeline<MessageVeniInteractionContext>()
@@ -111,31 +121,32 @@ namespace FFXIVVenues.Veni
             }
         }
 
-        private async Task SlashCommandExecutedAsync(SocketSlashCommand message)
+        private Task SlashCommandExecutedAsync(SocketSlashCommand message)
         {
-            try
-            {
-                if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
-                {
-                    await message.RespondAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
-                                               $" If you think this was a mistake please let my family know.",
-                        ephemeral: true);
-                    return;
-                }
+            // if (await _db.ExistsAsync<BlacklistEntry>(message.User.Id.ToString()))
+            // {
+            //     await message.RespondAsync($"Sorry, my family said I'm not allowed to speak to you. 😢" +
+            //                                $" If you think this was a mistake please let my family know.",
+            //         ephemeral: true);
+            //     return;
+            // }
 
-                var context = this._contextFactory.Create(message);
-                LogSlashCommandExecuted(message, context);
-                await this._commandBroker.HandleAsync(context);
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "An unhandled exception was thrown in handling a /{Command} command", message.CommandName);
-            }
+            var context = this._contextFactory.Create(message);
+            LogSlashCommandExecuted(message, context);
+
+            _ = this._commandBroker.HandleAsync(context)
+                .ContinueWith(t =>
+                {
+                    if (t.Exception is not null)
+                        Log.Error(t.Exception, "An unhandled exception was thrown in handling a /{Command} command", message.CommandName);
+                });
+
+            return Task.CompletedTask;
         }
 
         private async Task ComponentExecutedAsync(SocketMessageComponent message)
         {
-            await message.DeferAsync();
+            //await message.DeferAsync();
             var typingHandle = message.Channel.EnterTypingState();
 
             try
@@ -158,7 +169,6 @@ namespace FFXIVVenues.Veni
                 var context = this._contextFactory.Create(message);
                 context.TypingHandle = typingHandle;
                 LogComponentExecuted(message, context);
-                await context.Session.HandleComponentInteraction(context);
                 await this._componentBroker.HandleAsync(context);
             }
             catch (Exception e)

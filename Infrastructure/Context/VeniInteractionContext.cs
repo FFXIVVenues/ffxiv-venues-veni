@@ -18,6 +18,9 @@ namespace FFXIVVenues.Veni.Infrastructure.Context
         public DiscordSocketClient Client { get; } = client;
         public Session Session { get; } = conversation;
         public IDisposable TypingHandle { get; set; }
+
+
+
     }
 
     public class VeniInteractionContext(IInteractionWrapper m,
