@@ -2,6 +2,7 @@
 using FFXIVVenues.Veni.AI.Luis;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation.Configuration;
+using FFXIVVenues.Veni.Infrastructure;
 using FFXIVVenues.Veni.Infrastructure.Persistence;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring;
 using FFXIVVenues.Veni.VenueRendering;
@@ -31,7 +32,8 @@ internal static partial class Bootstrap
             UiConfig = config.GetSection("Ui").Get<UiConfiguration>() ?? new(),
             NotificationConfig = config.GetSection("Notifications").Get<NotificationsConfiguration>() ?? new(),
             AuthorisationConfig = config.GetSection("Authorisation").Get<AuthorisationConfiguration>() ?? new(),
-            DavinciConfig = config.GetSection("Davinci3").Get<DavinciConfiguration>() ?? new()
+            DavinciConfig = config.GetSection("Davinci3").Get<DavinciConfiguration>() ?? new(),
+            PresenceConfig = config.GetSection("Presence").Get<PresenceConfiguration>() ?? new()
         };
 
         serviceCollection.AddSingleton<IConfiguration>(config);
@@ -42,6 +44,7 @@ internal static partial class Bootstrap
         serviceCollection.AddSingleton(allConfig.ApiConfig);
         serviceCollection.AddSingleton(allConfig.PersistenceConfig);
         serviceCollection.AddSingleton(allConfig.UiConfig);
+        serviceCollection.AddSingleton(allConfig.PresenceConfig);
 
         return allConfig;
     }
@@ -58,4 +61,5 @@ internal class Configurations
     public NotificationsConfiguration NotificationConfig { get; set; }
     public AuthorisationConfiguration AuthorisationConfig { get; set; }
     public DavinciConfiguration DavinciConfig { get; set; }
+    public PresenceConfiguration PresenceConfig { get; set; }
 }

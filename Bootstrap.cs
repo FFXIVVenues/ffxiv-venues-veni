@@ -16,6 +16,7 @@ using FFXIVVenues.Veni.AI.Luis;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.GuildEngagement;
+using FFXIVVenues.Veni.Infrastructure;
 using FFXIVVenues.Veni.Infrastructure.Tasks;
 using FFXIVVenues.Veni.UserSupport;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit;
