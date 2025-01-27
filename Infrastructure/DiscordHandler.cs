@@ -12,6 +12,7 @@ using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Infrastructure.Middleware;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
+using FFXIVVenues.Veni.Infrastructure.Presence;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval;
 using Kana.Pipelines;
@@ -32,8 +33,8 @@ internal class DiscordHandler : IDiscordHandler
     private readonly IVenueApprovalService _venueApprovalService;
     private readonly IGuildManager _guildManager;
     private readonly IRepository _db;
-    private readonly PresenceConfiguration _config;
-    private readonly IApiService _venuesApi;
+    private readonly IActivityManager _activityManager;
+    private readonly PresenceConfiguration _presenceConfiguration;
 
     public DiscordHandler(DiscordSocketClient client,
         ICommandBroker commandBroker,
@@ -43,8 +44,8 @@ internal class DiscordHandler : IDiscordHandler
         IVenueApprovalService venueApprovalService,
         IGuildManager guildManager,
         IRepository db,
-        PresenceConfiguration config,
-        IApiService venuesApi)
+        PresenceConfiguration presenceConfiguration,
+        IActivityManager activityManager)
     {
         this._client = client;
         this._commandBroker = commandBroker;
@@ -52,8 +53,8 @@ internal class DiscordHandler : IDiscordHandler
         this._componentBroker = componentBroker;
         this._venueApprovalService = venueApprovalService;
         this._guildManager = guildManager;
-        this._config = config;
-        this._venuesApi = venuesApi;
+        this._presenceConfiguration = presenceConfiguration;
+        this._activityManager = activityManager;
         this._client.Connected += Connected;
         this._client.SlashCommandExecuted += SlashCommandExecutedAsync;
         this._client.MessageReceived += MessageReceivedAsync;
@@ -103,8 +104,8 @@ internal class DiscordHandler : IDiscordHandler
 
         var guildUser = guild.GetUser(_client.CurrentUser.Id);
         Log.Information("'{GuildNickname}' connected to guild {GuildId} {GuildName}", guildUser.Nickname, guild.Id, guild.Name);
-        if (_config.SetNickname && guildUser.Nickname != _config.Nickname)
-            await guildUser.ModifyAsync(x => x.Nickname = _config.Nickname);
+        if (this._presenceConfiguration.SetNickname && guildUser.Nickname != this._presenceConfiguration.Nickname)
+            await guildUser.ModifyAsync(x => x.Nickname = this._presenceConfiguration.Nickname);
     }
 
     public Task ListenAsync() =>
@@ -112,12 +113,8 @@ internal class DiscordHandler : IDiscordHandler
 
     private async Task Connected()
     {
-        var allVenuesTask = this._venuesApi.GetAllVenuesAsync();
         await this._commandBroker.RegisterAllGloballyAsync();
-        var allVenues = await allVenuesTask;
-        var countOfVenues = allVenues.Count();
-        var activity = _config.Activity.Replace("{count}", countOfVenues.ToString());
-        await this._client.SetActivityAsync(new Game(activity));
+        await this._activityManager.UpdateActivityAsync();
     }
 
     private async Task MessageReceivedAsync(SocketMessage message)

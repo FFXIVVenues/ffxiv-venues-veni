@@ -4,6 +4,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation.Configuration;
 using FFXIVVenues.Veni.Infrastructure;
 using FFXIVVenues.Veni.Infrastructure.Persistence;
+using FFXIVVenues.Veni.Infrastructure.Presence;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring;
 using FFXIVVenues.Veni.VenueRendering;
 using Microsoft.Extensions.Configuration;

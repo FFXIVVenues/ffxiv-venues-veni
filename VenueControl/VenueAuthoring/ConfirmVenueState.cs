@@ -6,6 +6,7 @@ using FFXIVVenues.Veni.GuildEngagement;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
+using FFXIVVenues.Veni.Infrastructure.Presence;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueAuditing;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval;
@@ -22,7 +23,8 @@ class ConfirmVenueSessionState(
     IGuildManager guildManager,
     IAuthorizer authorizer,
     IRepository repository,
-    IVenueAuditService auditService)
+    IVenueAuditService auditService,
+    IActivityManager activityManager)
     : ISessionState
 {
     private readonly IRepository _repository = repository;
@@ -125,6 +127,7 @@ class ConfirmVenueSessionState(
         }
 
         _ = c.Session.ClearStateAsync(c);
+        _ = activityManager.UpdateActivityAsync();
     }
 
     private Task Edit(ComponentVeniInteractionContext c) =>

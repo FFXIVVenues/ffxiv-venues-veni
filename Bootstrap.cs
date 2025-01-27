@@ -17,6 +17,7 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.GuildEngagement;
 using FFXIVVenues.Veni.Infrastructure;
+using FFXIVVenues.Veni.Infrastructure.Presence;
 using FFXIVVenues.Veni.Infrastructure.Tasks;
 using FFXIVVenues.Veni.UserSupport;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit;
@@ -61,6 +62,7 @@ serviceCollection.AddSingleton<IMassAuditExporter, MassAuditExporter>();
 serviceCollection.AddSingleton<MassNoticeService>();
 serviceCollection.AddSingleton<IDiscordValidator, DiscordValidator>();
 serviceCollection.AddSingleton<ISiteValidator, SiteValidator>();
+serviceCollection.AddSingleton<IActivityManager, ActivityManager>();
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
