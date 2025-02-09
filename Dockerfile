@@ -13,7 +13,12 @@ FROM ubuntu:latest AS build
 COPY . /src
 RUN apt update
 RUN apt install -y libcurl4
-RUN apt install -y dotnet-sdk-9.0
+
+RUN apt install -y wget
+RUN wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+RUN chmod +x ./dotnet-install.sh
+RUN ./dotnet-install.sh --version 9
+
 RUN dotnet publish /src/FFXIVVenues.Veni.csproj -c Release -o /src/build
 
 FROM base AS final
