@@ -11,7 +11,8 @@ using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 
 namespace FFXIVVenues.Veni.Engineering;
 
-[DiscordCommand("root blacklist list", "List of blacklisted users/servers.")]
+[DiscordCommandRestrictToMasterGuild]
+[DiscordCommand("blacklist list", "List of blacklisted users/servers.")]
 public class BlacklistListCommand : ICommandHandler
 {
     private readonly IRepository _db;

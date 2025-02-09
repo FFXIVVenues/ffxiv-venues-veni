@@ -10,7 +10,8 @@ using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni.Engineering;
 
-[DiscordCommand("root blacklist remove", "Remove a discord guild or user from the blacklist.")]
+[DiscordCommandRestrictToMasterGuild]
+[DiscordCommand("blacklist remove", "Remove a discord guild or user from the blacklist.")]
 [DiscordCommandOption("discordid", "Discord ID of guild/user", ApplicationCommandOptionType.String)]
 public class BlacklistRemoveCommand(IRepository db, IAuthorizer authorizer) : ICommandHandler
 {

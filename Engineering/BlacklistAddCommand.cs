@@ -10,7 +10,8 @@ using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni.Engineering;
 
-[DiscordCommand("root blacklist add", "Add a discord guild or user to the blacklist.")]
+[DiscordCommandRestrictToMasterGuild]
+[DiscordCommand("blacklist add", "Add a discord guild or user to the blacklist.")]
 [DiscordCommandOption("discordid", "Discord ID of guild/user", ApplicationCommandOptionType.String)]
 [DiscordCommandOption("reason", "Reason for blacklisting", ApplicationCommandOptionType.String)]
 public class BlacklistAddCommand(IRepository db, IAuthorizer authorizer) : ICommandHandler
