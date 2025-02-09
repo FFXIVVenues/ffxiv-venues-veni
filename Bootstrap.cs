@@ -69,7 +69,6 @@ var serviceProvider = serviceCollection.BuildServiceProvider();
 var commandBroker = serviceProvider.GetService<ICommandBroker>();
 commandBroker.AddFromAssembly();
 commandBroker.AddVenueControlCommands();
-commandBroker.Add<EscalateCommand.CommandFactory, EscalateCommand.CommandHandler>(EscalateCommand.COMMAND_NAME);
 commandBroker.Add<HelpCommand.CommandFactory, HelpCommand.CommandHandler>(HelpCommand.COMMAND_NAME);
 commandBroker.Add<ShowOpenCommand.CommandFactory, ShowOpenCommand.CommandHandler>(ShowOpenCommand.COMMAND_NAME);
 commandBroker.Add<ShowForCommand.CommandFactory, ShowForCommand.CommandHandler>(ShowForCommand.COMMAND_NAME);
