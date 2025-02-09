@@ -74,8 +74,6 @@ commandBroker.Add<HelpCommand.CommandFactory, HelpCommand.CommandHandler>(HelpCo
 commandBroker.Add<ShowOpenCommand.CommandFactory, ShowOpenCommand.CommandHandler>(ShowOpenCommand.COMMAND_NAME);
 commandBroker.Add<ShowForCommand.CommandFactory, ShowForCommand.CommandHandler>(ShowForCommand.COMMAND_NAME);
 commandBroker.Add<ShowMineCommand.CommandFactory, ShowMineCommand.CommandHandler>(ShowMineCommand.COMMAND_NAME);
-commandBroker.Add<SetWelcomeJoinersCommand.CommandFactory, SetWelcomeJoinersCommand.CommandHandler>(SetWelcomeJoinersCommand.COMMAND_NAME);
-commandBroker.Add<SetFormatNamesCommand.CommandFactory, SetFormatNamesCommand.CommandHandler>(SetFormatNamesCommand.COMMAND_NAME);
 commandBroker.Add<ShowCountCommand.CommandFactory, ShowCountCommand.CommandHandler>(ShowCountCommand.COMMAND_NAME);
 commandBroker.Add<GetUnapprovedCommand.CommandFactory, GetUnapprovedCommand.CommandHandler>(GetUnapprovedCommand.COMMAND_NAME);
 

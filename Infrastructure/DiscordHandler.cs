@@ -113,7 +113,8 @@ internal class DiscordHandler : IDiscordHandler
 
     private async Task Connected()
     {
-        await this._commandBroker.RegisterAllGloballyAsync();
+        await this._commandBroker.RegisterAllGlobalCommandsAsync();
+        await this._commandBroker.RegisterMasterGuildCommandsAsync();
         await this._activityManager.UpdateActivityAsync();
     }
 
@@ -215,14 +216,10 @@ internal class DiscordHandler : IDiscordHandler
     {
         Task.Delay(30_000).ContinueWith(async _ =>
         {
-            var welcomeTask = this._guildManager.WelcomeGuildUserAsync(user);
-            var formatTask = this._guildManager.FormatDisplayNameForGuildUserAsync(user);
-            var roleTask = Task.CompletedTask;
+            var welcomeTask = await this._guildManager.WelcomeGuildUserAsync(user);
+            var formatTask = await this._guildManager.FormatDisplayNameForGuildUserAsync(user);
             if (await this._guildManager.SyncRolesForGuildUserAsync(user))
-                roleTask = user.Guild.SystemChannel.SendMessageAsync(MessageRepository.RolesAssigned.PickRandom().Replace("{mention}", user.Mention));
-            await roleTask;
-            await formatTask;
-            await welcomeTask;
+                await user.Guild.SystemChannel.SendMessageAsync(MessageRepository.RolesAssigned.PickRandom().Replace("{mention}", user.Mention));
         });
         return Task.CompletedTask;
     }

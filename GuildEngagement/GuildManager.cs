@@ -7,10 +7,12 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
+using Microsoft.Azure.Cosmos;
+using Serilog;
 
 namespace FFXIVVenues.Veni.GuildEngagement;
 
-internal class GuildManager(DiscordSocketClient client, IRepository repository, IApiService apiService)
+internal class GuildManager(DiscordSocketClient client, IRepository repository, IApiService apiService, ILogger logger)
     : IGuildManager
 {
     private IReadOnlyCollection<IGuild> _guildsCache;
@@ -30,31 +32,62 @@ internal class GuildManager(DiscordSocketClient client, IRepository repository, 
     /// </returns>
     public async Task<bool> AssignRolesForVenueAsync(Venue venue)
     {
+        logger.Debug("Assigning roles for venue {VenueName}", venue.Name);
         var guilds = this.GetVenisGuilds();
         var guildIds = guilds.Select(guild => guild.Id.ToString());
         var guildSettings = await repository.GetWhereAsync<GuildSettings>(c => guildIds.Contains(c.id));
         var rolesAdded = false;
+
         foreach (var guildSetting in guildSettings)
         {
-            if (!guildSetting.DataCenterRoleMap.TryGetValue(venue.Location.DataCenter, out var roleId))
-                continue;
-
             var guild = guilds.FirstOrDefault(g => g.Id == guildSetting.GuildId);
-            if (guild == null) continue;
+            if (guild == null)
+            {
+                logger.Debug("Veni is longer in guild {GuildName}", guildSetting.GuildId);
+                continue;
+            }
+
+            logger.Debug("Checking guild configuration for {DataCenter} in guild {GuildName}", venue.Location.DataCenter, guild.Name);
+            if (!guildSetting.DataCenterRoleMap.TryGetValue(venue.Location.DataCenter, out var roleId))
+            {
+                logger.Debug("There is no guild configuration for {DataCenter} in guild {GuildName}", venue.Location.DataCenter, guild.Name);
+                continue;
+            }
 
             var role = guild.GetRole(roleId);
+            if (role == null)
+            {
+                logger.Debug("Role {RoleId} not found in guild {GuildName}", roleId, guild.Name);
+                continue;
+            }
 
             foreach (var managerId in venue.Managers)
             {
                 var manager = await guild.GetUserAsync(ulong.Parse(managerId));
-                if (manager == null) continue;
+                if (manager == null)
+                {
+                    logger.Debug("Manager {ManagerId} not found in guild {GuildName}", managerId, guild.Name);
+                    continue;
+                }
+
                 if (!manager.RoleIds.Contains(roleId))
                 {
+                    logger.Debug("Adding role {RoleId} to manager {ManagerId} in guild {GuildName}", roleId, managerId, guild.Name);
                     await manager.AddRoleAsync(roleId);
                     rolesAdded = true;
                 }
+                else
+                {
+                    logger.Debug("Manager {ManagerId} already has role {RoleId} in guild {GuildName}", managerId, roleId, guild.Name);
+                }
             }
         }
+
+        if (rolesAdded)
+            logger.Debug("Roles assigned for venue {VenueName}", venue.Name);
+        else
+            logger.Debug("No roles assigned for venue {VenueName}", venue.Name);
+
         return rolesAdded;
     }
 
@@ -72,23 +105,44 @@ internal class GuildManager(DiscordSocketClient client, IRepository repository, 
     /// </returns>
     public async Task<bool> SyncRolesForVenueAsync(Venue venue)
     {
+        logger.Debug("Syncing roles for venue {VenueName}", venue.Name);
         var guilds = this.GetVenisGuilds();
         var guildIds = guilds.Select(guild => guild.Id.ToString());
         var guildSettings = await repository.GetWhereAsync<GuildSettings>(c => guildIds.Contains(c.id));
-        var namesFormatted = false;
+        var rolesChanged = false;
+
         foreach (var guildSetting in guildSettings)
         {
             var guild = guilds.FirstOrDefault(g => g.Id == guildSetting.GuildId);
             if (guild == null) continue;
+            
+            logger.Debug("Syncing roles in guild {Guild}", guild.Name);
 
             foreach (var managerId in venue.Managers)
             {
                 var manager = await guild.GetUserAsync(ulong.Parse(managerId));
                 if (manager == null) continue;
-                await this.SyncRolesForGuildUserAsync(manager, guildSetting);
+
+                logger.Debug("Syncing roles for manager {ManagerId} in guild {Guild}", managerId, guild.Name);
+                var result = await this.SyncRolesForGuildUserAsync(manager, guildSetting);
+                if (result)
+                {
+                    rolesChanged = true;
+                    logger.Debug("Roles changed for manager {ManagerId} in guild {Guild}", managerId, guild.Name);
+                }
+                else
+                {
+                    logger.Debug("No roles changed for manager {ManagerId} in guild {Guild}", managerId, guild.Name);
+                }
             }
         }
-        return namesFormatted;
+
+        if (rolesChanged)
+            logger.Debug("Role changes applied for venue {VenueName}", venue.Name);
+        else
+            logger.Debug("No role changes applied for venue {VenueName}", venue.Name);
+
+        return rolesChanged;
     }
 
     /// <summary>
@@ -105,6 +159,7 @@ internal class GuildManager(DiscordSocketClient client, IRepository repository, 
     /// </returns>
     public async Task<bool> SyncRolesForGuildUserAsync(IGuildUser user, GuildSettings guildSettings = null)
     {
+        logger.Debug("Syncing roles for user {Username} in guild {Guild}", user.Username, user.Guild.Name);
         if (guildSettings == null)
             guildSettings = await repository.GetByIdAsync<GuildSettings>(user.GuildId.ToString());
         if (guildSettings == null) return false;
@@ -112,33 +167,66 @@ internal class GuildManager(DiscordSocketClient client, IRepository repository, 
         if (!guildSettings.DataCenterRoleMap.Any())
             return false;
 
+        logger.Debug("Getting venues for user {Username}", user.Username);
         var venues = await apiService.GetAllVenuesAsync(user.Id);
         var rolesToKeep = new HashSet<ulong>();
         var rolesToAdd = new HashSet<ulong>();
-        foreach (var venue in venues)
-            if (guildSettings.DataCenterRoleMap.TryGetValue(venue.Location.DataCenter, out var roleId))
+
+        logger.Debug("Aggregating data centers for user {Username}", user.Username);
+        var dataCenters = venues.Select(v => v.Location.DataCenter).Where(s => !string.IsNullOrWhiteSpace(s)).Distinct();
+        logger.Debug("User is in {DataCenterCount} data centers", dataCenters.Count());
+
+        foreach (var dataCenter in dataCenters)
+        {
+            logger.Debug("Checking guild configuration for {DataCenter}", dataCenter);
+            if (guildSettings.DataCenterRoleMap.TryGetValue(dataCenter, out var roleId))
             {
+                logger.Debug("Guild has configuration for {DataCenter}", dataCenter);
+                logger.Debug("Will keep user {Username} in role {RoleId}", user.Username, roleId);
                 rolesToKeep.Add(roleId);
                 if (!user.RoleIds.Contains(roleId))
+                {
+                    logger.Debug("User {Username} is not already in role {RoleId}", user.Username, roleId);
+                    logger.Debug("Will add user {Username} to role {RoleId}", user.Username, roleId);
                     rolesToAdd.Add(roleId);
+                }
             }
+            else
+            {
+                logger.Debug("There is no guild configuration for {DataCenter}", dataCenter);
+            }
+        }
 
+        logger.Debug("Calculating roles to remove from user {Username}", user.Username);
         var rolesToRemove = guildSettings.DataCenterRoleMap.Values.Where(r => !rolesToKeep.Contains(r) && user.RoleIds.Contains(r)).ToHashSet();
+        logger.Debug("Will remove user {Username} from roles {Roles}", user.Username, rolesToRemove);
 
         var changesMade = false;
         if (rolesToAdd.Any())
         {
             foreach (var role in rolesToAdd)
-                _ = user.AddRoleAsync(role);
+            {
+                logger.Debug("Adding user {Username} to role {Role}", user.Username, role);
+                await user.AddRoleAsync(role);
+            }
             changesMade = true;
         }
 
         if (rolesToRemove.Any())
         {
             foreach (var role in rolesToRemove)
-                _ = user.RemoveRoleAsync(role);
+            {
+                logger.Debug("Removing user {Username} from role {Role}", user.Username, role);
+                await user.RemoveRoleAsync(role);
+            }
             changesMade = true;
         }
+
+
+        if (changesMade)
+            logger.Debug("Role changes applied to {Username} in guild {Guild}", user.Username, user.Guild.Name);
+        else
+            logger.Debug("No changes applied to {Username} in guild {Guild}", user.Username, user.Guild.Name);
 
         return changesMade;
     }

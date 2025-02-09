@@ -9,9 +9,10 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands;
 
 public class CommandCartographer : ICommandCartographer
 {
-    public (SlashCommandBuilder[], Dictionary<string, Type>) Discover()
+    public CommandDiscoveryResult Discover()
     {
         var commands = new List<SlashCommandBuilder>();
+        var masterCommands = new List<SlashCommandBuilder>();
         var handlers = new Dictionary<string, Type>();
         
         var entryAssembly = Assembly.GetEntryAssembly();
@@ -28,15 +29,18 @@ public class CommandCartographer : ICommandCartographer
             var commandAttributes = @type.GetCustomAttributes<DiscordCommandAttribute>()!;
             var optionAttributes = @type.GetCustomAttributes<DiscordCommandOptionAttribute>().ToArray();
             var optionChoiceAttributes = @type.GetCustomAttributes<DiscordCommandOptionChoiceAttribute>().ToArray();
+            var isMasterGuildCommand = @type.GetCustomAttributes<DiscordCommandRestrictToMasterGuild>() is not null;
             
             foreach (var commandAttribute in commandAttributes)
             {
                 
                 var commandPath = commandAttribute.Command.Split(' ');
                 handlers.Add(string.Join(' ', commandPath), @type);
-                var command = GetOrCreateCommand(commands, commandPath[0]);
+                var command = GetOrCreateCommand(commands, masterCommands, isMasterGuildCommand, commandPath[0]);
                 command.WithContextTypes(command.ContextTypes.Intersect(commandAttribute.ContextTypes).ToArray())
-                    .WithDefaultMemberPermissions(command.DefaultMemberPermissions | commandAttribute.MemberPermissions);
+                    .WithDefaultMemberPermissions(command.DefaultMemberPermissions == null
+                                                  ? commandAttribute.MemberPermissions
+                                                  : command.DefaultMemberPermissions | commandAttribute.MemberPermissions);
                 if (commandPath.Length == 1)
                 {
                     command.WithDescription(commandAttribute.Description)
@@ -53,7 +57,7 @@ public class CommandCartographer : ICommandCartographer
             }
         }
 
-        return (commands.ToArray(), handlers);
+        return new (commands.ToArray(), masterCommands.ToArray(), handlers);
     }
 
     private static List<SlashCommandOptionBuilder> AddCommandOptions(DiscordCommandOptionAttribute[] optionAttributes,
@@ -96,17 +100,33 @@ public class CommandCartographer : ICommandCartographer
         return options;
     }
 
-    private static SlashCommandBuilder GetOrCreateCommand(in List<SlashCommandBuilder> commands, string commandName)
+    private static SlashCommandBuilder GetOrCreateCommand(in List<SlashCommandBuilder> globalCommands,
+        in List<SlashCommandBuilder> masterCommands, bool isMaster, string commandName)
     {
-        var command = commands.FirstOrDefault(c =>
+        var command = globalCommands.FirstOrDefault(c =>
             c.Name.Equals(commandName, StringComparison.OrdinalIgnoreCase));
-        if (command == null)
+        if (isMaster && command is not null)
         {
+            // Found in global but needs moving to master
+            globalCommands.Remove(command);
+            masterCommands.Add(command);
+        }
+        if (command is null)
+        {
+            // Not found in global commands, try find in master
+            command = masterCommands.FirstOrDefault(c =>
+                c.Name.Equals(commandName, StringComparison.OrdinalIgnoreCase));
+        }
+        if (command is null)
+        {
+            // Not found anywhere
             command = new SlashCommandBuilder().WithName(commandName).WithDescription("Meow")
                 .WithContextTypes(InteractionContextType.PrivateChannel, InteractionContextType.Guild, InteractionContextType.BotDm);
-            commands.Add(command);
+            if (isMaster)
+                masterCommands.Add(command);
+            else
+                globalCommands.Add(command);
         }
-
         return command;
     }
     

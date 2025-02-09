@@ -6,5 +6,9 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands;
 
 public interface ICommandCartographer
 {
-    (SlashCommandBuilder[], Dictionary<string, Type>) Discover();
+    CommandDiscoveryResult Discover();
 }
+
+public record struct CommandDiscoveryResult(SlashCommandBuilder[] GlobalCommands,
+                                            SlashCommandBuilder[] MasterCommands,
+                                            Dictionary<string, Type> Handlers);

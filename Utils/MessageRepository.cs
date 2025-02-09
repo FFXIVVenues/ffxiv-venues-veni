@@ -192,11 +192,9 @@ namespace FFXIVVenues.Veni.Utils
 
         public static string[] WelcomeMessages = new[]
         {
-            "Welcome {mention} to the cutie's venue server!",
             "Welcome {mention}! Glad to have mew! 🥰",
             "Welcome {mention}, hope mew have a good time!",
             "Yay, {mention} joined! ♥",
-            "It's {mention}! Welcome to the home for venue tech! 🥰",
             "{mention}! Hi hi! Glad to see you here. 😻",
             "Hey {mention} cutie! Good to see you. ;)",
             "Meow! {mention}! Welcome! 🥰",
@@ -205,9 +203,9 @@ namespace FFXIVVenues.Veni.Utils
 
         public static string[] RolesAssigned = new[]
         {
-            "I've assigned you your Venue Manager role.🙂",
-            "I've given you your Venue Manager role. 🙂",
-            "Your Venue Manager role is assigned. 🙂"
+            "I've assigned you your Venue Manager role(s). 🙂",
+            "I've given you your Venue Manager role(s). 🙂",
+            "Your Venue Manager role(s) are assigned. 🙂"
         };
 
 

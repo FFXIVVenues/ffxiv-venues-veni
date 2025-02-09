@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Context;
 
 namespace FFXIVVenues.Veni.Infrastructure.Commands
@@ -12,7 +11,8 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands
 
         void AddFromAssembly();
         Task HandleAsync(SlashCommandVeniInteractionContext context);
-        Task RegisterAllGloballyAsync();
+        Task RegisterAllGlobalCommandsAsync();
+        Task RegisterMasterGuildCommandsAsync();
     }
 
 }

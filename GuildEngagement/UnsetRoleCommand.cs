@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Commands.Attributes;
 using FFXIVVenues.Veni.Infrastructure.Context;
@@ -9,8 +8,8 @@ using FFXIVVenues.Veni.Utils;
 
 namespace FFXIVVenues.Veni.GuildEngagement;
 
-[DiscordCommand("server managerrole set", "Set role to assign to venue managers of the specified Data Center.", GuildPermission.ManageRoles, InteractionContextType.Guild)]
-[DiscordCommandOption("datacenter", "The data center to assign the given role to.", ApplicationCommandOptionType.String)]
+[DiscordCommand("server managerrole unset", "Stop a role being assigned to venue managers of the specified Data Center.", GuildPermission.ManageRoles, InteractionContextType.Guild)]
+[DiscordCommandOption("datacenter", "The data center to stop assigning roles to.", ApplicationCommandOptionType.String)]
 [DiscordCommandOptionChoice("datacenter", "Crystal", "Crystal")]
 [DiscordCommandOptionChoice("datacenter", "Aether", "Aether")]
 [DiscordCommandOptionChoice("datacenter", "Primal", "Primal")]
@@ -18,8 +17,7 @@ namespace FFXIVVenues.Veni.GuildEngagement;
 [DiscordCommandOptionChoice("datacenter", "Materia", "Materia")]
 [DiscordCommandOptionChoice("datacenter", "Light", "Light")]
 [DiscordCommandOptionChoice("datacenter", "Chaos", "Chaos")]
-[DiscordCommandOption("role", "The role to assign the user when they own a venue in the specified data center.", ApplicationCommandOptionType.Role)]
-public class SetManageRoleCommand(IRepository repository) : ICommandHandler
+public class UnsetManageRoleCommand(IRepository repository) : ICommandHandler
 {
     public async Task HandleAsync(SlashCommandVeniInteractionContext slashCommand)
     {
@@ -31,12 +29,10 @@ public class SetManageRoleCommand(IRepository repository) : ICommandHandler
                             ?? new GuildSettings { GuildId = guildId };
 
         var dataCenter = slashCommand.GetStringArg("datacenter");
-        var role = slashCommand.GetObjectArg<SocketRole>("role");
-
-        guildSettings.DataCenterRoleMap[dataCenter] = role.Id;
+        guildSettings.DataCenterRoleMap.Remove(dataCenter);
         var upsertTask = repository.UpsertAsync(guildSettings);
 
-        await slashCommand.Interaction.RespondAsync($"Great! I'll give that role to all {dataCenter} venue managers. 🥰", ephemeral: true);
+        await slashCommand.Interaction.RespondAsync($"Oki! I'll stop giving roles {dataCenter} venue managers. 🙂", ephemeral: true);
         await upsertTask;
     }
 

@@ -6,26 +6,34 @@ using Discord;
 using Discord.WebSocket;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Utils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 
 namespace FFXIVVenues.Veni.Infrastructure.Commands;
 
-internal class CommandBroker(IServiceProvider serviceProvider) : ICommandBroker
+internal class CommandBroker(IServiceProvider serviceProvider, IConfiguration config) : ICommandBroker
 {
     private readonly DiscordSocketClient _discordClient = serviceProvider.GetService<DiscordSocketClient>();
     private readonly List<SlashCommandProperties> _commands = new();
+    private readonly List<SlashCommandProperties> _globalCommands = new();
+    private readonly List<SlashCommandProperties> _masterGuildCommands = new();
     private readonly TypeMap<ICommandHandler> _handlers = new(serviceProvider);
     private readonly ICommandCartographer _cartographer = serviceProvider.GetService<ICommandCartographer>();
 
     public void AddFromAssembly()
     {
-        Log.Debug($"Adding slash command from Assembly.");
-        var (commands, handlers) = this._cartographer.Discover();
-        foreach (var handler in handlers)
+        var discoveryResult = this._cartographer.Discover();
+        foreach (var handler in discoveryResult.Handlers)
+        {
+            Log.Debug("Adding slash command {Command} from Assembly", handler.Key);
             this._handlers.Add(handler.Key, handler.Value);
-        this._commands.AddRange(commands.Select(c => c.Build()));
+        }
+        this._globalCommands.AddRange(discoveryResult.GlobalCommands.Select(c => c.Build()));
+        this._masterGuildCommands.AddRange(discoveryResult.MasterCommands.Select(c => c.Build()));
+        this._commands.AddRange(_globalCommands);
+        this._commands.AddRange(_masterGuildCommands);
     }
 
     public void Add<TFactory, THandler>(string key)
@@ -38,8 +46,24 @@ internal class CommandBroker(IServiceProvider serviceProvider) : ICommandBroker
         this._handlers.Add<THandler>(key);
     }
 
-    public Task RegisterAllGloballyAsync() =>
-        this._discordClient.BulkOverwriteGlobalApplicationCommandsAsync(this._commands.ToArray());
+    public Task RegisterAllGlobalCommandsAsync()
+    {
+        Log.Debug("Registering global slash commands");
+        return this._discordClient.BulkOverwriteGlobalApplicationCommandsAsync(this._globalCommands.ToArray());
+    }
+
+    public Task RegisterMasterGuildCommandsAsync()
+    {
+        Log.Debug("Fetching master guild");
+        var guild = this._discordClient.Guilds.FirstOrDefault(g => g.Id == config.GetValue<ulong>("MasterGuild", 0));
+        if (guild == null)
+        {
+            Log.Warning("Master guild not found");
+            return Task.CompletedTask;
+        }
+        Log.Debug("Registering master guild slash commands with master guild");
+        return guild.BulkOverwriteApplicationCommandAsync(this._masterGuildCommands.ToArray());
+    }
 
     public async Task HandleAsync(SlashCommandVeniInteractionContext context)
     {

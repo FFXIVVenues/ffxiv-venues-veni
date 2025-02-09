@@ -8,27 +8,18 @@ using FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.ComponentHandlers;
 
-public class DeleteHandler : IComponentHandler
+public class DeleteHandler(IAuthorizer authorizer, IApiService apiService) : IComponentHandler
 {
 
     // Change this key and any existing buttons linked to this will die
     public static string Key => "CONTROL_DELETE";
-    
-    private readonly IAuthorizer _authorizer;
-    private readonly IApiService _apiService;
 
-    public DeleteHandler(IAuthorizer authorizer, IApiService apiService)
-    {
-        this._authorizer = authorizer;
-        this._apiService = apiService;
-    }
-    
     public async Task HandleAsync(ComponentVeniInteractionContext context, string[] args)
     {
         var user = context.Interaction.User.Id;
         var venueId = args[0];
-        var venue = await this._apiService.GetVenueAsync(venueId);
-        if (!this._authorizer.Authorize(user, Permission.DeleteVenue, venue).Authorized)
+        var venue = await apiService.GetVenueAsync(venueId);
+        if (!authorizer.Authorize(user, Permission.DeleteVenue, venue).Authorized)
             return;
         
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>

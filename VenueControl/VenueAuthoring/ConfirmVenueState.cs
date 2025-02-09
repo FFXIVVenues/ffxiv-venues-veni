@@ -53,7 +53,7 @@ class ConfirmVenueSessionState(
     private static string[] _successfulNewResponse = new[]
     {
         "Wooo! I've sent it. Once it's approved, it'll show on the index!",
-        "All done! Once Sumi or Kana approves it, it'll be live! 🥳",
+        "All done! Once an Indexer approves it, it'll be live! 🥳",
         "Ok! We'll get that approved and get it live soon! 🎉"
     };
 
