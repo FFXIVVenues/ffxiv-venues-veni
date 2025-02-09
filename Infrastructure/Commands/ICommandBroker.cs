@@ -5,7 +5,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Commands
 {
     public interface ICommandBroker
     {
-        void Add<TFactory, THandler>(string key)
+        void Add<TFactory, THandler>(string key, bool isMasterGuildCommand)
             where TFactory : ICommandFactory
             where THandler : ICommandHandler;
 

@@ -36,14 +36,19 @@ internal class CommandBroker(IServiceProvider serviceProvider, IConfiguration co
         this._commands.AddRange(_masterGuildCommands);
     }
 
-    public void Add<TFactory, THandler>(string key)
+    public void Add<TFactory, THandler>(string key, bool isMasterGuildCommand)
         where TFactory : ICommandFactory
         where THandler : ICommandHandler
     {
         Log.Debug("Adding slash command {Command}", key);
         var factory = ActivatorUtilities.CreateInstance<TFactory>(serviceProvider);
-        this._commands.Add(factory.GetSlashCommand());
+        var slashCommand = factory.GetSlashCommand();
+        this._commands.Add(slashCommand);
         this._handlers.Add<THandler>(key);
+        if (isMasterGuildCommand)
+            this._masterGuildCommands.Add(slashCommand);
+        else
+            this._globalCommands.Add(slashCommand);
     }
 
     public Task RegisterAllGlobalCommandsAsync()

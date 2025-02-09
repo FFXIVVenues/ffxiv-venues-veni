@@ -29,7 +29,7 @@ public class CommandCartographer : ICommandCartographer
             var commandAttributes = @type.GetCustomAttributes<DiscordCommandAttribute>()!;
             var optionAttributes = @type.GetCustomAttributes<DiscordCommandOptionAttribute>().ToArray();
             var optionChoiceAttributes = @type.GetCustomAttributes<DiscordCommandOptionChoiceAttribute>().ToArray();
-            var isMasterGuildCommand = @type.GetCustomAttributes<DiscordCommandRestrictToMasterGuild>() is not null;
+            var isMasterGuildCommand = @type.GetCustomAttributes<DiscordCommandRestrictToMasterGuild>().Any();
             
             foreach (var commandAttribute in commandAttributes)
             {

@@ -20,10 +20,10 @@ public static class RegistrationExtensions
         if (commandBroker == null)
             return default;
         
-        commandBroker.Add<CreateCommand.Factory, CreateCommand.Handler>(CreateCommand.COMMAND_NAME);
-        commandBroker.Add<EditCommand.Factory, EditCommand.Handler>(EditCommand.COMMAND_NAME);
-        commandBroker.Add<CloseCommand.Factory, CloseCommand.Handler>(CloseCommand.COMMAND_NAME);
-        commandBroker.Add<OpenCommand.Factory, OpenCommand.Handler>(OpenCommand.COMMAND_NAME);
+        commandBroker.Add<CreateCommand.Factory, CreateCommand.Handler>(CreateCommand.COMMAND_NAME, isMasterGuildCommand: false);
+        commandBroker.Add<EditCommand.Factory, EditCommand.Handler>(EditCommand.COMMAND_NAME, isMasterGuildCommand: false);
+        commandBroker.Add<CloseCommand.Factory, CloseCommand.Handler>(CloseCommand.COMMAND_NAME, isMasterGuildCommand: false);
+        commandBroker.Add<OpenCommand.Factory, OpenCommand.Handler>(OpenCommand.COMMAND_NAME, isMasterGuildCommand: false);
 
         return commandBroker;
     }
