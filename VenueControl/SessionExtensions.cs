@@ -11,6 +11,12 @@ public static class SessionExtensions
 
     public static void SetVenue(this Session session, Venue venue) =>
         session.SetItem(SessionKeys.VENUE, venue);
+    
+    public static string GetVenueBanner(this Session session) =>
+        session.GetItem<string>(SessionKeys.BANNER_URL);
+    
+    public static void SetVenueBanner(this Session session, string bannerUri) =>
+        session.SetItem(SessionKeys.BANNER_URL, bannerUri);
 
     public static bool IsNewVenue(this Session session) =>
         session.GetItem<bool>(SessionKeys.IS_NEW_VENUE);

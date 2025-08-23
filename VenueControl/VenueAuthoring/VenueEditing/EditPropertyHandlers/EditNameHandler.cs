@@ -17,7 +17,6 @@ public class EditNameHandler(IAuthorizer authorizer, IApiService apiService) : I
         var user = context.Interaction.User.Id;
         var venueId = args[0];
 
-        var isNewVenue = context.Session.IsNewVenue();
         var alreadyModifying = context.Session.InEditing();
         var venue = alreadyModifying ? context.Session.GetVenue() : await apiService.GetVenueAsync(venueId);
         
@@ -30,10 +29,12 @@ public class EditNameHandler(IAuthorizer authorizer, IApiService apiService) : I
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
                     props.Components = new ComponentBuilder().Build());
         
-        await context.Session.ClearStateAsync(context);
-        context.Session.SetVenue(venue);
-        context.Session.SetEditing(true);
-        context.Session.SetIsNewVenue(isNewVenue);
+        if (!alreadyModifying)
+        {
+            context.Session.SetVenue(venue);
+            context.Session.SetEditing();
+        }
+        
         await context.Session.MoveStateAsync<NameEntrySessionState>(context);
     }
     

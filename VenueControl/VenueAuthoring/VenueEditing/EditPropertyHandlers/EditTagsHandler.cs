@@ -30,10 +30,12 @@ public class EditTagsHandler(IAuthorizer authorizer, IApiService apiService) : I
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
                     props.Components = new ComponentBuilder().Build());
         
-        await context.Session.ClearStateAsync(context);
-        context.Session.SetVenue(venue);
-        context.Session.SetEditing(true);
-        context.Session.SetIsNewVenue(isNewVenue);
+        if (!alreadyModifying)
+        {
+            context.Session.SetVenue(venue);
+            context.Session.SetEditing();
+        }
+        
         await context.Session.MoveStateAsync<CategoryEntrySessionState>(context);
     }
     

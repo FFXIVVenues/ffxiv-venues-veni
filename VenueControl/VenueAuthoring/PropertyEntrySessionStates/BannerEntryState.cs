@@ -95,7 +95,7 @@ class BannerEntrySessionState(IAuthorizer authorizer, HttpClient httpClient) : I
         var component = new ComponentBuilder();
         component.WithButton("Looks good!", c.Session.RegisterComponentHandler(async cm =>
         {
-            cm.Session.SetItem(SessionKeys.BANNER_URL, cm.Interaction.Message.Attachments.First().ProxyUrl);
+            cm.Session.SetVenueBanner(cm.Interaction.Message.Attachments.First().ProxyUrl);
             if (cm.Session.InEditing())
                 await cm.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
             else

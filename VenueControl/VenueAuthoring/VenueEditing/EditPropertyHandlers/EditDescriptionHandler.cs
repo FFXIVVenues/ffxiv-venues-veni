@@ -17,7 +17,6 @@ public class EditDescriptionHandler(IAuthorizer authorizer, IApiService apiServi
         var user = context.Interaction.User.Id;
         var venueId = args[0];
 
-        var isNewVenue = context.Session.IsNewVenue();
         var alreadyModifying = context.Session.InEditing();
         var venue = alreadyModifying ? context.Session.GetVenue() : await apiService.GetVenueAsync(venueId);
         
@@ -29,11 +28,13 @@ public class EditDescriptionHandler(IAuthorizer authorizer, IApiService apiServi
 
         _ = context.Interaction.ModifyOriginalResponseAsync(props =>
                     props.Components = new ComponentBuilder().Build());
+
+        if (!alreadyModifying)
+        {
+            context.Session.SetVenue(venue);
+            context.Session.SetEditing();
+        }
         
-        await context.Session.ClearStateAsync(context);
-        context.Session.SetVenue(venue);
-        context.Session.SetEditing(true);
-        context.Session.SetIsNewVenue(isNewVenue);
         await context.Session.MoveStateAsync<DescriptionEntrySessionState>(context);
     }
     

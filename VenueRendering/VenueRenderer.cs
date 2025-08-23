@@ -64,10 +64,6 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig, IDi
         }
         stringBuilder.Append("**Location**: ");
         stringBuilder.AppendLine(venue.Location.ToString());
-        stringBuilder.Append("**SyncShell ID**: ");
-        stringBuilder.AppendLine(venue.MareCode ?? "None");
-        stringBuilder.Append("**SyncShell Password**: ");
-        stringBuilder.AppendLine(venue.MarePassword ?? "None");
         stringBuilder.Append("**SFW**: ");
         stringBuilder.AppendLine(venue.Sfw ? "Yes" : "No");
         
@@ -361,11 +357,6 @@ public class VenueRenderer(IAuthorizer authorizer, UiConfiguration uiConfig, IDi
                     .WithEmote(new Emoji("📍"))
                     .WithDescription("The primary address of your venue.")
                     .WithStaticHandler(EditLocationHandler.Key, venue.Id))
-                .AddOption(new SelectMenuOptionBuilder()
-                    .WithLabel("Edit Mare SyncShell")
-                    .WithEmote(new Emoji("🌚"))
-                    .WithDescription("The Mare SyncShell ID and Password of your venue.")
-                    .WithStaticHandler(EditMareHandler.Key, venue.Id))
                 .AddOption(new SelectMenuOptionBuilder()
                     .WithLabel("Edit Schedule")
                     .WithEmote(new Emoji("📆"))

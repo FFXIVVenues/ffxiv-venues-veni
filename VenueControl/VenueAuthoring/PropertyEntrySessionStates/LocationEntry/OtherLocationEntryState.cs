@@ -3,7 +3,6 @@ using Discord;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
 using FFXIVVenues.Veni.Utils;
-using FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.MareEntry;
 using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionStates.LocationEntry;
@@ -26,7 +25,7 @@ internal class OtherLocationEntrySessionState : ISessionState
         if (c.Session.InEditing())
             return c.Session.MoveStateAsync<ConfirmVenueSessionState>(c);
 
-        return c.Session.MoveStateAsync<HasMareEntrySessionState>(c);
+        return c.Session.MoveStateAsync<SfwEntrySessionState>(c);
     }
     
 }

@@ -21,6 +21,8 @@ internal class EditIntentHandler(IApiService apiService, IVenueRenderer venueRen
             return;
         }
 
+        await context.Session.ClearStateAsync(context);
+        
         // ReSharper disable once PossibleMultipleEnumeration
         // Enumerating next once for the Any is better than enumerating all on a chance
         venues = venues.ToList();

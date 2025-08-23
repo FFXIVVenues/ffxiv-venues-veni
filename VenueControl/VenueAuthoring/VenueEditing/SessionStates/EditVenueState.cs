@@ -8,7 +8,6 @@ using FFXIVVenues.Veni.VenueRendering;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates
 {
-    // Currently is only used for editing from Confirm session state
     class EditVenueSessionState : ISessionState
     {
         private readonly IAuthorizer _authorizer;
