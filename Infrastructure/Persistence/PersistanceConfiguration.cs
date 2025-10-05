@@ -1,19 +1,15 @@
-﻿namespace FFXIVVenues.Veni.Infrastructure.Persistence
+﻿namespace FFXIVVenues.Veni.Infrastructure.Persistence;
+
+public class PersistenceConfiguration
 {
-    public class PersistenceConfiguration
-    {
+    public PersistanceProvider Provider { get; set; }
+    public string ConnectionString { get; set; }
+}
 
-        public PersistanceProvider Provider { get; set; }
-
-		public string ConnectionString { get; set; }
-
-    }
-
-    public enum PersistanceProvider
-    {
-        InMemory,
-        LiteDb,
-        Cosmos,
-        MongoDb
-    }
+public enum PersistanceProvider
+{
+    InMemory,
+    LiteDb,
+    Cosmos,
+    MongoDb
 }

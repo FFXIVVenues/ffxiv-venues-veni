@@ -13,36 +13,28 @@ using FFXIVVenues.VenueModels;
 
 namespace FFXIVVenues.Veni.VenueAuditing;
 
-public class VenueAuditService : IVenueAuditService
+public class VenueAuditService(
+    IDiscordClient client,
+    IVenueRenderer venueRenderer,
+    IRepository repository,
+    IApiService apiService)
+    : IVenueAuditService
 {
-    private readonly IDiscordClient _client;
-    private readonly IVenueRenderer _venueRenderer;
-    private readonly IRepository _repository;
-    private readonly IApiService _apiService;
-
-    public VenueAuditService(IDiscordClient client, IVenueRenderer venueRenderer, IRepository repository, IApiService apiService)
-    {
-        this._client = client;
-        this._venueRenderer = venueRenderer;
-        this._repository = repository;
-        this._apiService = apiService;
-    }
-
     public VenueAudit CreateAuditFor(Venue venue, string roundId, ulong requestedIn, ulong requestedBy) =>
-        new (venue, roundId, requestedIn, requestedBy, this._client, this._venueRenderer, this._repository);
+        new (venue, roundId, requestedIn, requestedBy, client, venueRenderer, repository);
     
     public VenueAudit CreateAuditFor(Venue venue, VenueAuditRecord record) =>
-        new (venue, record, this._client, this._venueRenderer, this._repository);
+        new (venue, record, client, venueRenderer, repository);
 
     public Task<VenueAuditRecord> GetAudit(string auditId) =>
-        this._repository.GetByIdAsync<VenueAuditRecord>(auditId);
+        repository.GetByIdAsync<VenueAuditRecord>(auditId);
     
     public Task<VenueAuditRecord> GetLatestRecordFor(Venue venue) =>
         this.GetLatestRecordFor(venue.Id);
 
     public async Task<VenueAuditRecord> GetLatestRecordFor(string venueId)
     {
-        var query = await this._repository.GetWhereAsync<VenueAuditRecord>(a => a.VenueId == venueId);
+        var query = await repository.GetWhereAsync<VenueAuditRecord>(a => a.VenueId == venueId);
         return query.OrderByDescending(a => a.SentTime).Take(1).ToList().FirstOrDefault();
     }
 
@@ -50,7 +42,7 @@ public class VenueAuditService : IVenueAuditService
         await UpdateAuditStatus(await GetLatestRecordFor(venue), venue, actingUserId, status);
     
     public async Task UpdateAuditStatus(VenueAuditRecord audit, ulong actingUserId, VenueAuditStatus status) =>
-        await UpdateAuditStatus(audit, await this._apiService.GetVenueAsync(audit.VenueId), actingUserId, status);
+        await UpdateAuditStatus(audit, await apiService.GetVenueAsync(audit.VenueId), actingUserId, status);
     
     public async Task UpdateAuditStatus(VenueAuditRecord audit, Venue venue, ulong actingUserId, VenueAuditStatus status)
     {
@@ -78,13 +70,13 @@ public class VenueAuditService : IVenueAuditService
         audit.CompletedBy = actingUserId;
         audit.CompletedAt = DateTime.UtcNow;
         
-        await this._repository.UpsertAsync(audit);
+        await repository.UpsertAsync(audit);
     }
 
     private async Task UpdateMessagesSentToManagers(VenueAuditRecord audit, Venue venue, ulong actingUserId, 
         string responderMessage, string othersMessage)
     {
-        var render = await this._venueRenderer.ValidateAndRenderAsync(venue);
+        var render = await venueRenderer.ValidateAndRenderAsync(venue);
         foreach (var message in audit.Messages)
         {
             if (message.Status != MessageStatus.Sent) continue;
@@ -92,7 +84,7 @@ public class VenueAuditService : IVenueAuditService
             if (message.UserId != actingUserId)
                 newMessage = othersMessage;
 
-            var channel = await this._client.GetChannelAsync(message.ChannelId);
+            var channel = await client.GetChannelAsync(message.ChannelId);
             (channel as IDMChannel)?.ModifyMessageAsync(message.MessageId, props =>
             {
                 props.Components = new ComponentBuilder().Build();
@@ -107,9 +99,9 @@ public class VenueAuditService : IVenueAuditService
     
     private async Task NotifyRequsterOfCompletion(VenueAuditRecord audit, Venue venue, string message)
     {
-        var channel = await this._client.GetChannelAsync(audit.RequestedIn);
+        var channel = await client.GetChannelAsync(audit.RequestedIn);
         if (channel == null)
-            channel = await this._client.GetDMChannelAsync(audit.RequestedIn);
+            channel = await client.GetDMChannelAsync(audit.RequestedIn);
 
         if (channel is SocketTextChannel sTextChannel)
             await sTextChannel.SendMessageAsync(
