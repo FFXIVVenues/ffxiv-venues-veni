@@ -394,15 +394,16 @@ internal class MassAuditService(
         var latestMassAudit = await this.GetTaskAsync();
         if (latestMassAudit == null)
             return [];
-        
-        var unconfirmedAudits = 
-            await repository.GetWhereAsync<VenueAuditRecord>(r =>
-                r.MassAuditId == latestMassAudit.id 
-                && (r.Status == VenueAuditStatus.AwaitingResponse 
-                    || r.Status == VenueAuditStatus.Failed));
+
+        var unconfirmedAudits =
+            (await repository.GetWhereAsync<VenueAuditRecord>(r =>
+                r.MassAuditId == latestMassAudit.id
+                && (r.Status == VenueAuditStatus.AwaitingResponse
+                    || r.Status == VenueAuditStatus.Failed))).ToList();
 
         var allVenues = await apiService.GetAllVenuesAsync();
-        return allVenues.Where(v => unconfirmedAudits.Any(a => a.VenueId == v.Id)).ToList();
+        return allVenues.Where(v => 
+            unconfirmedAudits.Any(a => a.VenueId == v.Id)).ToList();
     }
     
     public async Task<DeleteResult> StartDeletesAsync(ulong requestedIn, ulong requestedBy)
