@@ -9,7 +9,9 @@ using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils.Broadcasting;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Exporting;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Models;
+using FFXIVVenues.Veni.VenueAuditing.MassAuditDelete;
 using FFXIVVenues.Veni.VenueAuditing.MassAuditNotice;
+using FFXIVVenues.VenueModels;
 using Serilog;
 
 namespace FFXIVVenues.Veni.VenueAuditing.MassAudit;
@@ -20,7 +22,8 @@ internal class MassAuditService(
     IVenueAuditService venueAuditService,
     IDiscordClient client,
     IMassAuditExporter massAuditExporter,
-    MassNoticeService massNoticeService)
+    MassNoticeService massNoticeService,
+    MassDeleteService massDeleteService)
     : IMassAuditService
 {
     private bool _pause = false;
@@ -28,6 +31,7 @@ internal class MassAuditService(
     private Task _activeAuditTask;
     private CancellationTokenSource _cancellationTokenSource;
 
+    #region Mass Audit Api
     public async Task<ResumeResult> ResumeAsync(bool activeOnly)
     {
         Log.Debug("Resume requested for mass audit");
@@ -266,7 +270,16 @@ internal class MassAuditService(
         
         return CloseResult.Closed;
     }
-
+    
+    public async Task<MassAuditRecord> GetTaskAsync() => 
+        (await repository.QueryAsync<MassAuditRecord>())
+            .OrderByDescending(a => a.StartedAt)
+            .Take(1)
+            .ToList()
+            .FirstOrDefault();
+    #endregion
+    
+    #region Notices
     public async Task<NoticeResult> StartNoticeAsync(ulong requestedIn, ulong requestedBy, string notice)
     {
         Log.Debug("Notice requested for mass audit");
@@ -332,6 +345,7 @@ internal class MassAuditService(
     }
 
     public Task<PauseResult> PauseNoticeAsync() =>
+        // Allow pausing any task even if it's for a previous audit
         massNoticeService.PauseAsync();
 
     public async Task<ResumeResult> ResumeNoticeAsync()
@@ -348,6 +362,7 @@ internal class MassAuditService(
     }
 
     public Task<CancelResult> CancelNoticeAsync() =>
+        // Allow cancelling any task even if it's for a previous audit
         massNoticeService.CancelAsync();
 
     public async Task<MassNoticeTask> GetNoticeTaskAsync()
@@ -365,24 +380,112 @@ internal class MassAuditService(
 
     public async Task<MassNoticeSummary> GetNoticeSummaryAsync()
     {
+        var noticesTask = await this.GetNoticeTaskAsync();
+        return noticesTask is not null
+            ? await massNoticeService.GetSummary()
+            : null;
+    }
+    #endregion
+    
+    #region Deletes
+
+    public async Task<List<Venue>> ProposeDelete()
+    {
+        var latestMassAudit = await this.GetTaskAsync();
+        if (latestMassAudit == null)
+            return [];
+        
+        var unconfirmedAudits = 
+            await repository.GetWhereAsync<VenueAuditRecord>(r =>
+                r.MassAuditId == latestMassAudit.id 
+                && (r.Status == VenueAuditStatus.AwaitingResponse 
+                    || r.Status == VenueAuditStatus.Failed));
+
+        var allVenues = await apiService.GetAllVenuesAsync();
+        return allVenues.Where(v => unconfirmedAudits.Any(a => a.VenueId == v.Id)).ToList();
+    }
+    
+    public async Task<DeleteResult> StartDeletesAsync(ulong requestedIn, ulong requestedBy)
+    {
+        Log.Debug("Deletes requested for mass audit");
+        if (this._activeAuditTask is not null && !this._activeAuditTask.IsCompleted)
+        {
+            Log.Debug("Mass audit is active");
+            return DeleteResult.MassAuditRunning;
+        }
+        
+        var latestMassAudit = await this.GetTaskAsync();
+        if (latestMassAudit == null)
+            return DeleteResult.NoMassAudits;
+
+        if (latestMassAudit.Status is MassAuditStatus.Closed)
+            return DeleteResult.MassAuditClosed;
+
+        if (latestMassAudit.Status is not MassAuditStatus.Complete)
+            return DeleteResult.MassAuditNotComplete;
+
+        var unconfirmedVenues = 
+            await repository.GetWhereAsync<VenueAuditRecord>(r =>
+                r.MassAuditId == latestMassAudit.id 
+                && (r.Status == VenueAuditStatus.AwaitingResponse 
+                   || r.Status == VenueAuditStatus.Failed));
+        var unconfirmedVenueIds = unconfirmedVenues
+            .Select(v => new VenueTarget(v.VenueId));
+        
+        var startResult = await massDeleteService.StartAsync(new ()
+        {
+            MassAuditId = latestMassAudit.id,
+            RequestedBy = requestedBy,
+            RequestedIn = requestedIn,
+            VenuesToDelete = unconfirmedVenueIds.ToList()
+        });
+
+        return startResult switch
+        {
+            StartResult.Started => DeleteResult.Started,
+            StartResult.HaultedExists => DeleteResult.DeleteHaulted,
+            StartResult.AlreadyRunning => DeleteResult.DeleteAlreadyRunning,
+            StartResult.PausedExists => DeleteResult.DeletePausedExists,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    public Task<PauseResult> PauseDeletesAsync() =>
+        // Allow pausing any task even if it's for a previous audit
+        massDeleteService.PauseAsync();
+
+    public async Task<ResumeResult> ResumeDeletesAsync()
+    {
+        var deletesTask = await this.GetDeletesTaskAsync();
+        return deletesTask is null 
+            ? ResumeResult.NothingToResume 
+            : await massDeleteService.ResumeAsync(false);
+    }
+
+    public Task<CancelResult> CancelDeletesAsync() =>
+        // Allow cancelling any task even if it's for a previous audit
+        massDeleteService.CancelAsync();
+
+    public async Task<MassDeleteSummary> GetDeletesSummaryAsync()
+    {
+        var deletesTask = await this.GetDeletesTaskAsync();
+        return deletesTask is not null
+            ? await massDeleteService.GetSummary()
+            : null;
+    }
+
+    public async Task<MassDeleteTask> GetDeletesTaskAsync()
+    {
         var latestMassAudit = await this.GetTaskAsync();
         if (latestMassAudit is null)
             return null;
         
-        var summary = await massNoticeService.GetSummary();
-        if (summary.MassAuditId == latestMassAudit.id)
-            return summary;
-
-        return null;
+        var task = await massDeleteService.GetTaskAsync();
+        return task.MassAuditId == latestMassAudit.id ? task : null;
     }
+    #endregion
     
-    public async Task<MassAuditRecord> GetTaskAsync() => 
-        (await repository.QueryAsync<MassAuditRecord>())
-            .OrderByDescending(a => a.StartedAt)
-            .Take(1)
-            .ToList()
-            .FirstOrDefault();
-    
+    #region Mass Audit Internal Logic
     private void StartThread(MassAuditRecord massAudit)
     {
         Log.Debug("Start mass audit thread");
@@ -518,6 +621,7 @@ internal class MassAuditService(
             result = result.Remove(lastComma, 1).Insert(lastComma, " and");
         return result;
     }
+    #endregion
 
 }
 
@@ -532,6 +636,19 @@ public enum NoticeResult
     NoticeHaulted,
     Started
 }
+
+public enum DeleteResult
+{
+    NoMassAudits,
+    MassAuditRunning,
+    MassAuditClosed,
+    MassAuditNotComplete,
+    DeleteAlreadyRunning,
+    DeletePausedExists,
+    DeleteHaulted,
+    Started
+}
+
 
 public enum PauseResult
 {

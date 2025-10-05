@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FFXIVVenues.Veni.Authorisation.Blacklist;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using Serilog;
 

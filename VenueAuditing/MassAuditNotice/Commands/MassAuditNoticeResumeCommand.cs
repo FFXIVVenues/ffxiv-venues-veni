@@ -31,10 +31,10 @@ namespace FFXIVVenues.Veni.VenueAuditing.MassAuditNotice.Commands
                     await context.Interaction.FollowupAsync("There's no current notice for this mass audit to resume. 🤔");
                     break;
                 case ResumeResult.ResumedActive:
-                    await context.Interaction.FollowupAsync("A mass audit that did not gracefully stop has been resumed. 🤔");
+                    await context.Interaction.FollowupAsync("A notice that did not gracefully stop has been resumed. 🤔");
                     break;
                 case ResumeResult.ResumedPaused:
-                    await context.Interaction.FollowupAsync("The mass audit has been resumed. 🥳");
+                    await context.Interaction.FollowupAsync("The notice has been resumed. 🥳");
                     break;
             }
             
