@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -34,20 +35,20 @@ public class MassAuditDeletePreviewCommand(IAuthorizer authorizer, IMassAuditSer
         }
 
         var venueGroups = venues.GroupBy(v => v.Location.DataCenter);
-        var builder = new StringBuilder();
+        var embeds = new List<Embed>();
         foreach (var group in venueGroups)
         {
-            builder.Append("**").Append(group.Key?.ToUpper() ?? "CUSTOM").Append("** (").Append(group.Count()).AppendLine(")").AppendLine();
+            var builder = new StringBuilder();
             foreach (var venue in group)
                 builder.Append(venue.Name).Append(" [ ↗](").Append(uiConfig.BaseUrl).Append("/#").Append(venue.Id)
                     .AppendLine(")");
-            builder.AppendLine();
+            var embedBuilder = new EmbedBuilder()
+                .WithTitle($"Mass Audit deletes in {group.Key ?? "Custom"}")
+                .WithDescription(builder.ToString());
+            embeds.Add(embedBuilder.Build());
         }
-        builder.Append("**Total**: ").AppendLine(venues.Count.ToString());
-        var embedBuilder = new EmbedBuilder()
-            .WithTitle("Venues to be deleted for this Mass Audit")
-            .WithDescription(builder.ToString());
+        embeds.Add(new EmbedBuilder().WithDescription("**Total**: " + venues.Count).Build());
             
-        await context.Interaction.FollowupAsync("Okay, here it is! 🥰", embed: embedBuilder.Build());
+        await context.Interaction.FollowupAsync("Okay, here it is! 🥰", embeds: embeds.ToArray());
     }
 }
