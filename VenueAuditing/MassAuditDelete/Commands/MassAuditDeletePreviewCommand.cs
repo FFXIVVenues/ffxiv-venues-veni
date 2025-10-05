@@ -7,11 +7,12 @@ using FFXIVVenues.Veni.Infrastructure.Commands;
 using FFXIVVenues.Veni.Infrastructure.Commands.Attributes;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit;
+using FFXIVVenues.Veni.VenueRendering;
 
 namespace FFXIVVenues.Veni.VenueAuditing.MassAuditDelete.Commands;
 
-[DiscordCommand("massaudit delete propose", "See what venues would be deleted.")] 
-public class MassAuditDeleteProposeCommand(IAuthorizer authorizer, IMassAuditService massAuditService) : ICommandHandler
+[DiscordCommand("massaudit delete preview", "See what venues would be deleted.")] 
+public class MassAuditDeletePreviewCommand(IAuthorizer authorizer, IMassAuditService massAuditService, UiConfiguration uiConfig) : ICommandHandler
 {
     public async Task HandleAsync(SlashCommandVeniInteractionContext context)
     {
@@ -36,12 +37,13 @@ public class MassAuditDeleteProposeCommand(IAuthorizer authorizer, IMassAuditSer
         var builder = new StringBuilder();
         foreach (var group in venueGroups)
         {
-            builder.Append("**").Append(group.Key.ToUpper()).Append("** (").Append(group.Count()).AppendLine(")").AppendLine();
+            builder.Append("**").Append(group.Key?.ToUpper() ?? "CUSTOM").Append("** (").Append(group.Count()).AppendLine(")").AppendLine();
             foreach (var venue in group)
-                builder.Append("**").Append(venue.Name).Append("** (").Append(venue.Id).AppendLine(")");
+                builder.Append(venue.Name).Append(" [ ↗](").Append(uiConfig.BaseUrl).Append("/#").Append(venue.Id)
+                    .AppendLine(")");
             builder.AppendLine();
         }
-        builder.Append("Total: ").AppendLine(venues.Count.ToString());
+        builder.Append("**Total**: ").AppendLine(venues.Count.ToString());
         var embedBuilder = new EmbedBuilder()
             .WithTitle("Venues to be deleted for this Mass Audit")
             .WithDescription(builder.ToString());
