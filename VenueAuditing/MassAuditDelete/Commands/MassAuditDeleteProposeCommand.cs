@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Authorisation;
@@ -31,9 +32,16 @@ public class MassAuditDeleteProposeCommand(IAuthorizer authorizer, IMassAuditSer
             return;
         }
 
+        var venueGroups = venues.GroupBy(v => v.Location.DataCenter);
         var builder = new StringBuilder();
-        foreach (var venue in venues)
-            builder.Append(venue.Id).Append(" - **").Append(venue.Name).AppendLine("**");
+        foreach (var group in venueGroups)
+        {
+            builder.Append("**").Append(group.Key.ToUpper()).Append("** (").Append(group.Count()).AppendLine(")").AppendLine();
+            foreach (var venue in group)
+                builder.Append("**").Append(venue.Name).Append("** (").Append(venue.Id).AppendLine(")");
+            builder.AppendLine();
+        }
+        builder.Append("Total: ").AppendLine(venues.Count.ToString());
         var embedBuilder = new EmbedBuilder()
             .WithTitle("Venues to be deleted for this Mass Audit")
             .WithDescription(builder.ToString());
