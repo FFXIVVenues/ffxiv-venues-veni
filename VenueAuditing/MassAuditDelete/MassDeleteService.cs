@@ -70,18 +70,17 @@ public class MassDeleteService(IRepository repository, IApiService apiService, I
                     Log.Debug("Mass delete: Could not delete venue {VenueId}: {Error}", remainingVenue.VenueId,
                         result.StatusCode);
                 }
-
-                taskContext.Log($"Completed deletion of venues.");
-                taskContext.SetCompleted();
-                await repository.UpsertAsync(taskContext);
-
-                if (await discordClient.GetChannelAsync(taskContext.RequestedIn) is not IMessageChannel channel)
-                    channel = await discordClient.GetDMChannelAsync(taskContext.RequestedIn);
-                await channel.SendMessageAsync(
-                    $"Hey {MentionUtils.MentionUser(taskContext.RequestedBy)}, I've completed the deletes!");
-
-                Log.Debug("Mass delete: completed deletion of venues");
             }
+
+            taskContext.Log($"Completed deletion of venues.");
+            taskContext.SetCompleted();
+            await repository.UpsertAsync(taskContext);
+
+            if (await discordClient.GetChannelAsync(taskContext.RequestedIn) is not IMessageChannel channel)
+                channel = await discordClient.GetDMChannelAsync(taskContext.RequestedIn);
+            await channel.SendMessageAsync(
+                $"Hey {MentionUtils.MentionUser(taskContext.RequestedBy)}, I've completed the deletes!");
+            Log.Debug("Mass delete: completed deletion of venues");
 
         }
         catch (Exception e)
