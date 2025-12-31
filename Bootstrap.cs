@@ -18,7 +18,6 @@ using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.GuildEngagement;
 using FFXIVVenues.Veni.Infrastructure;
 using FFXIVVenues.Veni.Infrastructure.Presence;
-using FFXIVVenues.Veni.Infrastructure.Tasks;
 using FFXIVVenues.Veni.UserSupport;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Exporting;
@@ -29,46 +28,50 @@ using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval;
 using FFXIVVenues.Veni.VenueDiscovery.Commands;
 using FFXIVVenues.Veni.VenueObservations;
 using FFXIVVenues.Veni.VenueRendering;
+using Microsoft.Extensions.Hosting;
 using OfficeOpenXml;
 
-var serviceCollection = new ServiceCollection();
-var config = Bootstrap.LoadConfiguration(serviceCollection);
-Bootstrap.ConfigureLogging(serviceCollection, config);
-Bootstrap.ConfigureApiClient(serviceCollection, config);
-Bootstrap.ConfigureRepository(serviceCollection, config);
-Bootstrap.ConfigureDiscordClient(serviceCollection, config);
+var builder = Host.CreateApplicationBuilder(args);
 
-ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+var config = Bootstrap.LoadConfiguration(builder.Services);
+Bootstrap.ConfigureLogging(builder, config);
+Bootstrap.ConfigureApiClient(builder.Services, config);
+Bootstrap.ConfigureRepository(builder.Services, config);
+Bootstrap.ConfigureDiscordClient(builder.Services, config);
+Bootstrap.ConfigureRabbit(builder, config);
 
-serviceCollection.AddSingleton<ICommandBroker, CommandBroker>();
-serviceCollection.AddSingleton<IComponentBroker, ComponentBroker>();
-serviceCollection.AddSingleton<IApiService, ApiService>();
-serviceCollection.AddSingleton<IAuthorizer, Authorizer>();
-serviceCollection.AddSingleton<IGuildManager, GuildManager>();
-serviceCollection.AddSingleton<IVenueApprovalService, VenueApprovalService>();
-serviceCollection.AddSingleton<IAIHandler, AIHandler>();
-serviceCollection.AddSingleton<IDavinciService, DavinciService>();
-serviceCollection.AddSingleton<IAIContextBuilder, AiContextBuilder>();
-serviceCollection.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
-serviceCollection.AddSingleton<ISessionProvider, SessionProvider>();
-serviceCollection.AddSingleton<IDiscordHandler, DiscordHandler>();
-serviceCollection.AddSingleton<ICluClient, CluClient>();
-serviceCollection.AddSingleton<IVenueAuditService, VenueAuditService>();
-serviceCollection.AddSingleton<IVenueRenderer, VenueRenderer>();
-serviceCollection.AddSingleton<IApiObservationService, ApiObservationService>();
-serviceCollection.AddSingleton<IInteractionContextFactory, InteractionContextFactory>();
-serviceCollection.AddSingleton<ICommandCartographer, CommandCartographer>();
-serviceCollection.AddSingleton<IMassAuditService, MassAuditService>();
-serviceCollection.AddSingleton<IMassAuditExporter, MassAuditExporter>();
-serviceCollection.AddSingleton<MassNoticeService>();
-serviceCollection.AddSingleton<MassDeleteService>();
-serviceCollection.AddSingleton<IDiscordValidator, DiscordValidator>();
-serviceCollection.AddSingleton<ISiteValidator, SiteValidator>();
-serviceCollection.AddSingleton<IActivityManager, ActivityManager>();
+ExcelPackage.License.SetNonCommercialOrganization("FFXIV Venues");
 
-var serviceProvider = serviceCollection.BuildServiceProvider();
+builder.Services.AddSingleton<ICommandBroker, CommandBroker>();
+builder.Services.AddSingleton<IComponentBroker, ComponentBroker>();
+builder.Services.AddSingleton<IApiService, ApiService>();
+builder.Services.AddSingleton<IAuthorizer, Authorizer>();
+builder.Services.AddSingleton<IGuildManager, GuildManager>();
+builder.Services.AddSingleton<IVenueApprovalService, VenueApprovalService>();
+builder.Services.AddSingleton<IAIHandler, AIHandler>();
+builder.Services.AddSingleton<IDavinciService, DavinciService>();
+builder.Services.AddSingleton<IAIContextBuilder, AiContextBuilder>();
+builder.Services.AddSingleton<IIntentHandlerProvider, IntentHandlerProvider>();
+builder.Services.AddSingleton<ISessionProvider, SessionProvider>();
+builder.Services.AddSingleton<ICluClient, CluClient>();
+builder.Services.AddSingleton<IVenueAuditService, VenueAuditService>();
+builder.Services.AddSingleton<IVenueRenderer, VenueRenderer>();
+builder.Services.AddSingleton<IApiObservationService, ApiObservationService>();
+builder.Services.AddSingleton<IInteractionContextFactory, InteractionContextFactory>();
+builder.Services.AddSingleton<ICommandCartographer, CommandCartographer>();
+builder.Services.AddSingleton<IMassAuditService, MassAuditService>();
+builder.Services.AddSingleton<IMassAuditExporter, MassAuditExporter>();
+builder.Services.AddSingleton<MassNoticeService>();
+builder.Services.AddSingleton<MassDeleteService>();
+builder.Services.AddSingleton<IDiscordValidator, DiscordValidator>();
+builder.Services.AddSingleton<ISiteValidator, SiteValidator>();
+builder.Services.AddSingleton<IActivityManager, ActivityManager>();
 
-var commandBroker = serviceProvider.GetService<ICommandBroker>();
+builder.Services.AddHostedService<DiscordHostedService>();
+
+var app = builder.Build();
+
+var commandBroker = app.Services.GetService<ICommandBroker>();
 commandBroker.AddFromAssembly();
 commandBroker.AddVenueControlCommands();
 commandBroker.Add<HelpCommand.CommandFactory, HelpCommand.CommandHandler>(HelpCommand.COMMAND_NAME, isMasterGuildCommand: false);
@@ -78,15 +81,14 @@ commandBroker.Add<ShowMineCommand.CommandFactory, ShowMineCommand.CommandHandler
 commandBroker.Add<ShowCountCommand.CommandFactory, ShowCountCommand.CommandHandler>(ShowCountCommand.COMMAND_NAME, isMasterGuildCommand: false);
 commandBroker.Add<GetUnapprovedCommand.CommandFactory, GetUnapprovedCommand.CommandHandler>(GetUnapprovedCommand.COMMAND_NAME, isMasterGuildCommand: false);
 
-serviceProvider.GetService<IComponentBroker>()
+app.Services.GetService<IComponentBroker>()
     .AddVenueObservationHandlers()
     .AddVenueAuditingHandlers()
     .AddVenueControlHandlers()
     .AddVenueRenderingHandlers();
 
-_ = serviceProvider.GetService<IApiObservationService>()
+_ = app.Services.GetService<IApiObservationService>()
     .AddVenueObservers()
     .ObserveAsync();
 
-await serviceProvider.GetService<IDiscordHandler>().ListenAsync();
-await Task.Delay(Timeout.Infinite);
+await app.RunAsync();

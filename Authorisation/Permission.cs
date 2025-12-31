@@ -58,7 +58,8 @@ public enum Permission
     Blacklist,
     ControlMassAudit,
     ReportMassAudit,
-    SetLongSchedule
+    SetLongSchedule,
+    StreamEvents
 }
 
 public static class PermissionExtensions

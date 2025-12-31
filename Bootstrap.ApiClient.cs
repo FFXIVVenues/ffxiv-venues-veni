@@ -7,7 +7,7 @@ namespace FFXIVVenues.Veni;
 
 internal static partial class Bootstrap
 {
-    internal static void ConfigureApiClient(ServiceCollection serviceCollection, Configurations config)
+    internal static void ConfigureApiClient(IServiceCollection serviceCollection, Configurations config)
     {
         var apiHttpClient = new HttpClient { BaseAddress = new Uri(config.ApiConfig.BaseUrl) };
         apiHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", config.ApiConfig.AuthorizationKey);

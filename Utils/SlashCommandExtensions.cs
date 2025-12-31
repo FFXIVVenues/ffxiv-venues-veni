@@ -28,17 +28,9 @@ namespace FFXIVVenues.Veni.Utils
             var option = command.GetOption(name);
             if (option == null) return null;
 
-            var value = (long) option.Value;
-
-            if (value < 0)
-                return null;
-
-            var enumValues = Enum.GetValues<T>();
-
-            if (value >= enumValues.Length)
-                return null;
-
-            return (T?)enumValues[value];
+            var value = (string) option.Value;
+            
+            return Enum.TryParse<T>(value, out var enumValue) ? enumValue : default;
         }
         
         public static SocketSlashCommandDataOption GetOption(this SlashCommandVeniInteractionContext command, string name)

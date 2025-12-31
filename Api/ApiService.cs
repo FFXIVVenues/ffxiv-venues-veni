@@ -24,7 +24,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         if (cached.Result == CacheResult.CacheHit)
             return cached.Value;
             
-        var response = await httpClient.GetAsync($"/venue");
+        var response = await httpClient.GetAsync($"/v1.0/venue");
         var result = await response.Content.ReadFromJsonAsync<Venue[]>();
         this._venuesCache.Set("*", result);    
         return result;
@@ -37,7 +37,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         if (cached.Result == CacheResult.CacheHit)
             return cached.Value;
             
-        var response = await httpClient.GetAsync($"/venue?manager={forContact}");
+        var response = await httpClient.GetAsync($"/v1.0/venue?manager={forContact}");
         var result = await response.Content.ReadFromJsonAsync<Venue[]>();
         this._venuesCache.Set(forContact.ToString(), result);
         return result;
@@ -50,7 +50,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         if (cached.Result == CacheResult.CacheHit)
             return cached.Value;
             
-        var response = await httpClient.GetAsync($"/venue?open=true");
+        var response = await httpClient.GetAsync($"/v1.0/venue?open=true");
         var result = await response.Content.ReadFromJsonAsync<Venue[]>();
         this._venuesCache.Set("_open_", result);
         return result;
@@ -63,7 +63,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         if (cached.Result == CacheResult.CacheHit)
             return cached.Value;
             
-        var response = await httpClient.GetAsync($"/venue?approved=true");
+        var response = await httpClient.GetAsync($"/v1.0/venue?approved=true");
         var result = await response.Content.ReadFromJsonAsync<Venue[]>();
         this._venuesCache.Set("_approved_", result);
         return result;
@@ -76,7 +76,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         if (cached.Result == CacheResult.CacheHit)
             return cached.Value;
             
-        var response = await httpClient.GetAsync($"/venue?approved=false");
+        var response = await httpClient.GetAsync($"/v1.0/venue?approved=false");
         var result = await response.Content.ReadFromJsonAsync<Venue[]>();
         this._venuesCache.Set("_unapproved_", result);
         return result;
@@ -89,7 +89,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         if (cached.Result == CacheResult.CacheHit)
             return cached.Value;
             
-        var response = await httpClient.GetAsync($"/venue?search={searchQuery}");
+        var response = await httpClient.GetAsync($"/v1.0/venue?search={searchQuery}");
         var result = await response.Content.ReadFromJsonAsync<Venue[]>();
         this._venuesCache.Set($"_search_{searchQuery}", result);
         return result;
@@ -102,7 +102,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         if (cached.Result == CacheResult.CacheHit)
             return cached.Value;
 
-        var response = await httpClient.GetAsync("/venue/" + id + "?recordView=" + recordView);
+        var response = await httpClient.GetAsync("/v1.0/venue/" + id + "?recordView=" + recordView);
         var result = await response.Content.ReadFromJsonAsync<Venue>();
         this._venueCache.Set(id, result);
         return result;
@@ -113,7 +113,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         Log.Debug("Putting venue {Venue}", venue);
         this._venueCache.Remove(venue.Id);
         this._venuesCache.Clear();
-        var response = await httpClient.PutAsJsonAsync("/venue/" + venue.Id, venue);
+        var response = await httpClient.PutAsJsonAsync("/v1.0/venue/" + venue.Id, venue);
         if (!response.IsSuccessStatusCode)
             Log.Warning("Failed to put venue {Venue}: {ResponseStatusCode}", venue, response.StatusCode);
         return response;
@@ -135,7 +135,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         streamContent.Headers.ContentType = mediaType;
         this._venueCache.Remove(id);
         this._venuesCache.Clear();
-        var response = await httpClient.PutAsync("/venue/" + id + "/media", streamContent);
+        var response = await httpClient.PutAsync("/v1.0/venue/" + id + "/media", streamContent);
         if (!response.IsSuccessStatusCode)
             Log.Warning("Failed to put splash banner for venue {VenueId}: {ResponseStatusCode}", id, response.StatusCode);
         return response;
@@ -146,7 +146,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         Log.Debug("Deleting venue {VenueId}", id);
         this._venueCache.Remove(id);
         this._venuesCache.Clear();
-        var response = await httpClient.DeleteAsync("/venue/" + id);
+        var response = await httpClient.DeleteAsync("/v1.0/venue/" + id);
         if (!response.IsSuccessStatusCode)
             Log.Warning("Failed to delete venue {VenueId}: {ResponseStatusCode}", id, response.StatusCode);
         return response;
@@ -158,7 +158,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         this._venueCache.Remove(id);
         this._venuesCache.Clear();
         var @override = new ScheduleOverride { Open = true, Start = from, End = to };
-        var response = await httpClient.PutAsJsonAsync($"/venue/{id}/scheduleoverride", @override);
+        var response = await httpClient.PutAsJsonAsync($"/v1.0/venue/{id}/scheduleoverride", @override);
         if (!response.IsSuccessStatusCode)
             Log.Warning("Failed to open venue {VenueId}: {ResponseStatusCode}", id, response.StatusCode);
         return response;
@@ -170,7 +170,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         this._venueCache.Remove(id);
         this._venuesCache.Clear();
         var @override = new ScheduleOverride { Open = false, Start = from, End = to };
-        var response = await httpClient.PutAsJsonAsync($"/venue/{id}/scheduleoverride", @override);
+        var response = await httpClient.PutAsJsonAsync($"/v1.0/venue/{id}/scheduleoverride", @override);
         if (!response.IsSuccessStatusCode)
             Log.Warning("Failed to close venue {VenueId}: {ResponseStatusCode}", id, response.StatusCode);
         return response;
@@ -183,7 +183,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         Log.Debug("Removing overrides from venue {VenueId}", id);
         this._venueCache.Remove(id);
         this._venuesCache.Clear();
-        var response = await httpClient.DeleteAsync($"/venue/{id}/scheduleoverride?from={from:yyyy-MM-ddTHH:mm:ss.fffZ}&to={to:yyyy-MM-ddTHH:mm:ss.fffZ}");
+        var response = await httpClient.DeleteAsync($"/v1.0/venue/{id}/scheduleoverride?from={from:yyyy-MM-ddTHH:mm:ss.fffZ}&to={to:yyyy-MM-ddTHH:mm:ss.fffZ}");
         if (!response.IsSuccessStatusCode)
             Log.Warning("Failed to close venue {VenueId}: {ResponseStatusCode}", id, response.StatusCode);
         return response;
@@ -195,7 +195,7 @@ internal class ApiService(HttpClient httpClient) : IApiService
         else Log.Debug("Unapproving venue {VenueId}", id);
         this._venueCache.Remove(id);
         this._venuesCache.Clear();
-        var response = await httpClient.PutAsJsonAsync($"/venue/{id}/approved", approval);
+        var response = await httpClient.PutAsJsonAsync($"/v1.0/venue/{id}/approved", approval);
         if (!response.IsSuccessStatusCode)
             Log.Warning("Failed to approve/unapprove venue {VenueId}: {ResponseStatusCode}", id, response.StatusCode);
         return response;

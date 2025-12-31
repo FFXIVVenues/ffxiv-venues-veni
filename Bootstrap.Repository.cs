@@ -10,12 +10,11 @@ namespace FFXIVVenues.Veni;
 
 internal static partial class Bootstrap
 {
-    internal static void ConfigureRepository(ServiceCollection serviceCollection, Configurations config)
+    internal static void ConfigureRepository(IServiceCollection serviceCollection, Configurations config)
     {
         IRepository repository = config.PersistenceConfig.Provider switch
         {
             PersistanceProvider.LiteDb => new LiteDbRepository(config.PersistenceConfig.ConnectionString),
-            PersistanceProvider.Cosmos => new CosmosDbRepository(config.PersistenceConfig.ConnectionString),
             PersistanceProvider.MongoDb => new MongoDbRepository(config.PersistenceConfig.ConnectionString),
             _ => new InMemoryRepository()
         };

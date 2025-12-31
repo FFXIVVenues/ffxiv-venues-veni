@@ -1,5 +1,7 @@
 ﻿using FFXIVVenues.VenueModels;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 
@@ -7,8 +9,10 @@ namespace FFXIVVenues.Veni;
 
 internal static partial class Bootstrap
 {
-    internal static void ConfigureLogging(ServiceCollection serviceCollection, Configurations config)
+    internal static void ConfigureLogging(HostApplicationBuilder hostBuilder, Configurations config)
     {
+        hostBuilder.Logging.ClearProviders();
+        hostBuilder.Logging.AddSerilog();
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .WriteTo.BetterStack(config.LoggingConfig.BetterStackToken)
@@ -16,7 +20,7 @@ internal static partial class Bootstrap
             .Destructure.ByTransforming<Venue>(
                 v => new { VenueId = v.Id, VenueName = v.Name })
             .CreateLogger();
-        serviceCollection.AddSingleton(Log.Logger);
+        hostBuilder.Services.AddSingleton(Log.Logger);
     }
 }
 

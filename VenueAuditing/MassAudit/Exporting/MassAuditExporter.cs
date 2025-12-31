@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FFXIVVenues.Veni.Utils.Broadcasting;
 using FFXIVVenues.Veni.VenueAuditing.MassAudit.Models;
 using FFXIVVenues.VenueModels;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using ScottPlot;
 
 namespace FFXIVVenues.Veni.VenueAuditing.MassAudit.Exporting;
 

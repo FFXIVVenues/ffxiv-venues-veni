@@ -6,6 +6,7 @@ using FFXIVVenues.Veni.Infrastructure;
 using FFXIVVenues.Veni.Infrastructure.Persistence;
 using FFXIVVenues.Veni.Infrastructure.Presence;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring;
+using FFXIVVenues.Veni.VenueEvents;
 using FFXIVVenues.Veni.VenueRendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,11 +15,11 @@ namespace FFXIVVenues.Veni;
 
 internal static partial class Bootstrap
 {
-    internal static Configurations LoadConfiguration(ServiceCollection serviceCollection)
+    internal static Configurations LoadConfiguration(IServiceCollection serviceCollection)
     {
         var config = new ConfigurationBuilder()
             .AddJsonFile("config.json", optional: true)
-            .AddUserSecrets<DiscordHandler>(optional: true)
+            .AddUserSecrets<DiscordHostedService>(optional: true)
             .AddEnvironmentVariables("FFXIV_VENUES_")
             .AddEnvironmentVariables("FFXIV_VENUES_VENI_")
             .Build();
@@ -34,7 +35,8 @@ internal static partial class Bootstrap
             NotificationConfig = config.GetSection("Notifications").Get<NotificationsConfiguration>() ?? new(),
             AuthorisationConfig = config.GetSection("Authorisation").Get<AuthorisationConfiguration>() ?? new(),
             DavinciConfig = config.GetSection("Davinci3").Get<DavinciConfiguration>() ?? new(),
-            PresenceConfig = config.GetSection("Presence").Get<PresenceConfiguration>() ?? new()
+            PresenceConfig = config.GetSection("Presence").Get<PresenceConfiguration>() ?? new(),
+            RabbitConfig = config.GetSection("Rabbit").Get<RabbitConfiguration>() ?? new()
         };
 
         serviceCollection.AddSingleton<IConfiguration>(config);
@@ -46,6 +48,7 @@ internal static partial class Bootstrap
         serviceCollection.AddSingleton(allConfig.PersistenceConfig);
         serviceCollection.AddSingleton(allConfig.UiConfig);
         serviceCollection.AddSingleton(allConfig.PresenceConfig);
+        serviceCollection.AddSingleton(allConfig.RabbitConfig);
 
         return allConfig;
     }
@@ -63,4 +66,5 @@ internal class Configurations
     public AuthorisationConfiguration AuthorisationConfig { get; set; }
     public DavinciConfiguration DavinciConfig { get; set; }
     public PresenceConfiguration PresenceConfig { get; set; }
+    public RabbitConfiguration RabbitConfig { get; set; }
 }

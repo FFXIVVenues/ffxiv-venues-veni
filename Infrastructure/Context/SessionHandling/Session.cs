@@ -169,7 +169,7 @@ namespace FFXIVVenues.Veni.Infrastructure.Context.SessionHandling
         // TODO: Move this to ClearComponentHandlers method
         private async Task ClearPreviousComponents(ISocketMessageChannel channel, ulong currentUser)
         {
-            var messages = await channel.GetMessagesAsync(this._backClearance).FirstAsync();
+            await foreach (var messages in channel.GetMessagesAsync(this._backClearance))
             foreach (var message in messages)
             {
                 if (message.Author.Id == currentUser && message.Components.Any())

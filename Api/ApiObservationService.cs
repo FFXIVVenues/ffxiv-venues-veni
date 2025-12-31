@@ -25,7 +25,7 @@ namespace FFXIVVenues.Veni.Api
         {
             this._observeRequest = new (new ObservableOperation[] {  }, null, null);
             this._observers = new ();
-            this._wsUri = new Uri(config.BaseUrl.Replace("http", "ws") + "/venue/observe");
+            this._wsUri = new Uri(config.BaseUrl.Replace("http", "ws") + "/v1.0/venue/observe");
             this._serviceProvider = serviceProvider;
         }
 

@@ -7,7 +7,6 @@ using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.VenueModels;
-using Microsoft.Azure.Cosmos;
 using Serilog;
 
 namespace FFXIVVenues.Veni.GuildEngagement;

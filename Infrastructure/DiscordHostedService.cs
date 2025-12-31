@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -17,11 +18,12 @@ using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval;
 using Kana.Pipelines;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 
 namespace FFXIVVenues.Veni.Infrastructure;
 
-internal class DiscordHandler : IDiscordHandler
+internal class DiscordHostedService : IHostedService
 {
     private const string _name = "Veni Ki | FFXIV Venues";
 
@@ -36,7 +38,7 @@ internal class DiscordHandler : IDiscordHandler
     private readonly IActivityManager _activityManager;
     private readonly PresenceConfiguration _presenceConfiguration;
 
-    public DiscordHandler(DiscordSocketClient client,
+    public DiscordHostedService(DiscordSocketClient client,
         ICommandBroker commandBroker,
         IInteractionContextFactory contextFactory,
         IComponentBroker componentBroker,
@@ -82,6 +84,20 @@ internal class DiscordHandler : IDiscordHandler
             .Add<DontUnderstandMiddleware>();
     }
 
+
+    public Task StartAsync(CancellationToken cancellationToken) =>
+        _client.StartAsync();
+
+    public Task StopAsync(CancellationToken cancellationToken) =>
+        _client.StopAsync();
+
+    private async Task Connected()
+    {
+        await this._commandBroker.RegisterAllGlobalCommandsAsync();
+        await this._commandBroker.RegisterMasterGuildCommandsAsync();
+        await this._activityManager.UpdateActivityAsync();
+    }
+
     private async Task GuildAvailableAsync(SocketGuild guild)
     {
 
@@ -107,17 +123,7 @@ internal class DiscordHandler : IDiscordHandler
         if (this._presenceConfiguration.SetNickname && guildUser.Nickname != this._presenceConfiguration.Nickname)
             await guildUser.ModifyAsync(x => x.Nickname = this._presenceConfiguration.Nickname);
     }
-
-    public Task ListenAsync() =>
-        _client.StartAsync();
-
-    private async Task Connected()
-    {
-        await this._commandBroker.RegisterAllGlobalCommandsAsync();
-        await this._commandBroker.RegisterMasterGuildCommandsAsync();
-        await this._activityManager.UpdateActivityAsync();
-    }
-
+    
     private async Task MessageReceivedAsync(SocketMessage message)
     {
         var context = this._contextFactory.Create(message);

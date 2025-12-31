@@ -11,7 +11,7 @@ namespace FFXIVVenues.Veni;
 internal static partial class Bootstrap
 {
 
-    internal static DiscordSocketClient ConfigureDiscordClient(ServiceCollection serviceCollection, Configurations config)
+    internal static DiscordSocketClient ConfigureDiscordClient(IServiceCollection serviceCollection, Configurations config)
     {
         if (config.DiscordToken == null)
             throw new Exception("Discord Bot Token not set!");
