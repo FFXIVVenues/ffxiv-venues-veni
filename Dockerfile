@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/runtime:9.0 AS base
+FROM mcr.microsoft.com/dotnet/runtime:10.0 AS base
 ENV TZ=Etc/Utc
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update
@@ -7,7 +7,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 COPY . /src
 RUN dotnet publish /src/FFXIVVenues.Veni.csproj -c Release -o /src/build
 
