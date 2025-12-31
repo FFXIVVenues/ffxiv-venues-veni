@@ -7,7 +7,7 @@ on:
 
 jobs:
   publish_production_veni:
-    name: Publish Production Domain Services
+    name: Publish Production Veni
     uses: ./.github/workflows/publish-veni.yml
     with:
       branch: main

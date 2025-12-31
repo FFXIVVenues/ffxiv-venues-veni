@@ -89,5 +89,5 @@ jobs:
           webhook-url: ${{ secrets.DISCORD_BUILDS_WEBHOOK }}
           embed-author-name: "${{ github.workflow }}"
           embed-title: "${{ github.event.head_commit.message }}"
-          embed-url: "${{github.repositoryUrl}}/actions/runs/${{github.run_id}}"
+          embed-url: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           embed-description: "Build triggered by ${{ github.actor }}"
