@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using FFXIVVenues.FlagService.Client.Events;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
+using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueRendering;
 using Serilog;
 
@@ -29,6 +30,7 @@ public class VenueFlaggedHandler(IRepository repository, IDiscordClient client, 
             .WithDescription(
                 $"""
                 **Category: **{@event.Category}
+                **Region: **{FfxivWorlds.GetRegionForDataCenter(venue.Location.DataCenter)}
                 **Description: **
                 {@event.Description}
                 """)
