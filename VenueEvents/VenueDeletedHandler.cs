@@ -13,7 +13,7 @@ using Serilog;
 
 namespace FFXIVVenues.Veni.VenueEvents;
 
-public class VenueDeletedHandler(IRepository repository, IDiscordClient client, IApiService apiService)
+public class VenueDeletedHandler(IRepository repository, IDiscordClient client)
 {
     public async Task Handle(VenueDeletedEvent @event)
     {

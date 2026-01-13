@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -117,21 +118,30 @@ internal class GuildManager(DiscordSocketClient client, IRepository repository, 
             
             logger.Debug("Syncing roles in guild {Guild}", guild.Name);
 
+            
             foreach (var managerId in venue.Managers)
             {
-                var manager = await guild.GetUserAsync(ulong.Parse(managerId));
-                if (manager == null) continue;
+                try
+                {
+                    var manager = await guild.GetUserAsync(ulong.Parse(managerId));
+                    if (manager == null) continue;
 
-                logger.Debug("Syncing roles for manager {ManagerId} in guild {Guild}", managerId, guild.Name);
-                var result = await this.SyncRolesForGuildUserAsync(manager, guildSetting);
-                if (result)
-                {
-                    rolesChanged = true;
-                    logger.Debug("Roles changed for manager {ManagerId} in guild {Guild}", managerId, guild.Name);
+                    logger.Debug("Syncing roles for manager {ManagerId} in guild {Guild}", managerId, guild.Name);
+                    var result = await this.SyncRolesForGuildUserAsync(manager, guildSetting);
+                    if (result)
+                    {
+                        rolesChanged = true;
+                        logger.Debug("Roles changed for manager {ManagerId} in guild {Guild}", managerId, guild.Name);
+                    }
+                    else
+                    {
+                        logger.Debug("No roles changed for manager {ManagerId} in guild {Guild}", managerId,
+                            guild.Name);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    logger.Debug("No roles changed for manager {ManagerId} in guild {Guild}", managerId, guild.Name);
+                    logger.Error(ex, "Error syncing roles for manager {ManagerId} in guild {Guild}", managerId, guild.Name);
                 }
             }
         }

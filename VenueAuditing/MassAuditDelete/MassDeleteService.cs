@@ -83,7 +83,7 @@ public class MassDeleteService(IRepository repository, IApiService apiService, I
                 if (result.IsSuccessStatusCode)
                 {
                     var venue = await result.Content.ReadFromJsonAsync<Venue>(cancellationToken);
-                    new VenueDeletedHandler(repository, discordClient, apiService).Handle(
+                    new VenueDeletedHandler(repository, discordClient).Handle(
                         new VenueDeletedEvent(remainingVenue.VenueId, venue.Name, 2));
                 }
 

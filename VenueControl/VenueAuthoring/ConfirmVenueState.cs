@@ -92,7 +92,7 @@ class ConfirmVenueSessionState(
         if (!uploadVenueResponse.IsSuccessStatusCode)
         {
             _ = c.Interaction.Channel.SendMessageAsync("Ooops! Something went wrong. 😢");
-            await c.Interaction.RespondAsync(_summaryResponse.PickRandom(),
+            await c.Interaction.Channel.SendMessageAsync(_summaryResponse.PickRandom(),
                 embed: (await venueRenderer.ValidateAndRenderAsync(venue, bannerUrl)).Build(),
                 components: new ComponentBuilder()
                     .WithButton("Looks perfect! Save!", c.Session.RegisterComponentHandler(this.LooksPerfect, ComponentPersistence.ClearRow), ButtonStyle.Success)

@@ -145,7 +145,7 @@ public class VenueApprovalService(
                 
             await rejectBic.Component.Channel.SendMessageAsync("Okay! Well, maybe the next one then. 😢");
             
-            new VenueDeletedHandler(repository, client, apiService).Handle(
+            new VenueDeletedHandler(repository, client).Handle(
                 new VenueDeletedEvent(venue.Id, venue.Name, confirmDeleteBic.CurrentUser.Id));
         });
 

@@ -55,7 +55,7 @@ class DeleteVenueSessionState(IRepository repository, IDiscordClient client, IAp
                         await auditService.UpdateAuditStatus(latestAudit, this._venue, c.Interaction.User.Id, VenueAuditStatus.DeletedLater);
                     await guildManager.SyncRolesForVenueAsync(_venue);
                     
-                    new VenueDeletedHandler(repository, client, apiService).Handle(
+                    new VenueDeletedHandler(repository, client).Handle(
                         new VenueDeletedEvent(_venue.Id, _venue.Name, cm.Interaction.User.Id));
                 },
                 ComponentPersistence.ClearRow), ButtonStyle.Danger)
