@@ -7,14 +7,18 @@ using Discord.WebSocket;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.GuildEngagement;
+using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.Utils.Broadcasting;
+using FFXIVVenues.Veni.VenueEvents;
 using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;
+using FFXIVVenues.VenueService.Client.Events;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval;
 
 public class VenueApprovalService(
+    IRepository repository,
     DiscordSocketClient client,
     IVenueRenderer venueRenderer,
     IApiService apiService,
@@ -38,8 +42,8 @@ public class VenueApprovalService(
             .WithComponent(bcc =>
             {
                 ComponentBuilder approveRejectComponent = null;
-                var approveHandler = bcc.RegisterComponentHandler(c => this.ApproveVenueHandler(venue, c));
-                var rejectHandler = bcc.RegisterComponentHandler(c => this.DeleteVenueHandler(approveRejectComponent, venue, bcc, c));
+                var approveHandler = bcc.RegisterComponentHandler(c => this.ApproveVenueButtonHandler(venue, c));
+                var rejectHandler = bcc.RegisterComponentHandler(c => this.DeleteVenueButtonHandler(approveRejectComponent, venue, bcc, c));
                 return approveRejectComponent = new ComponentBuilder()
                     .WithButton("Approve", approveHandler, ButtonStyle.Success)
                     .WithButton("Reject", rejectHandler, ButtonStyle.Secondary);
@@ -47,7 +51,7 @@ public class VenueApprovalService(
             .SendToAsync(recipients);
     }
         
-    private async Task ApproveVenueHandler(Venue venue, Broadcast.BroadcastInteractionContext approveBic)
+    private async Task ApproveVenueButtonHandler(Venue venue, Broadcast.BroadcastInteractionContext approveBic)
     {
         var canApprove = authorizer
             .Authorize(approveBic.CurrentUser.Id, Permission.ApproveVenue, venue)
@@ -75,10 +79,10 @@ public class VenueApprovalService(
 
         await approveBic.Component.Channel.SendMessageAsync("Wew! Thank you, I've let them know! 💕");
             
-        await ApproveVenueAsync(venue);
+        await ApproveVenueAsync(venue, approveBic.CurrentUser.Id);
     }
 
-    public async Task<bool> ApproveVenueAsync(Venue venue)
+    public async Task<bool> ApproveVenueAsync(Venue venue, ulong approver)
     {
         // It may have been edited by indexers, so get the latest.
         venue = await apiService.GetVenueAsync(venue.Id);
@@ -98,11 +102,14 @@ public class VenueApprovalService(
                                            $"Let me know if you'd like anything edited or anything you'd like help with. 🥳",
                 embed: (await venueRenderer.ValidateAndRenderAsync(venue)).Build());
         }
+        
+        new VenueApprovedHandler(repository, client, apiService, uiConfiguration).Handle(
+            new VenueApprovedEvent(venue.Id, approver));
 
         return true;
     }
 
-    private async Task DeleteVenueHandler(ComponentBuilder approveRejectComponent, 
+    private async Task DeleteVenueButtonHandler(ComponentBuilder approveRejectComponent, 
         Venue venue, 
         Broadcast.ComponentContext bcc, 
         Broadcast.BroadcastInteractionContext rejectBic)
@@ -137,6 +144,9 @@ public class VenueApprovalService(
             });
                 
             await rejectBic.Component.Channel.SendMessageAsync("Okay! Well, maybe the next one then. 😢");
+            
+            new VenueDeletedHandler(repository, client, apiService).Handle(
+                new VenueDeletedEvent(venue.Id, venue.Name, confirmDeleteBic.CurrentUser.Id));
         });
 
         var cancelHandler = bcc.RegisterComponentHandler(cancelBic =>

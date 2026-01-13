@@ -2,5 +2,9 @@
 
 public enum StreamableEvent
 {
-    Flags
+    Flags,
+    Created,
+    Edits,
+    Delete,
+    Approved
 }

@@ -14,6 +14,10 @@ namespace FFXIVVenues.Veni.VenueEvents;
 [DiscordCommand("stream", "Stream venue events into this channel.", GuildPermission.ManageChannels)]
 [DiscordCommandOption("event", "The type of events to stream into the channel.", ApplicationCommandOptionType.String, Required = true)]
 [DiscordCommandOptionChoice("event", "Venue Flags", nameof(StreamableEvent.Flags))]
+[DiscordCommandOptionChoice("event", "Venue Creations", nameof(StreamableEvent.Created))]
+[DiscordCommandOptionChoice("event", "Venue Edits", nameof(StreamableEvent.Edits))]
+[DiscordCommandOptionChoice("event", "Venue Deletion", nameof(StreamableEvent.Delete))]
+[DiscordCommandOptionChoice("event", "Venue Approvals", nameof(StreamableEvent.Approved))]
 public class StreamCommand(IAuthorizer authorizer, IRepository repository) : ICommandHandler
 {
     public async Task HandleAsync(SlashCommandVeniInteractionContext context)

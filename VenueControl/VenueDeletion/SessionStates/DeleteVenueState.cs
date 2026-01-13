@@ -5,13 +5,16 @@ using FFXIVVenues.Veni.Authorisation;
 using FFXIVVenues.Veni.GuildEngagement;
 using FFXIVVenues.Veni.Infrastructure.Context;
 using FFXIVVenues.Veni.Infrastructure.Context.SessionHandling;
+using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueAuditing;
+using FFXIVVenues.Veni.VenueEvents;
 using FFXIVVenues.VenueModels;
+using FFXIVVenues.VenueService.Client.Events;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueDeletion.SessionStates;
 
-class DeleteVenueSessionState(IApiService apiService, IVenueAuditService auditService, IAuthorizer authorizer, IGuildManager guildManager)
+class DeleteVenueSessionState(IRepository repository, IDiscordClient client, IApiService apiService, IVenueAuditService auditService, IAuthorizer authorizer, IGuildManager guildManager)
     : ISessionState
 {
 
@@ -51,6 +54,9 @@ class DeleteVenueSessionState(IApiService apiService, IVenueAuditService auditSe
                     if (latestAudit?.Status is VenueAuditStatus.Failed or VenueAuditStatus.Pending or VenueAuditStatus.AwaitingResponse)
                         await auditService.UpdateAuditStatus(latestAudit, this._venue, c.Interaction.User.Id, VenueAuditStatus.DeletedLater);
                     await guildManager.SyncRolesForVenueAsync(_venue);
+                    
+                    new VenueDeletedHandler(repository, client, apiService).Handle(
+                        new VenueDeletedEvent(_venue.Id, _venue.Name, cm.Interaction.User.Id));
                 },
                 ComponentPersistence.ClearRow), ButtonStyle.Danger)
             .WithButton("No, don't! I've changed my mind. 🙂", c.Session.RegisterComponentHandler(cm => cm.Interaction.Channel.SendMessageAsync("Phew 😅"), ComponentPersistence.ClearRow))

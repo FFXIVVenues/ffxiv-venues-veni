@@ -2,12 +2,17 @@
 
 using System;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using FFXIVVenues.Veni.Api;
 using FFXIVVenues.Veni.Infrastructure.Persistence.Abstraction;
 using FFXIVVenues.Veni.Infrastructure.Tasks;
+using FFXIVVenues.Veni.VenueEvents;
+using FFXIVVenues.Veni.VenueRendering;
+using FFXIVVenues.VenueModels;
+using FFXIVVenues.VenueService.Client.Events;
 using Serilog;
 using TaskStatus = FFXIVVenues.Veni.Infrastructure.Tasks.TaskStatus;
 
@@ -74,6 +79,13 @@ public class MassDeleteService(IRepository repository, IApiService apiService, I
                 taskContext.Log($"Completed deletion of venues.");
                 taskContext.SetCompleted();
                 await repository.UpsertAsync(taskContext);
+                
+                if (result.IsSuccessStatusCode)
+                {
+                    var venue = await result.Content.ReadFromJsonAsync<Venue>(cancellationToken);
+                    new VenueDeletedHandler(repository, discordClient, apiService).Handle(
+                        new VenueDeletedEvent(remainingVenue.VenueId, venue.Name, 2));
+                }
 
                 if (await discordClient.GetChannelAsync(taskContext.RequestedIn) is not IMessageChannel channel)
                     channel = await discordClient.GetDMChannelAsync(taskContext.RequestedIn);

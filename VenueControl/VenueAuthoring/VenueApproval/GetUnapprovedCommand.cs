@@ -114,7 +114,7 @@ internal class GetUnapprovedCommand
                 components: new ComponentBuilder()
                     .WithButton("Approve", c.Session.RegisterComponentHandler(async cm =>
                     {
-                        await venueApprovalService.ApproveVenueAsync(venue);
+                        await venueApprovalService.ApproveVenueAsync(venue, cm.Interaction.User.Id);
                         await cm.Interaction.Channel.SendMessageAsync("Nyya! I've approved the venue! 💝");
                     }, ComponentPersistence.ClearRow), ButtonStyle.Success)
                     .WithButton("Edit", c.Session.RegisterComponentHandler(cm =>

@@ -11,8 +11,10 @@ using FFXIVVenues.Veni.Utils;
 using FFXIVVenues.Veni.VenueAuditing;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueApproval;
 using FFXIVVenues.Veni.VenueControl.VenueAuthoring.VenueEditing.SessionStates;
+using FFXIVVenues.Veni.VenueEvents;
 using FFXIVVenues.Veni.VenueRendering;
 using FFXIVVenues.VenueModels;
+using FFXIVVenues.VenueService.Client.Events;
 
 namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring;
 
@@ -23,12 +25,12 @@ class ConfirmVenueSessionState(
     IGuildManager guildManager,
     IAuthorizer authorizer,
     IRepository repository,
+    IDiscordClient discordClient,
     IVenueAuditService auditService,
-    IActivityManager activityManager)
+    IActivityManager activityManager,
+    UiConfiguration uiConfig)
     : ISessionState
 {
-    private readonly IRepository _repository = repository;
-
     private static string[] _preexisingResponse = new[]
     {
         "Wooo! All updated!",
@@ -103,6 +105,17 @@ class ConfirmVenueSessionState(
         if (bannerUrl != null) // changed
             await apiService.PutVenueBannerAsync(venue.Id, bannerUrl);
 
+        if (isNewVenue)
+        {
+            new VenueCreatedHandler(repository, discordClient, apiService, uiConfig).Handle(
+                new VenueCreatedEvent(venue.Id, c.Interaction.User.Id));
+        }
+        else
+        {
+            new VenueEditedHandler(repository, discordClient, apiService, uiConfig).Handle(
+                new VenueEditEvent(venue.Id, c.Interaction.User.Id));
+        }
+        
         if (!isNewVenue)
         {
             _ = guildManager.SyncRolesForVenueAsync(venue);
@@ -114,7 +127,7 @@ class ConfirmVenueSessionState(
         }
         else if (isApprover)
         {
-            var success = await indexersService.ApproveVenueAsync(venue);
+            var success = await indexersService.ApproveVenueAsync(venue, c.Interaction.User.Id);
             if (success)
                 await c.Interaction.Channel.SendMessageAsync("All done and auto-approved for you. :heart:");
             else
@@ -126,6 +139,7 @@ class ConfirmVenueSessionState(
             await SendToApprovers(venue, bannerUrl);
         }
 
+       
         _ = c.Session.ClearStateAsync(c);
         _ = activityManager.UpdateActivityAsync();
     }
