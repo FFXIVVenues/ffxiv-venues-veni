@@ -24,7 +24,7 @@ public class VenueDeletedHandler(IRepository repository, IDiscordClient client)
 
         var embed = new EmbedBuilder()
             .WithTitle(@event.VenueName)
-            .WithAuthor("Venue Deleted")
+            .WithAuthor("🗑️ Venue Deleted")
             .WithDescription("**By** " + @event.UserId switch
                 {
                     2 => "Mass Audit Delete",

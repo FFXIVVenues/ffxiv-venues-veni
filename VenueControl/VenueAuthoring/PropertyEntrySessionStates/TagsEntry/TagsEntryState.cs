@@ -23,6 +23,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
             ("Food", "Food"),
             ("Drink", "Drink"),
             ("Twitch DJ", "Twitch DJ"),
+            ("Sync DJ", "Sync DJ"),
             ("Bar", "Bar"),
             ("Tarot", "Tarot"),
             ("Pillow talk", "Pillow"),

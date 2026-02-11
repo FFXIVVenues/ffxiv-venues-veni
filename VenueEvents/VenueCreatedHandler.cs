@@ -26,7 +26,7 @@ public class VenueCreatedHandler(IRepository repository, IDiscordClient client, 
         if (venue == null) return;
         var embed = new EmbedBuilder()
             .WithTitle(venue.Name)
-            .WithAuthor("Venue Created")
+            .WithAuthor("🆕 Venue Created")
             .WithUrl(uiConfig.BaseUrl + "/venue/" + venue.Id)
             .WithDescription("**By** " + MentionUtils.MentionUser(@event.UserId))
             .WithColor(Color.Green);

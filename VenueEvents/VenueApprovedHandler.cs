@@ -27,7 +27,7 @@ public class VenueApprovedHandler(IRepository repository, IDiscordClient client,
         var embed = new EmbedBuilder()
             .WithTitle(venue.Name)
             .WithUrl(uiConfig.BaseUrl + "/venue/" + venue.Id)
-            .WithAuthor("Venue Approved")
+            .WithAuthor("✅ Venue Approved")
             .WithDescription("**By** " + MentionUtils.MentionUser(@event.UserId))
             .WithColor(Color.Green);
         
