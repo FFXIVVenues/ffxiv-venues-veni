@@ -31,9 +31,9 @@ public class VenueFlaggedHandler(IRepository repository, IDiscordClient client, 
                 $"""
                 **Category: **{@event.Category}
                 **Region: **{FfxivWorlds.GetRegionForDataCenter(venue.Location.DataCenter)}
-                **Description: **
-                {@event.Description}
+                {(@event.Description is not null ? "**Description: **" + @event.Description : "")}
                 """)
+            .WithFooter(@event.From)
             .WithColor(Color.Red);
         
         foreach (var stream in streams)
