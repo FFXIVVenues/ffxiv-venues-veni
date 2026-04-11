@@ -36,7 +36,7 @@ public class EditTagsHandler(IAuthorizer authorizer, IApiService apiService) : I
             context.Session.SetEditing();
         }
         
-        await context.Session.MoveStateAsync<CategoryEntrySessionState>(context);
+        await context.Session.MoveStateAsync<SceneEntrySessionState>(context);
     }
     
 }

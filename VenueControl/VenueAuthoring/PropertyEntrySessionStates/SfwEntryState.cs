@@ -19,7 +19,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                     venue.Sfw = true;
                     if (cm.Session.InEditing())
                         return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
-                    return cm.Session.MoveStateAsync<CategoryEntrySessionState>(cm);
+                    return cm.Session.MoveStateAsync<SceneEntrySessionState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .WithButton("No, we're openly NSFW", c.Session.RegisterComponentHandler(cm =>
                 {
@@ -27,7 +27,7 @@ namespace FFXIVVenues.Veni.VenueControl.VenueAuthoring.PropertyEntrySessionState
                     venue.Sfw = false;
                     if (cm.Session.InEditing())
                         return cm.Session.MoveStateAsync<ConfirmVenueSessionState>(cm);
-                    return cm.Session.MoveStateAsync<CategoryEntrySessionState>(cm);
+                    return cm.Session.MoveStateAsync<SceneEntrySessionState>(cm);
                 }, ComponentPersistence.ClearRow), ButtonStyle.Secondary)
                 .Build());
         }

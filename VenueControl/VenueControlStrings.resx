@@ -148,4 +148,13 @@
     <data name="VenueOpeningCancelled" xml:space="preserve">
         <value>Yay! I've cancelled the opening. 🥲</value>
     </data>
+    <data name="AskForScenesMessage" xml:space="preserve">
+        <value>Oki! Select the **scenes** that best describe your venue (maximum 2). 🙂</value>
+    </data>
+    <data name="AskForFeaturesMessage" xml:space="preserve">
+        <value>Now, select all the **features** that apply to your venue. 😊</value>
+    </data>
+    <data name="AskForGamesMessage" xml:space="preserve">
+        <value>Select all the **games** your venue features. 👾</value>
+    </data>
 </root>
