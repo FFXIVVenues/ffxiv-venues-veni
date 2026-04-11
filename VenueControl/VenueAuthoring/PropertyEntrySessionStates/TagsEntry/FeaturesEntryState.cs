@@ -32,6 +32,7 @@ class FeaturesEntrySessionState : ISessionState
         ("Void", "Void"),
         ("Stylists", "Stylists"),
         ("Novel performances", "Performances"),
+        ("Giveaways", "Giveaways"),
         ("VIP available", "VIP"),
         ("LGBTQIA+ focused", "LGBTQIA+"),
         ("RP encouraged", "RP Heavy"),
