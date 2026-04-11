@@ -20,7 +20,8 @@ class GamesEntrySessionState : ISessionState
         ("Blackjack", "Blackjack"),
         ("Deathroll", "Deathroll"),
         ("Texas Holdem", "Texas Holdem"),
-        ("Bingo", "Bingo")
+        ("Bingo", "Bingo"),
+        ("Roulette", "Roulette")
     };
 
     public Task Enter(VeniInteractionContext c)
