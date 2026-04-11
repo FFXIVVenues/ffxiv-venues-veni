@@ -132,6 +132,24 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Now, select all the **features** that apply to your venue. 😊.
+        /// </summary>
+        internal static string AskForFeaturesMessage {
+            get {
+                return ResourceManager.GetString("AskForFeaturesMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select all the **games** your venue features. 👾.
+        /// </summary>
+        internal static string AskForGamesMessage {
+            get {
+                return ResourceManager.GetString("AskForGamesMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to And how long are we closing for? 🥹.
         /// </summary>
         internal static string AskForHowLongClosingFor {
@@ -209,6 +227,15 @@ namespace FFXIVVenues.Veni.VenueControl {
         internal static string AskForOpenTimeOnDayMessage {
             get {
                 return ResourceManager.GetString("AskForOpenTimeOnDayMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oki! Select the **scenes** that best describe your venue (maximum 2). 🙂.
+        /// </summary>
+        internal static string AskForScenesMessage {
+            get {
+                return ResourceManager.GetString("AskForScenesMessage", resourceCulture);
             }
         }
         
