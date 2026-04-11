@@ -35,8 +35,8 @@ class FeaturesEntrySessionState : ISessionState
         ("Giveaways", "Giveaways"),
         ("VIP available", "VIP"),
         ("LGBTQIA+ focused", "LGBTQIA+"),
-        ("RP encouraged", "RP Heavy"),
-        ("Strictly in-character RP only", "IC RP Only")
+        ("IC RP encouraged", "RP Heavy"),
+        ("IC RP only", "IC RP Only")
     };
 
     public Task Enter(VeniInteractionContext c)
