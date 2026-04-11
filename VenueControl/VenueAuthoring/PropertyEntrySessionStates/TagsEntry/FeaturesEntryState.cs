@@ -63,7 +63,7 @@ class FeaturesEntrySessionState : ISessionState
     private Task OnComplete(ComponentVeniInteractionContext c)
     {
         var venue = c.Session.GetVenue();
-        venue.Tags = venue.Tags ?? new();
+        venue.Tags ??= new();
         venue.Tags.RemoveAll(existingTag => _availableTags.Any(availableTag => existingTag == availableTag.Value));
         venue.Tags.AddRange(c.Interaction.Data.Values);
 
