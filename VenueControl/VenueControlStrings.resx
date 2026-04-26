@@ -67,7 +67,7 @@
         <value>Aaaah. You'll need to [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) and ask staff in the FFXIV Venues discord to change this part of your venue information. 😊</value>
     </data>
     <data name="OpeningTooLong" xml:space="preserve">
-        <value>Aaaah, that's a long opening, max is **7 hours**. 😢 </value>
+         <value>Aaaah, that's a long opening, max is **7 hours**. 😢 </value>
     </data>
     <data name="DescriptionHasMonthlySchedule" xml:space="preserve">
         <value>Yes, our openings are on a particular day of every month.</value>
