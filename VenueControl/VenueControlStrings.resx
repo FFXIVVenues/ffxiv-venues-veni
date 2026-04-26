@@ -67,7 +67,7 @@
         <value>Aaaah. You'll need to [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) and ask staff in the FFXIV Venues discord to change this part of your venue information. 😊</value>
     </data>
     <data name="OpeningTooLong" xml:space="preserve">
-        <value>Aaaah, that's a long opening. 😢 Please only gives hours your are **actively present or staffed**. If you are indeed open and staffed longer than 7 hours please [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) in the FFXIV Venues discord to extend for longer hours.</value>
+        <value>Aaaah, that's a long opening, max is **7 hours**. 😢 </value>
     </data>
     <data name="DescriptionHasMonthlySchedule" xml:space="preserve">
         <value>Yes, our openings are on a particular day of every month.</value>
@@ -156,5 +156,10 @@
     </data>
     <data name="AskForGamesMessage" xml:space="preserve">
         <value>Select all the **games** your venue features. 👾</value>
+    </data>
+    <data name="UnstaffedOpeningsNotSupported" xml:space="preserve">
+        <value>### Unstaffed openings are not supported
+
+We do not support 'always open houses' or unstaffed openings, please only list explicitly scheduled staffed openings; if you do so anyway the team may remove your schedule/venue following enough flags from the community. If you do have a regular staffed opening longer than 7 hours please [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883), staff can override this for you. </value>
     </data>
 </root>

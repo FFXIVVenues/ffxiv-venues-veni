@@ -357,7 +357,7 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Aaaah, that&apos;s a long opening. 😢 Please only gives hours your are **actively present or staffed**. If you are indeed open and staffed longer than 7 hours please [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) in the FFXIV Venues discord to extend for longer hours..
+        ///   Looks up a localized string similar to Aaaah, that&apos;s a long opening, max is **7 hours**. 😢 .
         /// </summary>
         internal static string OpeningTooLong {
             get {
@@ -407,6 +407,17 @@ namespace FFXIVVenues.Veni.VenueControl {
         internal static string SelectVenueToEdit {
             get {
                 return ResourceManager.GetString("SelectVenueToEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ### Unstaffed openings are not supported
+        ///
+        ///We do not support &apos;always open houses&apos; or unstaffed openings, please only list explicitly scheduled staffed openings; if you do so anyway the team may remove your schedule/venue following enough flags from the community. If you do have a regular staffed opening longer than 7 hours please [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883), staff can override this for you. .
+        /// </summary>
+        internal static string UnstaffedOpeningsNotSupported {
+            get {
+                return ResourceManager.GetString("UnstaffedOpeningsNotSupported", resourceCulture);
             }
         }
         
