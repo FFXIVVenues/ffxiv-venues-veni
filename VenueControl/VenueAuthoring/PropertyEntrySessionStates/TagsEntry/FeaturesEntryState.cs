@@ -38,7 +38,7 @@ class FeaturesEntrySessionState : ISessionState
         ("LGBTQIA+ focused", "The venue is a safe space focused on LGBTQIA+.", "LGBTQIA+"),
         ("IC RP encouraged", "The venue encourages an environment for players to role play as their characters, though interacting as themselves is allowed.", "RP Heavy"),
         ("IC RP only", "The venue offers an environment for players to role play as their characters only, and does not allow open interaction as themselves.", "IC RP Only"),
-        ("24/7 Open House", "This venue allows anyone to visit at anytime, even outside of any scheduled hours.", "24/7 Open House")
+        ("24/7 open house", "This venue allows anyone to visit at anytime, even outside of any scheduled hours.", "24/7 open house")
     };
 
     public Task Enter(VeniInteractionContext c)
