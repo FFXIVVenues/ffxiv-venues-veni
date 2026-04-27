@@ -13,32 +13,32 @@ class FeaturesEntrySessionState : ISessionState
 {
     private Venue _venue;
 
-    private static List<(string Label, string Description, string Value)> _availableTags = new()
+    private static List<(string Label, string Description, string Value, string Emote)> _availableTags = new()
     {
-        ("Courtesans", "The venue offers erotic role-play services in a consensual environment.", "Courtesans"),
-        ("Gambling", "The venue offers various games of chance with set amounts of gils and house rules.", "Gambling"),
-        ("Artists", "Artists are present in the venue to offer various custom artwork.", "Artists"),
-        ("Dancers", "Dancers populate the venue to hype the party and/or host customers.", "Dancers"),
-        ("Bards", "A bard provides theme-based or general music to entertain guests with a selection of songs.", "Bards"),
-        ("Food", "The venue offers food in their service.", "Food"),
-        ("Drink", "The venue offers drinks in their service, this may be soft drinks or include alcohol.", "Drink"),
-        ("Twitch DJ", "The venue hosts a DJ who provides music in twitch streams and hype the venue.", "Twitch DJ"),
-        ("Sync DJ", "The venue hosts a sync DJ who offers music via a syncshell.", "Sync DJ"),
-        ("Bar", "The venue offers a bar in the environment.", "Bar"),
-        ("Tarot", "The venue hosts a Tarot Reader who offers to read drawn cards and provide insights about the possible meaning they hold.", "Tarot"),
-        ("Pillow talk", "The venue offers Pillows who provide a safe, confidential space to promote an SFW companionship for a limited time.", "Pillow"),
-        ("Photography", "The venue hosts photographers who take venue snapshots or more complex gpose of guests to display in the venue discord and create memories.", "Photography"),
-        ("Open stage", "The venue offers the stage for a patron to perform to the audience.", "Open stage"),
-        ("Void", "The venue is build in the void; created outside the walls of the house.", "Void"),
-        ("Stylists", "The venue hosts stylists who offer a variety of glamour services, including hair styling, makeup, and wardrobe assistance.", "Stylists"),
-        ("Novel performances", "The venue offers unique schedule performances, this could be SFW (theater, synch dancers, etc) or NSFW (erotic voyeur shows, live BDSM, etc).", "Performances"),
-        ("Giveaways", "The venue offers giveaways through various channels, in chat, twitch stream or discord.", "Giveaways"),
-        ("Syncshell available", "This venue has a syncshell available for guests to join and see each other as they see themselves.", "Syncshell available"),
-        ("VIP available", "The venue offers various perks through VIP tiers. This could include free drinks, gpose, gambling perk or more.", "VIP"),
-        ("LGBTQIA+ focused", "The venue is a safe space focused on LGBTQIA+.", "LGBTQIA+"),
-        ("IC RP encouraged", "The venue encourages an environment for players to role play as their characters, though interacting as themselves is allowed.", "RP Heavy"),
-        ("IC RP only", "The venue offers an environment for players to role play as their characters only, and does not allow open interaction as themselves.", "IC RP Only"),
-        ("24/7 open house", "This venue allows anyone to visit at anytime, even outside of any scheduled hours.", "24/7 open house")
+        (VenueControlStrings.TagLabel_Courtesans, VenueControlStrings.TagDescription_Courtesans, "Courtesans", "🔞"),
+        (VenueControlStrings.TagLabel_Gambling, VenueControlStrings.TagDescription_Gambling, "Gambling", "🎲"),
+        (VenueControlStrings.TagLabel_Artists, VenueControlStrings.TagDescription_Artists, "Artists", "🎨"),
+        (VenueControlStrings.TagLabel_Dancers, VenueControlStrings.TagDescription_Dancers, "Dancers", "💃"),
+        (VenueControlStrings.TagLabel_Bards, VenueControlStrings.TagDescription_Bards, "Bards", "🎵"),
+        (VenueControlStrings.TagLabel_Food, VenueControlStrings.TagDescription_Food, "Food", "🍲"),
+        (VenueControlStrings.TagLabel_Drink, VenueControlStrings.TagDescription_Drink, "Drink", "🍷"),
+        (VenueControlStrings.TagLabel_TwitchDJ, VenueControlStrings.TagDescription_TwitchDJ, "Twitch DJ", "🎧"),
+        (VenueControlStrings.TagLabel_SyncDJ, VenueControlStrings.TagDescription_SyncDJ, "Sync DJ", "🎧"),
+        (VenueControlStrings.TagLabel_Bar, VenueControlStrings.TagDescription_Bar, "Bar", "🍺"),
+        (VenueControlStrings.TagLabel_Tarot, VenueControlStrings.TagDescription_Tarot, "Tarot", "🔮"),
+        (VenueControlStrings.TagLabel_PillowTalk, VenueControlStrings.TagDescription_PillowTalk, "Pillow", "💬"),
+        (VenueControlStrings.TagLabel_Photography, VenueControlStrings.TagDescription_Photography, "Photography", "📷"),
+        (VenueControlStrings.TagLabel_OpenStage, VenueControlStrings.TagDescription_OpenStage, "Open stage", "🎤"),
+        (VenueControlStrings.TagLabel_Void, VenueControlStrings.TagDescription_Void, "Void", "🌒"),
+        (VenueControlStrings.TagLabel_Stylists, VenueControlStrings.TagDescription_Stylists, "Stylists", "💇"),
+        (VenueControlStrings.TagLabel_NovelPerformances, VenueControlStrings.TagDescription_NovelPerformances, "Performances", "💃"),
+        (VenueControlStrings.TagLabel_Giveaways, VenueControlStrings.TagDescription_Giveaways, "Giveaways", "🎁"),
+        (VenueControlStrings.TagLabel_SyncshellAvailable, VenueControlStrings.TagDescription_SyncshellAvailable, "Syncshell available", "👀"),
+        (VenueControlStrings.TagLabel_VIPAvailable, VenueControlStrings.TagDescription_VIPAvailable, "VIP", "💎"),
+        (VenueControlStrings.TagLabel_LgbtqiaFocused, VenueControlStrings.TagDescription_LgbtqiaFocused, "LGBTQIA+", "🏳️‍🌈"),
+        (VenueControlStrings.TagLabel_IcRpEncouraged, VenueControlStrings.TagDescription_IcRpEncouraged, "RP Heavy", "🎭"),
+        (VenueControlStrings.TagLabel_IcRpOnly, VenueControlStrings.TagDescription_IcRpOnly, "IC RP Only", "🎭"),
+        (VenueControlStrings.TagLabel_OpenHouse247, VenueControlStrings.TagDescription_OpenHouse247, "24/7 open house", "🏠")
     };
 
     public Task Enter(VeniInteractionContext c)
@@ -54,13 +54,13 @@ class FeaturesEntrySessionState : ISessionState
         var selectComponent = new SelectMenuBuilder()
             .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
             .WithMaxValues(_availableTags.Count);
-        foreach (var (label, desc, value) in _availableTags)
-            selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value), description: desc);
+        foreach (var (label, desc, value, emote) in _availableTags)
+            selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value), description: desc, emote: new Emoji(emote));
 
         return new ComponentBuilder()
             .WithSelectMenu(selectComponent)
             .WithBackButton(c)
-            .WithSkipButton<WebsiteEntrySessionState, ConfirmVenueSessionState>(c);
+            .WithSkipButton<GamesEntrySessionState, ConfirmVenueSessionState>(c);
     }
 
     private Task OnComplete(ComponentVeniInteractionContext c)

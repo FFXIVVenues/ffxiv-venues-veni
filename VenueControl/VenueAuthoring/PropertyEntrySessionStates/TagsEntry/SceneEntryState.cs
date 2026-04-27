@@ -14,21 +14,21 @@ class SceneEntrySessionState : ISessionState
 {
 
     private Venue _venue;
-    private static List<(string Label, string Value)> _availableScenes = new()
+    private static List<(string Label, string Value, string Emote)> _availableScenes = new()
     {
-        ("Nightclub", "Nightclub"),
-        ("Den", "Den"),
-        ("Cafe", "Cafe"),
-        ("Tavern", "Tavern"),
-        ("Inn", "Inn"),
-        ("Lounge", "Lounge"),
-        ("Bath house", "Bath house"),
-        ("Restaurant", "Restaurant"),
-        ("Fightclub", "Fightclub"),
-        ("Casino", "Casino"),
-        ("Shop", "Shop"),
-        ("Maid cafe / Host club", "Maid cafe"),
-        ("Other", "Other")
+        (VenueControlStrings.SceneLabel_Nightclub, "Nightclub", "💃"),
+        (VenueControlStrings.SceneLabel_Den, "Den", "🚬"),
+        (VenueControlStrings.SceneLabel_Cafe, "Cafe", "☕"),
+        (VenueControlStrings.SceneLabel_Tavern, "Tavern", "🍺"),
+        (VenueControlStrings.SceneLabel_Inn, "Inn", "🛌"),
+        (VenueControlStrings.SceneLabel_Lounge, "Lounge", "🍸"),
+        (VenueControlStrings.SceneLabel_BathHouse, "Bath house", "🛁"),
+        (VenueControlStrings.SceneLabel_Restaurant, "Restaurant", "🍴"),
+        (VenueControlStrings.SceneLabel_Fightclub, "Fightclub", "🥊"),
+        (VenueControlStrings.SceneLabel_Casino, "Casino", "🎰"),
+        (VenueControlStrings.SceneLabel_Shop, "Shop", "🛍️"),
+        (VenueControlStrings.SceneLabel_MaidCafe, "Maid cafe", "👔"),
+        (VenueControlStrings.SceneLabel_Other, "Other", "❓")
     };
 
     public Task Enter(VeniInteractionContext c)
@@ -44,8 +44,8 @@ class SceneEntrySessionState : ISessionState
         var selectComponent = new SelectMenuBuilder()
             .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
             .WithMaxValues(Math.Max(2, _availableScenes.Count(t => this._venue.Tags?.Contains(t.Value) ?? false)));
-        foreach (var (label, value) in _availableScenes)
-            selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value));
+        foreach (var (label, value, emote) in _availableScenes)
+            selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value), emote: new Emoji(emote));
 
         return new ComponentBuilder()
             .WithSelectMenu(selectComponent);
