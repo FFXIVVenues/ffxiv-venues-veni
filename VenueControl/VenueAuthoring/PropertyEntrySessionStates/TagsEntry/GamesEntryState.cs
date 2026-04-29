@@ -13,15 +13,15 @@ class GamesEntrySessionState : ISessionState
 {
     private Venue _venue;
 
-    private static List<(string Label, string Value)> _availableGames = new()
+    private static List<(string Label, string Description, string Value, string Emote)> _availableGames = new()
     {
-        ("Triple triad", "Triple triad"),
-        ("Truth or Dare", "Truth or Dare"),
-        ("Blackjack", "Blackjack"),
-        ("Deathroll", "Deathroll"),
-        ("Texas Holdem", "Texas Holdem"),
-        ("Bingo", "Bingo"),
-        ("Roulette", "Roulette")
+        (VenueControlStrings.TagLabel_TripleTriad, VenueControlStrings.TagDescription_TripleTriad, "Triple triad", "🎴"),
+        (VenueControlStrings.TagLabel_TruthOrDare, VenueControlStrings.TagDescription_TruthOrDare, "Truth or dare", "❓"),
+        (VenueControlStrings.TagLabel_Blackjack, VenueControlStrings.TagDescription_Blackjack, "Blackjack", "🃏"),
+        (VenueControlStrings.TagLabel_Deathroll, VenueControlStrings.TagDescription_Deathroll, "Deathroll", "🎲"),
+        (VenueControlStrings.TagLabel_TexasHoldem, VenueControlStrings.TagDescription_TexasHoldem, "Texas holdem", "♠️"),
+        (VenueControlStrings.TagLabel_Bingo, VenueControlStrings.TagDescription_Bingo, "Bingo", "🔢"),
+        (VenueControlStrings.TagLabel_Roulette, VenueControlStrings.TagDescription_Roulette, "Roulette", "🎡")
     };
 
     public Task Enter(VeniInteractionContext c)
@@ -37,8 +37,8 @@ class GamesEntrySessionState : ISessionState
         var selectComponent = new SelectMenuBuilder()
             .WithCustomId(c.Session.RegisterComponentHandler(OnComplete, ComponentPersistence.ClearRow))
             .WithMaxValues(_availableGames.Count);
-        foreach (var (label, value) in _availableGames)
-            selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value));
+        foreach (var (label, description, value, emote) in _availableGames)
+            selectComponent.AddOption(label, value, isDefault: this._venue.Tags.Contains(value), description: description, emote: new Emoji(emote));
 
         return new ComponentBuilder()
             .WithSelectMenu(selectComponent)

@@ -97,7 +97,7 @@ public class VenueApprovalService(
         {
             var manager = await client.GetUserAsync(ulong.Parse(managerId));
             var dmChannel = await manager.CreateDMChannelAsync();
-            _ = dmChannel.SendMessageAsync($"Hey hey! :heart:\n**{venue.Name}** has been **approved** and it's live!\n{uiConfiguration.BaseUrl}/#{venue.Id}\n" +
+            _ = dmChannel.SendMessageAsync($"Hey hey! :heart:\n**{venue.Name}** has been **approved** and it's live!\n{uiConfiguration.BaseUrl}/venue/{venue.Id}\n" +
                                            $"I've assigned you your Venue Manager discord role too.\n" +
                                            $"Let me know if you'd like anything edited or anything you'd like help with. 🥳",
                 embed: (await venueRenderer.ValidateAndRenderAsync(venue)).Build());

@@ -348,6 +348,42 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An apartment.
+        /// </summary>
+        internal static string LocationTypeLabel_Apartment {
+            get {
+                return ResourceManager.GetString("LocationTypeLabel_Apartment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A house.
+        /// </summary>
+        internal static string LocationTypeLabel_House {
+            get {
+                return ResourceManager.GetString("LocationTypeLabel_House", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other.
+        /// </summary>
+        internal static string LocationTypeLabel_Other {
+            get {
+                return ResourceManager.GetString("LocationTypeLabel_Other", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A room in a house.
+        /// </summary>
+        internal static string LocationTypeLabel_Room {
+            get {
+                return ResourceManager.GetString("LocationTypeLabel_Room", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Aaaah. You&apos;ll need to [create a ticket](https://discord.com/channels/942536163959406632/1188579990271434883) and ask staff in the FFXIV Venues discord to change this part of your venue information. 😊.
         /// </summary>
         internal static string NoPermission {
@@ -402,11 +438,722 @@ namespace FFXIVVenues.Veni.VenueControl {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bath house.
+        /// </summary>
+        internal static string SceneLabel_BathHouse {
+            get {
+                return ResourceManager.GetString("SceneLabel_BathHouse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cafe.
+        /// </summary>
+        internal static string SceneLabel_Cafe {
+            get {
+                return ResourceManager.GetString("SceneLabel_Cafe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Casino.
+        /// </summary>
+        internal static string SceneLabel_Casino {
+            get {
+                return ResourceManager.GetString("SceneLabel_Casino", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Den.
+        /// </summary>
+        internal static string SceneLabel_Den {
+            get {
+                return ResourceManager.GetString("SceneLabel_Den", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fightclub.
+        /// </summary>
+        internal static string SceneLabel_Fightclub {
+            get {
+                return ResourceManager.GetString("SceneLabel_Fightclub", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inn.
+        /// </summary>
+        internal static string SceneLabel_Inn {
+            get {
+                return ResourceManager.GetString("SceneLabel_Inn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lounge.
+        /// </summary>
+        internal static string SceneLabel_Lounge {
+            get {
+                return ResourceManager.GetString("SceneLabel_Lounge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maid cafe / Host club.
+        /// </summary>
+        internal static string SceneLabel_MaidCafe {
+            get {
+                return ResourceManager.GetString("SceneLabel_MaidCafe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nightclub.
+        /// </summary>
+        internal static string SceneLabel_Nightclub {
+            get {
+                return ResourceManager.GetString("SceneLabel_Nightclub", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other.
+        /// </summary>
+        internal static string SceneLabel_Other {
+            get {
+                return ResourceManager.GetString("SceneLabel_Other", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restaurant.
+        /// </summary>
+        internal static string SceneLabel_Restaurant {
+            get {
+                return ResourceManager.GetString("SceneLabel_Restaurant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shop.
+        /// </summary>
+        internal static string SceneLabel_Shop {
+            get {
+                return ResourceManager.GetString("SceneLabel_Shop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tavern.
+        /// </summary>
+        internal static string SceneLabel_Tavern {
+            get {
+                return ResourceManager.GetString("SceneLabel_Tavern", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Which venue would you like to edit? 🤔.
         /// </summary>
         internal static string SelectVenueToEdit {
             get {
                 return ResourceManager.GetString("SelectVenueToEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue contains adult content in the open area..
+        /// </summary>
+        internal static string SfwDescription_False {
+            get {
+                return ResourceManager.GetString("SfwDescription_False", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue is SFW in the open area..
+        /// </summary>
+        internal static string SfwDescription_True {
+            get {
+                return ResourceManager.GetString("SfwDescription_True", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No, we&apos;re openly NSFW.
+        /// </summary>
+        internal static string SfwLabel_False {
+            get {
+                return ResourceManager.GetString("SfwLabel_False", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes, it&apos;s safe on entry.
+        /// </summary>
+        internal static string SfwLabel_True {
+            get {
+                return ResourceManager.GetString("SfwLabel_True", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Artists are present in the venue to offer various custom artwork..
+        /// </summary>
+        internal static string TagDescription_Artists {
+            get {
+                return ResourceManager.GetString("TagDescription_Artists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue offers a bar in the environment..
+        /// </summary>
+        internal static string TagDescription_Bar {
+            get {
+                return ResourceManager.GetString("TagDescription_Bar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A bard provides theme-based or general music to entertain guests with a selection of songs..
+        /// </summary>
+        internal static string TagDescription_Bards {
+            get {
+                return ResourceManager.GetString("TagDescription_Bards", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue holds a venue wide bingo game, usually with prizes involved..
+        /// </summary>
+        internal static string TagDescription_Bingo {
+            get {
+                return ResourceManager.GetString("TagDescription_Bingo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue holds a table for players who wish to gamble gil in a game of 21..
+        /// </summary>
+        internal static string TagDescription_Blackjack {
+            get {
+                return ResourceManager.GetString("TagDescription_Blackjack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue offers erotic role-play services in a consensual environment..
+        /// </summary>
+        internal static string TagDescription_Courtesans {
+            get {
+                return ResourceManager.GetString("TagDescription_Courtesans", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dancers populate the venue to hype the party and/or host customers..
+        /// </summary>
+        internal static string TagDescription_Dancers {
+            get {
+                return ResourceManager.GetString("TagDescription_Dancers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue offers individual or competitive game of Deathroll usually with prizes involved..
+        /// </summary>
+        internal static string TagDescription_Deathroll {
+            get {
+                return ResourceManager.GetString("TagDescription_Deathroll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue offers drinks in their service, this may be soft drinks or include alcohol..
+        /// </summary>
+        internal static string TagDescription_Drink {
+            get {
+                return ResourceManager.GetString("TagDescription_Drink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue offers food in their service..
+        /// </summary>
+        internal static string TagDescription_Food {
+            get {
+                return ResourceManager.GetString("TagDescription_Food", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue offers various games of chance with set amounts of gils and house rules..
+        /// </summary>
+        internal static string TagDescription_Gambling {
+            get {
+                return ResourceManager.GetString("TagDescription_Gambling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue offers giveaways through various channels, in chat, twitch stream or discord..
+        /// </summary>
+        internal static string TagDescription_Giveaways {
+            get {
+                return ResourceManager.GetString("TagDescription_Giveaways", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Encourages role play as characters, though interacting as themselves is allowed..
+        /// </summary>
+        internal static string TagDescription_IcRpEncouraged {
+            get {
+                return ResourceManager.GetString("TagDescription_IcRpEncouraged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Environment for players to role play as their characters only; no open interaction as themselves..
+        /// </summary>
+        internal static string TagDescription_IcRpOnly {
+            get {
+                return ResourceManager.GetString("TagDescription_IcRpOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue is a safe space focused on LGBTQIA+..
+        /// </summary>
+        internal static string TagDescription_LgbtqiaFocused {
+            get {
+                return ResourceManager.GetString("TagDescription_LgbtqiaFocused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unique scheduled performances, ranging from SFW (theater) to NSFW (voyeur shows, BDSM). .
+        /// </summary>
+        internal static string TagDescription_NovelPerformances {
+            get {
+                return ResourceManager.GetString("TagDescription_NovelPerformances", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This venue allows anyone to visit at anytime, even outside of any scheduled hours..
+        /// </summary>
+        internal static string TagDescription_OpenHouse247 {
+            get {
+                return ResourceManager.GetString("TagDescription_OpenHouse247", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue offers the stage for a patron to perform to the audience..
+        /// </summary>
+        internal static string TagDescription_OpenStage {
+            get {
+                return ResourceManager.GetString("TagDescription_OpenStage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Photographers take snapshots or complex gpose of guests to create memories..
+        /// </summary>
+        internal static string TagDescription_Photography {
+            get {
+                return ResourceManager.GetString("TagDescription_Photography", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pillows provide a safe, confidential space to promote SFW companionship for a limited time..
+        /// </summary>
+        internal static string TagDescription_PillowTalk {
+            get {
+                return ResourceManager.GetString("TagDescription_PillowTalk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue holds a table for players who wish to gamble gil in a game of Roulette..
+        /// </summary>
+        internal static string TagDescription_Roulette {
+            get {
+                return ResourceManager.GetString("TagDescription_Roulette", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stylists offer various glamour services, including hair styling, makeup, and wardrobe assistance..
+        /// </summary>
+        internal static string TagDescription_Stylists {
+            get {
+                return ResourceManager.GetString("TagDescription_Stylists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue hosts a sync DJ who offers music via a syncshell..
+        /// </summary>
+        internal static string TagDescription_SyncDJ {
+            get {
+                return ResourceManager.GetString("TagDescription_SyncDJ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This venue has a syncshell available for guests to join and see each other as they see themselves..
+        /// </summary>
+        internal static string TagDescription_SyncshellAvailable {
+            get {
+                return ResourceManager.GetString("TagDescription_SyncshellAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A Tarot Reader offers to read drawn cards and provide insights about their possible meaning..
+        /// </summary>
+        internal static string TagDescription_Tarot {
+            get {
+                return ResourceManager.GetString("TagDescription_Tarot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue holds a table for players who wish to gamble gil in a game of Texas holdem..
+        /// </summary>
+        internal static string TagDescription_TexasHoldem {
+            get {
+                return ResourceManager.GetString("TagDescription_TexasHoldem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue offers individual or competitive games of Triple Triad via the game interface itself..
+        /// </summary>
+        internal static string TagDescription_TripleTriad {
+            get {
+                return ResourceManager.GetString("TagDescription_TripleTriad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue offers a game of Truth or Dare for whomever feels like joining..
+        /// </summary>
+        internal static string TagDescription_TruthOrDare {
+            get {
+                return ResourceManager.GetString("TagDescription_TruthOrDare", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue hosts a DJ who provides music in twitch streams and hype the venue..
+        /// </summary>
+        internal static string TagDescription_TwitchDJ {
+            get {
+                return ResourceManager.GetString("TagDescription_TwitchDJ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Various perks through VIP tiers. This could include free drinks, gpose, gambling perks or more..
+        /// </summary>
+        internal static string TagDescription_VIPAvailable {
+            get {
+                return ResourceManager.GetString("TagDescription_VIPAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The venue is build in the void; created outside the walls of the house..
+        /// </summary>
+        internal static string TagDescription_Void {
+            get {
+                return ResourceManager.GetString("TagDescription_Void", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Artists.
+        /// </summary>
+        internal static string TagLabel_Artists {
+            get {
+                return ResourceManager.GetString("TagLabel_Artists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bar.
+        /// </summary>
+        internal static string TagLabel_Bar {
+            get {
+                return ResourceManager.GetString("TagLabel_Bar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bards.
+        /// </summary>
+        internal static string TagLabel_Bards {
+            get {
+                return ResourceManager.GetString("TagLabel_Bards", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bingo.
+        /// </summary>
+        internal static string TagLabel_Bingo {
+            get {
+                return ResourceManager.GetString("TagLabel_Bingo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blackjack.
+        /// </summary>
+        internal static string TagLabel_Blackjack {
+            get {
+                return ResourceManager.GetString("TagLabel_Blackjack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Courtesans.
+        /// </summary>
+        internal static string TagLabel_Courtesans {
+            get {
+                return ResourceManager.GetString("TagLabel_Courtesans", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dancers.
+        /// </summary>
+        internal static string TagLabel_Dancers {
+            get {
+                return ResourceManager.GetString("TagLabel_Dancers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deathroll.
+        /// </summary>
+        internal static string TagLabel_Deathroll {
+            get {
+                return ResourceManager.GetString("TagLabel_Deathroll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drink.
+        /// </summary>
+        internal static string TagLabel_Drink {
+            get {
+                return ResourceManager.GetString("TagLabel_Drink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Food.
+        /// </summary>
+        internal static string TagLabel_Food {
+            get {
+                return ResourceManager.GetString("TagLabel_Food", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gambling.
+        /// </summary>
+        internal static string TagLabel_Gambling {
+            get {
+                return ResourceManager.GetString("TagLabel_Gambling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Giveaways.
+        /// </summary>
+        internal static string TagLabel_Giveaways {
+            get {
+                return ResourceManager.GetString("TagLabel_Giveaways", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IC RP encouraged.
+        /// </summary>
+        internal static string TagLabel_IcRpEncouraged {
+            get {
+                return ResourceManager.GetString("TagLabel_IcRpEncouraged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IC RP only.
+        /// </summary>
+        internal static string TagLabel_IcRpOnly {
+            get {
+                return ResourceManager.GetString("TagLabel_IcRpOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LGBTQIA+ focused.
+        /// </summary>
+        internal static string TagLabel_LgbtqiaFocused {
+            get {
+                return ResourceManager.GetString("TagLabel_LgbtqiaFocused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Novel performances.
+        /// </summary>
+        internal static string TagLabel_NovelPerformances {
+            get {
+                return ResourceManager.GetString("TagLabel_NovelPerformances", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 24/7 open house.
+        /// </summary>
+        internal static string TagLabel_OpenHouse247 {
+            get {
+                return ResourceManager.GetString("TagLabel_OpenHouse247", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open stage.
+        /// </summary>
+        internal static string TagLabel_OpenStage {
+            get {
+                return ResourceManager.GetString("TagLabel_OpenStage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Photography.
+        /// </summary>
+        internal static string TagLabel_Photography {
+            get {
+                return ResourceManager.GetString("TagLabel_Photography", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pillow talk.
+        /// </summary>
+        internal static string TagLabel_PillowTalk {
+            get {
+                return ResourceManager.GetString("TagLabel_PillowTalk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roulette.
+        /// </summary>
+        internal static string TagLabel_Roulette {
+            get {
+                return ResourceManager.GetString("TagLabel_Roulette", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stylists.
+        /// </summary>
+        internal static string TagLabel_Stylists {
+            get {
+                return ResourceManager.GetString("TagLabel_Stylists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sync DJ.
+        /// </summary>
+        internal static string TagLabel_SyncDJ {
+            get {
+                return ResourceManager.GetString("TagLabel_SyncDJ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syncshell available.
+        /// </summary>
+        internal static string TagLabel_SyncshellAvailable {
+            get {
+                return ResourceManager.GetString("TagLabel_SyncshellAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tarot.
+        /// </summary>
+        internal static string TagLabel_Tarot {
+            get {
+                return ResourceManager.GetString("TagLabel_Tarot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Texas holdem.
+        /// </summary>
+        internal static string TagLabel_TexasHoldem {
+            get {
+                return ResourceManager.GetString("TagLabel_TexasHoldem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Triple triad.
+        /// </summary>
+        internal static string TagLabel_TripleTriad {
+            get {
+                return ResourceManager.GetString("TagLabel_TripleTriad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Truth or dare.
+        /// </summary>
+        internal static string TagLabel_TruthOrDare {
+            get {
+                return ResourceManager.GetString("TagLabel_TruthOrDare", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Twitch DJ.
+        /// </summary>
+        internal static string TagLabel_TwitchDJ {
+            get {
+                return ResourceManager.GetString("TagLabel_TwitchDJ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to VIP available.
+        /// </summary>
+        internal static string TagLabel_VIPAvailable {
+            get {
+                return ResourceManager.GetString("TagLabel_VIPAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Void.
+        /// </summary>
+        internal static string TagLabel_Void {
+            get {
+                return ResourceManager.GetString("TagLabel_Void", resourceCulture);
             }
         }
         
